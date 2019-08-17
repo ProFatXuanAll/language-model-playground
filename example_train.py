@@ -34,6 +34,8 @@ else:
     converter = char_rnn.token.Converter()
     converter.build(df['Text'])
     train_ids = converter.convert_sentences_to_ids(df['Text'])
+    for ids in train_ids:
+        ids.append(converter.eos_token_id)
     with open(train_preprocess_file, 'wb') as f:
         pickle.dump(train_ids, f)
     converter.save_to_file(train_converter_file)
@@ -54,8 +56,8 @@ torch.manual_seed(777)
 #####################################################################
 DEVICE = torch.device('cuda:0') if torch.cuda.is_available() else torch.device('cpu')
 
-TOTAL_STEP = 1000000
-BATCH_SIZE = 256
+TOTAL_STEP = 100000
+BATCH_SIZE = 32
 EMBED_DIM = 100
 HIDDEN_DIM = 100
 LEARNING_RATE = 0.001
