@@ -50,7 +50,7 @@ if torch.cuda.is_available():
 ##############################################
 data_path = os.path.abspath('./data')
 
-df = pd.read_csv(f'{data_path}/text.csv')
+df = pd.read_csv(f'{data_path}/news_collection.csv')
 
 ##############################################
 # Construct tokenizer and perform tokenization.
@@ -58,7 +58,7 @@ df = pd.read_csv(f'{data_path}/text.csv')
 tokenizer = lmp.tokenizer.CharTokenizer()
 
 dataset = lmp.dataset.BaseDataset(config=config,
-                                  text_list=df['text'],
+                                  text_list=df['title'],
                                   tokenizer=tokenizer)
 
 data_loader = torch.utils.data.DataLoader(dataset,
@@ -104,7 +104,7 @@ for epoch in range(config.epoch):
         pred_y = model(x)
         pred_y = pred_y.view(-1, tokenizer.vocab_size())
         loss = criterion(pred_y, y)
-        total_loss += float(loss)
+        total_loss += float(loss) / len(dataset)
 
         optimizer.zero_grad()
         loss.backward()
