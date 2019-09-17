@@ -1,83 +1,121 @@
+# built-in modules
 import os
-import pickle
+
+# 3rd-party modules
+import numpy as np
 import pandas as pd
 import torch
+import torch.nn
+import torch.utils.data
+import torch.nn.utils.rnn
+import torch.optim
+import sklearn.metrics
+from tqdm import tqdm
 
-import char_rnn
+# self-made modules
+import lmp
 
-#####################################################################
-# 檔案路徑設定
-#####################################################################
-data_path = 'data'
+##############################################
+# Hyperparameters setup
+##############################################
+experiment_no = 1
+config = lmp.config.BaseConfig(batch_size=32,
+                               dropout=0,
+                               embedding_dim=100,
+                               epoch=20,
+                               grad_clip_value=1,
+                               hidden_dim=100,
+                               learning_rate=10e-4,
+                               min_count=0,
+                               num_rnn_layers=1,
+                               output_dim=5,
+                               seed=7)
 
-train_file = '{}/old-newspaper.tsv'.format(data_path)
-train_preprocess_file = '{}/train.preprocess.pickle'.format(data_path)
-train_converter_file = '{}/train.converter.pickle'.format(data_path)
-train_model_file = '{}/train.model.ckpt'.format(data_path)
+##############################################
+# Initialize random seed.
+##############################################
+device = torch.device('cpu')
+np.random.seed(config.seed)
+torch.manual_seed(config.seed)
 
-#####################################################################
-# 讀檔
-# 資料集為各國新聞內容且長短不一
-# 所以只取語言為「繁體中文」且長度介於 60 ~ 200 之間的文章
-#####################################################################
-if os.path.exists(train_preprocess_file):
-    with open(train_preprocess_file, 'rb') as f:
-        train_ids = pickle.load(f)
-    converter = char_rnn.token.Converter()
-    converter.load_from_file(train_converter_file)
-else:
-    df = pd.read_csv(train_file, sep='\t')
-    df = df[df['Language'] == 'Chinese (Traditional)']
-    df['len'] = df['Text'].apply(lambda x: len(str(x)))
-    df = df[(df['len'] >= 60) & (df['len'] <= 200)]
+if torch.cuda.is_available():
+    device = torch.device('cuda:0')
+    torch.cuda.manual_seed(config.seed)
+    torch.cuda.manual_seed_all(config.seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
 
-    converter = char_rnn.token.Converter()
-    converter.build(df['Text'])
-    train_ids = converter.convert_sentences_to_ids(df['Text'])
-    for ids in train_ids:
-        ids.append(converter.eos_token_id)
-    with open(train_preprocess_file, 'wb') as f:
-        pickle.dump(train_ids, f)
-    converter.save_to_file(train_converter_file)
+##############################################
+# Load data.
+##############################################
+data_path = os.path.abspath('./data')
 
-#####################################################################
-# 建立資料集
-#####################################################################
-dataset = char_rnn.data.Dataset(all_ids=train_ids,
-                                pad_token_id=converter.pad_token_id)
+df = pd.read_csv(f'{data_path}/text.csv')
 
-#####################################################################
-# 控制實驗隨機亂數
-#####################################################################
-torch.manual_seed(777)
+##############################################
+# Construct tokenizer and perform tokenization.
+##############################################
+tokenizer = lmp.tokenizer.CharTokenizer()
 
-#####################################################################
-# 決定使用 CPU 或 GPU 進行計算
-#####################################################################
-DEVICE = torch.device('cuda:0') if torch.cuda.is_available() else torch.device('cpu')
+dataset = lmp.dataset.BaseDataset(config=config,
+                                  text_list=df['text'],
+                                  tokenizer=tokenizer)
 
-TOTAL_STEP = 100000
-BATCH_SIZE = 32
-EMBED_DIM = 100
-HIDDEN_DIM = 100
-LEARNING_RATE = 0.001
-GRAD_CLIP_VALUE = 1
+data_loader = torch.utils.data.DataLoader(dataset,
+                                          batch_size=config.batch_size,
+                                          shuffle=True,
+                                          collate_fn=dataset.collate_fn)
 
-model = char_rnn.model.CharRNN(vocab_size=converter.vocab_size(),
-                               embed_dim=EMBED_DIM,
-                               hidden_dim=HIDDEN_DIM,
-                               pad_token_id=converter.pad_token_id)
 
-if os.path.exists(train_model_file):
-    model.load_state_dict(torch.load(train_model_file))
+##############################################
+# Construct RNN model, choose loss function and optimizer.
+##############################################
+model = lmp.model.GRUModel(config=config,
+                           tokenizer=tokenizer)
+model = model.to(device)
 
-char_rnn.model.train(model=model,
-                     converter=converter,
-                     dataset=dataset,
-                     total_step=TOTAL_STEP,
-                     batch_size=BATCH_SIZE,
-                     learning_rate=LEARNING_RATE,
-                     grad_clip_value=GRAD_CLIP_VALUE,
-                     device=DEVICE)
+criterion = torch.nn.CrossEntropyLoss()
 
-torch.save(model.state_dict(), train_model_file)
+optimizer = torch.optim.Adam(model.parameters(), lr=config.learning_rate)
+
+##############################################
+# train
+##############################################
+save_path = f'{data_path}/{experiment_no}'
+if not os.path.exists(save_path):
+    os.mkdir(save_path)
+
+config_save_path = f'{save_path}/config.pickle'
+tokenizer_save_path = f'{save_path}/tokenizer.pickle'
+model_save_path = f'{save_path}/model.ckpt'
+
+config.save_to_file(config_save_path)
+tokenizer.save_to_file(tokenizer_save_path)
+
+best_loss = None
+for epoch in range(config.epoch):
+    model.train()
+    print(f'epoch {epoch}')
+    total_loss = 0
+    for x, y in tqdm(data_loader, desc='training'):
+        x = x.to(device)
+        y = y.view(-1).to(device)
+
+        pred_y = model(x)
+        pred_y = pred_y.view(-1, tokenizer.vocab_size())
+        loss = criterion(pred_y, y)
+        total_loss += float(loss)
+
+        optimizer.zero_grad()
+        loss.backward()
+        torch.nn.utils.clip_grad_value_(model.parameters(), config.grad_clip_value)
+        optimizer.step()
+
+    print(f'loss: {total_loss:.10f}')
+
+    if (best_loss is None) or (total_loss < best_loss):
+        torch.save(model.state_dict(), model_save_path)
+        best_loss = total_loss
+
+print(f'experiment {experiment_no}')
+print(f'best loss: {best_loss:.10f}')

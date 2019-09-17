@@ -3,40 +3,24 @@ import pickle
 import pandas as pd
 import torch
 
-import char_rnn
+import lmp
 
 #####################################################################
 # 檔案路徑設定
 #####################################################################
-data_path = 'data'
+experiment_no = 1
+data_path = os.path.abspath('./data')
+model_path = f'{data_path}/{experiment_no}'
 
-train_file = '{}/old-newspaper.tsv'.format(data_path)
-train_converter_file = '{}/train.converter.pickle'.format(data_path)
-train_model_file = '{}/train.model.ckpt'.format(data_path)
+config = lmp.config.BaseConfig().load_from_file(f'{model_path}/config.pickle')
+tokenizer = lmp.tokenizer.CharTokenizer().load_from_file(f'{model_path}/tokenizer.pickle')
+model = lmp.model.GRUModel(config=config,
+                           tokenizer=tokenizer)
+model.load_state_dict(torch.load(f'{model_path}/model.ckpt'))
 
-if os.path.exists(train_converter_file):
-    converter = char_rnn.token.Converter()
-    converter.load_from_file(train_converter_file)
-else:
-    raise FileNotFoundError('pretrained converter file {} does not exist.'.format(train_converter_file))
-
-EMBED_DIM = 100
-HIDDEN_DIM = 100
-
-model = char_rnn.model.CharRNN(vocab_size=converter.vocab_size(),
-                               embed_dim=EMBED_DIM,
-                               hidden_dim=HIDDEN_DIM,
-                               pad_token_id=converter.pad_token_id)
-
-if os.path.exists(train_model_file):
-    model.load_state_dict(torch.load(train_model_file))
-else:
-    raise FileNotFoundError('pretrained model file {} does not exist.'.format(train_model_file))
-
-for generate_str in char_rnn.model.generator(model=model,
-                                             converter=converter,
-                                             begin_of_sentence='高宏宇',
-                                             beam_width=4,
-                                             max_len=500):
-    print(generate_str)
+for generated_str in model.generator(tokenizer=tokenizer,
+                                    begin_of_sentence='Hell',
+                                    beam_width=4,
+                                    max_len=200):
+    print(generated_str)
     print()
