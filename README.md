@@ -1,5 +1,5 @@
 # Language Model Playground
-[\[中文文件\]](#中文文件) [\[English\]](#English\ Document)
+[\[中文文件\]](#中文文件) [\[English\]](#English-Document)
 
 # 中文文件
 使用 PyTorch 實作 Language Model。
