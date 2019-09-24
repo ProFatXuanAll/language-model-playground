@@ -32,6 +32,8 @@ class BaseModel(torch.nn.Module):
                                       dropout=config.dropout,
                                       batch_first=True)
 
+        # Forward passing
+        self.m = torch.nn.Linear(config.hidden_dim, config.embedding_dim)
 
     def forward(self, batch_x):
         ######################################################################
@@ -49,8 +51,8 @@ class BaseModel(torch.nn.Module):
         ######################################################################
         # 維度: (batch_size, sequence_length, vocabulary_size)
         ######################################################################
+        ht = self.m(ht)
         yt = ht.matmul(self.embedding_layer.weight.transpose(0, 1))
-
         return yt
 
     def generator(self,
