@@ -13,7 +13,6 @@ class BaseConfig:
         self.learning_rate = kwargs.pop('learning_rate', 10e-4)
         self.min_count = kwargs.pop('min_count', 0)
         self.num_rnn_layers = kwargs.pop('num_rnn_layers', 1)
-        self.output_dim = kwargs.pop('output_dim', 1)
         self.seed = kwargs.pop('seed', 1)
 
     def load_from_file(self, file_path=None):
@@ -33,7 +32,6 @@ class BaseConfig:
             self.learning_rate = hyperparameters.pop('learning_rate', self.learning_rate)
             self.min_count = hyperparameters.pop('min_count', self.min_count)
             self.num_rnn_layers = hyperparameters.pop('num_rnn_layers', self.num_rnn_layers)
-            self.output_dim = hyperparameters.pop('output_dim', self.output_dim)
             self.seed = hyperparameters.pop('seed', self.seed)
 
         return self
@@ -53,7 +51,6 @@ class BaseConfig:
                     'learning_rate': self.learning_rate,
                     'min_count': self.min_count,
                     'num_rnn_layers': self.num_rnn_layers,
-                    'output_dim': self.output_dim,
                     'seed': self.seed,
                 }
 
