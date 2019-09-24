@@ -24,11 +24,10 @@ config = lmp.config.BaseConfig(batch_size=32,
                                embedding_dim=100,
                                epoch=20,
                                grad_clip_value=1,
-                               hidden_dim=100,
+                               hidden_dim=300,
                                learning_rate=10e-4,
                                min_count=0,
                                num_rnn_layers=1,
-                               output_dim=5,
                                seed=7)
 
 ##############################################
