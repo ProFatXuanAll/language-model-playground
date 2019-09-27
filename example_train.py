@@ -22,12 +22,13 @@ experiment_no = 1
 config = lmp.config.BaseConfig(batch_size=32,
                                dropout=0,
                                embedding_dim=100,
-                               epoch=20,
+                               epoch=10,
                                grad_clip_value=1,
                                hidden_dim=300,
                                learning_rate=10e-4,
                                min_count=0,
                                num_rnn_layers=1,
+                               num_linear_layers=2,
                                seed=7)
 
 ##############################################
@@ -89,6 +90,7 @@ tokenizer_save_path = f'{save_path}/tokenizer.pickle'
 model_save_path = f'{save_path}/model.ckpt'
 
 config.save_to_file(config_save_path)
+
 tokenizer.save_to_file(tokenizer_save_path)
 
 best_loss = None

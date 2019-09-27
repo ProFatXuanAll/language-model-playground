@@ -35,7 +35,10 @@ class BaseTokenizer:
         self.token_to_id[self.unk_token] = self.unk_token_id
         self.id_to_token[self.unk_token_id] = self.unk_token
 
-    def load_from_file(self, file_path=None):
+    @classmethod
+    def load_from_file(cls, file_path=None):
+        self = cls()
+        
         if file_path is None or type(file_path) != str:
             raise ValueError('argument `file_path` should be a string')
         elif not os.path.exists(file_path):

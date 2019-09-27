@@ -13,6 +13,7 @@ class BaseConfig:
         self.learning_rate = kwargs.pop('learning_rate', 10e-4)
         self.min_count = kwargs.pop('min_count', 0)
         self.num_rnn_layers = kwargs.pop('num_rnn_layers', 1)
+        self.num_linear_layers = kwargs.pop('num_linear_layers', 1)
         self.seed = kwargs.pop('seed', 1)
 
     @classmethod
@@ -35,6 +36,7 @@ class BaseConfig:
             self.learning_rate = hyperparameters.pop('learning_rate', self.learning_rate)
             self.min_count = hyperparameters.pop('min_count', self.min_count)
             self.num_rnn_layers = hyperparameters.pop('num_rnn_layers', self.num_rnn_layers)
+            self.num_linear_layers = hyperparameters.pop('num_linear_layers', self.num_linear_layers)
             self.seed = hyperparameters.pop('seed', self.seed)
 
         return self
@@ -54,6 +56,7 @@ class BaseConfig:
                     'learning_rate': self.learning_rate,
                     'min_count': self.min_count,
                     'num_rnn_layers': self.num_rnn_layers,
+                    'num_linear_layers': self.num_linear_layers,
                     'seed': self.seed,
                 }
 
