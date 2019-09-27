@@ -33,7 +33,16 @@ class BaseModel(torch.nn.Module):
                                       batch_first=True)
 
         # Forward passing
-        self.linear = torch.nn.Linear(config.hidden_dim, config.embedding_dim)
+        # self.linear = torch.nn.Linear(config.hidden_dim, config.embedding_dim)
+        self.linear = []
+
+        for _ in range(config.num_linear_layers):
+            self.linear.append(torch.nn.Linear(config.hidden_dim, config.hidden_dim))
+            self.linear.append(torch.nn.ReLU())
+            self.linear.append(torch.nn.Dropout(config.dropout))
+
+        self.linear.append(torch.nn.Linear(config.hidden_dim, config.embedding_dim))
+        self.sequential = torch.nn.Sequential(*self.linear)
 
     def forward(self, batch_x):
         ######################################################################
@@ -51,7 +60,8 @@ class BaseModel(torch.nn.Module):
         ######################################################################
         # 維度: (batch_size, sequence_length, vocabulary_size)
         ######################################################################
-        ht = self.linear(ht)
+        #ht = self.linear(ht)
+        ht = self.sequential(ht)
         yt = ht.matmul(self.embedding_layer.weight.transpose(0, 1))
         return yt
 
