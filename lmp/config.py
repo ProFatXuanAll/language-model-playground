@@ -16,7 +16,7 @@ class BaseConfig:
         self.seed = kwargs.pop('seed', 1)
 
     @classmethod
-    def load_from_file(cls, file_path=None, **kwargs):
+    def load_from_file(cls, file_path=None):
         self = cls()
 
         if file_path is None or type(file_path) != str:

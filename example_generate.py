@@ -14,9 +14,7 @@ model_path = f'{data_path}/{experiment_no}'
 
 config = lmp.config.BaseConfig.load_from_file(f'{model_path}/config.pickle')
 
-tokenizer = lmp.tokenizer.CharTokenizer()
-tokenizer.load_from_file(f'{model_path}/tokenizer.pickle')
-# -> tokenizer = lmp.tokenizer.CharTokenizer.load_from_file(f'{model_path}/tokenizer.pickle')
+tokenizer = lmp.tokenizer.CharTokenizer.load_from_file(f'{model_path}/tokenizer.pickle')
 
 model = lmp.model.GRUModel(config=config,
                            tokenizer=tokenizer)
