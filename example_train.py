@@ -11,6 +11,7 @@ import torch.nn.utils.rnn
 import torch.optim
 import sklearn.metrics
 from tqdm import tqdm
+import sys
 
 # self-made modules
 import lmp
@@ -18,7 +19,7 @@ import lmp
 ##############################################
 # Hyperparameters setup
 ##############################################
-experiment_no = 1
+experiment_no = 6
 config = lmp.config.BaseConfig(batch_size=32,
                                dropout=0,
                                embedding_dim=100,
@@ -57,9 +58,13 @@ df = pd.read_csv(f'{data_path}/news_collection.csv')
 ##############################################
 tokenizer = lmp.tokenizer.CharTokenizer()
 
+# 讓使用者決定是否 uncase
+uncaseOrNot = True if len(sys.argv) > 1 and sys.argv[1].lower() == 'uncase'   else False
+
 dataset = lmp.dataset.BaseDataset(config=config,
                                   text_list=df['title'],
-                                  tokenizer=tokenizer)
+                                  tokenizer=tokenizer,
+                                  uncase=uncaseOrNot)
 
 data_loader = torch.utils.data.DataLoader(dataset,
                                           batch_size=config.batch_size,
@@ -70,8 +75,11 @@ data_loader = torch.utils.data.DataLoader(dataset,
 ##############################################
 # Construct RNN model, choose loss function and optimizer.
 ##############################################
-model = lmp.model.GRUModel(config=config,
+model = lmp.model.LSTMModel(config=config,
                            tokenizer=tokenizer)
+# model = lmp.model.GRUModel(config=config,
+#                            tokenizer=tokenizer)
+
 model = model.to(device)
 
 criterion = torch.nn.CrossEntropyLoss()

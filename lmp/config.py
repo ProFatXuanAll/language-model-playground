@@ -3,21 +3,31 @@ import os
 import pickle
 
 class BaseConfig:
-    def __init__(self, **kwargs):
-        self.batch_size = kwargs.pop('batch_size', 1)
-        self.dropout = kwargs.pop('dropout', 0)
-        self.embedding_dim = kwargs.pop('embedding_dim', 1)
-        self.epoch = kwargs.pop('epoch', 1)
-        self.grad_clip_value = kwargs.pop('grad_clip_value', 1)
-        self.hidden_dim = kwargs.pop('hidden_dim', 1)
-        self.learning_rate = kwargs.pop('learning_rate', 10e-4)
-        self.min_count = kwargs.pop('min_count', 0)
-        self.num_rnn_layers = kwargs.pop('num_rnn_layers', 1)
-        self.num_linear_layers = kwargs.pop('num_linear_layers', 1)
-        self.seed = kwargs.pop('seed', 1)
+    def __init__(self, batch_size:int=1,
+                     dropout:float=0,
+                     embedding_dim:int=1,
+                     epoch:int=1,
+                     grad_clip_value:float=1,
+                     hidden_dim:int=1,
+                     learning_rate:float=10e-4,
+                     min_count:int=0,
+                     num_rnn_layers:int=1,
+                     num_linear_layers:int=1,
+                     seed:int=1):
+        self.batch_size = batch_size
+        self.dropout = dropout
+        self.embedding_dim = embedding_dim
+        self.epoch = epoch
+        self.grad_clip_value = grad_clip_value
+        self.hidden_dim = hidden_dim
+        self.learning_rate = learning_rate
+        self.min_count = min_count
+        self.num_rnn_layers = num_rnn_layers
+        self.num_linear_layers = num_linear_layers
+        self.seed = seed
 
     @classmethod
-    def load_from_file(cls, file_path=None):
+    def load_from_file(cls, file_path:str=None):
         self = cls()
 
         if file_path is None or type(file_path) != str:
@@ -41,7 +51,7 @@ class BaseConfig:
 
         return self
 
-    def save_to_file(self, file_path=None):
+    def save_to_file(self, file_path:str=None):
         if file_path is None or type(file_path) != str:
             raise ValueError('argument `file_path` should be a string')
         else:
