@@ -6,18 +6,21 @@ import lmp.config
 
 
 class BaseDataset(torch.utils.data.Dataset):
-    def __init__(self, text_list: List[str],
-                 config: lmp.config.BaseConfig,
-                 tokenizer: Union[lmp.tokenizer.BaseTokenizer, lmp.tokenizer.BaseTokenizerDict],
-                 uncase: bool = False):
+    def __init__(
+            self, 
+            text_list: List[str],     
+            config: lmp.config.BaseConfig,
+            tokenizer: Union[lmp.tokenizer.BaseTokenizerByList, lmp.tokenizer.BaseTokenizerByDict],
+            is_uncased: bool = False
+    ):
         super(BaseDataset, self).__init__()
 
         self.text_list = text_list
         self.config = config
         self.tokenizer = tokenizer
-        self.uncase = uncase  # 是否把大小寫視為不同字, default: False
+        self.is_uncased = is_uncased  # 是否把大小寫視為不同字, default: False
 
-        self.tokenizer.build_dict(self.text_list, self.config.min_count, self.uncase)
+        self.tokenizer.build_dict(self.text_list, self.config.min_count, self.is_uncased)
         self.id_list = [torch.LongTensor(ids) for ids in self.tokenizer.encode(self.text_list)]
 
 

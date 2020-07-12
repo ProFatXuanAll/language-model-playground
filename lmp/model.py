@@ -21,7 +21,7 @@ import lmp.config
 
 class BaseModel(torch.nn.Module):
     def __init__(self, config: lmp.config.BaseConfig,
-                 tokenizer: Union[lmp.tokenizer.BaseTokenizer, lmp.tokenizer.BaseTokenizerDict]):
+                 tokenizer: Union[lmp.tokenizer.BaseTokenizerByList, lmp.tokenizer.BaseTokenizerByDict]):
         super(BaseModel, self).__init__()
         
         # Embedding layer
@@ -80,7 +80,7 @@ class BaseModel(torch.nn.Module):
         return yt
 
     def generator(self,
-                  tokenizer: Union[lmp.tokenizer.BaseTokenizer, lmp.tokenizer.BaseTokenizerDict],
+                  tokenizer: Union[lmp.tokenizer.BaseTokenizerByList, lmp.tokenizer.BaseTokenizerByDict],
                   begin_of_sentence: str = '',
                   beam_width: int = 4,
                   max_len: int = 200) -> List[str]:
@@ -162,7 +162,7 @@ class BaseModel(torch.nn.Module):
                                 top_value[beam_id][-1]['value']) + active_ids_prob[beam_id]
                         if value < min_value:
                             max_value_beam_id = beam_id
-                            min_value = value.item()   # 從 tensor 變為 int，因為min_value是int(不轉的話一樣可運行，用mypy檢查會報error)
+                            min_value = value.item()   # 從 tensor 變為 int，因為 min_value 是 int (不轉的話一樣可運行，但用 mypy 檢查會報 error )
                             max_value_vocab_id = top_value[beam_id][-1]['vocab_id']
 
                     final_top_value.append({
