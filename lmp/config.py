@@ -3,22 +3,26 @@ import os
 import pickle
 
 class BaseConfig:
-    def __init__(self, batch_size:int=1,
-                     dropout:float=0,
-                     embedding_dim:int=1,
-                     epoch:int=1,
-                     grad_clip_value:float=1,
-                     hidden_dim:int=1,
-                     learning_rate:float=10e-4,
-                     min_count:int=0,
-                     num_rnn_layers:int=1,
-                     num_linear_layers:int=1,
-                     seed:int=1):
+    def __init__(
+            self, 
+            batch_size: int = 1,
+            dropout: float = 0,
+            embedding_dim: int = 1,
+            epoch: int = 1,
+            max_norm: float = 1,
+            hidden_dim: int = 1,
+            learning_rate: float = 10e-4,
+            min_count: int = 0,
+            num_rnn_layers: int = 1,
+            num_linear_layers: int = 1,
+            seed: int = 1
+    ):
+
         self.batch_size = batch_size
         self.dropout = dropout
         self.embedding_dim = embedding_dim
         self.epoch = epoch
-        self.grad_clip_value = grad_clip_value
+        self.max_norm = max_norm
         self.hidden_dim = hidden_dim
         self.learning_rate = learning_rate
         self.min_count = min_count
@@ -27,7 +31,7 @@ class BaseConfig:
         self.seed = seed
 
     @classmethod
-    def load_from_file(cls, file_path:str=None):
+    def load_from_file(cls, file_path: str = None):
         self = cls()
 
         if file_path is None or type(file_path) != str:
@@ -41,7 +45,7 @@ class BaseConfig:
             self.dropout = hyperparameters.pop('dropout', self.dropout)
             self.embedding_dim = hyperparameters.pop('embedding_dim', self.embedding_dim)
             self.epoch = hyperparameters.pop('epoch', self.epoch)
-            self.grad_clip_value = hyperparameters.pop('grad_clip_value', self.grad_clip_value)
+            self.max_norm = hyperparameters.pop('max_norm', self.max_norm)
             self.hidden_dim = hyperparameters.pop('hidden_dim', self.hidden_dim)
             self.learning_rate = hyperparameters.pop('learning_rate', self.learning_rate)
             self.min_count = hyperparameters.pop('min_count', self.min_count)
@@ -51,7 +55,7 @@ class BaseConfig:
 
         return self
 
-    def save_to_file(self, file_path:str=None):
+    def save_to_file(self, file_path: str = None):
         if file_path is None or type(file_path) != str:
             raise ValueError('argument `file_path` should be a string')
         else:
@@ -61,7 +65,7 @@ class BaseConfig:
                     'dropout': self.dropout,
                     'embedding_dim': self.embedding_dim,
                     'epoch': self.epoch,
-                    'grad_clip_value': self.grad_clip_value,
+                    'max_norm': self.max_norm,
                     'hidden_dim': self.hidden_dim,
                     'learning_rate': self.learning_rate,
                     'min_count': self.min_count,

@@ -11,7 +11,7 @@ import torch.nn.utils.rnn
 import torch.optim
 import sklearn.metrics
 from tqdm import tqdm
-import sys
+import argparse
 
 # self-made modules
 import lmp
@@ -19,12 +19,12 @@ import lmp
 ##############################################
 # Hyperparameters setup
 ##############################################
-experiment_no = 6
+experiment_no = 1
 config = lmp.config.BaseConfig(batch_size=32,
                                dropout=0,
                                embedding_dim=100,
-                               epoch=10,
-                               grad_clip_value=1,
+                               epoch=3,
+                               max_norm=1,
                                hidden_dim=300,
                                learning_rate=10e-4,
                                min_count=0,
@@ -59,12 +59,15 @@ df = pd.read_csv(f'{data_path}/news_collection.csv')
 tokenizer = lmp.tokenizer.CharTokenizer()
 
 # 讓使用者決定是否 uncase
-uncaseOrNot = True if len(sys.argv) > 1 and sys.argv[1].lower() == 'uncase'   else False
+parser = argparse.ArgumentParser()
+parser.add_argument("-u", "--uncase", help="regard capital letter and lowercase letter as same word",
+                    action="store_true")
+args = parser.parse_args()
 
 dataset = lmp.dataset.BaseDataset(config=config,
                                   text_list=df['title'],
                                   tokenizer=tokenizer,
-                                  uncase=uncaseOrNot)
+                                  is_uncased=args.uncase)
 
 data_loader = torch.utils.data.DataLoader(dataset,
                                           batch_size=config.batch_size,
@@ -77,8 +80,6 @@ data_loader = torch.utils.data.DataLoader(dataset,
 ##############################################
 model = lmp.model.LSTMModel(config=config,
                            tokenizer=tokenizer)
-# model = lmp.model.GRUModel(config=config,
-#                            tokenizer=tokenizer)
 
 model = model.to(device)
 
@@ -117,7 +118,8 @@ for epoch in range(config.epoch):
 
         optimizer.zero_grad()
         loss.backward()
-        torch.nn.utils.clip_grad_value_(model.parameters(), config.grad_clip_value)
+        torch.nn.utils.clip_grad_norm_(model.parameters(), config.max_norm)
+
         optimizer.step()
 
     print(f'loss: {total_loss:.10f}')
