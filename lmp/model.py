@@ -1,3 +1,8 @@
+r"""text generation models.
+Usage:
+    model = lmp.model.LSTMModel(...)
+    model = lmp.model.GRUModel(...)
+"""
 # built-in modules
 import os
 
@@ -20,6 +25,15 @@ import lmp.config
 
 
 class BaseModel(torch.nn.Module):
+    r""" Text-generation's BaseModel.
+    Args:
+        config:
+            Configuration for training model.
+            Come from lmp.config.BaseConfig.
+        tokenizer:
+            Convert sentences to ids, and decode the result ids to sentences.
+
+    """
     def __init__(self, config: lmp.config.BaseConfig,
                  tokenizer: Union[lmp.tokenizer.BaseTokenizerByList, lmp.tokenizer.BaseTokenizerByDict]):
         super(BaseModel, self).__init__()
@@ -84,6 +98,22 @@ class BaseModel(torch.nn.Module):
                   begin_of_sentence: str = '',
                   beam_width: int = 4,
                   max_len: int = 200) -> List[str]:
+        r""" 
+        According to begin_of_sentence taht we give, 
+        using beam search algorithm to generate texts.
+
+        Args:
+             tokenizer:
+                Convert sentences to ids, and decode the result ids to sentences.
+            begin_of_sentence:
+                As input of model to find probability of next word.
+            beam_width:
+                Used for Beam search algorithm to find 'beam_width' candidates.  
+            max_len:
+                Maximum of output sentence's length.
+        Returns:
+            generating sentences by using beam search algorithm.
+        """
         if begin_of_sentence is None or len(begin_of_sentence) == 0:
             raise ValueError('`begin_of_sentence` should be list type object.')
 
@@ -188,6 +218,10 @@ class BaseModel(torch.nn.Module):
 
 
 class LSTMModel(BaseModel):
+    r"""
+    Sub class of BaseModel,
+    LSTM replaces BaseModel's rnn_layer.
+    """
     def __init__(self, config, tokenizer):
         super(LSTMModel, self).__init__(config, tokenizer)
 
@@ -200,6 +234,10 @@ class LSTMModel(BaseModel):
 
 
 class GRUModel(BaseModel):
+    r"""
+    Sub class of BaseModel,
+    GRU replaces BaseModel's rnn_layer.
+    """
     def __init__(self, config, tokenizer):
         super(GRUModel, self).__init__(config, tokenizer)
 

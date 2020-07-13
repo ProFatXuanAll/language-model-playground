@@ -1,3 +1,11 @@
+r"""Train the text-generation model.
+Usage:
+    python example_train.py --experiment_no 1 --is_uncased True
+
+--experiment_no and --is_uncased are required arguments
+Run 'python example_train.py --help' for help
+"""
+
 # built-in modules
 import os
 
@@ -21,10 +29,13 @@ def boolean_string(s):
         raise ValueError('Not a valid boolean string')
     return s == 'True'
 
-# 讓使用者決定 config 的參數
 parser = argparse.ArgumentParser()
-parser.add_argument("--experiment_no", type=int, default=1, required=True, help="using which experiment_no data")
 
+# Required arguments.
+parser.add_argument("--experiment_no", type=int, default=1, required=True, help="using which experiment_no data")
+parser.add_argument("--is_uncased",    type=boolean_string, default=False, required=True, help="convert all upper case into lower case.")
+
+# Optional arguments.
 parser.add_argument("--batch_size",         type=int,   default=32,     help="determine batch size.")
 parser.add_argument("--dropout",            type=float, default=0,      help="determine dropout.")
 parser.add_argument("--embedding_dim",      type=int,   default=100,    help="determine embedding_dim.")
@@ -36,7 +47,6 @@ parser.add_argument("--min_count",          type=int,   default=0,      help="de
 parser.add_argument("--num_rnn_layers",     type=int,   default=1,      help="determine num_rnn_layers.")
 parser.add_argument("--num_linear_layers",  type=int,   default=2,      help="determine num_linear_layers.")
 parser.add_argument("--seed",               type=int,   default=7,      help="determine seed.")
-parser.add_argument("--is_uncased",         type=boolean_string, default=False, required=True, help="convert all upper case into lower case.")
 
 args = parser.parse_args()
 

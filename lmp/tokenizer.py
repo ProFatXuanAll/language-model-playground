@@ -1,3 +1,12 @@
+r"""tokenizing all sentences of dataset,
+    encoding tokens to ids,
+    decoding ids to token.
+Usage:
+    tokenizer = lmp.tokenizer.CharTokenizerByList(...)
+    tokenizer = lmp.tokenizer.CharTokenizerByDict(...)
+
+"""
+
 # built-in modules
 import os
 import pickle
@@ -5,8 +14,46 @@ import re
 import abc
 from typing import List, Dict
 
-# token_to_id 的 type 為 list (省記憶體)
+# type(token_to_id) is list (in order to save memory space)
 class BaseTokenizerByList:
+    r"""
+    Define how to build dictionry, encode tokens to id and decode ids back to token.
+    Using list structure to implement token_to_id.
+    
+    Attributes:
+        pad_token:
+            Used for pad sequence to same length.
+            All sequences in batch should have the same length.
+        cls_token:
+            Stand for classification.
+            For the sentence classification task.
+        sep_token:
+            Stand for separating sentences.
+            For the next sentence prediction task.
+        eos_token:
+            Stand for End of sentence token.
+            As soon as decoder generates this token we consider the answer to be complete.
+        unk_token:
+            Stand for Unknown token.
+            Used to replace the words that did not show in our vocabulary.
+        
+        pad_token_id:
+            This id stand for pad token.
+        cls_token_id:
+            This id stand for cls token.
+        sep_token_id:
+            This id stand for sep token.
+        eos_token_id:
+            This id stand for eos token.
+        unk_token_id:
+            This id stand for unk token.
+        
+        token_to_id:
+            Convert token to id by using token_to_id.index(token).
+            Convert id back to token by using token_to_id[id]. 
+            using list structure to save memory space.
+
+    """
     def __init__(
             self, 
             pad_token: str = '[PAD]', pad_token_id: int = 0,
@@ -132,12 +179,14 @@ class BaseTokenizerByList:
 
     def build_dict(self, all_sentences: List[str], min_count: int = 0, is_uncased: bool = False):
         """
-        build a dictionary of all tokens, dict is sorted by token frenquence(descending order)
+        build a vocabulary list of all tokens, dict is sorted by token frenquence(descending order)
 
-        Parameters:
-            min_count: if token's frequence is larger than min_count, then add token to token_to_id
-            is_uncased: if value is true, convert all upper case into lower case
-
+        Args:
+            min_count: 
+                Minimum of token'sfrequence.
+                if token's frequence is larger than min_count, then add token to token_to_id
+            is_uncased: 
+                Determine if convert all upper case into lower case.
         """
         if is_uncased:  
             all_sentences = [text.lower() for text in all_sentences]
@@ -166,8 +215,45 @@ class BaseTokenizerByList:
         return len(self.token_to_id)
 
 
-# token_to_id 的 type 為 dictionary
+# type(token_to_id) is dictionary
 class BaseTokenizerByDict:
+    r"""
+    Define how to build dictionry, encode tokens to id and decode ids back to token.
+    Using list structure to implement token_to_id.
+    
+    Attributes:
+        pad_token:
+            Used for pad sequence to same length.
+            All sequences in batch should have the same length.
+        cls_token:
+            Stand for classification.
+            For the sentence classification task.
+        sep_token:
+            Stand for separating sentences.
+            For the next sentence prediction task.
+        eos_token:
+            Stand for End of sentence token.
+            As soon as decoder generates this token we consider the answer to be complete.
+        unk_token:
+            Stand for Unknown token.
+            Used to replace the words that did not show in our vocabulary.
+        
+        pad_token_id:
+            This id stand for pad token.
+        cls_token_id:
+            This id stand for cls token.
+        sep_token_id:
+            This id stand for sep token.
+        eos_token_id:
+            This id stand for eos token.
+        unk_token_id:
+            This id stand for unk token.
+        
+        token_to_id:
+            Convert token to id.
+        id_to_token:
+            Convert id back to token. 
+    """
     def __init__(
             self, 
             pad_token: str = '[PAD]', pad_token_id: int = 0,
@@ -296,7 +382,18 @@ class BaseTokenizerByDict:
         return result
 
     def build_dict(self, all_sentences: List[str], min_count: int = 0, is_uncased: bool = False):
-        if is_uncased:  # 如果is_uncased是True，就不分大小寫
+        """
+        build a vocabulary dict of all tokens, dict is sorted by token frenquence(descending order)
+
+        Args:
+            min_count: 
+                Minimum of token'sfrequence.
+                if token's frequence is larger than min_count, then add token to token_to_id
+            is_uncased: 
+                Determine if convert all upper case into lower case.
+
+        """
+        if is_uncased:  
             all_sentences = [text.lower() for text in all_sentences]
 
         all_tokens = self.convert_sentences_to_tokens(all_sentences)
@@ -327,6 +424,10 @@ class BaseTokenizerByDict:
 
 
 class CharTokenizerByList(BaseTokenizerByList):
+    r"""
+    Subclass of BaseTokenizerByList
+    Tokenizing sentence by spliting all characters.
+    """
     def __init__(self, **kwargs):
         super(CharTokenizerByList, self).__init__(**kwargs)
 
@@ -338,6 +439,10 @@ class CharTokenizerByList(BaseTokenizerByList):
 
 
 class CharTokenizerByDict(BaseTokenizerByDict):
+    r"""
+    Subclass of BaseTokenizerByDict.
+    Tokenizing sentence by spliting all characters.
+    """
     def __init__(self, **kwargs):
         super(CharTokenizerByDict, self).__init__(**kwargs)
 
@@ -349,6 +454,10 @@ class CharTokenizerByDict(BaseTokenizerByDict):
 
 
 class WhiteSpaceTokenizer(BaseTokenizerByList):
+    r"""
+    Subclass of BaseTokenizerByDict.
+    Tokenizing sentence by spliting spaces.
+    """
     def __init__(self, **kwargs):
         super(WhiteSpaceTokenizer, self).__init__(**kwargs)
 
