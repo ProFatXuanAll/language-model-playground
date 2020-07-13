@@ -50,6 +50,9 @@ class BaseConfig:
         is_uncased:
             Convert all upper case to lower case.
             Must be True or False.
+        checkpoint:
+            Checkpoint interval based on number of mini-batch.
+            Must be bigger than or equal to `1`.
 
     """
     def __init__(
@@ -65,7 +68,8 @@ class BaseConfig:
             num_rnn_layers: int = 1,
             num_linear_layers: int = 1,
             seed: int = 1,
-            is_uncased: bool = False
+            is_uncased: bool = False,
+            checkpoint: int = 500
     ):
 
         self.batch_size = batch_size
@@ -80,6 +84,7 @@ class BaseConfig:
         self.num_linear_layers = num_linear_layers
         self.seed = seed
         self.is_uncased = is_uncased
+        self.checkpoint = checkpoint
 
     @classmethod
     def load_from_file(cls, file_path: str = None):
@@ -107,6 +112,7 @@ class BaseConfig:
             self.num_rnn_layers = hyperparameters.pop('num_rnn_layers', self.num_rnn_layers)
             self.num_linear_layers = hyperparameters.pop('num_linear_layers', self.num_linear_layers)
             self.seed = hyperparameters.pop('is_uncased', self.is_uncased)
+            self.checkpoint = hyperparameters.pop('checkpoint', self.checkpoint)
 
         return self
 
@@ -131,7 +137,8 @@ class BaseConfig:
                     'num_rnn_layers': self.num_rnn_layers,
                     'num_linear_layers': self.num_linear_layers,
                     'seed': self.seed,
-                    'is_uncased': self.is_uncased
+                    'is_uncased': self.is_uncased,
+                    'checkpoint': self.checkpoint
                 }
 
                 pickle.dump(hyperparameters, f)

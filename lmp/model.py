@@ -99,7 +99,7 @@ class BaseModel(torch.nn.Module):
                   beam_width: int = 4,
                   max_len: int = 200) -> List[str]:
         r""" 
-        According to begin_of_sentence taht we give, 
+        According to begin_of_sentence that we give, 
         using beam search algorithm to generate texts.
 
         Args:

@@ -36,17 +36,18 @@ parser.add_argument("--experiment_no", type=int, default=1, required=True, help=
 parser.add_argument("--is_uncased",    type=boolean_string, default=False, required=True, help="convert all upper case into lower case.")
 
 # Optional arguments.
-parser.add_argument("--batch_size",         type=int,   default=32,     help="determine batch size.")
-parser.add_argument("--dropout",            type=float, default=0,      help="determine dropout.")
-parser.add_argument("--embedding_dim",      type=int,   default=100,    help="determine embedding_dim.")
-parser.add_argument("--epoch",              type=int,   default=10,     help="determine epoch.")
-parser.add_argument("--max_norm",           type=float, default=1,      help="determine max_norm.")
-parser.add_argument("--hidden_dim",         type=int,   default=300,    help="determine hidden_dim.")
-parser.add_argument("--learning_rate",      type=float, default=10e-4,  help="determine learning_rate.")
-parser.add_argument("--min_count",          type=int,   default=0,      help="determine min_count.")
-parser.add_argument("--num_rnn_layers",     type=int,   default=1,      help="determine num_rnn_layers.")
-parser.add_argument("--num_linear_layers",  type=int,   default=2,      help="determine num_linear_layers.")
-parser.add_argument("--seed",               type=int,   default=7,      help="determine seed.")
+parser.add_argument("--batch_size",         type=int,   default=32,     help="Training batch size.")
+parser.add_argument("--dropout",            type=float, default=0,      help="Dropout rate.")
+parser.add_argument("--embedding_dim",      type=int,   default=100,    help="Embedding dimension.")
+parser.add_argument("--epoch",              type=int,   default=10,     help="Number of training epochs.")
+parser.add_argument("--max_norm",           type=float, default=1,      help="Max norm of gradient.Used when cliping gradient norm.")
+parser.add_argument("--hidden_dim",         type=int,   default=300,    help="Hidden dimension.")
+parser.add_argument("--learning_rate",      type=float, default=10e-4,  help="Optimizer's parameter `lr`.")
+parser.add_argument("--min_count",          type=int,   default=0,      help="Minimum of token'sfrequence.")
+parser.add_argument("--num_rnn_layers",     type=int,   default=1,      help="Number of rnn layers.")
+parser.add_argument("--num_linear_layers",  type=int,   default=2,      help="Number of Linear layers.")
+parser.add_argument("--seed",               type=int,   default=7,      help="Control random seed.")
+parser.add_argument("--checkpoint",         type=int,   default=500,    help="save model state each check point")
 
 args = parser.parse_args()
 
@@ -66,7 +67,9 @@ config = lmp.config.BaseConfig(batch_size=args.batch_size,
                                num_rnn_layers=args.num_rnn_layers,
                                num_linear_layers=args.num_linear_layers,
                                seed=args.seed,
-                               is_uncased=args.is_uncased)
+                               is_uncased=args.is_uncased,
+                               checkpoint = args.checkpoint)
+
 
 ##############################################
 # Initialize random seed.
@@ -133,25 +136,36 @@ config.save_to_file(config_save_path)
 
 tokenizer.save_to_file(tokenizer_save_path)
 
+model.train()
+
 best_loss = None
+
+model_num = 0
 for epoch in range(config.epoch):
-    model.train()
+    
     print(f'epoch {epoch}')
     total_loss = 0
+    iteration_times = 0
     for x, y in tqdm(data_loader, desc='training'):
         x = x.to(device)
         y = y.view(-1).to(device)
-
+        
+        optimizer.zero_grad()
+        
         pred_y = model(x)
         pred_y = pred_y.view(-1, tokenizer.vocab_size())
         loss = criterion(pred_y, y)
         total_loss += float(loss) / len(dataset)
 
-        optimizer.zero_grad()
+        
         loss.backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), config.max_norm)
 
         optimizer.step()
+        iteration_times += 1
+        if iteration_times % config.checkpoint == 0:
+            torch.save(model.state_dict(), f'{save_path}/model{model_num}.ckpt')
+            model_num += 1
 
     print(f'loss: {total_loss:.10f}')
 
