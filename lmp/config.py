@@ -1,8 +1,57 @@
+r"""Configuration for text-generation experiment.
+Usage:
+    config = lmp.config.BaseConfig(...params)
+    config.save_to_file(path)
+    config = config.load_from_file(path)
+"""
+
 # built-in modules
 import os
 import pickle
 
 class BaseConfig:
+    r"""Configuration for text-generation model.
+
+    Attributes:
+        batch_size:
+            Training batch size.
+            default is 1
+        dropout:
+            Dropout rate.
+            Range [0 , 1]
+        embedding_dim:
+            Embedding dimension.
+            Must be bigger than or equal to `1`.
+        epoch:
+            Number of training epochs.
+            epoch must be bigger than or equal to '1'
+        max_norm:
+            Max norm of gradient.
+            Used when cliping gradient norm.
+            Must be bigger than `0`.
+        hidden_dim:
+            Hidden dimension.
+            Must be bigger than or equal to `1`.
+        learning_rate:
+            Optimizer's parameter `lr`.
+            Must be bigger than `0`.
+        min_count:
+            Minimum of token'sfrequence.
+            Used to filter words that is smaller than min_count.
+        num_rnn_layers:
+            Number of rnn layers.
+            Must be bigger than or equal to `1`.
+        num_linear_layers
+            Number of Linear layers.
+            Must be bigger than or equal to `1`.
+        seed:
+            Control random seed.
+            Must be bigger than `0`.
+        is_uncased:
+            Convert all upper case to lower case.
+            Must be True or False.
+
+    """
     def __init__(
             self, 
             batch_size: int = 1,
@@ -34,6 +83,10 @@ class BaseConfig:
 
     @classmethod
     def load_from_file(cls, file_path: str = None):
+        r"""Load configuration from pickle  file.
+        Args:
+            file_path: Location of pickle file.
+        """
         self = cls()
 
         if file_path is None or type(file_path) != str:
@@ -58,6 +111,10 @@ class BaseConfig:
         return self
 
     def save_to_file(self, file_path: str = None):
+        r"""Save configuration into pickle file.
+        Args:
+            file_path: Location of saving file.
+        """
         if file_path is None or type(file_path) != str:
             raise ValueError('argument `file_path` should be a string')
         else:

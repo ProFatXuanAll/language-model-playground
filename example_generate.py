@@ -1,3 +1,10 @@
+r"""giving a text to generate sentences.
+Usage:
+    python example_generate.py --experiment_no 1 
+--experiment_no is a required argument.
+Run 'python example_generate.py --help' for help.
+"""
+
 import os
 import pickle
 import pandas as pd
@@ -36,9 +43,12 @@ def generate_sentences(experiment_no=1):
 
 
 
-parser = argparse.ArgumentParser()
-parser.add_argument("--experiment_no", type=int, default=1,  required=True, help="using which experiment_no data")
-args = parser.parse_args()
+if  __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+
+    # Required arguments.
+    parser.add_argument("--experiment_no", type=int, default=1,  required=True, help="using which experiment_no data")
+    args = parser.parse_args()
 
 
-generate_sentences(args.experiment_no)
+    generate_sentences(args.experiment_no)
