@@ -131,7 +131,15 @@ class BaseTokenizerByList:
         return result
 
     def build_dict(self, all_sentences: List[str], min_count: int = 0, is_uncased: bool = False):
-        if is_uncased:  # 如果 is_uncased 是 True，就不分大小寫
+        """
+        build a dictionary of all tokens, dict is sorted by token frenquence(descending order)
+
+        Parameters:
+            min_count: if token's frequence is larger than min_count, then add token to token_to_id
+            is_uncased: if value is true, convert all upper case into lower case
+
+        """
+        if is_uncased:  
             all_sentences = [text.lower() for text in all_sentences]
 
         all_tokens = self.convert_sentences_to_tokens(all_sentences)
@@ -318,9 +326,9 @@ class BaseTokenizerByDict:
         return len(self.token_to_id)
 
 
-class CharTokenizer(BaseTokenizerByList):
+class CharTokenizerByList(BaseTokenizerByList):
     def __init__(self, **kwargs):
-        super(CharTokenizer, self).__init__(**kwargs)
+        super(CharTokenizerByList, self).__init__(**kwargs)
 
     def tokenize(self, sentence: str) -> List[str]:
         return list(sentence)
@@ -329,9 +337,9 @@ class CharTokenizer(BaseTokenizerByList):
         return ''.join(tokens)
 
 
-class CharTokenizerDict(BaseTokenizerByDict):
+class CharTokenizerByDict(BaseTokenizerByDict):
     def __init__(self, **kwargs):
-        super(CharTokenizerDict, self).__init__(**kwargs)
+        super(CharTokenizerByDict, self).__init__(**kwargs)
 
     def tokenize(self, sentence: str) -> List[str]:
         return list(sentence)
