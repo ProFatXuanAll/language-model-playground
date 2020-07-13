@@ -15,7 +15,8 @@ class BaseConfig:
             min_count: int = 0,
             num_rnn_layers: int = 1,
             num_linear_layers: int = 1,
-            seed: int = 1
+            seed: int = 1,
+            is_uncased: bool = False
     ):
 
         self.batch_size = batch_size
@@ -29,6 +30,7 @@ class BaseConfig:
         self.num_rnn_layers = num_rnn_layers
         self.num_linear_layers = num_linear_layers
         self.seed = seed
+        self.is_uncased = is_uncased
 
     @classmethod
     def load_from_file(cls, file_path: str = None):
@@ -51,7 +53,7 @@ class BaseConfig:
             self.min_count = hyperparameters.pop('min_count', self.min_count)
             self.num_rnn_layers = hyperparameters.pop('num_rnn_layers', self.num_rnn_layers)
             self.num_linear_layers = hyperparameters.pop('num_linear_layers', self.num_linear_layers)
-            self.seed = hyperparameters.pop('seed', self.seed)
+            self.seed = hyperparameters.pop('is_uncased', self.is_uncased)
 
         return self
 
@@ -72,6 +74,7 @@ class BaseConfig:
                     'num_rnn_layers': self.num_rnn_layers,
                     'num_linear_layers': self.num_linear_layers,
                     'seed': self.seed,
+                    'is_uncased': self.is_uncased
                 }
 
                 pickle.dump(hyperparameters, f)

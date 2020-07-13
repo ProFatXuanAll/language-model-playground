@@ -16,21 +16,47 @@ import argparse
 # self-made modules
 import lmp
 
+def boolean_string(s):
+    if s not in {'False', 'True'}:
+        raise ValueError('Not a valid boolean string')
+    return s == 'True'
+
+# 讓使用者決定 config 的參數
+parser = argparse.ArgumentParser()
+parser.add_argument("--experiment_no", type=int, default=1, required=True, help="using which experiment_no data")
+
+parser.add_argument("--batch_size",         type=int,   default=32,     help="determine batch size.")
+parser.add_argument("--dropout",            type=float, default=0,      help="determine dropout.")
+parser.add_argument("--embedding_dim",      type=int,   default=100,    help="determine embedding_dim.")
+parser.add_argument("--epoch",              type=int,   default=10,     help="determine epoch.")
+parser.add_argument("--max_norm",           type=float, default=1,      help="determine max_norm.")
+parser.add_argument("--hidden_dim",         type=int,   default=300,    help="determine hidden_dim.")
+parser.add_argument("--learning_rate",      type=float, default=10e-4,  help="determine learning_rate.")
+parser.add_argument("--min_count",          type=int,   default=0,      help="determine min_count.")
+parser.add_argument("--num_rnn_layers",     type=int,   default=1,      help="determine num_rnn_layers.")
+parser.add_argument("--num_linear_layers",  type=int,   default=2,      help="determine num_linear_layers.")
+parser.add_argument("--seed",               type=int,   default=7,      help="determine seed.")
+parser.add_argument("--is_uncased",         type=boolean_string, default=False, required=True, help="convert all upper case into lower case.")
+
+args = parser.parse_args()
+
+
 ##############################################
 # Hyperparameters setup
 ##############################################
-experiment_no = 1
-config = lmp.config.BaseConfig(batch_size=32,
-                               dropout=0,
-                               embedding_dim=100,
-                               epoch=3,
-                               max_norm=1,
-                               hidden_dim=300,
-                               learning_rate=10e-4,
-                               min_count=0,
-                               num_rnn_layers=1,
-                               num_linear_layers=2,
-                               seed=7)
+experiment_no = args.experiment_no
+config = lmp.config.BaseConfig(batch_size=args.batch_size,
+                               dropout=args.dropout,
+                               embedding_dim=args.embedding_dim,
+                               epoch=args.epoch,
+                               max_norm=args.max_norm,
+                               hidden_dim=args.hidden_dim,
+                               learning_rate=args.learning_rate,
+                               min_count=args.min_count,
+                               num_rnn_layers=args.num_rnn_layers,
+                               num_linear_layers=args.num_linear_layers,
+                               seed=args.seed,
+                               is_uncased=args.is_uncased)
 
 ##############################################
 # Initialize random seed.
@@ -56,18 +82,13 @@ df = pd.read_csv(f'{data_path}/news_collection.csv')
 ##############################################
 # Construct tokenizer and perform tokenization.
 ##############################################
-tokenizer = lmp.tokenizer.CharTokenizer()
+tokenizer = lmp.tokenizer.CharTokenizerByList()
 
-# 讓使用者決定是否 uncase
-parser = argparse.ArgumentParser()
-parser.add_argument("-u", "--uncase", help="regard capital letter and lowercase letter as same word",
-                    action="store_true")
-args = parser.parse_args()
+
 
 dataset = lmp.dataset.BaseDataset(config=config,
                                   text_list=df['title'],
-                                  tokenizer=tokenizer,
-                                  is_uncased=args.uncase)
+                                  tokenizer=tokenizer)
 
 data_loader = torch.utils.data.DataLoader(dataset,
                                           batch_size=config.batch_size,

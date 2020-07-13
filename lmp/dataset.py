@@ -10,17 +10,15 @@ class BaseDataset(torch.utils.data.Dataset):
             self, 
             text_list: List[str],     
             config: lmp.config.BaseConfig,
-            tokenizer: Union[lmp.tokenizer.BaseTokenizerByList, lmp.tokenizer.BaseTokenizerByDict],
-            is_uncased: bool = False
+            tokenizer: Union[lmp.tokenizer.BaseTokenizerByList, lmp.tokenizer.BaseTokenizerByDict]
     ):
         super(BaseDataset, self).__init__()
 
         self.text_list = text_list
         self.config = config
         self.tokenizer = tokenizer
-        self.is_uncased = is_uncased  # 是否把大小寫視為不同字, default: False
 
-        self.tokenizer.build_dict(self.text_list, self.config.min_count, self.is_uncased)
+        self.tokenizer.build_dict(self.text_list, self.config.min_count, self.config.is_uncased)
         self.id_list = [torch.LongTensor(ids) for ids in self.tokenizer.encode(self.text_list)]
 
 
