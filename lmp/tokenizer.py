@@ -1,6 +1,7 @@
 r"""tokenizing all sentences of dataset,
     encoding tokens to ids,
     decoding ids to token.
+
 Usage:
     tokenizer = lmp.tokenizer.CharTokenizerByList(...)
     tokenizer = lmp.tokenizer.CharTokenizerByDict(...)
@@ -16,8 +17,7 @@ from typing import List, Dict
 
 # type(token_to_id) is list (in order to save memory space)
 class BaseTokenizerByList:
-    r"""
-    Define how to build dictionry, encode tokens to id and decode ids back to token.
+    r"""Define how to build dictionry, encode tokens to id and decode ids back to token.
     Using list structure to implement token_to_id.
     
     Attributes:
@@ -178,8 +178,7 @@ class BaseTokenizerByList:
         return result
 
     def build_dict(self, all_sentences: List[str], min_count: int = 0, is_uncased: bool = False):
-        """
-        build a vocabulary list of all tokens, dict is sorted by token frenquence(descending order)
+        """Build a vocabulary list of all tokens, dict is sorted by token frenquence(descending order).
 
         Args:
             min_count: 
@@ -217,8 +216,7 @@ class BaseTokenizerByList:
 
 # type(token_to_id) is dictionary
 class BaseTokenizerByDict:
-    r"""
-    Define how to build dictionry, encode tokens to id and decode ids back to token.
+    r"""Define how to build dictionry, encode tokens to id and decode ids back to token.
     Using list structure to implement token_to_id.
     
     Attributes:
@@ -382,8 +380,7 @@ class BaseTokenizerByDict:
         return result
 
     def build_dict(self, all_sentences: List[str], min_count: int = 0, is_uncased: bool = False):
-        """
-        build a vocabulary dict of all tokens, dict is sorted by token frenquence(descending order)
+        """Build a vocabulary dict of all tokens, dict is sorted by token frenquence(descending order).
 
         Args:
             min_count: 
@@ -424,9 +421,7 @@ class BaseTokenizerByDict:
 
 
 class CharTokenizerByList(BaseTokenizerByList):
-    r"""
-    Subclass of BaseTokenizerByList
-    Tokenizing sentence by spliting all characters.
+    r"""Tokenizing sentence by spliting all characters.
     """
     def __init__(self, **kwargs):
         super(CharTokenizerByList, self).__init__(**kwargs)
@@ -439,9 +434,7 @@ class CharTokenizerByList(BaseTokenizerByList):
 
 
 class CharTokenizerByDict(BaseTokenizerByDict):
-    r"""
-    Subclass of BaseTokenizerByDict.
-    Tokenizing sentence by spliting all characters.
+    r"""Tokenizing sentence by spliting all characters.
     """
     def __init__(self, **kwargs):
         super(CharTokenizerByDict, self).__init__(**kwargs)
@@ -454,9 +447,7 @@ class CharTokenizerByDict(BaseTokenizerByDict):
 
 
 class WhiteSpaceTokenizer(BaseTokenizerByList):
-    r"""
-    Subclass of BaseTokenizerByDict.
-    Tokenizing sentence by spliting spaces.
+    r"""Tokenizing sentence by spliting spaces.
     """
     def __init__(self, **kwargs):
         super(WhiteSpaceTokenizer, self).__init__(**kwargs)
