@@ -1,4 +1,5 @@
 r"""text generation models.
+
 Usage:
     model = lmp.model.LSTMModel(...)
     model = lmp.model.GRUModel(...)
@@ -25,7 +26,8 @@ import lmp.config
 
 
 class BaseModel(torch.nn.Module):
-    r""" Text-generation's BaseModel.
+    r"""Text-generation's BaseModel.
+
     Args:
         config:
             Configuration for training model.
@@ -98,9 +100,7 @@ class BaseModel(torch.nn.Module):
                   begin_of_sentence: str = '',
                   beam_width: int = 4,
                   max_len: int = 200) -> List[str]:
-        r""" 
-        According to begin_of_sentence that we give, 
-        using beam search algorithm to generate texts.
+        r"""Using beam search algorithm to generate texts.
 
         Args:
              tokenizer:
@@ -218,14 +218,11 @@ class BaseModel(torch.nn.Module):
 
 
 class LSTMModel(BaseModel):
-    r"""
-    Sub class of BaseModel,
-    LSTM replaces BaseModel's rnn_layer.
+    r"""LSTM replaces BaseModel's rnn_layer.
     """
     def __init__(self, config, tokenizer):
         super(LSTMModel, self).__init__(config, tokenizer)
-
-        # overload RNN layer
+        # rewrite RNN layer
         self.rnn_layer = torch.nn.LSTM(input_size=config.embedding_dim,
                                        hidden_size=config.hidden_dim,
                                        num_layers=config.num_rnn_layers,
@@ -234,14 +231,12 @@ class LSTMModel(BaseModel):
 
 
 class GRUModel(BaseModel):
-    r"""
-    Sub class of BaseModel,
-    GRU replaces BaseModel's rnn_layer.
+    r"""GRU replaces BaseModel's rnn_layer.
     """
     def __init__(self, config, tokenizer):
         super(GRUModel, self).__init__(config, tokenizer)
 
-        # overload RNN layer
+        # rewrite RNN layer
         self.rnn_layer = torch.nn.GRU(input_size=config.embedding_dim,
                                       hidden_size=config.hidden_dim,
                                       num_layers=config.num_rnn_layers,

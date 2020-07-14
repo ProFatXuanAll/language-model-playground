@@ -19,17 +19,30 @@ import lmp
 #####################################################################
 
 
-def generate_sentences(experiment_no=1):
+def generate_sentences(args):
     data_path = os.path.abspath('./data')
-    model_path = f'{data_path}/{experiment_no}'
+    model_path = f'{data_path}/{args.experiment_no}'
 
     config = lmp.config.BaseConfig.load_from_file(f'{model_path}/config.pickle')
-    tokenizer = lmp.tokenizer.CharTokenizerByList.load_from_file(f'{model_path}/tokenizer.pickle')
+    
+    if config.tokenizer_type.lower() not in ['list', 'dict']:
+        raise NameError(f'`{args.tokenizer}` is not exist, please input list or dict')
+    if config.tokenizer_type.lower() == 'dict':
+        tokenizer = lmp.tokenizer.CharTokenizerByDict().load_from_file(f'{model_path}/tokenizer.pickle')
+    elif config.tokenizer_type.lower() == 'list':
+        tokenizer = lmp.tokenizer.CharTokenizerByList().load_from_file(f'{model_path}/tokenizer.pickle')
 
 
-    model = lmp.model.LSTMModel(config=config,
-                            tokenizer=tokenizer)
+
+    if config.model_type.lower() not  in ['lstm', 'gru']:
+        raise NameError(f'model `{args.model}` is not exist, please input lstm or gru')
+    if config.model_type.lower() == 'gru':
+        model = lmp.model.GRUModel(config=config, tokenizer=tokenizer)
+    elif config.model_type.lower() == 'lstm':
+        model = lmp.model.LSTMModel(config=config, tokenizer=tokenizer)
+        
     model.load_state_dict(torch.load(f'{model_path}/model.ckpt'))
+
 
 
 
@@ -48,7 +61,9 @@ if  __name__ == "__main__":
 
     # Required arguments.
     parser.add_argument("--experiment_no", type=int, default=1,  required=True, help="using which experiment_no data")
+  
+    
     args = parser.parse_args()
 
 
-    generate_sentences(args.experiment_no)
+    generate_sentences(args)

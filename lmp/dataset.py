@@ -1,4 +1,5 @@
 r"""preprocessing training dataset.
+
 Usage:
     dataset = lmp.dataset.BaseDataset(...)
 """
@@ -11,8 +12,7 @@ import lmp.config
 
 
 class BaseDataset(torch.utils.data.Dataset):
-    r"""
-    Used to preprocess the data.
+    r"""Used to preprocess the data.
 
     Attributes:
         text_list:
