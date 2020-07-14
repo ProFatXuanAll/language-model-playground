@@ -33,7 +33,6 @@ parser = argparse.ArgumentParser()
 
 # Required arguments.
 parser.add_argument("--experiment_no", type=int, default=1, required=True, help="using which experiment_no data")
-parser.add_argument("--is_uncased",    type=boolean_string, default=False, required=True, help="convert all upper case into lower case.")
 
 # Optional arguments.
 parser.add_argument("--batch_size",         type=int,   default=32,     help="Training batch size.")
@@ -42,12 +41,13 @@ parser.add_argument("--embedding_dim",      type=int,   default=100,    help="Em
 parser.add_argument("--epoch",              type=int,   default=10,     help="Number of training epochs.")
 parser.add_argument("--max_norm",           type=float, default=1,      help="Max norm of gradient.Used when cliping gradient norm.")
 parser.add_argument("--hidden_dim",         type=int,   default=300,    help="Hidden dimension.")
-parser.add_argument("--learning_rate",      type=float, default=10e-4,  help="Optimizer's parameter `lr`.")
+parser.add_argument("--learning_rate",      type=float, default=1e-4,   help="Optimizer's parameter `lr`.")
 parser.add_argument("--min_count",          type=int,   default=0,      help="Minimum of token'sfrequence.")
 parser.add_argument("--num_rnn_layers",     type=int,   default=1,      help="Number of rnn layers.")
 parser.add_argument("--num_linear_layers",  type=int,   default=2,      help="Number of Linear layers.")
 parser.add_argument("--seed",               type=int,   default=7,      help="Control random seed.")
 parser.add_argument("--checkpoint",         type=int,   default=500,    help="save model state each check point")
+parser.add_argument("--is_uncased",         action="store_true",        help="convert all upper case into lower case.")
 
 args = parser.parse_args()
 
@@ -148,12 +148,12 @@ for epoch in range(config.epoch):
     iteration_times = 0
     for x, y in tqdm(data_loader, desc='training'):
         x = x.to(device)
-        y = y.view(-1).to(device)
+        y = y.view(-1).to(device) # shape: (batch_size * sequence_length)
         
         optimizer.zero_grad()
         
         pred_y = model(x)
-        pred_y = pred_y.view(-1, tokenizer.vocab_size())
+        pred_y = pred_y.view(-1, tokenizer.vocab_size()) # shape: (batch_size * sequence_length, vocabulary_size)
         loss = criterion(pred_y, y)
         total_loss += float(loss) / len(dataset)
 

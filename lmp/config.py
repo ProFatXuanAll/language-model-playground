@@ -63,7 +63,7 @@ class BaseConfig:
             epoch: int = 1,
             max_norm: float = 1,
             hidden_dim: int = 1,
-            learning_rate: float = 10e-4,
+            learning_rate: float = 1e-4,
             min_count: int = 0,
             num_rnn_layers: int = 1,
             num_linear_layers: int = 1,
