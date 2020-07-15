@@ -16,10 +16,12 @@ import abc
 from typing import List, Dict
 
 # type(token_to_id) is list (in order to save memory space)
+
+
 class BaseTokenizerByList:
     r"""Define how to build dictionry, encode tokens to id and decode ids back to token.
     Using list structure to implement token_to_id.
-    
+
     Attributes:
         pad_token:
             Used for pad sequence to same length.
@@ -36,7 +38,7 @@ class BaseTokenizerByList:
         unk_token:
             Stand for Unknown token.
             Used to replace the words that did not show in our vocabulary.
-        
+
         pad_token_id:
             This id stand for pad token.
         cls_token_id:
@@ -47,15 +49,16 @@ class BaseTokenizerByList:
             This id stand for eos token.
         unk_token_id:
             This id stand for unk token.
-        
+
         token_to_id:
             Convert token to id by using token_to_id.index(token).
             Convert id back to token by using token_to_id[id]. 
             using list structure to save memory space.
 
     """
+
     def __init__(
-            self, 
+            self,
             pad_token: str = '[PAD]', pad_token_id: int = 0,
             cls_token: str = '[CLS]', cls_token_id: int = 1,
             sep_token: str = '[SEP]', sep_token_id: int = 2,
@@ -86,7 +89,6 @@ class BaseTokenizerByList:
         self.token_to_id.append(self.sep_token)
         self.token_to_id.append(self.eos_token)
         self.token_to_id.append(self.unk_token)
-
 
     @classmethod
     def load_from_file(cls, file_path: str = None):
@@ -145,7 +147,7 @@ class BaseTokenizerByList:
         for ids in all_ids:
             tokens = []
             for index in ids:
-                if index <=  len(self.token_to_id):
+                if index <= len(self.token_to_id):
                     tokens.append(self.token_to_id[index])
                 else:
                     tokens.append(self.unk_token)
@@ -187,7 +189,7 @@ class BaseTokenizerByList:
             is_uncased: 
                 Determine if convert all upper case into lower case.
         """
-        if is_uncased:  
+        if is_uncased:
             all_sentences = [text.lower() for text in all_sentences]
 
         all_tokens = self.convert_sentences_to_tokens(all_sentences)
@@ -203,7 +205,6 @@ class BaseTokenizerByList:
         token_counter = dict(sorted(token_counter.items(),
                                     key=lambda x: x[1], reverse=True))
 
-
         for token, count in token_counter.items():
             if count > min_count:
                 self.token_to_id.append(token)
@@ -218,7 +219,7 @@ class BaseTokenizerByList:
 class BaseTokenizerByDict:
     r"""Define how to build dictionry, encode tokens to id and decode ids back to token.
     Using list structure to implement token_to_id.
-    
+
     Attributes:
         pad_token:
             Used for pad sequence to same length.
@@ -235,7 +236,7 @@ class BaseTokenizerByDict:
         unk_token:
             Stand for Unknown token.
             Used to replace the words that did not show in our vocabulary.
-        
+
         pad_token_id:
             This id stand for pad token.
         cls_token_id:
@@ -246,17 +247,18 @@ class BaseTokenizerByDict:
             This id stand for eos token.
         unk_token_id:
             This id stand for unk token.
-        
+
         token_to_id:
             Convert token to id.
         id_to_token:
-            Convert id back to token. 
+            Convert id back to token.
     """
+
     def __init__(
-            self, 
+            self,
             pad_token: str = '[PAD]', pad_token_id: int = 0,
             cls_token: str = '[CLS]', cls_token_id: int = 1,
-            sep_token: str = '[SEP]', sep_token_id: int = 2,     
+            sep_token: str = '[SEP]', sep_token_id: int = 2,
             eos_token: str = '[EOS]', eos_token_id: int = 3,
             unk_token: str = '[UNK]', unk_token_id: int = 4
     ):
@@ -383,14 +385,14 @@ class BaseTokenizerByDict:
         """Build a vocabulary dict of all tokens, dict is sorted by token frenquence(descending order).
 
         Args:
-            min_count: 
+            min_count:
                 Minimum of token'sfrequence.
                 if token's frequence is larger than min_count, then add token to token_to_id
-            is_uncased: 
+            is_uncased:
                 Determine if convert all upper case into lower case.
 
         """
-        if is_uncased:  
+        if is_uncased:
             all_sentences = [text.lower() for text in all_sentences]
 
         all_tokens = self.convert_sentences_to_tokens(all_sentences)
@@ -423,6 +425,7 @@ class BaseTokenizerByDict:
 class CharTokenizerByList(BaseTokenizerByList):
     r"""Tokenizing sentence by spliting all characters.
     """
+
     def __init__(self, **kwargs):
         super(CharTokenizerByList, self).__init__(**kwargs)
 
@@ -436,6 +439,7 @@ class CharTokenizerByList(BaseTokenizerByList):
 class CharTokenizerByDict(BaseTokenizerByDict):
     r"""Tokenizing sentence by spliting all characters.
     """
+
     def __init__(self, **kwargs):
         super(CharTokenizerByDict, self).__init__(**kwargs)
 
@@ -449,6 +453,7 @@ class CharTokenizerByDict(BaseTokenizerByDict):
 class WhiteSpaceTokenizer(BaseTokenizerByList):
     r"""Tokenizing sentence by spliting spaces.
     """
+
     def __init__(self, **kwargs):
         super(WhiteSpaceTokenizer, self).__init__(**kwargs)
 

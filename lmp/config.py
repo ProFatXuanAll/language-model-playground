@@ -10,6 +10,7 @@ Usage:
 import os
 import pickle
 
+
 class BaseConfig:
     r"""Configuration for text-generation model.
 
@@ -61,8 +62,9 @@ class BaseConfig:
             Tokenizer's token_to_id is implemented in different structure(list or dict).
 
     """
+
     def __init__(
-            self, 
+            self,
             batch_size: int = 1,
             checkpoint: int = 500,
             dropout: float = 0,
@@ -95,8 +97,6 @@ class BaseConfig:
         self.num_linear_layers = num_linear_layers
         self.seed = seed
         self.tokenizer_type = tokenizer_type
-        
-        
 
     @classmethod
     def load_from_file(cls, file_path: str = None):
@@ -113,28 +113,13 @@ class BaseConfig:
             raise FileNotFoundError('file {} does not exist'.format(file_path))
 
         with open(file_path, 'rb') as f:
-            hyperparameters = pickle.load(f)
-            self.batch_size = hyperparameters.pop('batch_size', self.batch_size)
-            self.checkpoint = hyperparameters.pop('checkpoint', self.checkpoint)
-            self.dropout = hyperparameters.pop('dropout', self.dropout)
-            self.embedding_dim = hyperparameters.pop('embedding_dim', self.embedding_dim)
-            self.epoch = hyperparameters.pop('epoch', self.epoch)
-            self.hidden_dim = hyperparameters.pop('hidden_dim', self.hidden_dim)
-            self.is_uncased = hyperparameters.pop('is_uncased', self.is_uncased)
-            self.learning_rate = hyperparameters.pop('learning_rate', self.learning_rate)            
-            self.max_norm = hyperparameters.pop('max_norm', self.max_norm)
-            self.min_count = hyperparameters.pop('min_count', self.min_count)
-            self.model_type = hyperparameters.pop('model_type', self.model_type)
-            self.num_rnn_layers = hyperparameters.pop('num_rnn_layers', self.num_rnn_layers)
-            self.num_linear_layers = hyperparameters.pop('num_linear_layers', self.num_linear_layers)
-            self.seed = hyperparameters.pop('seed', self.seed)
-            self.tokenizer_type = hyperparameters.pop('tokenizer_type', self.tokenizer_type)
+            return cls(**pickle.load(f))
 
         return self
 
     def save_to_file(self, file_path: str = None):
         r"""Save configuration into pickle file.
-        
+
         Args:
             file_path: Location of saving file.
         """
