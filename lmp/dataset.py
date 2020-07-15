@@ -27,11 +27,13 @@ class BaseDataset(torch.utils.data.Dataset):
             Save ids of encoding sentences result.
 
     """
+
     def __init__(
-            self, 
-            text_list: List[str],     
+            self,
+            text_list: List[str],
             config: lmp.config.BaseConfig,
-            tokenizer: Union[lmp.tokenizer.BaseTokenizerByList, lmp.tokenizer.BaseTokenizerByDict]
+            tokenizer: Union[lmp.tokenizer.BaseTokenizerByList,
+                             lmp.tokenizer.BaseTokenizerByDict]
     ):
         super(BaseDataset, self).__init__()
 
@@ -39,9 +41,10 @@ class BaseDataset(torch.utils.data.Dataset):
         self.config = config
         self.tokenizer = tokenizer
 
-        self.tokenizer.build_dict(self.text_list, self.config.min_count, self.config.is_uncased)
-        self.id_list = [torch.LongTensor(ids) for ids in self.tokenizer.encode(self.text_list)]
-
+        self.tokenizer.build_dict(
+            self.text_list, self.config.min_count, self.config.is_uncased)
+        self.id_list = [torch.LongTensor(
+            ids) for ids in self.tokenizer.encode(self.text_list)]
 
     def __len__(self) -> int:
         return len(self.id_list)
