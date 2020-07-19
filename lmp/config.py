@@ -18,7 +18,7 @@ class BaseConfig:
         batch_size:
             Training batch size.
             default is 1
-        checkpoint:
+        checkpoint_size:
             Checkpoint interval based on number of mini-batch.
             Must be bigger than or equal to `1`.
         dropout:
@@ -66,7 +66,7 @@ class BaseConfig:
     def __init__(
             self,
             batch_size: int = 1,
-            checkpoint: int = 500,
+            checkpoint_size: int = 500,
             dropout: float = 0,
             embedding_dim: int = 1,
             epoch: int = 1,
@@ -83,7 +83,7 @@ class BaseConfig:
     ):
 
         self.batch_size = batch_size
-        self.checkpoint = checkpoint
+        self.checkpoint_size = checkpoint_size
         self.dropout = dropout
         self.embedding_dim = embedding_dim
         self.epoch = epoch
@@ -129,7 +129,7 @@ class BaseConfig:
             with open(file_path, 'wb') as f:
                 hyperparameters = {
                     'batch_size': self.batch_size,
-                    'checkpoint': self.checkpoint,
+                    'checkpoint_size': self.checkpoint_size,
                     'dropout': self.dropout,
                     'embedding_dim': self.embedding_dim,
                     'epoch': self.epoch,

@@ -161,11 +161,17 @@ class BaseTokenizerByList:
     def convert_ids_to_sentences(self, all_ids: List[List[int]]) -> List[str]:
         return self.convert_tokens_to_sentences(self.convert_ids_to_tokens(all_ids))
 
-    def encode(self, all_sentences: List[str]) -> List[List[int]]:
+    def encode(self, all_sentences: List[str], max_seq_len: int) -> List[List[int]]:
         all_ids = self.convert_sentences_to_ids(all_sentences)
 
         for id_list in all_ids:
             id_list.append(self.eos_token_id)
+
+        if max_seq_len > 0:
+            for i in range(len(all_ids)):
+                data = all_ids[i]
+                data.extend(self.pad_token_id for _ in range(max_seq_len - len(data)))
+                all_ids[i] = data[ : max_seq_len]
 
         return all_ids
 
@@ -363,11 +369,16 @@ class BaseTokenizerByDict:
     def convert_ids_to_sentences(self, all_ids: List[List[int]]) -> List[str]:
         return self.convert_tokens_to_sentences(self.convert_ids_to_tokens(all_ids))
 
-    def encode(self, all_sentences: List[str]) -> List[List[int]]:
+    def encode(self, all_sentences: List[str], max_seq_len: int) -> List[List[int]]:
         all_ids = self.convert_sentences_to_ids(all_sentences)
 
         for id_list in all_ids:
             id_list.append(self.eos_token_id)
+
+        if max_seq_len > 0:
+            for data in all_ids:
+                data.extend(self.pad_token_id for _ in range(max_seq_len - len(data)))
+                data = data[:max_seq_len]
 
         return all_ids
 
