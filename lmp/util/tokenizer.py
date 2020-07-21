@@ -63,4 +63,4 @@ def load_tokenizer_by_config(config: lmp.config.BaseConfig,
         tokenizer = load_blank_tokenizer(config.tokenizer_class)
         tokenizer.build_dict(sentneces, config.min_count, config.is_uncased)
 
-        return load_blank_tokenizer(config.tokenizer_class)
+        return tokenizer

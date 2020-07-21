@@ -212,32 +212,3 @@ class BaseModel(torch.nn.Module):
             if ids[-1] == tokenizer.eos_token_id:
                 ids.pop()
         return tokenizer.convert_ids_to_sentences(generate_result)
-
-
-class LSTMModel(BaseModel):
-    r"""LSTM replaces BaseModel's rnn_layer.
-    """
-
-    def __init__(self, config, tokenizer):
-        super(LSTMModel, self).__init__(config, tokenizer)
-        # rewrite RNN layer
-        self.rnn_layer = torch.nn.LSTM(input_size=config.embedding_dim,
-                                       hidden_size=config.hidden_dim,
-                                       num_layers=config.num_rnn_layers,
-                                       dropout=config.dropout,
-                                       batch_first=True)
-
-
-class GRUModel(BaseModel):
-    r"""GRU replaces BaseModel's rnn_layer.
-    """
-
-    def __init__(self, config, tokenizer):
-        super(GRUModel, self).__init__(config, tokenizer)
-
-        # rewrite RNN layer
-        self.rnn_layer = torch.nn.GRU(input_size=config.embedding_dim,
-                                      hidden_size=config.hidden_dim,
-                                      num_layers=config.num_rnn_layers,
-                                      dropout=config.dropout,
-                                      batch_first=True)
