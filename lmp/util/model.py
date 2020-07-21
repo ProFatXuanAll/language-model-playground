@@ -1,19 +1,21 @@
 r"""Helper function for loading model.
 
 Usage:
-    model = lmp.util.load_model()
+    model = lmp.util.load_saved_model()
 """
 import torch
 from typing import Union
 
 import lmp.config
 import lmp.tokenizer
+import lmp.model
 
 
-def load_model(model_path: str,
+def load_saved_model(file_path: str,
                config: lmp.config.BaseConfig,
-               tokenizer: Union[lmp.tokenizer.BaseTokenizerByList, lmp.tokenizer.BaseTokenizerByDict],
-               model_type: str = 'lstm') -> Union[lmp.model.GRUModel, lmp.model.LSTMModel]:
+               tokenizer: Union[lmp.tokenizer.BaseTokenizerByList,
+                                lmp.tokenizer.BaseTokenizerByDict]
+               ) -> Union[lmp.model.GRUModel, lmp.model.LSTMModel]:
     r"""Used to load saved model
 
     Args:
@@ -22,29 +24,29 @@ def load_model(model_path: str,
             Come from lmp.config.BaseConfig.
         tokenizer:
             Convert sentences to ids, and decode the result ids to sentences.
-        model_type:
-            Decide to use which model, LSTM or GRU.
     Returns:
         lmp.model.GRUModel
         lmp.model.LSTMModel
     """
 
-    if config.model_type.lower() not in ['lstm', 'gru']:
+    if config.model_class.lower() not in ['lstm', 'gru']:
         raise ValueError(
-            f'model `{args.model}` is not exist, please input lstm or gru')
-    if model_type.lower() == 'gru':
+            f'model `{config.model_class}` is not exist, please input lstm or gru')
+    if config.model_class.lower() == 'gru':
         model = lmp.model.GRUModel(config=config, tokenizer=tokenizer)
-    elif model_type.lower() == 'lstm':
+    elif config.model_class.lower() == 'lstm':
         model = lmp.model.LSTMModel(config=config, tokenizer=tokenizer)
 
-    model.load_state_dict(torch.load(f'{model_path}/model.ckpt'))
+    checkpoint_state = torch.load(file_path)
+    model.load_state_dict(checkpoint_state['model'])
 
     return model
 
 
 def load_blank_model(config: lmp.config.BaseConfig,
-                     tokenizer: Union[lmp.tokenizer.BaseTokenizerByList, lmp.tokenizer.BaseTokenizerByDict],
-                     model_type: str = 'lstm') -> Union[lmp.model.GRUModel, lmp.model.LSTMModel]:
+                     tokenizer: Union[lmp.tokenizer.BaseTokenizerByList,
+                                      lmp.tokenizer.BaseTokenizerByDict]
+                     ) -> Union[lmp.model.GRUModel, lmp.model.LSTMModel]:
     r"""Used to load blank model
 
     Args:
@@ -53,19 +55,39 @@ def load_blank_model(config: lmp.config.BaseConfig,
             Come from lmp.config.BaseConfig.
         tokenizer:
             Convert sentences to ids, and decode the result ids to sentences.
-        model_type:
-            Decide to use which model, LSTM or GRU.
     Returns:
         lmp.model.GRUModel
         lmp.model.LSTMModel
     """
 
-    if config.model_type.lower() not in ['lstm', 'gru']:
+    if config.model_class.lower() not in ['lstm', 'gru']:
         raise ValueError(
-            f'model `{args.model}` is not exist, please input lstm or gru')
-    if model_type.lower() == 'gru':
+            f'model `{config.model_class}` is not exist, please input lstm or gru')
+    if config.model_class.lower() == 'gru':
         model = lmp.model.GRUModel(config=config, tokenizer=tokenizer)
-    elif model_type.lower() == 'lstm':
+    elif config.model_class.lower() == 'lstm':
         model = lmp.model.LSTMModel(config=config, tokenizer=tokenizer)
+
+    return model
+
+
+def load_model_for_train(
+    checkpoint: int,
+    config: lmp.config.BaseConfig,
+    device: torch.device,
+    save_path: str,
+    tokenizer: Union[lmp.tokenizer.BaseTokenizerByList,
+                     lmp.tokenizer.BaseTokenizerByDict]
+
+) -> Union[lmp.model.GRUModel, lmp.model.LSTMModel]:
+
+    if checkpoint > 0:
+        state_path = f'{save_path}/checkpoint{checkpoint}.pt'
+        model = load_saved_model(file_path=state_path,
+                           config=config, tokenizer=tokenizer)
+    else:
+        model = load_blank_model(config=config, tokenizer=tokenizer)
+
+    model.to(device)
 
     return model

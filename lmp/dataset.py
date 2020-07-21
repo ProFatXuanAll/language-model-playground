@@ -7,7 +7,6 @@ import torch.utils.data
 import torch.nn.utils.rnn
 from typing import List, Tuple, Union, Callable
 import lmp.tokenizer
-import lmp.config
 import pickle
 import lmp
 import os
@@ -20,6 +19,7 @@ CollateFnReturn = Tuple[
     torch.LongTensor
 ]
 
+
 class BaseDataset(torch.utils.data.Dataset):
     r"""Used to preprocess the data.
 
@@ -27,16 +27,6 @@ class BaseDataset(torch.utils.data.Dataset):
         text_list:
             All sentences of dataset.
             Be Used to build vocabulary dict.
-        config:
-            Configuration for vocabulary dict.
-            Come from lmp.config.BaseConfig.
-        tokenizer:
-            Encode sentences to ids.
-        id_list:
-            Save ids of encoding sentences result.
-        file_path:
-            Used to load id_list from pickle file.
-
     """
 
     def __init__(
@@ -53,30 +43,33 @@ class BaseDataset(torch.utils.data.Dataset):
     def __getitem__(self, index: int) -> str:
         return self.text_list[index]
 
-
     @staticmethod
     def creat_collate_fn(
             tokenizer:  Union[lmp.tokenizer.BaseTokenizerByList,
                               lmp.tokenizer.BaseTokenizerByDict],
             max_seq_len: int = -1
     ):
-            r"""
-            Processing training data, make each shape of x,y fit [batch_size , Max_seq_len].
-            Max_seq_len means maximum of sentence's length in each batch.
+        r"""
+        Processing training data, make each shape of x,y fit [batch_size , Max_seq_len].
+        Max_seq_len means maximum of sentence's length in each batch.
 
-            """
+        Attributes:
+            tokenizer:
+                Encode sentences to ids.
+            max_seq_len:
+                Indicate each sentence's max length.
+        """
 
-            def collate_fn(batch: List['str']) -> CollateFnReturn:
-                batch_id_list = [torch.LongTensor(ids)
-                                 for ids in tokenizer.encode(batch, max_seq_len)]
+        def collate_fn(batch: List['str']) -> CollateFnReturn:
+            batch_id_list = torch.LongTensor(
+                tokenizer.encode(batch, max_seq_len))
 
-                x = torch.nn.utils.rnn.pad_sequence([data[:-1] for data in batch_id_list],
-                                                    batch_first=True,
-                                                    padding_value=tokenizer.pad_token_id)
-                y = torch.nn.utils.rnn.pad_sequence([data[1:] for data in batch_id_list],
-                                                    batch_first=True,
-                                                    padding_value=tokenizer.pad_token_id)
+            x = batch_id_list[:, :-1]
 
-                return x, y
+            y = batch_id_list[:, 1:]
 
-            return collate_fn
+            y = y.contiguous()
+
+            return x, y
+
+        return collate_fn
