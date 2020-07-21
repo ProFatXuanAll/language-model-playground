@@ -1,51 +1,66 @@
 r"""Helper function for loading tokenizer.
 
 Usage:
-    tokenizer = lmp.util.load_tokenizer()
+    tokenizer = lmp.util.load_saved_tokenizer()
 """
 
-from typing import Union
+from typing import Union, List
 
 import lmp.tokenizer
+import lmp.config
 
 
-def load_tokenizer(model_path: str, tokenizer_type: str = 'list') -> Union[lmp.tokenizer.BaseTokenizerByList, lmp.tokenizer.BaseTokenizerByDict]:
+def load_saved_tokenizer(file_path: str, tokenizer_class: str = 'list') -> Union[lmp.tokenizer.BaseTokenizerByList, lmp.tokenizer.BaseTokenizerByDict]:
     r"""Decide to load which saved tokenizer.
 
     Args:
-        model_path:
+        file_path:
             Location of tokenizer's pickle file
-        tokenizer_type:
+        tokenizer_class:
             Decide to use which tokenizer, list or dict
             Tokenizer's token_to_id is implemented in different structure(list or dict).
     Returns:
-        lmp.tokenizer.CharTokenizerByDict().load_from_file(f'{model_path}/tokenizer.pickle')
-        lmp.tokenizer.CharTokenizerByList().load_from_file(f'{model_path}/tokenizer.pickle')
+        lmp.tokenizer.CharTokenizerByDict().load_from_file(f'{file_path}/tokenizer.pickle')
+        lmp.tokenizer.CharTokenizerByList().load_from_file(f'{file_path}/tokenizer.pickle')
     """
-    if tokenizer_type.lower() not in ['list', 'dict']:
+    if tokenizer_class.lower() not in ['list', 'dict']:
         raise ValueError(
-            f'`{args.tokenizer}` is not exist, please input list or dict')
-    if tokenizer_type.lower() == 'dict':
-        return lmp.tokenizer.CharTokenizerByDict.load_from_file(f'{model_path}/tokenizer.pickle')
-    elif tokenizer_type.lower() == 'list':
-        return lmp.tokenizer.CharTokenizerByList.load_from_file(f'{model_path}/tokenizer.pickle')
+            f'`{tokenizer_class}` is not exist, please input list or dict')
+    if tokenizer_class.lower() == 'dict':
+        return lmp.tokenizer.CharTokenizerByDict.load_from_file(file_path)
+    elif tokenizer_class.lower() == 'list':
+        return lmp.tokenizer.CharTokenizerByList.load_from_file(file_path)
 
 
-def load_blank_tokenizer(tokenizer_type: str = 'list') -> Union[lmp.tokenizer.BaseTokenizerByList, lmp.tokenizer.BaseTokenizerByDict]:
+def load_blank_tokenizer(tokenizer_class: str = 'list') -> Union[lmp.tokenizer.BaseTokenizerByList, lmp.tokenizer.BaseTokenizerByDict]:
     r"""Decide to use which blank tokenizer.
 
     Args:
-        tokenizer_type:
+        tokenizer_class:
             Decide to use which tokenizer, list or dict
             Tokenizer's token_to_id is implemented in different structure(list or dict).
     Returns:
         lmp.tokenizer.CharTokenizerByDict()
         lmp.tokenizer.CharTokenizerByList()
     """
-    if tokenizer_type.lower() not in ['list', 'dict']:
+    if tokenizer_class.lower() not in ['list', 'dict']:
         raise ValueError(
-            f'`{args.tokenizer}` is not exist, please input list or dict')
-    if tokenizer_type.lower() == 'dict':
+            f'`{tokenizer_class}` is not exist, please input list or dict')
+    if tokenizer_class.lower() == 'dict':
         return lmp.tokenizer.CharTokenizerByDict()
-    elif tokenizer_type.lower() == 'list':
+    elif tokenizer_class.lower() == 'list':
         return lmp.tokenizer.CharTokenizerByList()
+
+
+def load_tokenizer_by_config(config: lmp.config.BaseConfig,
+                             checkpoint: int,
+                             file_path: str,
+                             sentneces: List[str] = ['']):
+
+    if checkpoint > 0:
+        return load_saved_tokenizer(file_path, config.tokenizer_class)
+    else:
+        tokenizer = load_blank_tokenizer(config.tokenizer_class)
+        tokenizer.build_dict(sentneces, config.min_count, config.is_uncased)
+
+        return load_blank_tokenizer(config.tokenizer_class)

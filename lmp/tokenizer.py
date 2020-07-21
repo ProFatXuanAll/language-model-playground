@@ -161,17 +161,20 @@ class BaseTokenizerByList:
     def convert_ids_to_sentences(self, all_ids: List[List[int]]) -> List[str]:
         return self.convert_tokens_to_sentences(self.convert_ids_to_tokens(all_ids))
 
-    def encode(self, all_sentences: List[str], max_seq_len: int) -> List[List[int]]:
+    def encode(self, all_sentences: List[str], max_seq_len: int = -1) -> List[List[int]]:
         all_ids = self.convert_sentences_to_ids(all_sentences)
 
         for id_list in all_ids:
             id_list.append(self.eos_token_id)
 
-        if max_seq_len > 0:
-            for i in range(len(all_ids)):
-                data = all_ids[i]
-                data.extend(self.pad_token_id for _ in range(max_seq_len - len(data)))
-                all_ids[i] = data[ : max_seq_len]
+        if max_seq_len < 0:
+            max_seq_len = max(map(lambda seq: len(seq), all_ids))
+        for i in range(len(all_ids)):
+            # Truncate sentence to `max_seq_len`.
+            all_ids[i] = all_ids[i][:max_seq_len]
+            # Pad sequnence to `max_seq_len`.
+            all_ids[i].extend(
+                [self.pad_token_id for _ in range(max_seq_len - len(all_ids[i]))])
 
         return all_ids
 
@@ -189,10 +192,10 @@ class BaseTokenizerByList:
         """Build a vocabulary list of all tokens, dict is sorted by token frenquence(descending order).
 
         Args:
-            min_count: 
+            min_count:
                 Minimum of token'sfrequence.
                 if token's frequence is larger than min_count, then add token to token_to_id
-            is_uncased: 
+            is_uncased:
                 Determine if convert all upper case into lower case.
         """
         if is_uncased:
@@ -377,7 +380,8 @@ class BaseTokenizerByDict:
 
         if max_seq_len > 0:
             for data in all_ids:
-                data.extend(self.pad_token_id for _ in range(max_seq_len - len(data)))
+                data.extend(self.pad_token_id for _ in range(
+                    max_seq_len - len(data)))
                 data = data[:max_seq_len]
 
         return all_ids

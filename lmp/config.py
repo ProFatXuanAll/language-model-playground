@@ -18,7 +18,7 @@ class BaseConfig:
         batch_size:
             Training batch size.
             default is 1
-        checkpoint_size:
+        checkpoint_step:
             Checkpoint interval based on number of mini-batch.
             Must be bigger than or equal to `1`.
         dropout:
@@ -46,7 +46,7 @@ class BaseConfig:
         min_count:
             Minimum of token'sfrequence.
             Used to filter words that is smaller than min_count.
-        model_type:
+        model_class:
             Decide to use which model, LSTM or GRU.
         num_rnn_layers:
             Number of rnn layers.
@@ -57,7 +57,7 @@ class BaseConfig:
         seed:
             Control random seed.
             Must be bigger than `0`.
-        tokenizer_type:
+        tokenizer_class:
             Decide to use which tokenizer, list or dict
             Tokenizer's token_to_id is implemented in different structure(list or dict).
 
@@ -66,7 +66,7 @@ class BaseConfig:
     def __init__(
             self,
             batch_size: int = 1,
-            checkpoint_size: int = 500,
+            checkpoint_step: int = 500,
             dropout: float = 0,
             embedding_dim: int = 1,
             epoch: int = 1,
@@ -75,15 +75,15 @@ class BaseConfig:
             learning_rate: float = 5e-5,
             max_norm: float = 1,
             min_count: int = 0,
-            model_type: str = 'lstm',
+            model_class: str = 'lstm',
             num_rnn_layers: int = 1,
             num_linear_layers: int = 1,
             seed: int = 1,
-            tokenizer_type: str = 'list'
+            tokenizer_class: str = 'list'
     ):
 
         self.batch_size = batch_size
-        self.checkpoint_size = checkpoint_size
+        self.checkpoint_step = checkpoint_step
         self.dropout = dropout
         self.embedding_dim = embedding_dim
         self.epoch = epoch
@@ -92,11 +92,11 @@ class BaseConfig:
         self.learning_rate = learning_rate
         self.max_norm = max_norm
         self.min_count = min_count
-        self.model_type = model_type
+        self.model_class = model_class
         self.num_rnn_layers = num_rnn_layers
         self.num_linear_layers = num_linear_layers
         self.seed = seed
-        self.tokenizer_type = tokenizer_type
+        self.tokenizer_class = tokenizer_class
 
     @classmethod
     def load_from_file(cls, file_path: str = None):
@@ -129,7 +129,7 @@ class BaseConfig:
             with open(file_path, 'wb') as f:
                 hyperparameters = {
                     'batch_size': self.batch_size,
-                    'checkpoint_size': self.checkpoint_size,
+                    'checkpoint_step': self.checkpoint_step,
                     'dropout': self.dropout,
                     'embedding_dim': self.embedding_dim,
                     'epoch': self.epoch,
@@ -138,11 +138,11 @@ class BaseConfig:
                     'learning_rate': self.learning_rate,
                     'max_norm': self.max_norm,
                     'min_count': self.min_count,
-                    'model_type': self.model_type,
+                    'model_class': self.model_class,
                     'num_rnn_layers': self.num_rnn_layers,
                     'num_linear_layers': self.num_linear_layers,
                     'seed': self.seed,
-                    'tokenizer_type': self.tokenizer_type
+                    'tokenizer_class': self.tokenizer_class
                 }
 
                 pickle.dump(hyperparameters, f)
