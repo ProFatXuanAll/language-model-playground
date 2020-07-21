@@ -11,11 +11,12 @@ import lmp.tokenizer
 import lmp.model
 
 
-def load_saved_model(file_path: str,
-               config: lmp.config.BaseConfig,
-               tokenizer: Union[lmp.tokenizer.BaseTokenizerByList,
-                                lmp.tokenizer.BaseTokenizerByDict]
-               ) -> Union[lmp.model.GRUModel, lmp.model.LSTMModel]:
+def load_saved_model(
+    file_path: str,
+    config: lmp.config.BaseConfig,
+    tokenizer: Union[lmp.tokenizer.BaseTokenizerByList,
+                     lmp.tokenizer.BaseTokenizerByDict]
+) -> Union[lmp.model.GRUModel, lmp.model.LSTMModel]:
     r"""Used to load saved model
 
     Args:
@@ -43,10 +44,11 @@ def load_saved_model(file_path: str,
     return model
 
 
-def load_blank_model(config: lmp.config.BaseConfig,
-                     tokenizer: Union[lmp.tokenizer.BaseTokenizerByList,
-                                      lmp.tokenizer.BaseTokenizerByDict]
-                     ) -> Union[lmp.model.GRUModel, lmp.model.LSTMModel]:
+def load_blank_model(
+    config: lmp.config.BaseConfig,
+    tokenizer: Union[lmp.tokenizer.BaseTokenizerByList,
+                     lmp.tokenizer.BaseTokenizerByDict]
+) -> Union[lmp.model.GRUModel, lmp.model.LSTMModel]:
     r"""Used to load blank model
 
     Args:
@@ -84,7 +86,7 @@ def load_model_for_train(
     if checkpoint > 0:
         state_path = f'{save_path}/checkpoint{checkpoint}.pt'
         model = load_saved_model(file_path=state_path,
-                           config=config, tokenizer=tokenizer)
+                                 config=config, tokenizer=tokenizer)
     else:
         model = load_blank_model(config=config, tokenizer=tokenizer)
 
