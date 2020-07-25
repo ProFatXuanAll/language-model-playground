@@ -108,7 +108,7 @@ class BaseConfig:
             num_rnn_layers: int = 1,
             optimizer_class: str = 'adam',
             seed: int = 1,
-            tokenizer_class: str = 'list'
+            tokenizer_class: str = 'char_dict''
     ):
         if not isinstance(batch_size, int):
             raise TypeError(
