@@ -1,29 +1,106 @@
+r"""preprocessing training dataset.
+
+Usage:
+    dataset = lmp.dataset.BaseDataset(...)
+"""
+
+# built-in modules
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
+from typing import List
+from typing import Tuple
+
+# 3rd-party modules
+
 import torch.utils.data
-import torch.nn.utils.rnn
+
+# self-made modules
+
+import lmp.tokenizer
+
+
+# Define types for type annotation.
+CollateFnReturn = Tuple[
+    torch.LongTensor,
+    torch.LongTensor
+]
+
 
 class BaseDataset(torch.utils.data.Dataset):
-    def __init__(self, **kwargs):
-        super(BaseDataset, self).__init__()
+    r"""Dataset class for generating language model samples.
 
-        self.text_list = kwargs.pop('text_list', [])
-        self.config = kwargs.pop('config', None)
-        self.tokenizer = kwargs.pop('tokenizer', None)
+    Attributes:
+        batch_sequences:
+            All sequences in the dataset.
+    """
 
-        self.tokenizer.build_dict(self.text_list, self.config.min_count)
+    def __init__(
+            self,
+            batch_sequences: List[str]
+    ):
+        super().__init__()
+        self.batch_sequences = batch_sequences
 
-        self.id_list = [torch.LongTensor(ids) for ids in self.tokenizer.encode(self.text_list)]
+    def __len__(self) -> int:
+        r"""Dataset size."""
+        return len(self.batch_sequences)
 
-    def __len__(self):
-        return len(self.id_list)
+    def __getitem__(self, index: int) -> str:
+        r"""Sample single sequence using index."""
+        return self.batch_sequences[index]
 
-    def __getitem__(self, index):
-        return self.id_list[index][:-1], self.id_list[index][1:]
+    @staticmethod
+    def creat_collate_fn(
+            tokenizer: lmp.tokenizer.BaseTokenizer,
+            max_seq_len: int = -1
+    ):
+        r"""Create `collate_fn` for `torch.utils.data.DataLoader`.
 
-    def collate_fn(self, batch):
-        x = torch.nn.utils.rnn.pad_sequence([data[0] for data in batch],
-                                            batch_first=True,
-                                            padding_value=self.tokenizer.pad_token_id)
-        y = torch.nn.utils.rnn.pad_sequence([data[1] for data in batch],
-                                            batch_first=True,
-                                            padding_value=self.tokenizer.pad_token_id)
-        return x, y
+        Use `tokenizer` to perform tokenization on each mini-batch. Each
+        mini-batch will be encoded into tokens' ids with length equal to
+        `max_seq_len`. If `max_seq_len == -1`, then `max_seq_len` will be
+        inferred from current mini-batch.
+
+        Attributes:
+            tokenizer:
+                Perform both tokenization and encoding.
+            max_seq_len:
+                Mini-batch's maximum encoded sequence length.
+
+        Returns:
+            A function used by `torch.utils.data.DataLoader`.
+        """
+        def collate_fn(batch_sequences: List[str]) -> CollateFnReturn:
+            r"""Function used by `torch.utils.data.DataLoader`.
+
+            Each sequence in `batch_sequences` will be first tokenized and
+            encoded by `tokenizer`, the returned batch of tokens' ids will
+            have exact same length. We construct training samples following
+            language model format.
+
+            Returns:
+                x:
+                    Model input batch of token's ids.
+                y:
+                    Model predict target for each token id in `x`.
+            """
+            batch_token_ids = torch.LongTensor(
+                tokenizer.batch_encode(
+                    batch_sequences, max_seq_len=max_seq_len)
+            )
+
+            # Construct sample following language model:
+            # `batch_sequences[0][0]` must predict `batch_sequences[0][1]`,
+            # `batch_sequences[0][1]` must predict `batch_sequences[0][2]`,
+            # ...
+            # `batch_sequences[n][m]` must predict `batch_sequences[n][m+1]`.
+            x = batch_token_ids[:, :-1]
+            y = batch_token_ids[:, 1:]
+
+            return x, y
+
+        return collate_fn
