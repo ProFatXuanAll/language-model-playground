@@ -64,14 +64,21 @@ unzip yet-another-chinese-news-dataset.zip && chmod 666 news_collection.csv && m
 python run_train.py --experiment 1 --batch_size 32 --checkpoint -1 --checkpoint_step 500 --d_emb 100 --d_hid 300 --dataset news_collection --dropout 0.1 --epoch 10 --is_uncased --learning_rate 1e-4 --max_norm 1.0 --max_seq_len 60 --min_count 1 --model_class lstm --num_linear_layers 1 --num_rnn_layers 1 --optimizer_class adam --seed 42 --tokenizer_class char_dict
 ```
 
-8. 指定訓練模型存檔點並生成範例句子。
+8. 使用 `tensorboard` 觀察模型誤差表現。
+
+```sh
+# 在 Windows 上路徑請用 `.\data\log`
+tensorboard --logdir ./data/log
+```
+
+9. 指定訓練模型存檔點並生成範例句子。
 
 ```sh
 # 使用第 500 步的存檔點進行句子生成
 python run_generate.py --experiment 1 --checkpoint 500 --begin_of_sequence 今天 --beam_width 4 --max_seq_len 60
 ```
 
-9. 試著使用不同的超參數或更換模型並使用 `run_train.py` 重新訓練。接著使用 `run_generate.py` 給予相同 `begin_of_sequence` 進行生成並比較生成結果之不同。
+10. 試著使用不同的超參數或更換模型並使用 `run_train.py` 重新訓練。接著使用 `run_generate.py` 給予相同 `begin_of_sequence` 進行生成並比較生成結果之不同。
 
 ## English Document
 
@@ -134,11 +141,18 @@ unzip yet-another-chinese-news-dataset.zip && chmod 666 news_collection.csv && m
 python run_train.py --experiment 1 --batch_size 32 --checkpoint -1 --checkpoint_step 500 --d_emb 100 --d_hid 300 --dataset news_collection --dropout 0.1 --epoch 10 --is_uncased --learning_rate 1e-4 --max_norm 1.0 --max_seq_len 60 --min_count 1 --model_class lstm --num_linear_layers 1 --num_rnn_layers 1 --optimizer_class adam --seed 42 --tokenizer_class char_dict
 ```
 
-8. Generate sequences using model checkpoints.
+8. Use `tensorboard` to observe model training loss performance.
+
+```sh
+# On Windows use path `.\data\log`
+tensorboard --logdir ./data/log
+```
+
+9. Generate sequences using model checkpoints.
 
 ```sh
 # Using checkpoint 500 to generate sequences.
 python run_generate.py --experiment 1 --checkpoint 500 --begin_of_sequence 今天 --beam_width 4 --max_seq_len 60
 ```
 
-9. Try using different hyperparameters or change model, then use `run_train.py` to perform training as above example. Then run `run_generate.py` to compare generated results given exactly same `begin_of_sequence`.
+10. Try using different hyperparameters or change model, then use `run_train.py` to perform training as above example. Then run `run_generate.py` to compare generated results given exactly same `begin_of_sequence`.
