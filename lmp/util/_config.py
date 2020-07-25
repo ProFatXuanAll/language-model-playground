@@ -13,13 +13,15 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import argparse
+
 # self-made modules
 
 import lmp.config
 import lmp.model
 
 
-def load_config(args) -> lmp.config.BaseConfig:
+def load_config(args: argparse.Namespace) -> lmp.config.BaseConfig:
     r"""Load configuration from standard input.
 
     Args:
