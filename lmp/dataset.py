@@ -3,17 +3,27 @@ r"""preprocessing training dataset.
 Usage:
     dataset = lmp.dataset.BaseDataset(...)
 """
-import torch.utils.data
-import torch.nn.utils.rnn
-from typing import List, Tuple, Union, Callable
-import lmp.tokenizer
-import pickle
-import lmp
-import os
 
-###############################################################################
+# built-in modules
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
+from typing import List
+from typing import Tuple
+
+# 3rd-party modules
+
+import torch.utils.data
+
+# self-made modules
+
+import lmp.tokenizer
+
+
 # Define types for type annotation.
-###############################################################################
 CollateFnReturn = Tuple[
     torch.LongTensor,
     torch.LongTensor
@@ -21,54 +31,75 @@ CollateFnReturn = Tuple[
 
 
 class BaseDataset(torch.utils.data.Dataset):
-    r"""Used to preprocess the data.
+    r"""Dataset class for generating language model samples.
 
     Attributes:
-        text_list:
-            All sentences of dataset.
-            Be Used to build vocabulary dict.
+        batch_sequences:
+            All sequences in the dataset.
     """
 
     def __init__(
             self,
-            text_list: List[str]
+            batch_sequences: List[str]
     ):
-        super(BaseDataset, self).__init__()
-        self.text_list = text_list
+        super().__init__()
+        self.batch_sequences = batch_sequences
 
     def __len__(self) -> int:
-        return len(self.text_list)
+        r"""Dataset size."""
+        return len(self.batch_sequences)
 
-    # Tuple[torch.Tensor, torch.Tensor]
     def __getitem__(self, index: int) -> str:
-        return self.text_list[index]
+        r"""Sample single sequence using index."""
+        return self.batch_sequences[index]
 
     @staticmethod
     def creat_collate_fn(
-            tokenizer:  Union[lmp.tokenizer.BaseTokenizerByList,
-                              lmp.tokenizer.BaseTokenizerByDict],
+            tokenizer: lmp.tokenizer.BaseTokenizer,
             max_seq_len: int = -1
     ):
-        r"""
-        Processing training data, make each shape of x,y fit [batch_size , Max_seq_len].
-        Max_seq_len means maximum of sentence's length in each batch.
+        r"""Create `collate_fn` for `torch.utils.data.DataLoader`.
+
+        Use `tokenizer` to perform tokenization on each mini-batch. Each
+        mini-batch will be encoded into tokens' ids with length equal to
+        `max_seq_len`. If `max_seq_len == -1`, then `max_seq_len` will be
+        inferred from current mini-batch.
 
         Attributes:
             tokenizer:
-                Encode sentences to ids.
+                Perform both tokenization and encoding.
             max_seq_len:
-                Indicate each sentence's max length.
+                Mini-batch's maximum encoded sequence length.
+
+        Returns:
+            A function used by `torch.utils.data.DataLoader`.
         """
+        def collate_fn(batch_sequences: List[str]) -> CollateFnReturn:
+            r"""Function used by `torch.utils.data.DataLoader`.
 
-        def collate_fn(batch: List['str']) -> CollateFnReturn:
-            batch_id_list = torch.LongTensor(
-                tokenizer.encode(batch, max_seq_len))
+            Each sequence in `batch_sequences` will be first tokenized and
+            encoded by `tokenizer`, the returned batch of tokens' ids will
+            have exact same length. We construct training samples following
+            language model format.
 
-            x = batch_id_list[:, :-1]
+            Returns:
+                x:
+                    Model input batch of token's ids.
+                y:
+                    Model predict target for each token id in `x`.
+            """
+            batch_token_ids = torch.LongTensor(
+                tokenizer.batch_encode(
+                    batch_sequences, max_seq_len=max_seq_len)
+            )
 
-            y = batch_id_list[:, 1:]
-
-            y = y.contiguous()
+            # Construct sample following language model:
+            # `batch_sequences[0][0]` must predict `batch_sequences[0][1]`,
+            # `batch_sequences[0][1]` must predict `batch_sequences[0][2]`,
+            # ...
+            # `batch_sequences[n][m]` must predict `batch_sequences[n][m+1]`.
+            x = batch_token_ids[:, :-1]
+            y = batch_token_ids[:, 1:]
 
             return x, y
 

@@ -1,24 +1,37 @@
-r"""All utililties.
-All utilities files in this module must be renamed in this very file.
-This help to avoid unnecessary import structure (we prefer using
-`lmp.util.load_model` over `fine_tune.util.model.load_model`).
+r"""Helper functions collection.
 
-Usage:
-    model = lmp.util.load_model(...)
+All utilities files in this module must be re-import in this very file.
+This help to avoid unnecessary import structure (for example, we prefer using
+`lmp.util._load_model` over `lmp.util._model.load_model`).
+
+All submodules which provide loading utilites should provide two interface,
+one for directly passing parameter and one for using configuration object
+(for example, `lmp.util._load_model` and `lmp.util._load_model_by_config`).
 """
-from lmp.util.config import load_config
 
-from lmp.util.tokenizer import load_saved_tokenizer
-from lmp.util.tokenizer import load_blank_tokenizer
-from lmp.util.tokenizer import load_tokenizer_by_config
+# built-in modules
 
-from lmp.util.dataset import load_dataset
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
 
-from lmp.util.model import load_saved_model
-from lmp.util.model import load_blank_model
-from lmp.util.model import load_model_for_train
+# self-made modules
 
-from lmp.util.optimizer import load_optimizer
-
-
-
+from lmp.util._config import load_config
+from lmp.util._dataset import load_dataset
+from lmp.util._dataset import load_dataset_by_config
+from lmp.util._generate_sequence import generate_sequence
+from lmp.util._generate_sequence import generate_sequence_by_config
+from lmp.util._model import load_model
+from lmp.util._model import load_model_by_config
+from lmp.util._optimizer import load_optimizer
+from lmp.util._optimizer import load_optimizer_by_config
+from lmp.util._seed import set_seed
+from lmp.util._seed import set_seed_by_config
+from lmp.util._tokenizer import load_tokenizer
+from lmp.util._tokenizer import load_tokenizer_by_config
+from lmp.util._train_model import train_model
+from lmp.util._train_model import train_model_by_config
+from lmp.util._train_tokenizer import train_tokenizer
+from lmp.util._train_tokenizer import train_tokenizer_by_config
