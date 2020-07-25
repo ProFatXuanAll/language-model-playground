@@ -18,7 +18,6 @@ from __future__ import unicode_literals
 
 import torch
 import torch.nn
-import torch.nn.utils.rnn
 
 
 class BaseRNNModel(torch.nn.Module):

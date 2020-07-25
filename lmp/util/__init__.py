@@ -7,6 +7,12 @@ This help to avoid unnecessary import structure (for example, we prefer using
 All submodules which provide loading utilites should provide two interface,
 one for directly passing parameter and one for using configuration object
 (for example, `lmp.util._load_model` and `lmp.util._load_model_by_config`).
+
+Usage:
+    import lmp
+
+    dataset = lmp.util.load_dataset_by_config(...)
+    tokenizer = lmp.util.train_tokenizer_by_config(...)
 """
 
 # built-in modules
