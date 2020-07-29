@@ -25,8 +25,8 @@ import lmp.tokenizer
 
 # Define types for type annotation.
 CollateFnReturn = Tuple[
-    torch.LongTensor,
-    torch.LongTensor
+    torch.Tensor,
+    torch.Tensor
 ]
 
 
@@ -85,8 +85,10 @@ class BaseDataset(torch.utils.data.Dataset):
             Returns:
                 x:
                     Model input batch of token's ids.
+                    dtype = int64
                 y:
                     Model predict target for each token id in `x`.
+                    dtype = int64
             """
             batch_token_ids = torch.LongTensor(
                 tokenizer.batch_encode(
