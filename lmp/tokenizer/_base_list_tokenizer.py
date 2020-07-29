@@ -18,6 +18,11 @@ import os
 
 from typing import List
 
+# 3rd-party modules
+
+from tqdm import tqdm
+
+
 # self-made modules
 
 import lmp.path
@@ -366,6 +371,11 @@ class BaseListTokenizer(BaseTokenizer):
             reverse=True
         )
 
+        build_vocab_iterator = tqdm(
+            new_tokens,
+            desc='Build tokneizer vocabulary'
+        )
+
         # Add new tokens to vocabulary.
-        for new_token in new_tokens:
+        for new_token in build_vocab_iterator:
             self.token_to_id.append(new_token)
