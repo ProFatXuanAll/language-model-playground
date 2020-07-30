@@ -62,7 +62,16 @@ def load_tokenizer(
             is_uncased=is_uncased)
     else:
         raise ValueError(
-            f'`{tokenizer_class}` does not support.'
+            f'`{tokenizer_class}` does not support.\nSupported options:' +
+            ''.join(list(map(
+                lambda option: f'\n\t--tokenizer {option}',
+                [
+                    'char_dict',
+                    'char_list',
+                    'whitespace_dict',
+                    'whitespace_list',
+                ]
+            )))
         )
 
     if checkpoint != -1:

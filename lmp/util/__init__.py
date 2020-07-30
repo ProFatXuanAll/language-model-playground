@@ -27,6 +27,8 @@ from __future__ import unicode_literals
 from lmp.util._config import load_config
 from lmp.util._dataset import load_dataset
 from lmp.util._dataset import load_dataset_by_config
+from lmp.util._perplexity_eval import perplexity_eval
+from lmp.util._perplexity_eval import batch_perplexity_eval
 from lmp.util._generate_sequence import generate_sequence
 from lmp.util._generate_sequence import generate_sequence_by_config
 from lmp.util._model import load_model

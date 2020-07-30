@@ -1,9 +1,9 @@
-r"""Train the text-generation model.
-Usage:
-    python example_train.py --experiment_no 1 --is_uncased True
+r"""Train language model.
 
---experiment_no is a required argument.
-Run 'python example_train.py --help' for help
+Usage:
+    python run_train.py ...
+
+Run 'python run_train.py --help' for help.
 """
 
 # built-in modules
@@ -14,6 +14,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import argparse
+import time
 
 # self-made modules
 
@@ -64,7 +65,7 @@ if __name__ == '__main__':
     )
     parser.add_argument(
         '--dataset',
-        default='news_collection',
+        default='news_collection_title',
         help='Name of the dataset to perform experiment.',
         type=str
     )
@@ -165,6 +166,7 @@ if __name__ == '__main__':
         config=config
     )
 
+    start_time = time.time()
     # Load tokenizer.
     tokenizer = lmp.util.load_tokenizer_by_config(
         checkpoint=args.checkpoint,
@@ -203,3 +205,5 @@ if __name__ == '__main__':
         optimizer=optimizer,
         tokenizer=tokenizer
     )
+
+    print(f'{config.tokenizer_class} train_time: ', time.time()-start_time)

@@ -19,6 +19,10 @@ import os
 from typing import Dict
 from typing import List
 
+# 3rd-party modules
+
+from tqdm import tqdm
+
 # self-made modules
 
 import lmp.path
@@ -30,10 +34,12 @@ class BaseDictTokenizer(BaseTokenizer):
     r"""Tokenizer base class using `dict` structure.
 
     Design philosophy:
-        Using `dict` structure is faster compare to `list` because python use
-        hash algorithm to implement `dict`. But using `dict` will consume much
-        higher memory compare to `list` implementation.
-    TODO: write perf for speed and memory test.
+        Using `dict` structure to perform token ids lookup is slower compare to
+        `list` because python use hash algorithm to implement `dict` and bucket
+        size may need to dynamically adjust. We use another `dict` to perform
+        inverse lookup, so in theory both `encode` and `decode` have exact same
+        speed. But this means `BaseDictTokenizer` will consume much higher
+        memory compare to `BaseListTokenizer` implementation.
 
     Attributes:
         bos_token:
@@ -381,11 +387,16 @@ class BaseDictTokenizer(BaseTokenizer):
             reverse=True
         )
 
+        build_vocab_iterator = tqdm(
+            new_tokens,
+            desc='Build tokneizer vocabulary'
+        )
+
         # New token id must begin with last token id.
         start_token_id = self.vocab_size
 
         # Add new tokens to vocabulary.
-        for fake_token_id, new_token in enumerate(new_tokens):
+        for fake_token_id, new_token in enumerate(build_vocab_iterator):
             new_token_id = fake_token_id + start_token_id
             self.token_to_id[new_token] = new_token_id
             self.id_to_token[new_token_id] = new_token
