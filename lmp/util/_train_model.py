@@ -127,7 +127,7 @@ def train_model(
             # x.size = (B, S)
             # y.size = (B x S)
             x = x.to(device)
-            y = y.contiguous().view(-1).to(device)
+            y = y.reshape(-1).to(device)
 
             # Forward pass.
             # pred_y_logits.size = (B, S, V)
@@ -136,7 +136,7 @@ def train_model(
             # Reshape `pred_y_logits` into shape (B x S, V) for cross-entropy.
             # Since `pred_y_logits` is already contigous in memory, we can call
             # `view` directly without using `contiguous()`.
-            pred_y_logits = pred_y_logits.view(-1, vocab_size)
+            pred_y_logits = pred_y_logits.reshape(-1, vocab_size)
 
             # Perform cross-entropy.
             loss = criterion(pred_y_logits, y)

@@ -1,8 +1,9 @@
-r"""giving a text to generate sentences.
+r"""Giving a text to generate rest sequence.
+
 Usage:
-    python example_generate.py --experiment_no 1
---experiment_no is a required argument.
-Run 'python example_generate.py --help' for help.
+    python run_generate.py ...
+
+Run 'python run_generate.py --help' for help.
 """
 
 # built-in modules

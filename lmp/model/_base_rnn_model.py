@@ -120,12 +120,10 @@ class BaseRNNModel(torch.nn.Module):
         Args:
             batch_sequences:
                 Batch of sequences which have been encoded by
-                `lmp.tokenizer.BaseTokenizer`.
-                dtype = int64
+                `lmp.tokenizer.BaseTokenizer` with numeric type `torch.int64`.
 
         Returns:
-            Logits for each token in sequences.
-            dtype = float32
+            Logits for each token in sequences with numeric type `torch.float32`.
         """
         # 將 batch_sequences 中的所有 token_id 經過 embedding matrix
         # 轉換成 embedding vectors (共有 (B, S) 個維度為 E 的向量)
@@ -137,11 +135,9 @@ class BaseRNNModel(torch.nn.Module):
         # ht 維度: (B, S, H)
         ht, _ = self.rnn_layer(batch_sequences)
 
-
         # 將每個 hidden vectors 轉換維度至 embedding dimension
         # ht 維度: (B, S, E)
         ht = self.linear_layers(ht)
-
 
         # 與轉置後的 embedding matrix 進行矩陣乘法取得預測文字
         # 重複使用 embedding matrix 的目的為節省參數數量
@@ -159,11 +155,9 @@ class BaseRNNModel(torch.nn.Module):
         Args:
             batch_sequences:
                 Batch of sequences which have been encoded by
-                `lmp.tokenizer.BaseTokenizer`.
-                dtype = int64
+                `lmp.tokenizer.BaseTokenizer` with numeric type `torch.int64`.
 
         Returns:
-            Predicition using softmax on model output logits.
-            dtype = float32
+            Predicition using softmax on model output logits with numeric type `torch.float32`.
         """
         return torch.nn.functional.softmax(self(batch_sequences), dim=-1)
