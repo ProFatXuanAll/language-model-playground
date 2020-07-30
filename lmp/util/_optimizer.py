@@ -56,6 +56,10 @@ def load_optimizer(
         parameters:
             Model parameters to be optimized.
 
+    Raises:
+        ValueError:
+            If `optimizer` does not supported.
+
     Returns:
         `torch.optim.SGD` if `optimizer_class == 'sgd'`;
         `torch.optim.Adam` if `optimizer_class == 'adam'`.
@@ -72,7 +76,14 @@ def load_optimizer(
         )
     else:
         raise ValueError(
-            f'`{optimizer_class}` does not support.'
+            f'`{optimizer_class}` does not support\nSupported options:' +
+            ''.join(list(map(
+                lambda option: f'\n\t--optimizer {option}',
+                [
+                    'sgd',
+                    'adam',
+                ]
+            )))
         )
 
     if checkpoint != -1:

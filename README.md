@@ -61,7 +61,7 @@ unzip yet-another-chinese-news-dataset.zip && chmod 666 news_collection.csv && m
 7. 訓練範例模型。
 
 ```sh
-python run_train.py --experiment 1 --batch_size 32 --checkpoint -1 --checkpoint_step 500 --d_emb 100 --d_hid 300 --dataset news_collection --dropout 0.1 --epoch 10 --is_uncased --learning_rate 1e-4 --max_norm 1.0 --max_seq_len 60 --min_count 1 --model_class lstm --num_linear_layers 1 --num_rnn_layers 1 --optimizer_class adam --seed 42 --tokenizer_class char_dict
+python run_train.py --experiment 1 --batch_size 32 --checkpoint -1 --checkpoint_step 500 --d_emb 100 --d_hid 300 --dataset news_collection_title --dropout 0.1 --epoch 10 --is_uncased --learning_rate 1e-4 --max_norm 1.0 --max_seq_len 60 --min_count 1 --model_class lstm --num_linear_layers 1 --num_rnn_layers 1 --optimizer_class adam --seed 42 --tokenizer_class char_dict
 ```
 
 8. 使用 `tensorboard` 觀察模型誤差表現。
@@ -78,7 +78,14 @@ tensorboard --logdir ./data/log
 python run_generate.py --experiment 1 --checkpoint 500 --begin_of_sequence 今天 --beam_width 4 --max_seq_len 60
 ```
 
-10. 試著使用不同的超參數或更換模型並使用 `run_train.py` 重新訓練。接著使用 `run_generate.py` 給予相同 `begin_of_sequence` 進行生成並比較生成結果之不同。
+10. 評估模型在資料集上的 perplexity 表現。
+
+```sh
+# 使用第 500 步的存檔點進行表現評估
+python run_perplexity_evaluation.py --experiment 1 --checkpoint 500 --dataset news_collection_title
+```
+
+11. 試著使用不同的超參數或更換模型並使用 `run_train.py` 重新訓練。接著使用 `run_generate.py` 給予相同 `begin_of_sequence` 進行生成並比較生成結果之不同。
 
 ## English Document
 
@@ -138,7 +145,7 @@ unzip yet-another-chinese-news-dataset.zip && chmod 666 news_collection.csv && m
 7. Train example model.
 
 ```sh
-python run_train.py --experiment 1 --batch_size 32 --checkpoint -1 --checkpoint_step 500 --d_emb 100 --d_hid 300 --dataset news_collection --dropout 0.1 --epoch 10 --is_uncased --learning_rate 1e-4 --max_norm 1.0 --max_seq_len 60 --min_count 1 --model_class lstm --num_linear_layers 1 --num_rnn_layers 1 --optimizer_class adam --seed 42 --tokenizer_class char_dict
+python run_train.py --experiment 1 --batch_size 32 --checkpoint -1 --checkpoint_step 500 --d_emb 100 --d_hid 300 --dataset news_collection_title --dropout 0.1 --epoch 10 --is_uncased --learning_rate 1e-4 --max_norm 1.0 --max_seq_len 60 --min_count 1 --model_class lstm --num_linear_layers 1 --num_rnn_layers 1 --optimizer_class adam --seed 42 --tokenizer_class char_dict
 ```
 
 8. Use `tensorboard` to observe model training loss performance.
@@ -155,4 +162,11 @@ tensorboard --logdir ./data/log
 python run_generate.py --experiment 1 --checkpoint 500 --begin_of_sequence 今天 --beam_width 4 --max_seq_len 60
 ```
 
-10. Try using different hyperparameters or change model, then use `run_train.py` to perform training as above example. Then run `run_generate.py` to compare generated results given exactly same `begin_of_sequence`.
+10. Evaluate model performance on dataset by calculating perplexity.
+
+```sh
+# Using checkpoint 500 to evaluate.
+python run_perplexity_evaluation.py --experiment 1 --checkpoint 500 --dataset news_collection_title
+```
+
+11. Try using different hyperparameters or change model, then use `run_train.py` to perform training as above example. Then run `run_generate.py` to compare generated results given exactly same `begin_of_sequence`.

@@ -1,11 +1,10 @@
-r"""Giving a text to generate rest sequence.
+r"""Calculating perplexities on dataset.
 
 Usage:
-    python run_generate.py ...
+    python run_perplexity_evaluation.py ...
 
-Run 'python run_generate.py --help' for help.
+Run 'python run_perplexity_evaluation.py --help' for help.
 """
-
 # built-in modules
 
 from __future__ import absolute_import
@@ -14,10 +13,6 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import argparse
-
-# 3rd-party modules
-
-import torch
 
 # self-made modules
 
@@ -28,16 +23,16 @@ if __name__ == "__main__":
 
     # Required arguments.
     parser.add_argument(
-        '--begin_of_sequence',
-        help='Begining of sequence which model will auto-complete.',
-        required=True,
-        type=str
-    )
-    parser.add_argument(
         '--checkpoint',
         help='Load specific checkpoint.',
         required=True,
         type=int
+    )
+    parser.add_argument(
+        '--dataset',
+        help='Current experiment name.',
+        required=True,
+        type=str,
     )
     parser.add_argument(
         '--experiment',
@@ -46,24 +41,16 @@ if __name__ == "__main__":
         type=str,
     )
 
-    # Optional arguments.
-    parser.add_argument(
-        "--beam_width",
-        default=4,
-        help="using for generating `beam_width` sentences",
-        type=int
-    )
-    parser.add_argument(
-        '--max_seq_len',
-        default=64,
-        help='Text sample max length.',
-        type=int
-    )
-
     args = parser.parse_args()
 
     # Load pre-trained hyperparameters.
     config = lmp.config.BaseConfig.load(experiment=args.experiment)
+
+    # Overwrite evaluation dataset.
+    config.dataset = args.dataset
+
+    # Load dataset.
+    dataset = lmp.util.load_dataset_by_config(config=config)
 
     # Load pre-trained tokenizer.
     tokenizer = lmp.util.load_tokenizer_by_config(
@@ -78,16 +65,14 @@ if __name__ == "__main__":
         tokenizer=tokenizer
     )
 
-    # Sequences generation.
-    generated_sequences = lmp.util.generate_sequence_by_config(
-        beam_width=args.beam_width,
-        begin_of_sequence=args.begin_of_sequence,
-        config=config,
-        max_seq_len=args.max_seq_len,
+    # Calculating dataset perplexity.
+    perplexities = lmp.util.batch_perplexity_eval(
+        dataset=dataset,
+        device=config.device,
         model=model,
         tokenizer=tokenizer
     )
 
-    # Output generated sequences.
-    for sequence in generated_sequences:
-        print(sequence)
+    # Print perplexity of each sequence.
+    for i, perplexity in enumerate(perplexities):
+        print(f'{perplexity:.6f}, {dataset[i]}')
