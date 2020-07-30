@@ -121,9 +121,7 @@ def train_model(
                 continue
 
             # Put tensors on to specified device (CPU or GPU). Reshape `y` into
-            # shape (B x S) for cross-entropy. Since `view` require tensor to
-            # be contigous in memory, `y` need to first reallocate memory using
-            # `contiguous()`.
+            # shape (B x S) for cross-entropy.
             # x.size = (B, S)
             # y.size = (B x S)
             x = x.to(device)
@@ -134,8 +132,6 @@ def train_model(
             pred_y_logits = model(x)
 
             # Reshape `pred_y_logits` into shape (B x S, V) for cross-entropy.
-            # Since `pred_y_logits` is already contigous in memory, we can call
-            # `view` directly without using `contiguous()`.
             pred_y_logits = pred_y_logits.reshape(-1, vocab_size)
 
             # Perform cross-entropy.

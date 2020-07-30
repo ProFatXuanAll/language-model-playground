@@ -34,10 +34,12 @@ class BaseDictTokenizer(BaseTokenizer):
     r"""Tokenizer base class using `dict` structure.
 
     Design philosophy:
-        Using `dict` structure is faster compare to `list` because python use
-        hash algorithm to implement `dict`. But using `dict` will consume much
-        higher memory compare to `list` implementation.
-    TODO: write perf for speed and memory test.
+        Using `dict` structure to perform token ids lookup is slower compare to
+        `list` because python use hash algorithm to implement `dict` and bucket
+        size may need to dynamically adjust. We use another `dict` to perform
+        inverse lookup, so in theory both `encode` and `decode` have exact same
+        speed. But this means `BaseDictTokenizer` will consume much higher
+        memory compare to `BaseListTokenizer` implementation.
 
     Attributes:
         bos_token:
