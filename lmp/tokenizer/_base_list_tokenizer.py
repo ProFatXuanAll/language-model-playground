@@ -34,10 +34,12 @@ class BaseListTokenizer(BaseTokenizer):
     r"""Tokenizer base class using `list` structure.
 
     Design philosophy:
-        Using `list` structure is slower compare to `dict` because python use
-        single head linked list to implement `list`. But using `list` will
-        consume much lower memory compare to `dict` implementation.
-    TODO: write perf for speed and memory test.
+        Using `list` structure is to perform token ids lookup is faster compare
+        to `dict` because python use array of pointer to implement `list`. But
+        we also use the same `list` to perform inverse look up, so in theory
+        `decode` is much slower compare to `encode`. But this means
+        `BaseListTokenizer` will consume much lower memory compare to
+        `BaseDictTokenizer` implementation.
 
     Attributes:
         bos_token:
