@@ -398,4 +398,3 @@ class BaseDictTokenizer(BaseTokenizer):
             new_token_id = fake_token_id + start_token_id
             self.token_to_id[new_token] = new_token_id
             self.id_to_token[new_token_id] = new_token
-

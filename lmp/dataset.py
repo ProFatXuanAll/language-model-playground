@@ -84,11 +84,11 @@ class BaseDataset(torch.utils.data.Dataset):
 
             Returns:
                 x:
-                    Model input batch of token's ids.
-                    dtype = int64
+                    Model input batch of token's ids with numeric type
+                    `torch.int64`.
                 y:
-                    Model predict target for each token id in `x`.
-                    dtype = int64
+                    Model predict target for each token id in `x` with numeric
+                    type `torch.int64`.
             """
             batch_token_ids = torch.LongTensor(
                 tokenizer.batch_encode(

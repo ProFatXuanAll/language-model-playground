@@ -67,6 +67,10 @@ def load_model(
         vocab_size:
             Embedding matrix vocabulary dimension.
 
+    Raises:
+        ValueError:
+            If `model` does not supported.
+
     Returns:
         `lmp.model.BaseRNNModel` if `model_class == 'rnn'`;
         `lmp.model.GRUModel` if `model_class == 'gru'`;
@@ -105,7 +109,15 @@ def load_model(
         )
     else:
         raise ValueError(
-            f'model `{model_class}` does not support'
+            f'model `{model_class}` does not support.\nSupported options:' +
+            ''.join(list(map(
+                lambda option: f'\n\t--model {option}',
+                [
+                    'rnn',
+                    'gru',
+                    'lstm',
+                ]
+            )))
         )
 
     if checkpoint != -1:

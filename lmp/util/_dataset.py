@@ -45,23 +45,34 @@ def load_dataset(
     Returns:
         `lmp.dataset.BaseDataset` instance where samples are sequences.
     """
-    file_path = f'{lmp.path.DATA_PATH}/news_collection.csv'
-    if not os.path.exists(file_path):
-        raise FileNotFoundError(
-            f'file {file_path} does not exist.'
-        )
-
-    if dataset == 'news_collection_title':
-        df = pd.read_csv(file_path)
-        batch_sequences = df['title'].to_list()
-        return lmp.dataset.BaseDataset(batch_sequences)
-    elif dataset == 'news_collection_desc':
+    if dataset == 'news_collection_desc':
+        file_path = f'{lmp.path.DATA_PATH}/news_collection.csv'
+        if not os.path.exists(file_path):
+            raise FileNotFoundError(
+                f'file {file_path} does not exist.'
+            )
         df = pd.read_csv(file_path)
         batch_sequences = df['desc'].to_list()
         return lmp.dataset.BaseDataset(batch_sequences)
+    if dataset == 'news_collection_title':
+        file_path = f'{lmp.path.DATA_PATH}/news_collection.csv'
+        if not os.path.exists(file_path):
+            raise FileNotFoundError(
+                f'file {file_path} does not exist.'
+            )
+        df = pd.read_csv(file_path)
+        batch_sequences = df['title'].to_list()
+        return lmp.dataset.BaseDataset(batch_sequences)
 
     raise ValueError(
-        'dataset `{dataset}` does not support.'
+        f'dataset `{dataset}` does not support.\nSupported options:' +
+        ''.join(list(map(
+            lambda option: f'\n\t--dataset {option}',
+            [
+                'news_collection_desc',
+                'news_collection_title',
+            ]
+        )))
     )
 
 
