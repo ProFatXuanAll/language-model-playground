@@ -17,6 +17,7 @@ import json
 import os
 
 from typing import Dict
+from typing import Iterable
 from typing import List
 from typing import Union
 
@@ -159,6 +160,10 @@ class BaseTokenizer:
             sequence:
                 Input sequence to be tokenized.
 
+        Raises:
+            TypeError:
+                When `sequence` is not instance of `str`.
+
         Returns:
             Tokens represent input sequence.
         """
@@ -168,7 +173,7 @@ class BaseTokenizer:
         )
 
     @abc.abstractmethod
-    def detokenize(self, tokens: List[str]) -> str:
+    def detokenize(self, tokens: Iterable[str]) -> str:
         r"""Convert tokens back to sequence.
 
         All subclasses must implement this instance method.
@@ -176,6 +181,10 @@ class BaseTokenizer:
         Args:
             tokens:
                 Tokens to be converted.
+
+        Raises:
+            TypeError:
+                When `tokens` is not instance of `Iterable[str]`.
 
         Returns:
             Sequence converted from input tokens.
