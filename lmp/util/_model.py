@@ -107,6 +107,36 @@ def load_model(
             pad_token_id=pad_token_id,
             vocab_size=vocab_size
         )
+    elif model_class == 'res_rnn':
+        model = lmp.model.BaseResidualRNNModel(
+            d_emb=d_emb,
+            d_hid=d_hid,
+            dropout=dropout,
+            num_rnn_layers=num_rnn_layers,
+            num_linear_layers=num_linear_layers,
+            pad_token_id=pad_token_id,
+            vocab_size=vocab_size
+        )
+    elif model_class == 'res_gru':
+        model = lmp.model.ResidualGRUModel(
+            d_emb=d_emb,
+            d_hid=d_hid,
+            dropout=dropout,
+            num_rnn_layers=num_rnn_layers,
+            num_linear_layers=num_linear_layers,
+            pad_token_id=pad_token_id,
+            vocab_size=vocab_size
+        )
+    elif model_class == 'res_lstm':
+        model = lmp.model.ResidualLSTMModel(
+            d_emb=d_emb,
+            d_hid=d_hid,
+            dropout=dropout,
+            num_rnn_layers=num_rnn_layers,
+            num_linear_layers=num_linear_layers,
+            pad_token_id=pad_token_id,
+            vocab_size=vocab_size
+        )
     else:
         raise ValueError(
             f'model `{model_class}` does not support.\nSupported options:' +
@@ -116,6 +146,9 @@ def load_model(
                     'rnn',
                     'gru',
                     'lstm',
+                    'res_rnn',
+                    'res_gru',
+                    'res_lstm',
                 ]
             )))
         )
