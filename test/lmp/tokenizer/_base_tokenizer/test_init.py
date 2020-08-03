@@ -72,26 +72,18 @@ class TestInit(unittest.TestCase):
         r"""Raise `NotImplementedError` when construct instance."""
         msg1 = 'Must raise `NotImplementedError` when construct instance.'
         msg2 = 'Inconsistent error message.'
+        examples = (True, False)
 
-        with self.assertRaises(NotImplementedError, msg=msg1) as ctx_man:
-            BaseTokenizer()
+        for is_uncased in examples:
+            with self.assertRaises(NotImplementedError, msg=msg1) as ctx_man:
+                BaseTokenizer(is_uncased=is_uncased)
 
-        self.assertEqual(
-            ctx_man.exception.args[0],
-            'In class `BaseTokenizer`: '
-            'function `reset_vocab` not implemented yet.',
-            msg=msg2
-        )
-
-        with self.assertRaises(NotImplementedError, msg=msg1) as ctx_man:
-            BaseTokenizer(is_uncased=True)
-
-        self.assertEqual(
-            ctx_man.exception.args[0],
-            'In class `BaseTokenizer`: '
-            'function `reset_vocab` not implemented yet.',
-            msg=msg2
-        )
+            self.assertEqual(
+                ctx_man.exception.args[0],
+                'In class `BaseTokenizer`: '
+                'function `reset_vocab` not implemented yet.',
+                msg=msg2
+            )
 
     def test_class_attributes(self):
         r"""Declare required class attributes."""

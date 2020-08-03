@@ -1,8 +1,8 @@
-r"""Test `lmp.tokenizer.BaseTokenizer.reset_vocab`.
+r"""Test `lmp.tokenizer.BaseTokenizer.batch_sequences_to_ids`.
 
 Usage:
     python -m unittest \
-        test/lmp/tokenizer/_base_tokenizer/test_reset_vocab.py
+        test/lmp/tokenizer/_base_tokenizer/test_batch_sequences_to_ids.py
 """
 
 # built-in modules
@@ -15,20 +15,23 @@ from __future__ import unicode_literals
 import inspect
 import unittest
 
+from typing import Iterable
+from typing import List
+
 # self-made modules
 
 from lmp.tokenizer import BaseTokenizer
 
 
-class TestResetVocab(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.BaseTokenizer.reset_vocab`."""
+class TestBatchSequencesToIds(unittest.TestCase):
+    r"""Test Case for `lmp.tokenizer.BaseTokenizer.batch_sequences_to_ids`."""
 
     def test_signature(self):
         r"""Ensure signature consistency."""
         msg = 'Inconsistent method signature.'
 
         self.assertEqual(
-            inspect.signature(BaseTokenizer.reset_vocab),
+            inspect.signature(BaseTokenizer.batch_sequences_to_ids),
             inspect.Signature(
                 parameters=[
                     inspect.Parameter(
@@ -36,8 +39,14 @@ class TestResetVocab(unittest.TestCase):
                         kind=inspect.Parameter.POSITIONAL_OR_KEYWORD,
                         default=inspect.Parameter.empty
                     ),
+                    inspect.Parameter(
+                        name='batch_sequences',
+                        kind=inspect.Parameter.POSITIONAL_OR_KEYWORD,
+                        annotation=Iterable[str],
+                        default=inspect.Parameter.empty
+                    ),
                 ],
-                return_annotation=None
+                return_annotation=List[List[int]]
             ),
             msg=msg
         )
@@ -54,21 +63,23 @@ class TestResetVocab(unittest.TestCase):
         # pylint: disable=W0223
         # pylint: disable=W0231
         class SubClassTokenizer(BaseTokenizer):
-            r"""Intented to not implement `reset_vocab`."""
+            r"""Intented to not implement `batch_sequences_to_ids`."""
 
-            def __init__(self, is_uncased: bool = False):
-                self.is_uncased = is_uncased
+            def reset_vocab(self):
+                pass
         # pylint: enable=W0231
         # pylint: enable=W0223
 
         for is_uncased in examples:
             with self.assertRaises(NotImplementedError, msg=msg1) as ctx_man:
-                SubClassTokenizer(is_uncased=is_uncased).reset_vocab()
+                SubClassTokenizer(
+                    is_uncased=is_uncased
+                ).batch_sequences_to_ids([''])
 
             self.assertEqual(
                 ctx_man.exception.args[0],
                 'In class `SubClassTokenizer`: '
-                'function `reset_vocab` not implemented yet.',
+                'function `tokenize` not implemented yet.',
                 msg=msg2
             )
 

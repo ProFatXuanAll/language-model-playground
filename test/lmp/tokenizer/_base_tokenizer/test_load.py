@@ -50,6 +50,7 @@ class TestLoad(unittest.TestCase):
             'implement.'
         )
         msg2 = 'Inconsistent error message.'
+        examples = (True, False)
 
         # pylint: disable=W0223
         # pylint: disable=W0231
@@ -61,15 +62,16 @@ class TestLoad(unittest.TestCase):
         # pylint: enable=W0231
         # pylint: enable=W0223
 
-        with self.assertRaises(NotImplementedError, msg=msg1) as ctx_man:
-            SubClassTokenizer().load(123)
+        for is_uncased in examples:
+            with self.assertRaises(NotImplementedError, msg=msg1) as ctx_man:
+                SubClassTokenizer(is_uncased=is_uncased).load(123)
 
-        self.assertEqual(
-            ctx_man.exception.args[0],
-            'In class `SubClassTokenizer`: '
-            'function `load` not implemented yet.',
-            msg=msg2
-        )
+            self.assertEqual(
+                ctx_man.exception.args[0],
+                'In class `SubClassTokenizer`: '
+                'function `load` not implemented yet.',
+                msg=msg2
+            )
 
 
 if __name__ == '__main__':

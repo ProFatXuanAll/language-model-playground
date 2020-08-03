@@ -74,7 +74,7 @@ class BaseDictTokenizer(BaseTokenizer):
             When `is_uncased` is not instance of `bool`.
     """
 
-    def reset_vocab(self):
+    def reset_vocab(self) -> None:
         r"""Reset vocabulary to initial state.
 
         Using `dict` structure to implement token look up.
@@ -263,7 +263,7 @@ class BaseDictTokenizer(BaseTokenizer):
 
     def decode(
             self,
-            token_ids: List[int],
+            token_ids: Iterable[int],
             remove_special_tokens: bool = False
     ) -> str:
         r"""Decode token ids into sequence.
@@ -304,7 +304,7 @@ class BaseDictTokenizer(BaseTokenizer):
 
     def batch_encode(
             self,
-            batch_sequences: List[str],
+            batch_sequences: Iterable[str],
             max_seq_len: int = -1
     ) -> List[List[int]]:
         r"""Encode batch of sequence into batch of token ids.
@@ -357,7 +357,7 @@ class BaseDictTokenizer(BaseTokenizer):
 
     def build_vocab(
             self,
-            batch_sequences: List[str],
+            batch_sequences: Iterable[str],
             min_count: int = 1
     ) -> None:
         """Build vocabulary for tokenizer.
