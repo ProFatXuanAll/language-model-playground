@@ -68,17 +68,17 @@ class BaseDictTokenizer(BaseTokenizer):
             replaced by unknown token.
         vocab_size:
             Vocabulary size of tokenizer.
-    """
 
-    def __init__(self, is_uncased: bool = False):
-        super().__init__(is_uncased=is_uncased)
+    Raises:
+        TypeError:
+            When `is_uncased` is not instance of `bool`.
+    """
 
     def reset_vocab(self):
         r"""Reset vocabulary to initial state.
 
         Using `dict` structure to implement token look up.
         """
-
         # Declare vocabulary data structure with `dict`.
         # `token_to_id` serves as token's id look up.
         # and `id_to_token` serves as inverse look up.
@@ -99,18 +99,23 @@ class BaseDictTokenizer(BaseTokenizer):
                 Name of the existing experiment.
 
         Raises:
-            ValueError:
-                If `experiment` is not type `str`.
             FileNotFoundError:
                 If directory `experiment` or file `experiment/tokenizer.json`
                 does not exist.
             JSONDecodeError:
                 If tokenizer is not in JSON format.
+            TypeError:
+                When `experiment` is not instance of `str`.
+            ValueError:
+                When `experiment` is empty string.
         """
-        self = cls()
+        # Type check.
+        if not isinstance(experiment, str):
+            raise TypeError('`experiment` must be instance of `str`.')
 
-        if experiment is None or not isinstance(experiment, str):
-            raise TypeError('`experiment` must be type `str`.')
+        # Value check.
+        if not experiment:
+            raise ValueError('`experiment` must not be empty.')
 
         file_path = os.path.join(
             lmp.path.DATA_PATH,
@@ -122,8 +127,11 @@ class BaseDictTokenizer(BaseTokenizer):
             raise FileNotFoundError(f'file {file_path} does not exist.')
 
         with open(file_path, 'r', encoding='utf-8') as input_file:
-            self.__dict__['token_to_id'] = json.load(input_file)
-        self.__dict__['id_to_token'] = {
+            obj = json.load(input_file)
+
+        self = cls(is_uncased=obj['is_uncased'])
+        self.token_to_id = obj['token_to_id']
+        self.id_to_token = {
             v: i for i, v in self.token_to_id.items()
         }
 
@@ -272,7 +280,6 @@ class BaseDictTokenizer(BaseTokenizer):
         Returns:
             Sequence decoded from `token_ids`.
         """
-
         if remove_special_tokens:
             # Get special tokens' ids except unknown token.
             special_token_ids = list(
@@ -319,7 +326,6 @@ class BaseDictTokenizer(BaseTokenizer):
         Returns:
             Batch of token ids encoded from `batch_sequence`.
         """
-
         # Encode each sequence independently.
         # If `max_seq_len == 0`, then sequences are not padded.
         batch_token_ids = [

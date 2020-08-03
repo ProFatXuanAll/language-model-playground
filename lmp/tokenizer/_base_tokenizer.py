@@ -16,10 +16,9 @@ import abc
 import json
 import os
 
-from typing import Dict
+from typing import Generator
 from typing import Iterable
 from typing import List
-from typing import Union
 
 # self-made modules
 
@@ -57,25 +56,29 @@ class BaseTokenizer:
             replaced by unknown token.
         vocab_size:
             Vocabulary size of tokenizer.
-    """
 
+    Raises:
+        TypeError:
+            When `is_uncased` is not instance of `bool`.
+    """
     bos_token: str = '[BOS]'
     eos_token: str = '[EOS]'
     pad_token: str = '[PAD]'
     unk_token: str = '[UNK]'
 
     def __init__(self, is_uncased: bool = False):
+        # Type check.
+        if not isinstance(is_uncased, bool):
+            raise TypeError('`is_uncased` must be instance of `bool`.')
+
         self.is_uncased = is_uncased
+
+        # Any class inherit `BaseTokenizer` must define instance attribute
+        # `token_to_id` in method `reset_vocab`.
         self.reset_vocab()
 
-        # Any class inherit `BaseTokenizer` must define `self.token_to_id` in
-        # `reset_vocab`. Set this to `NONE` indicate `self.token_to_id` still
-        # not implemented.
-        if 'token_to_id' not in self.__dict__:
-            self.token_to_id: Union[List, Dict, None] = None
-
     @staticmethod
-    def special_tokens():
+    def special_tokens() -> Generator[str, None, None]:
         r"""Iterating special tokens.
 
         This static method must be updated when adding more special tokens.
@@ -109,13 +112,15 @@ class BaseTokenizer:
                 Name of the existing experiment.
 
         Raises:
-            ValueError:
-                If `experiment` is not type `str`.
             FileNotFoundError:
                 If directory `experiment` or file `experiment/tokenizer.json`
                 does not exist.
             JSONDecodeError:
                 If tokenizer is not in JSON format.
+            TypeError:
+                When `experiment` is not instance of `str`.
+            ValueError:
+                When `experiment` is empty string.
         """
         raise NotImplementedError(
             f'In class `{cls.__name__}`: '
@@ -128,7 +133,20 @@ class BaseTokenizer:
         Args:
             experiment:
                 Name of the current experiment.
+
+        Raises:
+            TypeError:
+                When `experiment` is not instance of `str`.
+            ValueError:
+                When `experiment` is empty string.
         """
+        # Type check.
+        if not isinstance(experiment, str):
+            raise TypeError('`experiment` must be instance of `str`.')
+
+        # Value check.
+        if not experiment:
+            raise ValueError('`experiment` must not be empty.')
 
         file_dir = os.path.join(
             lmp.path.DATA_PATH,
@@ -144,7 +162,10 @@ class BaseTokenizer:
 
         with open(file_path, 'w', encoding='utf8') as output_file:
             json.dump(
-                self.token_to_id,
+                {
+                    'is_uncased': self.is_uncased,
+                    'token_to_id': self.token_to_id,
+                },
                 output_file,
                 ensure_ascii=False
             )
@@ -468,7 +489,6 @@ class BaseTokenizer:
         Returns:
             Batch of sequence decoded from `batch_token_ids`.
         """
-
         return [
             self.decode(token_ids, remove_special_tokens=remove_special_tokens)
             for token_ids in batch_token_ids
