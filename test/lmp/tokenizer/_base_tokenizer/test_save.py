@@ -47,7 +47,7 @@ class TestSave(unittest.TestCase):
                         default=inspect.Parameter.empty
                     ),
                 ],
-                return_annotation=inspect.Signature.empty
+                return_annotation=None
             ),
             msg=msg
         )

@@ -92,7 +92,7 @@ class BaseTokenizer:
         yield BaseTokenizer.unk_token
 
     @abc.abstractmethod
-    def reset_vocab(self):
+    def reset_vocab(self) -> None:
         r"""Reset vocabulary to initial state.
 
         This method must declare `self.token_to_id`.
@@ -127,7 +127,7 @@ class BaseTokenizer:
             'function `load` not implemented yet.'
         )
 
-    def save(self, experiment: str):
+    def save(self, experiment: str) -> None:
         r"""Save tokenizer into JSON file.
 
         Args:
@@ -217,7 +217,7 @@ class BaseTokenizer:
 
     def batch_sequences_to_tokens(
             self,
-            batch_sequences: List[str]
+            batch_sequences: Iterable[str]
     ) -> List[List[str]]:
         r"""Perform tokenization on batch of sequences.
 
@@ -232,7 +232,7 @@ class BaseTokenizer:
 
     def batch_tokens_to_sequences(
             self,
-            batch_tokens: List[List[str]]
+            batch_tokens: Iterable[Iterable[str]]
     ) -> List[str]:
         r"""Convert batch of tokens back to sequences.
 
@@ -281,7 +281,7 @@ class BaseTokenizer:
 
     def convert_tokens_to_ids(
             self,
-            tokens: List[str]
+            tokens: Iterable[str]
     ) -> List[int]:
         r"""Perform token id look up on input tokens.
 
@@ -299,7 +299,7 @@ class BaseTokenizer:
 
     def convert_ids_to_tokens(
             self,
-            token_ids: List[int]
+            token_ids: Iterable[int]
     ) -> List[str]:
         r"""Perform token id inverse look up on input tokens' ids.
 
@@ -317,7 +317,7 @@ class BaseTokenizer:
 
     def batch_tokens_to_ids(
             self,
-            batch_tokens: List[List[str]]
+            batch_tokens: Iterable[Iterable[str]]
     ) -> List[List[int]]:
         r"""Perform token id look up on batch of tokens.
 
@@ -335,7 +335,7 @@ class BaseTokenizer:
 
     def batch_ids_to_tokens(
             self,
-            batch_token_ids: List[List[int]]
+            batch_token_ids: Iterable[Iterable[int]]
     ) -> List[List[str]]:
         r"""Perform token id inverse look up on batch of tokens' ids.
 
@@ -353,7 +353,7 @@ class BaseTokenizer:
 
     def batch_sequences_to_ids(
             self,
-            batch_sequences: List[str]
+            batch_sequences: Iterable[str]
     ) -> List[List[int]]:
         r"""Perform token id look up on batch of sequences.
 
@@ -370,7 +370,7 @@ class BaseTokenizer:
 
     def batch_ids_to_sequences(
             self,
-            batch_token_ids: List[List[int]]
+            batch_token_ids: Iterable[Iterable[int]]
     ) -> List[str]:
         r"""Perform token id inverse look up on batch of sequences.
 
@@ -389,7 +389,7 @@ class BaseTokenizer:
     def encode(
             self,
             sequence: str,
-            max_seq_len: int = 0
+            max_seq_len: int = -1
     ) -> List[int]:
         r"""Encode sequence into token ids.
 
@@ -418,7 +418,7 @@ class BaseTokenizer:
     @abc.abstractmethod
     def decode(
             self,
-            token_ids: List[int],
+            token_ids: Iterable[int],
             remove_special_tokens: bool = False
     ) -> str:
         r"""Decode token ids into sequence.
@@ -443,8 +443,8 @@ class BaseTokenizer:
     @abc.abstractmethod
     def batch_encode(
             self,
-            batch_sequences: List[str],
-            max_seq_len: int = 0
+            batch_sequences: Iterable[str],
+            max_seq_len: int = -1
     ) -> List[List[int]]:
         r"""Encode batch of sequence into batch of token ids.
 
@@ -472,7 +472,7 @@ class BaseTokenizer:
 
     def batch_decode(
             self,
-            batch_token_ids: List[List[int]],
+            batch_token_ids: Iterable[Iterable[int]],
             remove_special_tokens: bool = False
     ) -> List[str]:
         r"""Decode batch of token ids into batch of sequence.
@@ -497,7 +497,7 @@ class BaseTokenizer:
     @abc.abstractmethod
     def build_vocab(
             self,
-            batch_sequences: List[str],
+            batch_sequences: Iterable[str],
             min_count: int = 1
     ) -> None:
         """Build vocabulary for tokenizer.

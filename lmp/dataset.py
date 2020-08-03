@@ -45,6 +45,11 @@ class BaseDataset(torch.utils.data.Dataset):
         super().__init__()
         self.batch_sequences = batch_sequences
 
+    def __iter__(self):
+        r"""Iterate each sample in the dataset."""
+        for sequence in self.batch_sequences:
+            yield sequence
+
     def __len__(self) -> int:
         r"""Dataset size."""
         return len(self.batch_sequences)
