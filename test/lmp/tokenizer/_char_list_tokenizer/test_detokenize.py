@@ -51,11 +51,13 @@ class TestDetokenize(unittest.TestCase):
                     inspect.Parameter(
                         name='self',
                         kind=inspect.Parameter.POSITIONAL_OR_KEYWORD,
+                        default=inspect.Parameter.empty
                     ),
                     inspect.Parameter(
                         name='tokens',
                         kind=inspect.Parameter.POSITIONAL_OR_KEYWORD,
-                        annotation=Iterable[str]
+                        annotation=Iterable[str],
+                        default=inspect.Parameter.empty
                     )
                 ],
                 return_annotation=str
@@ -65,7 +67,8 @@ class TestDetokenize(unittest.TestCase):
 
     def test_invalid_input(self):
         r"""Raise `TypeError` when input is invalid."""
-        msg = 'Must raise `TypeError` when input is invalid.'
+        msg1 = 'Must raise `TypeError` when input is invalid.'
+        msg2 = 'Inconsistent error message.'
         examples = (
             0, 1, -1, 0.0, 1.0, math.nan, math.inf, True, False,
             (1, 2, 3), [1, 2, 3], {1, 2, 3}, None,
@@ -73,13 +76,13 @@ class TestDetokenize(unittest.TestCase):
 
         for invalid_input in examples:
             for tokenizer in self.tokenizers:
-                with self.assertRaises(TypeError, msg=msg) as cm:
+                with self.assertRaises(TypeError, msg=msg1) as ctx_man:
                     tokenizer.detokenize(invalid_input)
 
                 self.assertEqual(
-                    cm.exception.args[0],
+                    ctx_man.exception.args[0],
                     '`tokens` must be instance of `Iterable[str]`.',
-                    msg='Inconsistent error message.'
+                    msg=msg2
                 )
 
     def test_expected_return(self):

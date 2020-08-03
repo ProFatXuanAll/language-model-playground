@@ -54,7 +54,7 @@ class BaseDataset(torch.utils.data.Dataset):
         return self.batch_sequences[index]
 
     @staticmethod
-    def creat_collate_fn(
+    def create_collate_fn(
             tokenizer: lmp.tokenizer.BaseTokenizer,
             max_seq_len: int = -1
     ):
@@ -92,7 +92,9 @@ class BaseDataset(torch.utils.data.Dataset):
             """
             batch_token_ids = torch.LongTensor(
                 tokenizer.batch_encode(
-                    batch_sequences, max_seq_len=max_seq_len)
+                    batch_sequences,
+                    max_seq_len=max_seq_len
+                )
             )
 
             # Construct sample following language model:
