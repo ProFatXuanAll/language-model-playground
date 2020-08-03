@@ -10,6 +10,7 @@
 ### 環境
 
 1. Python 版本: 3.6+
+
 2. CUDA 版本: 10.0+
 
 ### 安裝
@@ -87,6 +88,24 @@ python run_perplexity_evaluation.py --experiment 1 --checkpoint 500 --dataset ne
 
 11. 試著使用不同的超參數或更換模型並使用 `run_train.py` 重新訓練。接著使用 `run_generate.py` 給予相同 `begin_of_sequence` 進行生成並比較生成結果之不同。
 
+### 開發
+
+1. 請參考 [Google python style guide](https://google.github.io/styleguide/pyguide.html) 撰寫程式碼並使程式碼符合其風格。
+
+2. 請參考 [`typing`](https://docs.python.org/3/library/typing.html) 為每個 `function` 與 `method` 加上型態註記。
+
+3. 請為每個 `class`, `function` 與 `method` 補上 `docstring`。
+
+4. 請執行 `pylint your_code.py` 自動驗證你的程式是否符合 [PEP 8](https://www.python.org/dev/peps/pep-0008/) 的規範。
+
+5. 請執行 `autopep8 -i -a -a your_code.py` 自動修改你的程式使其符合 [PEP 8](https://www.python.org/dev/peps/pep-0008/) 的規範。
+
+6. 請執行 `mypy your_code.py` 自動驗證程式碼的型別正確性。
+
+7. 請執行 `python -m unittest` 確認程式碼是否通過單元測試。
+
+8. 請撰寫單元測試程式碼讓程式碼容易維護。
+
 ## English Document
 
 Language Model implemented with PyTorch.
@@ -94,6 +113,7 @@ Language Model implemented with PyTorch.
 ### Environment
 
 1. Python version: 3.6+
+
 2. CUDA version: 10.0+
 
 ### Install
@@ -170,3 +190,21 @@ python run_perplexity_evaluation.py --experiment 1 --checkpoint 500 --dataset ne
 ```
 
 11. Try using different hyperparameters or change model, then use `run_train.py` to perform training as above example. Then run `run_generate.py` to compare generated results given exactly same `begin_of_sequence`.
+
+### Development
+
+1. Make sure your code conform [Google python style guide](https://google.github.io/styleguide/pyguide.html).
+
+2. Do type annotation for every `function` and `method` (You might need to see [`typing`](https://docs.python.org/3/library/typing.html)).
+
+3. Write `docstring` for every `class`, `function` and `method`.
+
+4. Run `pylint your_code.py` to automatically check your code whether conform to [PEP 8](https://www.python.org/dev/peps/pep-0008/).
+
+5. Run `autopep8 -i -a -a your_code.py` to automatically fix your code and conform to [PEP 8](https://www.python.org/dev/peps/pep-0008/).
+
+6. Run `mypy your_code.py` to check type annotaions.
+
+7. Run `python -m unittest` to perform unit tests.
+
+8. Write unit tests for your code and make them maintainable.

@@ -16,8 +16,11 @@ Usage:
     tokens = tokenizer.tokenize(sequence)
     sequence = tokenizer.detokenize(tokens)
 
-    batch_token_ids = tokenizer.encode(batch_seqeunces)
-    batch_sequences = tokenizer.decode(batch_token_ids)
+    token_ids = tokenizer.encode(seqeunce)
+    sequence = tokenizer.decode(token_ids)
+
+    batch_token_ids = tokenizer.batch_encode(batch_seqeunces)
+    batch_sequences = tokenizer.batch_decode(batch_token_ids)
 """
 
 # built-in modules
@@ -30,6 +33,7 @@ from __future__ import unicode_literals
 import re
 import unicodedata
 
+from typing import Iterable
 from typing import List
 
 # self-made modules
@@ -39,8 +43,6 @@ from lmp.tokenizer._base_dict_tokenizer import BaseDictTokenizer
 
 class WhitespaceDictTokenizer(BaseDictTokenizer):
     r"""Whitespace tokenizer using `dict` structure.
-
-    TODO: write perf for speed and memory test.
 
     Attributes:
         bos_token:
@@ -88,9 +90,16 @@ class WhitespaceDictTokenizer(BaseDictTokenizer):
             sequence:
                 Input sequence to be tokenized.
 
+        Raises:
+            TypeError:
+                When `sequence` is not instance of `str`.
+
         Returns:
             Tokens (characters) represent input sequence.
         """
+        # Type check.
+        if not isinstance(sequence, str):
+            raise TypeError('`sequence` must be instance of `str`.')
 
         # NFKC normalization.
         sequence = unicodedata.normalize('NFKC', sequence)
@@ -102,10 +111,15 @@ class WhitespaceDictTokenizer(BaseDictTokenizer):
         # Stripping both leading and trailing whitespace characters.
         sequence = sequence.strip()
 
+        # Return empty list when `sequence` is empty string. This is need since
+        # `re.split(r'\s+', '')` return `['']` instead of `[]`.
+        if not sequence:
+            return []
+
         # Perform tokenization.
         return re.split(r'\s+', sequence)
 
-    def detokenize(self, tokens: List) -> str:
+    def detokenize(self, tokens: Iterable[str]) -> str:
         r"""Convert tokens back to sequence.
 
         Since each tokens are originally tokenized by whitespace characters,
@@ -115,7 +129,21 @@ class WhitespaceDictTokenizer(BaseDictTokenizer):
             tokens:
                 Tokens to be converted.
 
+        Raises:
+            TypeError:
+                When `tokens` is not instance of `Iterable[str]`.
+
         Returns:
             Sequence converted from input tokens.
         """
+        # Type check.
+        if not isinstance(tokens, Iterable):
+            raise TypeError('`tokens` must be instance of `Iterable[str]`.')
+
+        tokens = list(tokens)
+
+        if any(map(lambda token: not isinstance(token, str), tokens)):
+            raise TypeError('`tokens` must be instance of `Iterable[str]`.')
+
+        # Perform detokenization.
         return ' '.join(tokens)
