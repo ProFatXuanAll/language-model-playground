@@ -18,6 +18,10 @@ from __future__ import unicode_literals
 import json
 import os
 
+from typing import Generator
+from typing import Tuple
+from typing import Union
+
 # 3rd-party modules
 
 import torch
@@ -110,45 +114,100 @@ class BaseConfig:
             seed: int = 1,
             tokenizer_class: str = 'char_dict'
     ):
+        # Type check.
         if not isinstance(batch_size, int):
             raise TypeError(
-                '`batch_size`\'s type must be `int`.'
-            )
-        if batch_size < 1:
-            raise ValueError(
-                '`batch_size` must be bigger than or equal to `1`.'
+                '`batch_size` must be instance of `int`.'
             )
         if not isinstance(checkpoint_step, int):
             raise TypeError(
-                '`checkpoint_step`\'s type must be `int`.'
+                '`checkpoint_step` must be instance of `int`.'
+            )
+        if not isinstance(d_emb, int):
+            raise TypeError(
+                '`d_emb` must be instance of `int`.'
+            )
+        if not isinstance(d_hid, int):
+            raise TypeError(
+                '`d_hid` must be instance of `int`.'
+            )
+        if not isinstance(dropout, float):
+            raise TypeError(
+                '`dropout` must be instance of `float`.'
+            )
+        if not isinstance(dataset, str):
+            raise TypeError(
+                '`dataset` must be instance of `str`.'
+            )
+        if not isinstance(experiment, str):
+            raise TypeError(
+                '`experiment` must be instance of `str`.'
+            )
+        if not isinstance(epoch, int):
+            raise TypeError(
+                '`epoch` must be instance of `int`.'
+            )
+        if not isinstance(is_uncased, bool):
+            raise TypeError(
+                '`is_uncased` must be instance of `bool`.'
+            )
+        if not isinstance(learning_rate, float):
+            raise TypeError(
+                '`learning_rate` must be instance of `float`.'
+            )
+        if not isinstance(max_norm, float):
+            raise TypeError(
+                '`max_norm` must be instance of `float`.'
+            )
+        if not isinstance(max_seq_len, int):
+            raise TypeError(
+                '`max_seq_len` must be instance of `int`.'
+            )
+        if not isinstance(min_count, int):
+            raise TypeError(
+                '`min_count` must be instance of `int`.'
+            )
+        if not isinstance(model_class, str):
+            raise TypeError(
+                '`model_class` must be instance of `str`.'
+            )
+        if not isinstance(num_linear_layers, int):
+            raise TypeError(
+                '`num_linear_layers` must be instance of `int`.'
+            )
+        if not isinstance(num_rnn_layers, int):
+            raise TypeError(
+                '`num_rnn_layers` must be instance of `int`.'
+            )
+        if not isinstance(optimizer_class, str):
+            raise TypeError(
+                '`optimizer_class` must be instance of `str`.'
+            )
+        if not isinstance(seed, int):
+            raise TypeError(
+                '`seed` must be instance of `int`.'
+            )
+        if not isinstance(tokenizer_class, str):
+            raise TypeError(
+                '`tokenizer_class` must be instance of `str`.'
+            )
+
+        # Value Check.
+        if batch_size < 1:
+            raise ValueError(
+                '`batch_size` must be bigger than or equal to `1`.'
             )
         if checkpoint_step < 1:
             raise ValueError(
                 '`checkpoint_step` must be bigger than or equal to `1`.'
             )
-        if not isinstance(d_emb, int):
-            raise TypeError(
-                '`d_emb`\'s type must be `int`.'
-            )
         if d_emb < 1:
             raise ValueError(
                 '`d_emb` must be bigger than or equal to `1`.'
             )
-        if not isinstance(d_hid, int):
-            raise TypeError(
-                '`d_hid`\'s type must be `int`.'
-            )
         if d_hid < 1:
             raise ValueError(
                 '`d_hid` must be bigger than or equal to `1`.'
-            )
-        if not isinstance(dropout, float):
-            raise TypeError(
-                '`dropout`\'s type must be `float`.'
-            )
-        if not isinstance(dataset, str):
-            raise TypeError(
-                '`dataset`\'s type must be `str`.'
             )
         if not dataset:
             raise ValueError(
@@ -158,93 +217,41 @@ class BaseConfig:
             raise ValueError(
                 '`dropout` must range from `0` to `1`.'
             )
-        if not isinstance(experiment, str):
-            raise TypeError(
-                '`experiment`\'s type must be `str`.'
-            )
         if not experiment:
             raise ValueError(
                 '`experiment` must not be empty.'
-            )
-        if not isinstance(epoch, int):
-            raise TypeError(
-                '`epoch`\'s type must be `int`.'
             )
         if epoch < 1:
             raise ValueError(
                 '`epoch` must be bigger than or equal to `1`.'
             )
-        if not isinstance(is_uncased, bool):
-            raise TypeError(
-                '`is_uncased`\'s type must be `bool`.'
-            )
-        if not isinstance(learning_rate, float):
-            raise TypeError(
-                '`learning_rate`\'s type must be `float`.'
-            )
         if learning_rate < 0:
             raise ValueError(
                 '`learning_rate` must be bigger than `0`.'
-            )
-        if not isinstance(max_norm, float):
-            raise TypeError(
-                '`max_norm`\'s type must be `float`.'
             )
         if max_norm < 0:
             raise ValueError(
                 '`max_norm` must be bigger than `0`.'
             )
-        if not isinstance(max_seq_len, int):
-            raise TypeError(
-                '`max_seq_len`\'s type must be `int`.'
-            )
         if max_seq_len <= 0:
             raise ValueError(
                 '`max_seq_len` must be bigger than `0`.'
-            )
-        if not isinstance(min_count, int):
-            raise TypeError(
-                '`min_count`\'s type must be `int`.'
             )
         if min_count < 1:
             raise ValueError(
                 '`min_count` must be bigger than or equal to `1`.'
             )
-        if not isinstance(model_class, str):
-            raise TypeError(
-                '`model_class`\'s type must be `str`.'
-            )
-        if not isinstance(num_linear_layers, int):
-            raise TypeError(
-                '`num_linear_layers`\'s type must be `int`.'
-            )
         if num_linear_layers < 1:
             raise ValueError(
                 '`num_linear_layers` must be bigger than or equal to `1`.'
-            )
-        if not isinstance(num_rnn_layers, int):
-            raise TypeError(
-                '`num_rnn_layers`\'s type must be `int`.'
             )
         if num_rnn_layers < 1:
             raise ValueError(
                 '`num_rnn_layers` must be bigger than `1`.'
             )
-        if not isinstance(optimizer_class, str):
-            raise TypeError(
-                '`optimizer_class`\'s type must be `str`.'
-            )
-        if not isinstance(seed, int):
-            raise TypeError(
-                '`seed`\'s type must be `int`.'
-            )
         if seed < 0:
             raise ValueError(
                 '`seed` must be bigger than `0`.'
-            )
-        if not isinstance(tokenizer_class, str):
-            raise TypeError(
-                '`tokenizer_class`\'s type must be `str`.'
             )
 
         self.batch_size = batch_size
@@ -286,7 +293,7 @@ class BaseConfig:
         """
 
         if experiment is None or not isinstance(experiment, str):
-            raise TypeError('`experiment` must be type `str`.')
+            raise TypeError('`experiment` must be instance of `str`.')
 
         file_path = os.path.join(
             lmp.path.DATA_PATH,
@@ -300,7 +307,9 @@ class BaseConfig:
         with open(file_path, 'r', encoding='utf-8') as input_file:
             return cls(**json.load(input_file))
 
-    def __iter__(self):
+    def __iter__(self) -> Generator[
+            Tuple[str, Union[float, int, str]], None, None
+    ]:
         r"""Make instance attributes iterable.
 
         Yields:
@@ -349,7 +358,7 @@ class BaseConfig:
             )
 
     @property
-    def device(self):
+    def device(self) -> torch.device:
         r"""Get running model device.
 
         If `torch.cuda.is_available() == True`, then run model on GPU.
