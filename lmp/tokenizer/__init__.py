@@ -27,3 +27,5 @@ from lmp.tokenizer._char_dict_tokenizer import CharDictTokenizer
 from lmp.tokenizer._char_list_tokenizer import CharListTokenizer
 from lmp.tokenizer._whitespace_dict_tokenizer import WhitespaceDictTokenizer
 from lmp.tokenizer._whitespace_list_tokenizer import WhitespaceListTokenizer
+from lmp.tokenizer._nltk_dict_tokenizer import NltkDictTokenizer
+from lmp.tokenizer._nltk_list_tokenizer import NltkListTokenizer
