@@ -88,7 +88,7 @@ python run_perplexity_evaluation.py --experiment 1 --checkpoint 500 --dataset ne
 
 11. 試著使用不同的超參數或更換模型並使用 `run_train.py` 重新訓練。接著使用 `run_generate.py` 給予相同 `begin_of_sequence` 進行生成並比較生成結果之不同。
 
-12. 指定訓練模型進行詞向量的句法及語意測試(目前只有英文測試資料集)。
+12. 指定訓練模型進行詞向量的句法及語意測試(目前只有英文測試資料集，使用前請先將word-test.v1.txt移動到指定資料夾下)。
 ```sh
 # 使用第 500 步的存檔點進行測試
 python run_syntatic_and_semantic_test.py --experiment 2 --checkpoint 500
@@ -196,7 +196,7 @@ python run_perplexity_evaluation.py --experiment 1 --checkpoint 500 --dataset ne
 
 11. Try using different hyperparameters or change model, then use `run_train.py` to perform training as above example. Then run `run_generate.py` to compare generated results given exactly same `begin_of_sequence`.
 
-12. syntatic and semantic test of word embedding using model checkpoints(only english test dataset)
+12. syntatic and semantic test of word embedding using model checkpoints(only english test dataset.Please move word-test.v1.txt to the specified folder before use)
 ```sh
 # Using checkpoint 500 to test
 python run_syntatic_and_semantic_test.py --experiment 2 --checkpoint 500
