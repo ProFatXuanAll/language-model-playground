@@ -12,6 +12,7 @@ from __future__ import unicode_literals
 
 # self-made modules
 
+import lmp.analogy_dataset
 import lmp.config
 import lmp.dataset
 import lmp.model
