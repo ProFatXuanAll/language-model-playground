@@ -16,10 +16,9 @@ import abc
 import json
 import os
 
-from typing import Dict
+from typing import Generator
 from typing import Iterable
 from typing import List
-from typing import Union
 
 # self-made modules
 
@@ -57,25 +56,29 @@ class BaseTokenizer:
             replaced by unknown token.
         vocab_size:
             Vocabulary size of tokenizer.
-    """
 
+    Raises:
+        TypeError:
+            When `is_uncased` is not instance of `bool`.
+    """
     bos_token: str = '[BOS]'
     eos_token: str = '[EOS]'
     pad_token: str = '[PAD]'
     unk_token: str = '[UNK]'
 
     def __init__(self, is_uncased: bool = False):
+        # Type check.
+        if not isinstance(is_uncased, bool):
+            raise TypeError('`is_uncased` must be instance of `bool`.')
+
         self.is_uncased = is_uncased
+
+        # Any class inherit `BaseTokenizer` must define instance attribute
+        # `token_to_id` in method `reset_vocab`.
         self.reset_vocab()
 
-        # Any class inherit `BaseTokenizer` must define `self.token_to_id` in
-        # `reset_vocab`. Set this to `NONE` indicate `self.token_to_id` still
-        # not implemented.
-        if 'token_to_id' not in self.__dict__:
-            self.token_to_id: Union[List, Dict, None] = None
-
     @staticmethod
-    def special_tokens():
+    def special_tokens() -> Generator[str, None, None]:
         r"""Iterating special tokens.
 
         This static method must be updated when adding more special tokens.
@@ -89,7 +92,7 @@ class BaseTokenizer:
         yield BaseTokenizer.unk_token
 
     @abc.abstractmethod
-    def reset_vocab(self):
+    def reset_vocab(self) -> None:
         r"""Reset vocabulary to initial state.
 
         This method must declare `self.token_to_id`.
@@ -109,26 +112,41 @@ class BaseTokenizer:
                 Name of the existing experiment.
 
         Raises:
-            ValueError:
-                If `experiment` is not type `str`.
             FileNotFoundError:
                 If directory `experiment` or file `experiment/tokenizer.json`
                 does not exist.
             JSONDecodeError:
                 If tokenizer is not in JSON format.
+            TypeError:
+                When `experiment` is not instance of `str`.
+            ValueError:
+                When `experiment` is empty string.
         """
         raise NotImplementedError(
             f'In class `{cls.__name__}`: '
             'function `load` not implemented yet.'
         )
 
-    def save(self, experiment: str):
+    def save(self, experiment: str) -> None:
         r"""Save tokenizer into JSON file.
 
         Args:
             experiment:
                 Name of the current experiment.
+
+        Raises:
+            TypeError:
+                When `experiment` is not instance of `str`.
+            ValueError:
+                When `experiment` is empty string.
         """
+        # Type check.
+        if not isinstance(experiment, str):
+            raise TypeError('`experiment` must be instance of `str`.')
+
+        # Value check.
+        if not experiment:
+            raise ValueError('`experiment` must not be empty.')
 
         file_dir = os.path.join(
             lmp.path.DATA_PATH,
@@ -144,7 +162,10 @@ class BaseTokenizer:
 
         with open(file_path, 'w', encoding='utf8') as output_file:
             json.dump(
-                self.token_to_id,
+                {
+                    'is_uncased': self.is_uncased,
+                    'token_to_id': self.token_to_id,
+                },
                 output_file,
                 ensure_ascii=False
             )
@@ -196,7 +217,7 @@ class BaseTokenizer:
 
     def batch_sequences_to_tokens(
             self,
-            batch_sequences: List[str]
+            batch_sequences: Iterable[str]
     ) -> List[List[str]]:
         r"""Perform tokenization on batch of sequences.
 
@@ -211,7 +232,7 @@ class BaseTokenizer:
 
     def batch_tokens_to_sequences(
             self,
-            batch_tokens: List[List[str]]
+            batch_tokens: Iterable[Iterable[str]]
     ) -> List[str]:
         r"""Convert batch of tokens back to sequences.
 
@@ -260,7 +281,7 @@ class BaseTokenizer:
 
     def convert_tokens_to_ids(
             self,
-            tokens: List[str]
+            tokens: Iterable[str]
     ) -> List[int]:
         r"""Perform token id look up on input tokens.
 
@@ -278,7 +299,7 @@ class BaseTokenizer:
 
     def convert_ids_to_tokens(
             self,
-            token_ids: List[int]
+            token_ids: Iterable[int]
     ) -> List[str]:
         r"""Perform token id inverse look up on input tokens' ids.
 
@@ -296,7 +317,7 @@ class BaseTokenizer:
 
     def batch_tokens_to_ids(
             self,
-            batch_tokens: List[List[str]]
+            batch_tokens: Iterable[Iterable[str]]
     ) -> List[List[int]]:
         r"""Perform token id look up on batch of tokens.
 
@@ -314,7 +335,7 @@ class BaseTokenizer:
 
     def batch_ids_to_tokens(
             self,
-            batch_token_ids: List[List[int]]
+            batch_token_ids: Iterable[Iterable[int]]
     ) -> List[List[str]]:
         r"""Perform token id inverse look up on batch of tokens' ids.
 
@@ -332,7 +353,7 @@ class BaseTokenizer:
 
     def batch_sequences_to_ids(
             self,
-            batch_sequences: List[str]
+            batch_sequences: Iterable[str]
     ) -> List[List[int]]:
         r"""Perform token id look up on batch of sequences.
 
@@ -349,7 +370,7 @@ class BaseTokenizer:
 
     def batch_ids_to_sequences(
             self,
-            batch_token_ids: List[List[int]]
+            batch_token_ids: Iterable[Iterable[int]]
     ) -> List[str]:
         r"""Perform token id inverse look up on batch of sequences.
 
@@ -368,7 +389,7 @@ class BaseTokenizer:
     def encode(
             self,
             sequence: str,
-            max_seq_len: int = 0
+            max_seq_len: int = -1
     ) -> List[int]:
         r"""Encode sequence into token ids.
 
@@ -397,7 +418,7 @@ class BaseTokenizer:
     @abc.abstractmethod
     def decode(
             self,
-            token_ids: List[int],
+            token_ids: Iterable[int],
             remove_special_tokens: bool = False
     ) -> str:
         r"""Decode token ids into sequence.
@@ -422,8 +443,8 @@ class BaseTokenizer:
     @abc.abstractmethod
     def batch_encode(
             self,
-            batch_sequences: List[str],
-            max_seq_len: int = 0
+            batch_sequences: Iterable[str],
+            max_seq_len: int = -1
     ) -> List[List[int]]:
         r"""Encode batch of sequence into batch of token ids.
 
@@ -451,7 +472,7 @@ class BaseTokenizer:
 
     def batch_decode(
             self,
-            batch_token_ids: List[List[int]],
+            batch_token_ids: Iterable[Iterable[int]],
             remove_special_tokens: bool = False
     ) -> List[str]:
         r"""Decode batch of token ids into batch of sequence.
@@ -475,9 +496,11 @@ class BaseTokenizer:
         """
         # Type check.
         if not isinstance(batch_token_ids, List):
-            raise TypeError('`batch_token_ids` must be instance of `List[List[int]]`.')
+            raise TypeError(
+                '`batch_token_ids` must be instance of `List[List[int]]`.')
         if not isinstance(remove_special_tokens, bool):
-            raise TypeError('`remove_special_tokens` must be instance of `bool`.')
+            raise TypeError(
+                '`remove_special_tokens` must be instance of `bool`.')
 
         return [
             self.decode(token_ids, remove_special_tokens=remove_special_tokens)
@@ -487,7 +510,7 @@ class BaseTokenizer:
     @abc.abstractmethod
     def build_vocab(
             self,
-            batch_sequences: List[str],
+            batch_sequences: Iterable[str],
             min_count: int = 1
     ) -> None:
         """Build vocabulary for tokenizer.

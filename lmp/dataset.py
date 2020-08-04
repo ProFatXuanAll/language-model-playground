@@ -45,6 +45,11 @@ class BaseDataset(torch.utils.data.Dataset):
         super().__init__()
         self.batch_sequences = batch_sequences
 
+    def __iter__(self):
+        r"""Iterate each sample in the dataset."""
+        for sequence in self.batch_sequences:
+            yield sequence
+
     def __len__(self) -> int:
         r"""Dataset size."""
         return len(self.batch_sequences)
@@ -92,7 +97,9 @@ class BaseDataset(torch.utils.data.Dataset):
             """
             batch_token_ids = torch.LongTensor(
                 tokenizer.batch_encode(
-                    batch_sequences, max_seq_len=max_seq_len)
+                    batch_sequences,
+                    max_seq_len=max_seq_len
+                )
             )
 
             # Construct sample following language model:

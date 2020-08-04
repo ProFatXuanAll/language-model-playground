@@ -68,17 +68,17 @@ class BaseDictTokenizer(BaseTokenizer):
             replaced by unknown token.
         vocab_size:
             Vocabulary size of tokenizer.
+
+    Raises:
+        TypeError:
+            When `is_uncased` is not instance of `bool`.
     """
 
-    def __init__(self, is_uncased: bool = False):
-        super().__init__(is_uncased=is_uncased)
-
-    def reset_vocab(self):
+    def reset_vocab(self) -> None:
         r"""Reset vocabulary to initial state.
 
         Using `dict` structure to implement token look up.
         """
-
         # Declare vocabulary data structure with `dict`.
         # `token_to_id` serves as token's id look up.
         # and `id_to_token` serves as inverse look up.
@@ -99,18 +99,23 @@ class BaseDictTokenizer(BaseTokenizer):
                 Name of the existing experiment.
 
         Raises:
-            ValueError:
-                If `experiment` is not type `str`.
             FileNotFoundError:
                 If directory `experiment` or file `experiment/tokenizer.json`
                 does not exist.
             JSONDecodeError:
                 If tokenizer is not in JSON format.
+            TypeError:
+                When `experiment` is not instance of `str`.
+            ValueError:
+                When `experiment` is empty string.
         """
-        self = cls()
+        # Type check.
+        if not isinstance(experiment, str):
+            raise TypeError('`experiment` must be instance of `str`.')
 
-        if experiment is None or not isinstance(experiment, str):
-            raise TypeError('`experiment` must be type `str`.')
+        # Value check.
+        if not experiment:
+            raise ValueError('`experiment` must not be empty.')
 
         file_path = os.path.join(
             lmp.path.DATA_PATH,
@@ -122,8 +127,11 @@ class BaseDictTokenizer(BaseTokenizer):
             raise FileNotFoundError(f'file {file_path} does not exist.')
 
         with open(file_path, 'r', encoding='utf-8') as input_file:
-            self.__dict__['token_to_id'] = json.load(input_file)
-        self.__dict__['id_to_token'] = {
+            obj = json.load(input_file)
+
+        self = cls(is_uncased=obj['is_uncased'])
+        self.token_to_id = obj['token_to_id']
+        self.id_to_token = {
             v: i for i, v in self.token_to_id.items()
         }
 
@@ -181,10 +189,17 @@ class BaseDictTokenizer(BaseTokenizer):
             token:
                 Look up input token.
 
+        Raises:
+            TypeError:
+                When `token` is not instance of `str`.
+
         Returns:
             Token's id look up result. If `token` does not exist in tokenizer's
             vocabulary, then return unknown word token's id.
         """
+        if not isinstance(token, str):
+            raise TypeError('`token` must be instance of `str`.')
+
         try:
             return self.token_to_id[token]
         except KeyError:
@@ -197,10 +212,17 @@ class BaseDictTokenizer(BaseTokenizer):
             token_id:
                 Inverse look up token's id.
 
+        Raises:
+            TypeError:
+                When `token_id` is not instance of `int`.
+
         Returns:
             Token id's inverse lookup result. If `token_id` does not exist in
             tokenizer's vocabulary, then return unknown word token.
         """
+        if not isinstance(token_id, int):
+            raise TypeError('`token_id` must be instance of `int`.')
+
         try:
             return self.id_to_token[token_id]
         except KeyError:
@@ -266,7 +288,7 @@ class BaseDictTokenizer(BaseTokenizer):
 
     def decode(
             self,
-            token_ids: List[int],
+            token_ids: Iterable[int],
             remove_special_tokens: bool = False
     ) -> str:
         r"""Decode token ids into sequence.
@@ -292,7 +314,8 @@ class BaseDictTokenizer(BaseTokenizer):
         if not isinstance(token_ids, List):
             raise TypeError('`token_ids` must be instance of `List[int]`.')
         if not isinstance(remove_special_tokens, bool):
-            raise TypeError('`remove_special_tokens` must be instance of `bool`.')
+            raise TypeError(
+                '`remove_special_tokens` must be instance of `bool`.')
 
         if remove_special_tokens:
             # Get special tokens' ids except unknown token.
@@ -318,7 +341,7 @@ class BaseDictTokenizer(BaseTokenizer):
 
     def batch_encode(
             self,
-            batch_sequences: List[str],
+            batch_sequences: Iterable[str],
             max_seq_len: int = -1
     ) -> List[List[int]]:
         r"""Encode batch of sequence into batch of token ids.
@@ -347,7 +370,8 @@ class BaseDictTokenizer(BaseTokenizer):
         """
         # Type check.
         if not isinstance(batch_sequences, List):
-            raise TypeError('`batch_sequences` must be instance of `List[str]`.')
+            raise TypeError(
+                '`batch_sequences` must be instance of `List[str]`.')
         if not isinstance(max_seq_len, int):
             raise TypeError('`max_seq_len` must be instance of `int`.')
 
@@ -382,7 +406,7 @@ class BaseDictTokenizer(BaseTokenizer):
 
     def build_vocab(
             self,
-            batch_sequences: List[str],
+            batch_sequences: Iterable[str],
             min_count: int = 1
     ) -> None:
         """Build vocabulary for tokenizer.

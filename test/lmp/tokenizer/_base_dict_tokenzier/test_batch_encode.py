@@ -23,6 +23,7 @@ from typing import List
 
 from lmp.tokenizer import CharDictTokenizer
 
+
 class TestBatchEncode(unittest.TestCase):
     r"""Test Case for `lmp.tokenizer.CharDictTokenizer.batch_encode`."""
 
@@ -125,7 +126,8 @@ class TestBatchEncode(unittest.TestCase):
 
         for batch_sequences in examples:
             for tokenizer in self.tokenizers:
-                batch_token_ids = tokenizer.batch_encode(batch_sequences=batch_sequences)
+                batch_token_ids = tokenizer.batch_encode(
+                    batch_sequences=batch_sequences)
                 self.assertIsInstance(batch_token_ids, list, msg=msg)
                 for token_ids in batch_token_ids:
                     self.assertIsInstance(token_ids, list, msg=msg)
@@ -139,7 +141,7 @@ class TestBatchEncode(unittest.TestCase):
             'Return result must include [BOS] id and [EOS] id for \
                 each tokens_ids.'
         )
-        examples= (
+        examples = (
             (
                 [
                     'Hello',
@@ -169,7 +171,7 @@ class TestBatchEncode(unittest.TestCase):
             'Return result must make sure  each `List[int]`\'s length must not \
             exceed `max_seq_len`.'
         )
-        examples= (
+        examples = (
             (
                 [
                     'Hello',
@@ -199,7 +201,7 @@ class TestBatchEncode(unittest.TestCase):
         msg = (
             'Return result must pad each `List[int]` the length to `max_seq_len`.'
         )
-        examples= (
+        examples = (
             (
                 [
                     'Hello',
@@ -221,6 +223,7 @@ class TestBatchEncode(unittest.TestCase):
                 ans_tokens_ids,
                 msg=msg
             )
+
 
 if __name__ == '__main__':
     unittest.main()

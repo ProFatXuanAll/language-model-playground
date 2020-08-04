@@ -51,11 +51,13 @@ class TestTokenize(unittest.TestCase):
                     inspect.Parameter(
                         name='self',
                         kind=inspect.Parameter.POSITIONAL_OR_KEYWORD,
+                        default=inspect.Parameter.empty
                     ),
                     inspect.Parameter(
                         name='sequence',
                         kind=inspect.Parameter.POSITIONAL_OR_KEYWORD,
-                        annotation=str
+                        annotation=str,
+                        default=inspect.Parameter.empty
                     )
                 ],
                 return_annotation=List[str]
@@ -74,11 +76,11 @@ class TestTokenize(unittest.TestCase):
 
         for invalid_input in examples:
             for tokenizer in self.tokenizers:
-                with self.assertRaises(TypeError, msg=msg1) as cm:
+                with self.assertRaises(TypeError, msg=msg1) as ctx_man:
                     tokenizer.tokenize(invalid_input)
 
                 self.assertEqual(
-                    cm.exception.args[0],
+                    ctx_man.exception.args[0],
                     '`sequence` must be instance of `str`.',
                     msg=msg2
                 )

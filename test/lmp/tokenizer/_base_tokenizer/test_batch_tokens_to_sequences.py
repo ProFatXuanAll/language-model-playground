@@ -1,8 +1,8 @@
-r"""Test `lmp.tokenizer.BaseListTokenizer.detokenize`.
+r"""Test `lmp.tokenizer.BaseTokenizer.batch_tokens_to_sequences`.
 
 Usage:
     python -m unittest \
-        test/lmp/tokenizer/_base_list_tokenizer/test_detokenize.py
+        test/lmp/tokenizer/_base_tokenizer/test_batch_tokens_to_sequences.py
 """
 
 # built-in modules
@@ -13,8 +13,6 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import inspect
-import gc
-import math
 import unittest
 
 from typing import Iterable
@@ -22,18 +20,18 @@ from typing import List
 
 # self-made modules
 
-from lmp.tokenizer import BaseListTokenizer
+from lmp.tokenizer import BaseTokenizer
 
 
-class TestDetokenize(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.BaseListTokenizer.detokenize`."""
+class TestBatchTokensToSequences(unittest.TestCase):
+    r"""Test Case for `lmp.tokenizer.BaseTokenizer.batch_tokens_to_sequences`."""
 
     def test_signature(self):
         r"""Ensure signature consistency."""
         msg = 'Inconsistent method signature.'
 
         self.assertEqual(
-            inspect.signature(BaseListTokenizer.detokenize),
+            inspect.signature(BaseTokenizer.batch_tokens_to_sequences),
             inspect.Signature(
                 parameters=[
                     inspect.Parameter(
@@ -42,13 +40,13 @@ class TestDetokenize(unittest.TestCase):
                         default=inspect.Parameter.empty
                     ),
                     inspect.Parameter(
-                        name='tokens',
+                        name='batch_tokens',
                         kind=inspect.Parameter.POSITIONAL_OR_KEYWORD,
-                        annotation=Iterable[str],
+                        annotation=Iterable[Iterable[str]],
                         default=inspect.Parameter.empty
                     ),
                 ],
-                return_annotation=str
+                return_annotation=List[str]
             ),
             msg=msg
         )
@@ -64,8 +62,8 @@ class TestDetokenize(unittest.TestCase):
 
         # pylint: disable=W0223
         # pylint: disable=W0231
-        class SubClassTokenizer(BaseListTokenizer):
-            r"""Intented to not implement `detokenize`."""
+        class SubClassTokenizer(BaseTokenizer):
+            r"""Intented to not implement `batch_tokens_to_sequences`."""
 
             def reset_vocab(self):
                 pass
@@ -74,7 +72,9 @@ class TestDetokenize(unittest.TestCase):
 
         for is_uncased in examples:
             with self.assertRaises(NotImplementedError, msg=msg1) as ctx_man:
-                SubClassTokenizer(is_uncased=is_uncased).detokenize('')
+                SubClassTokenizer(
+                    is_uncased=is_uncased
+                ).batch_tokens_to_sequences([['']])
 
             self.assertEqual(
                 ctx_man.exception.args[0],

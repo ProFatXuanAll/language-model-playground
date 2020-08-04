@@ -1,8 +1,8 @@
-r"""Test `lmp.tokenizer.CharDictTokenizer.detokenize`.
+r"""Test `lmp.tokenizer.CharDictTokenizer.convert_id_to_token`.
 
 Usage:
     python -m unittest \
-        test/lmp/tokenizer/_char_dict_tokenizer/test_detokenize.py
+        test/lmp/tokenizer/_base_dict_tokenizer/convert_id_to_token.py
 """
 
 # built-in modules
@@ -17,15 +17,13 @@ import gc
 import math
 import unittest
 
-from typing import Iterable
-
 # self-made modules
 
 from lmp.tokenizer import CharDictTokenizer
 
 
-class TestDetokenize(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.CharDictTokenizer.detokenize`."""
+class TestConvertIdToToken(unittest.TestCase):
+    r"""Test Case for `lmp.tokenizer.CharDictTokenizer.convert_id_to_token`."""
 
     def setUp(self):
         r"""Setup both cased and uncased tokenizer instances."""
@@ -45,7 +43,7 @@ class TestDetokenize(unittest.TestCase):
         msg = 'Inconsistent method signature.'
 
         self.assertEqual(
-            inspect.signature(CharDictTokenizer.detokenize),
+            inspect.signature(CharDictTokenizer.convert_id_to_token),
             inspect.Signature(
                 parameters=[
                     inspect.Parameter(
@@ -54,71 +52,82 @@ class TestDetokenize(unittest.TestCase):
                         default=inspect.Parameter.empty
                     ),
                     inspect.Parameter(
-                        name='tokens',
+                        name='token_id',
                         kind=inspect.Parameter.POSITIONAL_OR_KEYWORD,
-                        annotation=Iterable[str],
+                        annotation=int,
                         default=inspect.Parameter.empty
-                    )
+                    ),
                 ],
                 return_annotation=str
             ),
             msg=msg
         )
 
-    def test_invalid_input(self):
+    def test_invalid_input_token_id(self):
         r"""Raise `TypeError` when input is invalid."""
         msg1 = 'Must raise `TypeError` when input is invalid.'
         msg2 = 'Inconsistent error message.'
         examples = (
-            0, 1, -1, 0.0, 1.0, math.nan, math.inf, True, False,
-            (1, 2, 3), [1, 2, 3], {1, 2, 3}, None,
+            0.0, 1.0, math.nan, math.inf, b'',
+            [], (), {}, set(), object(), lambda x: x, type, None,
         )
 
         for invalid_input in examples:
             for tokenizer in self.tokenizers:
-                with self.assertRaises(TypeError, msg=msg1) as ctx_man:
-                    tokenizer.detokenize(invalid_input)
+                with self.assertRaises(TypeError, msg=msg1) as cxt_man:
+                    tokenizer.convert_id_to_token(token_id=invalid_input)
 
                 self.assertEqual(
-                    ctx_man.exception.args[0],
-                    '`tokens` must be instance of `Iterable[str]`.',
+                    cxt_man.exception.args[0],
+                    '`token_id` must be instance of `int`.',
                     msg=msg2
                 )
 
-    def test_expected_return(self):
-        r"""Return expected strings."""
-        msg = 'Inconsistent detokenization result.'
+    def test_return_type(self):
+        r"""Return `str`."""
+        msg = 'Must return `str`.'
+        examples = (
+            0, 1, 2,
+        )
+
+        for token_id in examples:
+            for tokenizer in self.tokenizers:
+                token = tokenizer.convert_id_to_token(token_id=token_id)
+                self.assertIsInstance(token, str, msg=msg)
+
+    def test_convert_special_and_unknown_id_to_token(self):
+        r"""Return `str`."""
+        msg = 'Must return token str.'
         examples = (
             (
-                ['H', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', '!'],
-                'Hello world!'
+                0,
+                '[BOS]'
             ),
             (
-                [],
-                ''
-            )
+                1,
+                '[EOS]'
+            ),
+            (
+                2,
+                '[PAD]'
+            ),
+            (
+                3,
+                '[UNK]'
+            ),
+            (
+                6,
+                '[UNK]'
+            ),
         )
 
-        for tokens, ans_sequence in examples:
+        for token_id, ans_token in examples:
             for tokenizer in self.tokenizers:
-                out_sequence = tokenizer.detokenize(tokens)
-                self.assertIsInstance(out_sequence, str, msg=msg)
-                self.assertEqual(out_sequence, ans_sequence, msg=msg)
-
-    def test_case_insensitive(self):
-        r"""Detokenize does not consider cases."""
-        msg = 'Inconsistent detokenization result.'
-        examples = (
-            ['H', 'e', 'L', 'l', 'O', ' ', 'W', 'o', 'R', 'l', 'D', '!'],
-            ['h', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', '!'],
-        )
-
-        for tokens in examples:
-            self.assertEqual(
-                self.cased_tokenizer.detokenize(tokens),
-                self.uncased_tokenizer.detokenize(tokens),
-                msg=msg
-            )
+                self.assertEqual(
+                    tokenizer.convert_id_to_token(token_id=token_id),
+                    ans_token,
+                    msg=msg
+                )
 
 
 if __name__ == '__main__':

@@ -21,6 +21,7 @@ import torch.nn
 
 from lmp.model._base_res_rnn_block import BaseResRNNBlock
 
+
 class ResLSTMBlock(BaseResRNNBlock):
     r"""Residual block with LSTM layers.
 
@@ -32,6 +33,7 @@ class ResLSTMBlock(BaseResRNNBlock):
         dropout:
             Dropout probability on all layers out (except output layer).
     """
+
     def __init__(
         self,
         d_in: int,
@@ -52,4 +54,3 @@ class ResLSTMBlock(BaseResRNNBlock):
             dropout=dropout,
             batch_first=True
         )
-
