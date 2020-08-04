@@ -419,7 +419,18 @@ class BaseDictTokenizer(BaseTokenizer):
             min_count:
                 Minimum of token's frequence. If token's frequence is smaller
                 than `min_count`, then discard that token.
+         Raises:
+            TypeError:
+                When `batch_sequences` is not instance of `List[str]`.
+                When `min_count` is not instance of `int`.
         """
+        # Type check.
+        if not isinstance(batch_sequences, List):
+            raise TypeError(
+                '`batch_sequences` must be instance of `List[str]`.')
+        if not isinstance(min_count, int):
+            raise TypeError('`min_count` must be instance of `int`.')
+
         # Convert upper cases into lower cases.
         if self.is_uncased:
             batch_sequences = [
