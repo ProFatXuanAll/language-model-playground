@@ -17,6 +17,7 @@ from __future__ import unicode_literals
 import torch
 import torch.nn
 
+
 class BaseResRNNBlock(torch.nn.Module):
     r"""Residual block with RNN layers.
 
@@ -30,6 +31,7 @@ class BaseResRNNBlock(torch.nn.Module):
         dropout:
             Dropout probability on all layers out (except output layer).
     """
+
     def __init__(
         self,
         d_in: int,
@@ -53,7 +55,6 @@ class BaseResRNNBlock(torch.nn.Module):
 
         self.dropout = torch.nn.Dropout(dropout)
         self.act_fn = torch.nn.ReLU()
-
 
     def forward(self, x: torch.Tensor):
         ht, _ = self.rnn_layer(x)

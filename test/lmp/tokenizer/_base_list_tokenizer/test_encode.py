@@ -23,6 +23,7 @@ from typing import List
 
 from lmp.tokenizer import CharListTokenizer
 
+
 class TestEncode(unittest.TestCase):
     r"""Test Case for `lmp.tokenizer.CharListTokenizer.encode`."""
 
@@ -101,7 +102,8 @@ class TestEncode(unittest.TestCase):
         for invalid_input in examples:
             for tokenizer in self.tokenizers:
                 with self.assertRaises(TypeError, msg=msg1) as cxt_man:
-                    tokenizer.encode(sequence='Hello world', max_seq_len=invalid_input)
+                    tokenizer.encode(sequence='Hello world',
+                                     max_seq_len=invalid_input)
 
                 self.assertEqual(
                     cxt_man.exception.args[0],
@@ -129,7 +131,7 @@ class TestEncode(unittest.TestCase):
         msg = (
             'Return result must include [BOS] id and [EOS] id.'
         )
-        examples= (
+        examples = (
             (
                 'Hello',
                 [0, 3, 3, 3, 3, 3, 1]
@@ -180,6 +182,7 @@ class TestEncode(unittest.TestCase):
                 ans_token_ids,
                 msg=msg
             )
+
 
 if __name__ == '__main__':
     unittest.main()

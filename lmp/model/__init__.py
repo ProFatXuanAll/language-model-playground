@@ -28,4 +28,3 @@ from lmp.model._res_gru_block import ResGRUBlock
 from lmp.model._res_lstm_block import ResLSTMBlock
 from lmp.model._residual_gru_model import ResidualGRUModel
 from lmp.model._residual_lstm_model import ResidualLSTMModel
-

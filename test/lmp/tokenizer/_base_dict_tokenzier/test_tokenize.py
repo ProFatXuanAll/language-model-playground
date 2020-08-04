@@ -82,5 +82,6 @@ class TestTokenize(unittest.TestCase):
                 msg=msg2
             )
 
+
 if __name__ == '__main__':
     unittest.main()

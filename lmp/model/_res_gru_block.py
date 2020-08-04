@@ -21,6 +21,7 @@ import torch.nn
 
 from lmp.model._base_res_rnn_block import BaseResRNNBlock
 
+
 class ResGRUBlock(BaseResRNNBlock):
     r"""Residual block with GRU layers.
 
@@ -32,6 +33,7 @@ class ResGRUBlock(BaseResRNNBlock):
         dropout:
             Dropout probability on all layers out (except output layer).
     """
+
     def __init__(
         self,
         d_in: int,

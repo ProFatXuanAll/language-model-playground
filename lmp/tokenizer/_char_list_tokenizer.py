@@ -70,10 +70,11 @@ class CharListTokenizer(BaseListTokenizer):
             replaced by unknown token.
         vocab_size:
             Vocabulary size of tokenizer.
-    """
 
-    def __init__(self, is_uncased: bool = False):
-        super().__init__(is_uncased=is_uncased)
+    Raises:
+        TypeError:
+            When `is_uncased` is not instance of `bool`.
+    """
 
     def tokenize(self, sequence: str) -> List[str]:
         r"""Perform tokenization on input sequence.
