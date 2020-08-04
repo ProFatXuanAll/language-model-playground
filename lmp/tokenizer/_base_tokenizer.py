@@ -465,9 +465,19 @@ class BaseTokenizer:
                 tokens except unknown word's token.
                 See class docstring for more details on special tokens.
 
+        Raises:
+            TypeError:
+                When `batch_token_ids` is not instance of `List[List[int]]`.
+                When `remove_special_tokens` is not instance of `bool`.
+
         Returns:
             Batch of sequence decoded from `batch_token_ids`.
         """
+        # Type check.
+        if not isinstance(batch_token_ids, List):
+            raise TypeError('`batch_token_ids` must be instance of `List[List[int]]`.')
+        if not isinstance(remove_special_tokens, bool):
+            raise TypeError('`remove_special_tokens` must be instance of `bool`.')
 
         return [
             self.decode(token_ids, remove_special_tokens=remove_special_tokens)

@@ -191,7 +191,7 @@ class BaseListTokenizer(BaseTokenizer):
         """
         try:
             return self.token_to_id[token_id]
-        except KeyError:
+        except IndexError:
             return self.__class__.unk_token
 
     def encode(
@@ -215,9 +215,20 @@ class BaseListTokenizer(BaseTokenizer):
                 and pad to `max_seq_len` when sequence length is shorter than
                 `max_seq_len`.
 
+        Raises:
+            TypeError:
+                When `sequence` is not instance of `str`.
+                When `max_seq_len` is not instance of `int`.
+
         Returns:
             Token ids encoded from `sequence`.
         """
+        # Type check.
+        if not isinstance(sequence, str):
+            raise TypeError('`sequence` must be instance of `str`.')
+        if not isinstance(max_seq_len, int):
+            raise TypeError('`max_seq_len` must be instance of `int`.')
+
         token_ids = self.convert_tokens_to_ids(self.tokenize(sequence))
 
         # Truncate to max sequence length,
@@ -257,9 +268,19 @@ class BaseListTokenizer(BaseTokenizer):
                 tokens except unknown word's token.
                 See class docstring for more details on special tokens.
 
+        Raises:
+            TypeError:
+                When `token_ids` is not instance of `List[int]`.
+                When `remove_special_tokens` is not instance of `bool`.
+
         Returns:
             Sequence decoded from `token_ids`.
         """
+        # Type check.
+        if not isinstance(token_ids, List):
+            raise TypeError('`token_ids` must be instance of `List[int]`.')
+        if not isinstance(remove_special_tokens, bool):
+            raise TypeError('`remove_special_tokens` must be instance of `bool`.')
 
         if remove_special_tokens:
             # Get special tokens' ids except unknown token.
@@ -302,9 +323,19 @@ class BaseListTokenizer(BaseTokenizer):
                 longer than `max_seq_len` and padded to `max_seq_len` when
                 individual sequence length is shorter than `max_seq_len`.
 
+        Raises:
+            TypeError:
+                When `batch_sequences` is not instance of `List[str]`.
+                When `max_seq_len` is not instance of `int`.
+
         Returns:
             Batch of token ids encoded from `batch_sequence`.
         """
+        # Type check.
+        if not isinstance(batch_sequences, List):
+            raise TypeError('`batch_sequences` must be instance of `List[str]`.')
+        if not isinstance(max_seq_len, int):
+            raise TypeError('`max_seq_len` must be instance of `int`.')
 
         # Encode each sequence independently.
         # If `max_seq_len == 0`, then sequences are not padded.
