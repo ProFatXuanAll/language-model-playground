@@ -54,7 +54,7 @@ class BaseDataset(torch.utils.data.Dataset):
         return self.batch_sequences[index]
 
     @staticmethod
-    def creat_collate_fn(
+    def create_collate_fn(
             tokenizer: lmp.tokenizer.BaseTokenizer,
             max_seq_len: int = -1
     ):
