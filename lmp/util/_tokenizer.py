@@ -60,6 +60,12 @@ def load_tokenizer(
     elif tokenizer_class == 'whitespace_list':
         tokenizer = lmp.tokenizer.WhitespaceListTokenizer(
             is_uncased=is_uncased)
+    elif tokenizer_class == 'nltk_dict':
+        tokenizer = lmp.tokenizer.NltkDictTokenizer(
+            is_uncased=is_uncased)
+    elif tokenizer_class == 'nltk_list':
+        tokenizer = lmp.tokenizer.NltkListTokenizer(
+            is_uncased=is_uncased)
     else:
         raise ValueError(
             f'`{tokenizer_class}` does not support.\nSupported options:' +
@@ -70,6 +76,8 @@ def load_tokenizer(
                     'char_list',
                     'whitespace_dict',
                     'whitespace_list',
+                    'nltk_dict',
+                    'nltk_list'
                 ]
             )))
         )

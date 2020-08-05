@@ -145,7 +145,19 @@ class BaseRNNModel(torch.nn.Module):
         yt = ht.matmul(self.embedding_layer.weight.transpose(0, 1))
 
         return yt
+    def get_word_embed(
+            self,
+            batch_wordidx: torch.LongTensor
+        ) -> torch.FloatTensor:
+        r"""Convert word index to embedding result
+        Args:
+            batch_wordidx:
+                Batch of word index
+        Returns:
+            embedding result of the words in the batch
+        """
 
+        return self.embedding_layer(batch_wordidx)
     def predict(
             self,
             batch_sequences: torch.Tensor
