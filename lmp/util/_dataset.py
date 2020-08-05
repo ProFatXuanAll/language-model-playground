@@ -63,6 +63,26 @@ def load_dataset(
         df = pd.read_csv(file_path)
         batch_sequences = df['title'].to_list()
         return lmp.dataset.BaseDataset(batch_sequences)
+    if dataset[0:4] == 'data' and len(dataset)>4:
+        file_path = f'{lmp.path.DATA_PATH}/'+dataset+'.txt'
+        if not os.path.exists(file_path):
+            raise FileNotFoundError(
+                f'file {file_path} does not exist.'
+            )
+        with open(file_path,'r',encoding='utf8') as f:
+            df=f.read()
+        df=df.split('.')
+        return lmp.dataset.BaseDataset(df)
+    if dataset == 'data':
+        file_path = f'{lmp.path.DATA_PATH}/data.txt'
+        if not os.path.exists(file_path):
+            raise FileNotFoundError(
+                f'file {file_path} does not exist.'
+            )
+        with open(file_path,'r',encoding='utf8') as f:
+            df=f.read()
+        df=df.split('.')
+        return lmp.dataset.BaseDataset(df)
 
     raise ValueError(
         f'dataset `{dataset}` does not support.\nSupported options:' +
