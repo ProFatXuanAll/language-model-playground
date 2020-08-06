@@ -1,7 +1,7 @@
-r"""Test `lmp.config.BaseConfig.save`.
+r"""Test `lmp.config.BaseConfig.__iter__`.
 
 Usage:
-    python -m unittest test/lmp/config/test_save.py
+    python -m unittest test/lmp/config/test_iter.py
 """
 
 # built-in modules
@@ -12,41 +12,27 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import inspect
-import json
-import os
 import unittest
 
-# self-made modules
+from typing import Iterable
+from typing import Generator
+from typing import Tuple
+from typing import Union
 
-import lmp.path
+# self-made modules
 
 from lmp.config import BaseConfig
 
 
-class TestSave(unittest.TestCase):
-    r"""Test Case for `lmp.config.BaseConfig.save`."""
-
-    @classmethod
-    def setUpClass(cls):
-        r"""Create test directory."""
-        cls.experiment = 'I-AM-A-TEST-FOLDER'
-        cls.test_dir = os.path.join(
-            lmp.path.DATA_PATH,
-            cls.experiment
-        )
-        os.makedirs(cls.test_dir)
-
-    @classmethod
-    def tearDownClass(cls):
-        r"""Remove test directory."""
-        os.removedirs(cls.test_dir)
+class TestIter(unittest.TestCase):
+    r"""Test Case for `lmp.config.BaseConfig.__iter__`."""
 
     def test_signature(self):
         r"""Ensure signature consistency."""
         msg = 'Inconsistent method signature.'
 
         self.assertEqual(
-            inspect.signature(BaseConfig.save),
+            inspect.signature(BaseConfig.__iter__),
             inspect.Signature(
                 parameters=[
                     inspect.Parameter(
@@ -55,15 +41,18 @@ class TestSave(unittest.TestCase):
                         default=inspect.Parameter.empty
                     ),
                 ],
-                return_annotation=None
+                return_annotation=Generator[
+                    Tuple[str, Union[bool, float, int, str]],
+                    None,
+                    None
+                ]
             ),
             msg=msg
         )
 
-    def test_save_result(self):
-        r"""Save result must be consistent."""
-        msg1 = 'Must save as `config.json`.'
-        msg2 = 'Inconsistent save result.'
+    def test_yield_value(self):
+        r"""Is an iterable which yield attributes in order."""
+        msg = 'Must be an iterable which yield attributes in order.'
         examples = (
             {
                 'batch_size': 111,
@@ -73,7 +62,7 @@ class TestSave(unittest.TestCase):
                 'dataset': 'hello',
                 'dropout': 0.42069,
                 'epoch': 555,
-                'experiment': self.__class__.experiment,
+                'experiment': 'world',
                 'is_uncased': True,
                 'learning_rate': 0.69420,
                 'max_norm': 6.9,
@@ -94,7 +83,7 @@ class TestSave(unittest.TestCase):
                 'dataset': 'world',
                 'dropout': 0.69420,
                 'epoch': 666,
-                'experiment': self.__class__.experiment,
+                'experiment': 'hello',
                 'is_uncased': True,
                 'learning_rate': 0.42069,
                 'max_norm': 4.20,
@@ -110,34 +99,33 @@ class TestSave(unittest.TestCase):
         )
 
         for ans_attributes in examples:
-            test_path = os.path.join(
-                self.__class__.test_dir,
-                'config.json'
-            )
+            config = BaseConfig(**ans_attributes)
 
-            try:
-                # Create test file.
-                BaseConfig(**ans_attributes).save()
-                self.assertTrue(os.path.exists(test_path), msg=msg1)
+            self.assertIsInstance(config, Iterable, msg=msg)
 
-                with open(test_path, 'r') as input_file:
-                    attributes = json.load(input_file)
-
-                for attr_key, attr_value in attributes.items():
-                    self.assertIn(attr_key, ans_attributes, msg=msg2)
-                    self.assertIsInstance(
-                        ans_attributes[attr_key],
-                        type(attr_value),
-                        msg=msg2
-                    )
-                    self.assertEqual(
-                        ans_attributes[attr_key],
-                        attr_value,
-                        msg=msg2
-                    )
-            finally:
-                # Clean up test file.
-                os.remove(test_path)
+            for attr_key, attr_value in config:
+                self.assertIn(attr_key, ans_attributes, msg=msg)
+                self.assertTrue(hasattr(config, attr_key), msg=msg)
+                self.assertIsInstance(
+                    getattr(config, attr_key),
+                    type(ans_attributes[attr_key]),
+                    msg=msg
+                )
+                self.assertIsInstance(
+                    getattr(config, attr_key),
+                    type(attr_value),
+                    msg=msg
+                )
+                self.assertEqual(
+                    getattr(config, attr_key),
+                    ans_attributes[attr_key],
+                    msg=msg
+                )
+                self.assertEqual(
+                    getattr(config, attr_key),
+                    attr_value,
+                    msg=msg
+                )
 
 
 if __name__ == '__main__':

@@ -480,7 +480,6 @@ class TestInit(unittest.TestCase):
                     learning_rate=invalid_input
                 )
 
-
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
@@ -518,7 +517,6 @@ class TestInit(unittest.TestCase):
                     experiment='test',
                     max_norm=invalid_input
                 )
-
 
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
@@ -927,6 +925,7 @@ class TestInit(unittest.TestCase):
                         attr_val,
                         msg=msg3.format(attr, attr_val)
                     )
+
 
 if __name__ == '__main__':
     unittest.main()

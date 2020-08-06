@@ -108,7 +108,6 @@ class TestLoad(unittest.TestCase):
             else:
                 self.fail(msg=msg1)
 
-
     def test_invalid_json(self):
         r"""Raise when configuration is invalid."""
         msg = (
@@ -204,6 +203,7 @@ class TestLoad(unittest.TestCase):
             finally:
                 # Clean up test file.
                 os.remove(test_path)
+
 
 if __name__ == '__main__':
     unittest.main()
