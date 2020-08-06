@@ -159,7 +159,6 @@ class BaseConfig:
         if not isinstance(tokenizer_class, str):
             raise TypeError('`tokenizer_class` must be instance of `str`.')
 
-
         # Value Check.
         if batch_size < 1:
             raise ValueError(
@@ -283,7 +282,7 @@ class BaseConfig:
             return cls(**json.load(input_file))
 
     def __iter__(self) -> Generator[
-            Tuple[str, Union[float, int, str]], None, None
+            Tuple[str, Union[bool, float, int, str]], None, None
     ]:
         r"""Make instance attributes iterable.
 
