@@ -251,8 +251,8 @@ class BaseDictTokenizer(BaseTokenizer):
 
         Raises:
             TypeError:
-                When `sequence` is not instance of `str`.
-                When `max_seq_len` is not instance of `int`.
+                When `sequence` is not instance of `str` or `max_seq_len` is
+                not instance of `int`.
 
         Returns:
             Token ids encoded from `sequence`.
@@ -304,15 +304,18 @@ class BaseDictTokenizer(BaseTokenizer):
 
         Raises:
             TypeError:
-                When `token_ids` is not instance of `List[int]`.
-                When `remove_special_tokens` is not instance of `bool`.
+                When `token_ids` is not instance of `Iterable[int]` or
+                `remove_special_tokens` is not instance of `bool`.
 
         Returns:
             Sequence decoded from `token_ids`.
         """
         # Type check.
-        if not isinstance(token_ids, List):
-            raise TypeError('`token_ids` must be instance of `List[int]`.')
+        if not isinstance(token_ids, Iterable):
+            raise TypeError('`token_ids` must be instance of `Iterable[int]`.')
+
+        token_ids = list(token_ids)
+
         if not isinstance(remove_special_tokens, bool):
             raise TypeError(
                 '`remove_special_tokens` must be instance of `bool`.')
@@ -334,8 +337,10 @@ class BaseDictTokenizer(BaseTokenizer):
                 lambda token_id: token_id not in special_token_ids,
                 token_ids
             ))
-
-        sequence = self.detokenize(self.convert_ids_to_tokens(token_ids))
+        try:
+            sequence = self.detokenize(self.convert_ids_to_tokens(token_ids))
+        except TypeError:
+            raise TypeError('`token_ids` must be instance of `Iterable[int]`.')
 
         return sequence
 
@@ -362,25 +367,31 @@ class BaseDictTokenizer(BaseTokenizer):
 
         Raises:
             TypeError:
-                When `batch_sequences` is not instance of `List[str]`.
-                When `max_seq_len` is not instance of `int`.
+                When `batch_sequences` is not instance of `Iterable[str]` or
+                `max_seq_len` is not instance of `int`.
 
         Returns:
             Batch of token ids encoded from `batch_sequence`.
         """
         # Type check.
-        if not isinstance(batch_sequences, List):
+        if not isinstance(batch_sequences, Iterable):
             raise TypeError(
-                '`batch_sequences` must be instance of `List[str]`.')
+                '`batch_sequences` must be instance of `Iterable[str]`.'
+            )
         if not isinstance(max_seq_len, int):
             raise TypeError('`max_seq_len` must be instance of `int`.')
 
-        # Encode each sequence independently.
-        # If `max_seq_len == 0`, then sequences are not padded.
-        batch_token_ids = [
-            self.encode(sequence, max_seq_len=max_seq_len)
-            for sequence in batch_sequences
-        ]
+        try:
+            # Encode each sequence independently.
+            # If `max_seq_len == 0`, then sequences are not padded.
+            batch_token_ids = [
+                self.encode(sequence, max_seq_len=max_seq_len)
+                for sequence in list(batch_sequences)
+            ]
+        except TypeError:
+            raise TypeError(
+                '`batch_sequences` must be instance of `Iterable[str]`.'
+            )
 
         # If `max_seq_len == -1`, then padded sequences to the longest sequence
         # length in the current batch. This step do not need to add `[BOS]`
@@ -421,13 +432,22 @@ class BaseDictTokenizer(BaseTokenizer):
                 than `min_count`, then discard that token.
          Raises:
             TypeError:
-                When `batch_sequences` is not instance of `List[str]`.
-                When `min_count` is not instance of `int`.
+                When `batch_sequences` is not instance of `Iterable[str]` or
+                `min_count` is not instance of `int`.
         """
         # Type check.
-        if not isinstance(batch_sequences, List):
+        if not isinstance(batch_sequences, Iterable):
             raise TypeError(
-                '`batch_sequences` must be instance of `List[str]`.')
+                '`batch_sequences` must be instance of `Iterable[str]`.'
+            )
+
+        batch_sequences = list(batch_sequences)
+
+        if not any([isinstance(sequence, str) for sequence in batch_sequences]):
+            raise TypeError(
+                '`batch_sequences` must be instance of `Iterable[str]`.'
+            )
+
         if not isinstance(min_count, int):
             raise TypeError('`min_count` must be instance of `int`.')
 

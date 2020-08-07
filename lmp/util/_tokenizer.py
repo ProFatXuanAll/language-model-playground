@@ -24,7 +24,7 @@ def load_tokenizer(
         checkpoint: int,
         experiment: str,
         is_uncased: bool = False,
-        tokenizer_class: str = 'char-list'
+        tokenizer_class: str = 'char_list'
 ) -> lmp.tokenizer.BaseTokenizer:
     r"""Helper function for constructing tokenizer.
 

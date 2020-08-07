@@ -1,10 +1,10 @@
-r"""Language model with residual GRU blocks.
+r"""Language model with residual LSTM blocks.
 
 Usage:
     from torch.utils.data import DataLoader
     import lmp
 
-    model = lmp.model.ResidualGRUModel(...)
+    model = lmp.model.ResLSTMModel(...)
     tokenizer = lmp.tokenizer.CharDictTokenizer(...)
     dataset = lmp.dataset.BaseDataset(...)
     dataloader = DataLoader(
@@ -12,7 +12,7 @@ Usage:
         collate_fn=dataset.create_collate_fn(tokenizer)
     )
     for x, y in dataloader:
-        pred = model(x)
+        pred_logits = model(x)
 """
 
 # built-in modules
@@ -31,14 +31,14 @@ import torch
 
 import lmp.model
 
-from lmp.model._base_residual_rnn_model import BaseResidualRNNModel
+from lmp.model._base_res_rnn_model import BaseResRNNModel
 
 
-class ResidualGRUModel(BaseResidualRNNModel):
-    r"""Language model with residual GRU blocks.
+class ResLSTMModel(BaseResRNNModel):
+    r"""Language model with residual LSTM blocks.
 
     Each input token will first be embedded into vectors, then sequentially
-    feed into residual GRU blocks. Output vectors of blocks then go through
+    feed into residual LSTM blocks. Output vectors of blocks then go through
     fully-connected layer and project back to embedding dimension in order to
     perform vocabulary prediction.
 
@@ -88,16 +88,15 @@ class ResidualGRUModel(BaseResidualRNNModel):
             vocab_size=vocab_size
         )
 
-        # Sequential residual GRU blocks
-        # Dimension: (E, H)
-        gru_blocks = []
+        # Sequential residual LSTM blocks
+        # Dimension: (E, E)
+        rnn_blocks = []
         for _ in range(num_rnn_layers):
-            gru_blocks.append(
-                lmp.model.ResGRUBlock(
-                    d_in=d_hid,
-                    d_out=d_hid,
+            rnn_blocks.append(
+                lmp.model.ResLSTMBlock(
+                    d_hid=d_hid,
                     dropout=dropout
                 )
             )
 
-        self.rnn_blocks = torch.nn.Sequential(*gru_blocks)
+        self.rnn_layer = torch.nn.Sequential(*rnn_blocks)

@@ -206,4 +206,4 @@ if __name__ == '__main__':
         tokenizer=tokenizer
     )
 
-    print(f'{config.tokenizer_class} train_time: ', time.time()-start_time)
+    print(f'{config.tokenizer_class} train_time: ', time.time() - start_time)

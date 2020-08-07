@@ -23,7 +23,7 @@ import torch
 
 import lmp
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     # Required arguments.
@@ -48,9 +48,9 @@ if __name__ == "__main__":
 
     # Optional arguments.
     parser.add_argument(
-        "--beam_width",
+        '--beam_width',
         default=4,
-        help="using for generating `beam_width` sentences",
+        help='using for generating `beam_width` sentences',
         type=int
     )
     parser.add_argument(

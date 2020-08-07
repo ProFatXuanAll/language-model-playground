@@ -71,7 +71,7 @@ class BaseTokenizer:
         if not isinstance(is_uncased, bool):
             raise TypeError('`is_uncased` must be instance of `bool`.')
 
-        self.is_uncased = is_uncased
+        self.is_uncased = bool(is_uncased)
 
         # Any class inherit `BaseTokenizer` must define instance attribute
         # `token_to_id` in method `reset_vocab`.
@@ -135,6 +135,8 @@ class BaseTokenizer:
                 Name of the current experiment.
 
         Raises:
+            FileExistsError:
+                When experiment path already exists but is not a directory.
             TypeError:
                 When `experiment` is not instance of `str`.
             ValueError:
@@ -148,27 +150,42 @@ class BaseTokenizer:
         if not experiment:
             raise ValueError('`experiment` must not be empty.')
 
-        file_dir = os.path.join(
-            lmp.path.DATA_PATH,
-            experiment
-        )
-        file_path = os.path.join(
-            file_dir,
-            'tokenizer.json'
-        )
+        file_dir = os.path.join(lmp.path.DATA_PATH, experiment)
+        file_path = os.path.join(file_dir, 'tokenizer.json')
 
+        create_dir_flag = False
+        create_file_flag = False
         if not os.path.exists(file_dir):
             os.makedirs(file_dir)
+            create_dir_flag = True
+        elif not os.path.isdir(file_dir):
+            raise FileExistsError(f'{file_dir} is not a directory.')
 
-        with open(file_path, 'w', encoding='utf8') as output_file:
-            json.dump(
-                {
-                    'is_uncased': self.is_uncased,
-                    'token_to_id': self.token_to_id,
-                },
-                output_file,
-                ensure_ascii=False
+        try:
+            with open(file_path, 'w', encoding='utf8') as output_file:
+                json.dump(
+                    {
+                        'is_uncased': self.is_uncased,
+                        'token_to_id': self.token_to_id,
+                    },
+                    output_file,
+                    ensure_ascii=False
+                )
+            create_file_flag = True
+        except AttributeError:
+            raise NotImplementedError(
+                f'In class `{self.__class__.__name__}`: '
+                'function `reset_vocab` not implemented yet.'
             )
+        finally:
+            if create_file_flag:
+                return
+
+            if os.path.exists(file_path):
+                os.remove(file_path)
+
+            if create_dir_flag and os.path.exists(file_dir):
+                os.removedirs(file_dir)
 
     @abc.abstractmethod
     def tokenize(self, sequence: str) -> List[str]:
@@ -225,10 +242,27 @@ class BaseTokenizer:
             batch_sequences:
                 Batch of sequences to be tokenized.
 
+        Raises:
+            TypeError:
+                When `batch_sequences` is not instance of `Iterable[str]`.
+
         Returns:
             Batch of tokens converted from `batch_sequences`.
         """
-        return [self.tokenize(sequence) for sequence in batch_sequences]
+        if not isinstance(batch_sequences, Iterable):
+            raise TypeError(
+                '`batch_sequences` must be instance of `Iterable[str]`.'
+            )
+
+        try:
+            return [
+                self.tokenize(sequence)
+                for sequence in list(batch_sequences)
+            ]
+        except TypeError:
+            raise TypeError(
+                '`batch_sequences` must be instance of `Iterable[str]`.'
+            )
 
     def batch_tokens_to_sequences(
             self,
@@ -240,10 +274,24 @@ class BaseTokenizer:
             batch_tokens:
                 Batch of tokens to be converted.
 
+        Raises:
+            TypeError:
+                When `batch_tokens` is not instance of `Iterable[Iterable[str]]`.
+
         Returns:
             Batch of sequences converted from `batch_tokens`.
         """
-        return [self.detokenize(tokens) for tokens in batch_tokens]
+        if not isinstance(batch_tokens, Iterable):
+            raise TypeError(
+                '`batch_tokens` must be instance of `Iterable[Iterable[str]]`.'
+            )
+
+        try:
+            return [self.detokenize(tokens) for tokens in list(batch_tokens)]
+        except TypeError:
+            raise TypeError(
+                '`batch_tokens` must be instance of `Iterable[Iterable[str]]`.'
+            )
 
     @abc.abstractmethod
     def convert_token_to_id(self, token: str) -> int:
@@ -252,6 +300,10 @@ class BaseTokenizer:
         Args:
             token:
                 Look up input token.
+
+        Raises:
+            TypeError:
+                When `token` is not instance of `str`.
 
         Returns:
             Token's id look up result. If `token` does not exist in tokenizer's
@@ -269,6 +321,10 @@ class BaseTokenizer:
         Args:
             token_id:
                 Inverse look up token's id.
+
+        Raises:
+            TypeError:
+                When `token_id` is not instance of `int`.
 
         Returns:
             Token id's inverse lookup result. If `token_id` does not exist in
@@ -289,13 +345,23 @@ class BaseTokenizer:
             tokens:
                 Look up input tokens.
 
+        Raises:
+            TypeError:
+                When `tokens` is not instance of `Iterable[str]`.
+
         Returns:
             Input tokens' ids.
         """
-        return [
-            self.convert_token_to_id(token)
-            for token in tokens
-        ]
+        if not isinstance(tokens, Iterable):
+            raise TypeError('`tokens` must be instance of `Iterable[str]`.')
+
+        try:
+            return [
+                self.convert_token_to_id(token)
+                for token in list(tokens)
+            ]
+        except TypeError:
+            raise TypeError('`tokens` must be instance of `Iterable[str]`.')
 
     def convert_ids_to_tokens(
             self,
@@ -307,13 +373,23 @@ class BaseTokenizer:
             token_id:
                 Inverse look up input tokens' ids.
 
+        Raises:
+            TypeError:
+                When `token_ids` is not instance of `Iterable[int]`.
+
         Returns:
             Tokens converted from input tokens' ids.
         """
-        return [
-            self.convert_id_to_token(token_id)
-            for token_id in token_ids
-        ]
+        if not isinstance(token_ids, Iterable):
+            raise TypeError('`token_ids` must be instance of `Iterable[int]`.')
+
+        try:
+            return [
+                self.convert_id_to_token(token_id)
+                for token_id in list(token_ids)
+            ]
+        except TypeError:
+            raise TypeError('`token_ids` must be instance of `Iterable[int]`.')
 
     def batch_tokens_to_ids(
             self,
@@ -325,13 +401,28 @@ class BaseTokenizer:
             batch_tokens:
                 Look up batch of tokens.
 
+        Raises:
+            TypeError:
+                When `batch_token_ids` is not instance of
+                `Iterable[Iterable[str]]`.
+
         Returns:
             Batch of tokens' ids.
         """
-        return [
-            self.convert_tokens_to_ids(tokens)
-            for tokens in batch_tokens
-        ]
+        if not isinstance(batch_tokens, Iterable):
+            raise TypeError(
+                '`batch_tokens` must be instance of `Iterable[Iterable[str]]`.'
+            )
+
+        try:
+            return [
+                self.convert_tokens_to_ids(tokens)
+                for tokens in list(batch_tokens)
+            ]
+        except TypeError:
+            raise TypeError(
+                '`batch_tokens` must be instance of `Iterable[Iterable[str]]`.'
+            )
 
     def batch_ids_to_tokens(
             self,
@@ -343,13 +434,28 @@ class BaseTokenizer:
             batch_token_id:
                 Inverse look up batch tokens' ids.
 
+        Raises:
+            TypeError:
+                When `batch_token_ids` is not instance of
+                `Iterable[Iterable[int]]`.
+
         Returns:
             Batch of Tokens.
         """
-        return [
-            self.convert_ids_to_tokens(token_ids)
-            for token_ids in batch_token_ids
-        ]
+        if not isinstance(batch_token_ids, Iterable):
+            raise TypeError(
+                '`batch_token_ids` must be instance of `Iterable[Iterable[int]]`.'
+            )
+
+        try:
+            return [
+                self.convert_ids_to_tokens(token_ids)
+                for token_ids in list(batch_token_ids)
+            ]
+        except TypeError:
+            raise TypeError(
+                '`batch_token_ids` must be instance of `Iterable[Iterable[int]]`.'
+            )
 
     def batch_sequences_to_ids(
             self,
@@ -361,12 +467,26 @@ class BaseTokenizer:
             batch_sequences:
                 Batch of sequences to be tokenized and looked up.
 
+        Raises:
+            TypeError:
+                When `batch_token_ids` is not instance of `Iterable[str]`.
+
         Returns:
             Batch of tokens' ids.
         """
-        return self.batch_tokens_to_ids(
-            self.batch_sequences_to_tokens(batch_sequences)
-        )
+        if not isinstance(batch_sequences, Iterable):
+            raise TypeError(
+                '`batch_sequences` must be instance of `Iterable[str]`.'
+            )
+
+        try:
+            return self.batch_tokens_to_ids(
+                self.batch_sequences_to_tokens(list(batch_sequences))
+            )
+        except TypeError:
+            raise TypeError(
+                '`batch_sequences` must be instance of `Iterable[str]`.'
+            )
 
     def batch_ids_to_sequences(
             self,
@@ -378,12 +498,26 @@ class BaseTokenizer:
             batch_token_ids:
                 Batch of tokens' ids to be inverse looked up and detokenized.
 
+        Raises:
+            TypeError:
+                When `batch_token_ids` is not instance of `Iterable[Iterable[str]]`.
+
         Returns:
             Batch of sequences.
         """
-        return self.batch_tokens_to_sequences(
-            self.batch_ids_to_tokens(batch_token_ids)
-        )
+        if not isinstance(batch_token_ids, Iterable):
+            raise TypeError(
+                '`batch_token_ids` must be instance of `Iterable[Iterable[int]]`.'
+            )
+
+        try:
+            return self.batch_tokens_to_sequences(
+                self.batch_ids_to_tokens(list(batch_token_ids))
+            )
+        except TypeError:
+            raise TypeError(
+                '`batch_token_ids` must be instance of `Iterable[Iterable[int]]`.'
+            )
 
     @abc.abstractmethod
     def encode(
@@ -406,6 +540,11 @@ class BaseTokenizer:
                 `max_seq_len` when sequence length is longer than `max_seq_len`
                 and pad to `max_seq_len` when sequence length is shorter than
                 `max_seq_len`.
+
+        Raises:
+            TypeError:
+                When `sequence` is not instance of `str` or `max_seq_len` is
+                not instance of `int`.
 
         Returns:
             Token ids encoded from `sequence`.
@@ -431,6 +570,11 @@ class BaseTokenizer:
                 If `remove_special_tokens == True`, then remove all special
                 tokens except unknown word's token.
                 See class docstring for more details on special tokens.
+
+        Raises:
+            TypeError:
+                When `token_ids` is not instance of `Iterable[int]` or
+                `remove_special_tokens` is not instance of `int`.
 
         Returns:
             Sequence decoded from `token_ids`.
@@ -462,6 +606,11 @@ class BaseTokenizer:
                 longer than `max_seq_len` and padded to `max_seq_len` when
                 individual sequence length is shorter than `max_seq_len`.
 
+        Raises:
+            TypeError:
+                When `batch_sequences` is not instance of `Iterable[str]` or
+                `max_seq_len` is not instance of `int`.
+
         Returns:
             Batch of token ids encoded from `batch_sequence`.
         """
@@ -488,24 +637,32 @@ class BaseTokenizer:
 
         Raises:
             TypeError:
-                When `batch_token_ids` is not instance of `List[List[int]]`.
-                When `remove_special_tokens` is not instance of `bool`.
+                When `batch_token_ids` is not instance of `Iterable[Iterable[int]]` or
+                `remove_special_tokens` is not instance of `bool`.
 
         Returns:
             Batch of sequence decoded from `batch_token_ids`.
         """
         # Type check.
-        if not isinstance(batch_token_ids, List):
+        if not isinstance(batch_token_ids, Iterable):
             raise TypeError(
-                '`batch_token_ids` must be instance of `List[List[int]]`.')
+                '`batch_token_ids` must be instance of `Iterable[Iterable[int]]`.'
+            )
         if not isinstance(remove_special_tokens, bool):
             raise TypeError(
-                '`remove_special_tokens` must be instance of `bool`.')
+                '`remove_special_tokens` must be instance of `bool`.'
+            )
 
-        return [
-            self.decode(token_ids, remove_special_tokens=remove_special_tokens)
-            for token_ids in batch_token_ids
-        ]
+        try:
+            return [
+                self.decode(
+                    token_ids, remove_special_tokens=remove_special_tokens)
+                for token_ids in list(batch_token_ids)
+            ]
+        except TypeError:
+            raise TypeError(
+                '`batch_token_ids` must be instance of `Iterable[Iterable[int]]`.'
+            )
 
     @abc.abstractmethod
     def build_vocab(
@@ -516,6 +673,11 @@ class BaseTokenizer:
         """Build vocabulary for tokenizer.
 
         Vocabulary is sorted by token frenquence in descending order.
+
+        Raises:
+            TypeError:
+                When `batch_sequences` is not instance of `Iterable[str]` or
+                `min_count` is not instance of `int`.
 
         Args:
             batch_sequences:

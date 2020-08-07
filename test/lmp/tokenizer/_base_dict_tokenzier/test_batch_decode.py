@@ -1,4 +1,4 @@
-r"""Test `lmp.tokenizer.CharDictTokenizer.batch_decode`.
+r"""Test `lmp.tokenizer.BaseDictTokenizer.batch_decode`.
 
 Usage:
     python -m unittest \
@@ -13,39 +13,25 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import inspect
-import gc
-import math
 import unittest
 
+from typing import Iterable
 from typing import List
 
 # self-made modules
 
-from lmp.tokenizer import CharDictTokenizer
+from lmp.tokenizer import BaseDictTokenizer
 
 
 class TestBatchDecode(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.CharDictTokenizer.batch_decode`."""
-
-    def setUp(self):
-        r"""Setup both cased and uncased tokenizer instances."""
-        self.cased_tokenizer = CharDictTokenizer()
-        self.uncased_tokenizer = CharDictTokenizer(is_uncased=True)
-        self.tokenizers = [self.cased_tokenizer, self.uncased_tokenizer]
-
-    def tearDown(self):
-        r"""Delete both cased and uncased tokenizer instances."""
-        del self.tokenizers
-        del self.cased_tokenizer
-        del self.uncased_tokenizer
-        gc.collect()
+    r"""Test Case for `lmp.tokenizer.BaseDictTokenizer.batch_decode`."""
 
     def test_signature(self):
         r"""Ensure signature consistency."""
         msg = 'Inconsistent method signature.'
 
         self.assertEqual(
-            inspect.signature(CharDictTokenizer.batch_decode),
+            inspect.signature(BaseDictTokenizer.batch_decode),
             inspect.Signature(
                 parameters=[
                     inspect.Parameter(
@@ -55,7 +41,7 @@ class TestBatchDecode(unittest.TestCase):
                     inspect.Parameter(
                         name='batch_token_ids',
                         kind=inspect.Parameter.POSITIONAL_OR_KEYWORD,
-                        annotation=List[List[int]],
+                        annotation=Iterable[Iterable[int]],
                         default=inspect.Parameter.empty
                     ),
                     inspect.Parameter(
@@ -70,97 +56,31 @@ class TestBatchDecode(unittest.TestCase):
             msg=msg
         )
 
-    def test_invalid_input_batch_token_ids(self):
-        r"""Raise `TypeError` when input is invalid."""
-        msg1 = 'Must raise `TypeError` when input is invalid.'
+    def test_abstract_method(self):
+        r"""Raise `NotImplementedError` when subclass did not implement."""
+        msg1 = (
+            'Must raise `NotImplementedError` when subclass did not implement.'
+        )
         msg2 = 'Inconsistent error message.'
-        examples = (
-            0, 1, -1, 0.0, 1.0, math.nan, math.inf, True, False, b'',
-            (), {}, set(), object(), lambda x: x, type, None,
-        )
+        examples = (True, False)
 
-        for invalid_input in examples:
-            for tokenizer in self.tokenizers:
-                with self.assertRaises(TypeError, msg=msg1) as cxt_man:
-                    tokenizer.batch_decode(batch_token_ids=invalid_input)
+        # pylint: disable=W0223
+        # pylint: disable=W0231
+        class SubClassTokenizer(BaseDictTokenizer):
+            r"""Intented to not implement `detokenize`."""
+        # pylint: enable=W0231
+        # pylint: enable=W0223
 
-                self.assertEqual(
-                    cxt_man.exception.args[0],
-                    '`batch_token_ids` must be instance of `List[List[int]]`.',
-                    msg=msg2
-                )
+        for is_uncased in examples:
+            with self.assertRaises(NotImplementedError, msg=msg1) as ctx_man:
+                SubClassTokenizer(is_uncased=is_uncased).batch_decode([[0]])
 
-    def test_invalid_input_remove_special_tokens(self):
-        r"""Raise `TypeError` when input is invalid."""
-        msg1 = 'Must raise `TypeError` when input is invalid.'
-        msg2 = 'Inconsistent error message.'
-        examples = (
-            0, 1, -1, 0.0, 1.0, math.nan, math.inf, b'',
-            [], (), {}, set(), object(), lambda x: x, type, None,
-        )
-
-        for invalid_input in examples:
-            for tokenizer in self.tokenizers:
-                with self.assertRaises(TypeError, msg=msg1) as cxt_man:
-                    tokenizer.batch_decode(
-                        batch_token_ids=[[0, 1, 2, 3, 4]],
-                        remove_special_tokens=invalid_input
-                    )
-
-                self.assertEqual(
-                    cxt_man.exception.args[0],
-                    '`remove_special_tokens` must be instance of `bool`.',
-                    msg=msg2
-                )
-
-    def test_return_type(self):
-        r"""Return `List[str]`."""
-        msg = 'Must return `List[str]`.'
-        examples = (
-            [
-                [0, 1, 2, 3, 4],
-                [0, 5, 6, 7, 8]
-            ],
-            [],
-        )
-
-        for batch_token_ids in examples:
-            for tokenizer in self.tokenizers:
-                batch_sequences = tokenizer.batch_decode(
-                    batch_token_ids=batch_token_ids
-                )
-                self.assertIsInstance(batch_sequences, list, msg=msg)
-                for sequence in batch_sequences:
-                    self.assertIsInstance(sequence, str, msg=msg)
-
-    def test_remove_special_tokens(self):
-        r"""Return List[str] must remove special token."""
-        msg = (
-            'Return result must remove special token.'
-        )
-        examples = (
-            (
-                [
-                    [0, 3, 3, 3, 3, 3, 1],
-                    [0, 3, 3, 1]
-                ],
-                [
-                    '[UNK][UNK][UNK][UNK][UNK]',
-                    '[UNK][UNK]'
-                ]
-            ),
-        )
-
-        for batch_token_ids, ans_batch_sequence in examples:
-            for tokenizer in self.tokenizers:
-                self.assertEqual(
-                    tokenizer.batch_decode(
-                        batch_token_ids=batch_token_ids,
-                        remove_special_tokens=True
-                    ),
-                    ans_batch_sequence,
-                    msg=msg
-                )
+            self.assertEqual(
+                ctx_man.exception.args[0],
+                'In class `SubClassTokenizer`: '
+                'function `detokenize` not implemented yet.',
+                msg=msg2
+            )
 
 
 if __name__ == '__main__':
