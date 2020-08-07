@@ -1,6 +1,8 @@
-r"""Residual block with RNN layers.
+r"""RNN residual block.
 
 Usage:
+    import lmp
+
     block = lmp.model.BaseResRNNBlock(...)
     logits = block(...)
 """
@@ -19,14 +21,12 @@ import torch.nn
 
 
 class BaseResRNNBlock(torch.nn.Module):
-    r"""Residual block with RNN layers.
+    r"""RNN residual block.
 
     out = activate(F(x) + x)
 
     Args:
-        d_in:
-            Input data's vector dimension.
-        d_out:
+        d_hid:
             GRU layers hidden dimension.
         dropout:
             Dropout probability on all layers out (except output layer).
@@ -34,22 +34,14 @@ class BaseResRNNBlock(torch.nn.Module):
 
     def __init__(
         self,
-        d_in: int,
-        d_out: int,
+        d_hid: int,
         dropout: float
     ):
         super().__init__()
 
-        self.linear_layer = torch.nn.Linear(
-            in_features=d_in,
-            out_features=d_out
-        )
-
         self.rnn_layer = torch.nn.RNN(
-            input_size=d_in,
-            hidden_size=d_out,
-            num_layers=1,
-            dropout=dropout,
+            input_size=d_hid,
+            hidden_size=d_hid,
             batch_first=True
         )
 
@@ -58,8 +50,4 @@ class BaseResRNNBlock(torch.nn.Module):
 
     def forward(self, x: torch.Tensor):
         ht, _ = self.rnn_layer(x)
-
-        if x.size(-1) != ht.size(-1):
-            x = self.linear_layer(x)
-
         return self.act_fn(self.dropout(ht + x))

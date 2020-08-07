@@ -86,30 +86,30 @@ class BaseRNNModel(torch.nn.Module):
 
         # Sequential linear layer
         # Dimension: (H, E)
-        linear_layers = []
+        proj_hid_to_emb = []
 
         for _ in range(num_linear_layers):
-            linear_layers.append(
+            proj_hid_to_emb.append(
                 torch.nn.Linear(
                     in_features=d_hid,
                     out_features=d_hid
                 )
             )
-            linear_layers.append(
+            proj_hid_to_emb.append(
                 torch.nn.ReLU()
             )
-            linear_layers.append(
+            proj_hid_to_emb.append(
                 torch.nn.Dropout(dropout)
             )
 
-        linear_layers.append(
+        proj_hid_to_emb.append(
             torch.nn.Linear(
                 in_features=d_hid,
                 out_features=d_emb
             )
         )
 
-        self.linear_layers = torch.nn.Sequential(*linear_layers)
+        self.proj_hid_to_emb = torch.nn.Sequential(*proj_hid_to_emb)
 
     def forward(
             self,
@@ -137,7 +137,7 @@ class BaseRNNModel(torch.nn.Module):
 
         # 將每個 hidden vectors 轉換維度至 embedding dimension
         # ht 維度: (B, S, E)
-        ht = self.linear_layers(ht)
+        ht = self.proj_hid_to_emb(ht)
 
         # 與轉置後的 embedding matrix 進行矩陣乘法取得預測文字
         # 重複使用 embedding matrix 的目的為節省參數數量

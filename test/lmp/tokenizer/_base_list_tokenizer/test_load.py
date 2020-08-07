@@ -1,4 +1,4 @@
-r"""Test `lmp.tokenizer.CharListTokenizer.load`.
+r"""Test `lmp.tokenizer.BaseListTokenizer.load`.
 
 Usage:
     python -m unittest \
@@ -22,16 +22,28 @@ import unittest
 # self-made modules
 
 from lmp.path import DATA_PATH
-from lmp.tokenizer import CharListTokenizer
+from lmp.tokenizer import BaseListTokenizer
 
 
 class TestLoad(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.CharListTokenizer.load`."""
+    r"""Test Case for `lmp.tokenizer.BaseListTokenizer.load`."""
+
+    @classmethod
+    def setUpClass(cls):
+        r"""Create test directory."""
+        cls.experiment = 'I-AM-A-TEST'
+        cls.test_dir = os.path.join(DATA_PATH, cls.experiment)
+        os.makedirs(cls.test_dir)
+
+    @classmethod
+    def tearDownClass(cls):
+        r"""Clean up test directory."""
+        os.removedirs(cls.test_dir)
 
     def setUp(self):
         r"""Setup both cased and uncased tokenizer instances."""
-        self.cased_tokenizer = CharListTokenizer()
-        self.uncased_tokenizer = CharListTokenizer(is_uncased=True)
+        self.cased_tokenizer = BaseListTokenizer()
+        self.uncased_tokenizer = BaseListTokenizer(is_uncased=True)
         self.tokenizers = [self.cased_tokenizer, self.uncased_tokenizer]
 
     def tearDown(self):
@@ -46,7 +58,7 @@ class TestLoad(unittest.TestCase):
         msg = 'Inconsistent method signature.'
 
         self.assertEqual(
-            inspect.signature(CharListTokenizer.load),
+            inspect.signature(BaseListTokenizer.load),
             inspect.Signature(
                 parameters=[
                     inspect.Parameter(
@@ -67,7 +79,8 @@ class TestLoad(unittest.TestCase):
         msg2 = 'Inconsistent error message.'
         examples = (
             0, 1, -1, 0.0, 1.0, math.nan, math.inf, '', b'', True, False,
-            [], (), {}, set(), object(), lambda x: x, type, None,
+            [], (), {}, set(), object(), lambda x: x, type, None, 0j, 1j,
+            NotImplemented, ...,
         )
 
         for invalid_input in examples:
@@ -95,41 +108,30 @@ class TestLoad(unittest.TestCase):
         r"""Load `tokenizer.json`."""
         msg = 'Inconsistent `tokenizer.json` format.'
         examples = (
-            'iamtestiamtestiamtestiamtestiamtest',
-            'iamtestiamtestiamtestiamtestiamtest',
-            'IAMTESTIAMTESTIAMTESTIAMTESTIAMTEST',
-            'IAMTESTIAMTESTIAMTESTIAMTESTIAMTEST',
+            ('is_uncased', bool),
+            ('token_to_id', list),
         )
 
-        for experiment in examples:
-            for tokenizer in self.tokenizers:
-                tokenizer.save(experiment)
+        for tokenizer in self.tokenizers:
+            test_path = os.path.join(self.__class__.test_dir, 'tokenizer.json')
 
-                file_dir = os.path.join(
-                    DATA_PATH,
-                    experiment
-                )
-                file_path = os.path.join(
-                    file_dir,
-                    'tokenizer.json'
-                )
-                with open(file_path, 'r', encoding='utf-8') as input_file:
+            try:
+                # Create test file.
+                tokenizer.save(self.__class__.experiment)
+                with open(test_path, 'r', encoding='utf-8') as input_file:
                     obj = json.load(input_file)
 
-                self.assertEqual(
-                    tokenizer.is_uncased,
-                    obj['is_uncased'],
-                    msg=msg
-                )
-                self.assertEqual(
-                    tokenizer.token_to_id,
-                    obj['token_to_id'],
-                    msg=msg
-                )
-
+                for attr_key, attr_type in examples:
+                    self.assertIn(attr_key, obj, msg=msg)
+                    self.assertIsInstance(obj[attr_key], attr_type, msg=msg)
+                    self.assertEqual(
+                        obj[attr_key],
+                        getattr(tokenizer, attr_key),
+                        msg=msg
+                    )
+            finally:
                 # Clean up test case.
-                os.remove(file_path)
-                os.removedirs(file_dir)
+                os.remove(test_path)
 
 
 if __name__ == '__main__':

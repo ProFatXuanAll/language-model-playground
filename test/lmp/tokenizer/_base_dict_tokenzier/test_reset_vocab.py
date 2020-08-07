@@ -1,4 +1,4 @@
-r"""Test `lmp.tokenizer.CharDictTokenizer.reset_vocab`.
+r"""Test `lmp.tokenizer.BaseDictTokenizer.reset_vocab`.
 
 Usage:
     python -m unittest \
@@ -18,16 +18,16 @@ import unittest
 
 # self-made modules
 
-from lmp.tokenizer import CharDictTokenizer
+from lmp.tokenizer import BaseDictTokenizer
 
 
 class TestResetVocab(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.CharDictTokenizer.reset_vocab`."""
+    r"""Test Case for `lmp.tokenizer.BaseDictTokenizer.reset_vocab`."""
 
     def setUp(self):
         r"""Setup both cased and uncased tokenizer instances."""
-        self.cased_tokenizer = CharDictTokenizer()
-        self.uncased_tokenizer = CharDictTokenizer(is_uncased=True)
+        self.cased_tokenizer = BaseDictTokenizer()
+        self.uncased_tokenizer = BaseDictTokenizer(is_uncased=True)
         self.tokenizers = [self.cased_tokenizer, self.uncased_tokenizer]
 
     def tearDown(self):
@@ -42,7 +42,7 @@ class TestResetVocab(unittest.TestCase):
         msg = 'Inconsistent method signature.'
 
         self.assertEqual(
-            inspect.signature(CharDictTokenizer.reset_vocab),
+            inspect.signature(BaseDictTokenizer.reset_vocab),
             inspect.Signature(
                 parameters=[
                     inspect.Parameter(

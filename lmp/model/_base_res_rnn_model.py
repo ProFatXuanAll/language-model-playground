@@ -4,7 +4,7 @@ Usage:
     from torch.utils.data import DataLoader
     import lmp
 
-    model = lmp.model.BaseResidualRNNModel(...)
+    model = lmp.model.BaseResRNNModel(...)
     tokenizer = lmp.tokenizer.CharDictTokenizer(...)
     dataset = lmp.dataset.BaseDataset(...)
     dataloader = DataLoader(
@@ -12,7 +12,7 @@ Usage:
         collate_fn=dataset.create_collate_fn(tokenizer)
     )
     for x, y in dataloader:
-        pred = model(x)
+        pred_logits = model(x)
 """
 
 # built-in modules
@@ -30,7 +30,7 @@ import torch.nn
 import lmp.model
 
 
-class BaseResidualRNNModel(torch.nn.Module):
+class BaseResRNNModel(torch.nn.Module):
     r"""Language model with residual RNN blocks.
 
     Each input token will first be embedded into vectors, then sequentially
@@ -84,50 +84,51 @@ class BaseResidualRNNModel(torch.nn.Module):
             padding_idx=pad_token_id
         )
 
-        self.linear_layer_tran = torch.nn.Linear(
+        # Project d_emb to d_jid
+        # Dimension: (E, H)
+        self.proj_emb_to_hid = torch.nn.Linear(
             in_features=d_emb,
             out_features=d_hid
         )
 
-        # Sequential RNN blocks
-        # Dimension: (E, E)
+        # Sequential RNN layers.
+        # Dimension: (H, H)
         rnn_blocks = []
         for _ in range(num_rnn_layers):
             rnn_blocks.append(
                 lmp.model.BaseResRNNBlock(
-                    d_in=d_hid,
-                    d_out=d_hid,
+                    d_hid=d_hid,
                     dropout=dropout
                 )
             )
 
-        self.rnn_blocks = torch.nn.Sequential(*rnn_blocks)
+        self.rnn_layer = torch.nn.Sequential(*rnn_blocks)
 
         # Sequential linear layer
         # Dimension: (H, E)
-        linear_layers = []
+        proj_hid_to_emb = []
         for _ in range(num_linear_layers):
-            linear_layers.append(
+            proj_hid_to_emb.append(
                 torch.nn.Linear(
                     in_features=d_hid,
                     out_features=d_hid
                 )
             )
-            linear_layers.append(
+            proj_hid_to_emb.append(
                 torch.nn.ReLU()
             )
-            linear_layers.append(
+            proj_hid_to_emb.append(
                 torch.nn.Dropout(dropout)
             )
 
-        linear_layers.append(
+        proj_hid_to_emb.append(
             torch.nn.Linear(
                 in_features=d_hid,
                 out_features=d_emb
             )
         )
 
-        self.linear_layers = torch.nn.Sequential(*linear_layers)
+        self.proj_hid_to_emb = torch.nn.Sequential(*proj_hid_to_emb)
 
     def forward(
             self,
@@ -151,15 +152,15 @@ class BaseResidualRNNModel(torch.nn.Module):
 
         # 將每個 embedding vectors 經由 linear 轉換 得到輸出 hidden vectors
         # ht 維度: (B, S, H)
-        ht = self.linear_layer_tran(batch_sequences)
+        ht = self.proj_emb_to_hid(batch_sequences)
 
         # 將每個 embedding vectors 依序經由 RNN 輸入 得到輸出 hidden vectors
         # ht 維度: (B, S, H)
-        ht = self.rnn_blocks(ht)
+        ht = self.rnn_layer(ht)
 
         # 將每個 hidden vectors 轉換維度至 embedding dimension
         # ht 維度: (B, S, E)
-        ht = self.linear_layers(ht)
+        ht = self.proj_hid_to_emb(ht)
 
         # 與轉置後的 embedding matrix 進行矩陣乘法取得預測文字
         # 重複使用 embedding matrix 的目的為節省參數數量

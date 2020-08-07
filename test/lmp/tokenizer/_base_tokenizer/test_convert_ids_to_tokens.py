@@ -54,8 +54,7 @@ class TestConvertIdsToTokens(unittest.TestCase):
     def test_abstract_method(self):
         r"""Raise `NotImplementedError` when subclass did not implement."""
         msg1 = (
-            'Must raise `NotImplementedError` when subclass did not '
-            'implement.'
+            'Must raise `NotImplementedError` when subclass did not implement.'
         )
         msg2 = 'Inconsistent error message.'
         examples = (True, False)
@@ -63,7 +62,7 @@ class TestConvertIdsToTokens(unittest.TestCase):
         # pylint: disable=W0223
         # pylint: disable=W0231
         class SubClassTokenizer(BaseTokenizer):
-            r"""Intented to not implement `convert_ids_to_tokens`."""
+            r"""Intented to not implement `convert_id_to_token`."""
 
             def reset_vocab(self):
                 pass

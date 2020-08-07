@@ -56,8 +56,7 @@ class TestDetokenize(unittest.TestCase):
     def test_abstract_method(self):
         r"""Raise `NotImplementedError` when subclass did not implement."""
         msg1 = (
-            'Must raise `NotImplementedError` when subclass did not '
-            'implement.'
+            'Must raise `NotImplementedError` when subclass did not implement.'
         )
         msg2 = 'Inconsistent error message.'
         examples = (True, False)
@@ -66,9 +65,6 @@ class TestDetokenize(unittest.TestCase):
         # pylint: disable=W0231
         class SubClassTokenizer(BaseListTokenizer):
             r"""Intented to not implement `detokenize`."""
-
-            def reset_vocab(self):
-                pass
         # pylint: enable=W0231
         # pylint: enable=W0223
 

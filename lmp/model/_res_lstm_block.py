@@ -1,6 +1,8 @@
-r"""Residual LSTM block.
+r"""LSTM residual block.
 
 Usage:
+    import lmp
+
     block = lmp.model.ResLSTMBlock(...)
     logits = block(...)
 """
@@ -23,12 +25,10 @@ from lmp.model._base_res_rnn_block import BaseResRNNBlock
 
 
 class ResLSTMBlock(BaseResRNNBlock):
-    r"""Residual block with LSTM layers.
+    r"""LSTM residual block.
 
     Args:
-        d_in:
-            Input data's vector dimension.
-        d_out:
+        d_hid:
             GRU layers hidden dimension.
         dropout:
             Dropout probability on all layers out (except output layer).
@@ -36,21 +36,17 @@ class ResLSTMBlock(BaseResRNNBlock):
 
     def __init__(
         self,
-        d_in: int,
-        d_out: int,
+        d_hid: int,
         dropout: float
     ):
         super().__init__(
-            d_in=d_in,
-            d_out=d_out,
+            d_hid=d_hid,
             dropout=dropout
         )
 
         # Override RNN layer with LSTM layer.
         self.rnn_layer = torch.nn.LSTM(
-            input_size=d_in,
-            hidden_size=d_out,
-            num_layers=1,
-            dropout=dropout,
+            input_size=d_hid,
+            hidden_size=d_hid,
             batch_first=True
         )

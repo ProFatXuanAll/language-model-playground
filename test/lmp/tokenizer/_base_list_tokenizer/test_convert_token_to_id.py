@@ -1,4 +1,4 @@
-r"""Test `lmp.tokenizer.CharListTokenizer.convert_token_to_id`.
+r"""Test `lmp.tokenizer.BaseListTokenizer.convert_token_to_id`.
 
 Usage:
     python -m unittest \
@@ -19,16 +19,16 @@ import unittest
 
 # self-made modules
 
-from lmp.tokenizer import CharListTokenizer
+from lmp.tokenizer import BaseListTokenizer
 
 
 class TestConvertTokenToId(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.CharListTokenizer.convert_token_to_id`."""
+    r"""Test Case for `lmp.tokenizer.BaseListTokenizer.convert_token_to_id`."""
 
     def setUp(self):
         r"""Setup both cased and uncased tokenizer instances."""
-        self.cased_tokenizer = CharListTokenizer()
-        self.uncased_tokenizer = CharListTokenizer(is_uncased=True)
+        self.cased_tokenizer = BaseListTokenizer()
+        self.uncased_tokenizer = BaseListTokenizer(is_uncased=True)
         self.tokenizers = [self.cased_tokenizer, self.uncased_tokenizer]
 
     def tearDown(self):
@@ -43,7 +43,7 @@ class TestConvertTokenToId(unittest.TestCase):
         msg = 'Inconsistent method signature.'
 
         self.assertEqual(
-            inspect.signature(CharListTokenizer.convert_token_to_id),
+            inspect.signature(BaseListTokenizer.convert_token_to_id),
             inspect.Signature(
                 parameters=[
                     inspect.Parameter(
@@ -68,8 +68,9 @@ class TestConvertTokenToId(unittest.TestCase):
         msg1 = 'Must raise `TypeError` when input is invalid.'
         msg2 = 'Inconsistent error message.'
         examples = (
-            0, 1, -1, 0.0, 1.0, math.nan, math.inf, True, False, b'',
+            0, 1, -1, 0.0, 1.0, math.nan, math.inf, True, False, b'', 0j, 1j,
             [], (), {}, set(), object(), lambda x: x, type, None,
+            NotImplemented, ...,
         )
 
         for invalid_input in examples:

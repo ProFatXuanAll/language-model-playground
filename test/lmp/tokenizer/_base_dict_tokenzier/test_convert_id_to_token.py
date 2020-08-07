@@ -1,4 +1,4 @@
-r"""Test `lmp.tokenizer.CharDictTokenizer.convert_id_to_token`.
+r"""Test `lmp.tokenizer.BaseDictTokenizer.convert_id_to_token`.
 
 Usage:
     python -m unittest \
@@ -19,16 +19,16 @@ import unittest
 
 # self-made modules
 
-from lmp.tokenizer import CharDictTokenizer
+from lmp.tokenizer import BaseDictTokenizer
 
 
 class TestConvertIdToToken(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.CharDictTokenizer.convert_id_to_token`."""
+    r"""Test Case for `lmp.tokenizer.BaseDictTokenizer.convert_id_to_token`."""
 
     def setUp(self):
         r"""Setup both cased and uncased tokenizer instances."""
-        self.cased_tokenizer = CharDictTokenizer()
-        self.uncased_tokenizer = CharDictTokenizer(is_uncased=True)
+        self.cased_tokenizer = BaseDictTokenizer()
+        self.uncased_tokenizer = BaseDictTokenizer(is_uncased=True)
         self.tokenizers = [self.cased_tokenizer, self.uncased_tokenizer]
 
     def tearDown(self):
@@ -43,7 +43,7 @@ class TestConvertIdToToken(unittest.TestCase):
         msg = 'Inconsistent method signature.'
 
         self.assertEqual(
-            inspect.signature(CharDictTokenizer.convert_id_to_token),
+            inspect.signature(BaseDictTokenizer.convert_id_to_token),
             inspect.Signature(
                 parameters=[
                     inspect.Parameter(
@@ -68,8 +68,8 @@ class TestConvertIdToToken(unittest.TestCase):
         msg1 = 'Must raise `TypeError` when input is invalid.'
         msg2 = 'Inconsistent error message.'
         examples = (
-            0.0, 1.0, math.nan, math.inf, b'',
-            [], (), {}, set(), object(), lambda x: x, type, None,
+            0.0, 1.0, math.nan, math.inf, b'',  0j, 1j, [], (),
+            {}, set(), object(), lambda x: x, type, None, NotImplemented, ...
         )
 
         for invalid_input in examples:

@@ -108,7 +108,7 @@ def load_model(
             vocab_size=vocab_size
         )
     elif model_class == 'res_rnn':
-        model = lmp.model.BaseResidualRNNModel(
+        model = lmp.model.BaseResRNNModel(
             d_emb=d_emb,
             d_hid=d_hid,
             dropout=dropout,
@@ -118,7 +118,7 @@ def load_model(
             vocab_size=vocab_size
         )
     elif model_class == 'res_gru':
-        model = lmp.model.ResidualGRUModel(
+        model = lmp.model.ResGRUModel(
             d_emb=d_emb,
             d_hid=d_hid,
             dropout=dropout,
@@ -128,7 +128,7 @@ def load_model(
             vocab_size=vocab_size
         )
     elif model_class == 'res_lstm':
-        model = lmp.model.ResidualLSTMModel(
+        model = lmp.model.ResLSTMModel(
             d_emb=d_emb,
             d_hid=d_hid,
             dropout=dropout,
