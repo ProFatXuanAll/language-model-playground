@@ -98,5 +98,7 @@ class ResGRUModel(BaseResRNNModel):
                     dropout=dropout
                 )
             )
-
+        rnn_blocks.append(
+            torch.nn.Dropout(dropout)
+        )
         self.rnn_layer = torch.nn.Sequential(*rnn_blocks)

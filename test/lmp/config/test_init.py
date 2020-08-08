@@ -767,6 +767,44 @@ class TestInit(unittest.TestCase):
             else:
                 self.fail(msg=msg1)
 
+    def test_invalid_seed(self):
+        r"""Raise when `seed` is invalid."""
+        msg1 = (
+            'Must raise `TypeError` or `ValueError` when `seed` is invalid.'
+        )
+        msg2 = 'Inconsistent error message.'
+        examples = (
+            False, 0, -1, 0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf,
+            0j, 1j, '', b'', [], (), {}, set(), object(), lambda x: x, type,
+            None, NotImplemented, ...
+        )
+
+        for invalid_input in examples:
+            with self.assertRaises(
+                    (TypeError, ValueError),
+                    msg=msg1
+            ) as ctx_man:
+                BaseConfig(
+                    dataset='test',
+                    experiment='test',
+                    seed=invalid_input
+                )
+
+            if isinstance(ctx_man.exception, TypeError):
+                self.assertEqual(
+                    ctx_man.exception.args[0],
+                    '`seed` must be instance of `int`.',
+                    msg=msg2
+                )
+            elif isinstance(ctx_man.exception, ValueError):
+                self.assertEqual(
+                    ctx_man.exception.args[0],
+                    '`seed` must be bigger than or equal to `1`.',
+                    msg=msg2
+                )
+            else:
+                self.fail(msg=msg1)
+
     def test_invalid_tokenizer_class(self):
         r"""Raise when `tokenizer_class` is invalid."""
         msg1 = (
@@ -801,44 +839,6 @@ class TestInit(unittest.TestCase):
                 self.assertEqual(
                     ctx_man.exception.args[0],
                     '`tokenizer_class` must not be empty.',
-                    msg=msg2
-                )
-            else:
-                self.fail(msg=msg1)
-
-    def test_invalid_seed(self):
-        r"""Raise when `seed` is invalid."""
-        msg1 = (
-            'Must raise `TypeError` or `ValueError` when `seed` is invalid.'
-        )
-        msg2 = 'Inconsistent error message.'
-        examples = (
-            False, 0, -1, 0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf,
-            0j, 1j, '', b'', [], (), {}, set(), object(), lambda x: x, type,
-            None, NotImplemented, ...
-        )
-
-        for invalid_input in examples:
-            with self.assertRaises(
-                    (TypeError, ValueError),
-                    msg=msg1
-            ) as ctx_man:
-                BaseConfig(
-                    dataset='test',
-                    experiment='test',
-                    seed=invalid_input
-                )
-
-            if isinstance(ctx_man.exception, TypeError):
-                self.assertEqual(
-                    ctx_man.exception.args[0],
-                    '`seed` must be instance of `int`.',
-                    msg=msg2
-                )
-            elif isinstance(ctx_man.exception, ValueError):
-                self.assertEqual(
-                    ctx_man.exception.args[0],
-                    '`seed` must be bigger than or equal to `1`.',
                     msg=msg2
                 )
             else:

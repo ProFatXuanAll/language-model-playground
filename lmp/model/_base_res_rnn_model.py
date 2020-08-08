@@ -75,6 +75,47 @@ class BaseResRNNModel(torch.nn.Module):
             vocab_size: int
     ):
         super().__init__()
+        # Type check.
+        if not isinstance(d_emb, int):
+            raise TypeError('`d_emb` must be instance of `int`.')
+
+        if not isinstance(d_hid, int):
+            raise TypeError('`d_hid` must be instance of `int`.')
+
+        if not isinstance(dropout, float):
+            raise TypeError('`dropout` must be instance of `float`.')
+
+        if not isinstance(num_linear_layers, int):
+            raise TypeError('`num_linear_layers` must be instance of `int`.')
+
+        if not isinstance(num_rnn_layers, int):
+            raise TypeError('`num_rnn_layers` must be instance of `int`.')
+
+        if not isinstance(pad_token_id, int):
+            raise TypeError('`pad_token_id` must be instance of `int`.')
+
+        if not isinstance(vocab_size, int):
+            raise TypeError('`vocab_size` must be instance of `int`.')
+
+        # Value Check.
+        if d_emb < 1:
+            raise ValueError('`d_emb` must be bigger than or equal to `1`.')
+
+        if d_hid < 1:
+            raise ValueError('`d_hid` must be bigger than or equal to `1`.')
+
+        if not (0 <= dropout <= 1):
+            raise ValueError('`dropout` must range from `0.0` to `1.0`.')
+
+        if num_linear_layers < 1:
+            raise ValueError(
+                '`num_linear_layers` must be bigger than or equal to `1`.'
+            )
+
+        if num_rnn_layers < 1:
+            raise ValueError(
+                '`num_rnn_layers` must be bigger than or equal to `1`.'
+            )
 
         # Embedding layer
         # Dimension: (V, E)
@@ -83,13 +124,23 @@ class BaseResRNNModel(torch.nn.Module):
             embedding_dim=d_emb,
             padding_idx=pad_token_id
         )
+        self.dropout = torch.nn.Dropout(dropout)
+
 
         # Project d_emb to d_jid
         # Dimension: (E, H)
-        self.proj_emb_to_hid = torch.nn.Linear(
-            in_features=d_emb,
-            out_features=d_hid
+        proj_emb_to_hid = []
+        proj_emb_to_hid.append(
+            torch.nn.Linear(
+                in_features=d_emb,
+                out_features=d_hid
+            )
         )
+        proj_emb_to_hid.append(
+            torch.nn.Dropout(dropout)
+        )
+        self.proj_emb_to_hid = torch.nn.Sequential(*proj_emb_to_hid)
+
 
         # Sequential RNN layers.
         # Dimension: (H, H)
@@ -101,10 +152,12 @@ class BaseResRNNModel(torch.nn.Module):
                     dropout=dropout
                 )
             )
-
+        rnn_blocks.append(
+            torch.nn.Dropout(dropout)
+        )
         self.rnn_layer = torch.nn.Sequential(*rnn_blocks)
 
-        # Sequential linear layer
+        # Sequential linear layer.
         # Dimension: (H, E)
         proj_hid_to_emb = []
         for _ in range(num_linear_layers):
@@ -144,11 +197,17 @@ class BaseResRNNModel(torch.nn.Module):
         Returns:
             Logits for each token in sequences with numeric type `torch.float32`.
         """
+        # Type check
+        if not isinstance(batch_sequences, torch.Tensor):
+            raise TypeError('`batch_sequences` must be instance of `Tensor`.')
+
         # 將 batch_sequences 中的所有 token_id 經過 embedding matrix
         # 轉換成 embedding vectors (共有 (B, S) 個維度為 E 的向量)
         # embedding 前的 batch_sequences 維度: (B, S)
         # embedding 後的 batch_sequences 維度: (B, S, E)
         batch_sequences = self.embedding_layer(batch_sequences)
+
+        batch_sequences = self.dropout(batch_sequences)
 
         # 將每個 embedding vectors 經由 linear 轉換 得到輸出 hidden vectors
         # ht 維度: (B, S, H)
@@ -183,4 +242,8 @@ class BaseResRNNModel(torch.nn.Module):
         Returns:
             Predicition using softmax on model output logits with numeric type `torch.float32`.
         """
+        # Type check
+        if not isinstance(batch_sequences, torch.Tensor):
+            raise TypeError('`batch_sequences` must be instance of `Tensor`.')
+
         return torch.nn.functional.softmax(self(batch_sequences), dim=-1)
