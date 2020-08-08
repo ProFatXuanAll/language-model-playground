@@ -80,9 +80,9 @@ class LSTMModel(BaseRNNModel):
 
         # Override RNN layer with LSTM layer.
         self.rnn_layer = torch.nn.LSTM(
-            input_size=d_emb,
-            hidden_size=d_hid,
-            num_layers=num_rnn_layers,
-            dropout=dropout,
-            batch_first=True
-        )
+                input_size=d_emb,
+                hidden_size=d_hid,
+                num_layers=num_rnn_layers,
+                dropout=dropout,
+                batch_first=True
+            )

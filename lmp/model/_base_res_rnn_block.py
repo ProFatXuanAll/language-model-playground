@@ -38,6 +38,19 @@ class BaseResRNNBlock(torch.nn.Module):
         dropout: float
     ):
         super().__init__()
+        # Type check.
+        if not isinstance(d_hid, int):
+            raise TypeError('`d_hid` must be instance of `int`.')
+
+        if not isinstance(dropout, float):
+            raise TypeError('`dropout` must be instance of `float`.')
+
+        # Value Check.
+        if d_hid < 1:
+            raise ValueError('`d_hid` must be bigger than or equal to `1`.')
+
+        if not (0 <= dropout <= 1):
+            raise ValueError('`dropout` must range from `0.0` to `1.0`.')
 
         self.rnn_layer = torch.nn.RNN(
             input_size=d_hid,
@@ -48,6 +61,10 @@ class BaseResRNNBlock(torch.nn.Module):
         self.dropout = torch.nn.Dropout(dropout)
         self.act_fn = torch.nn.ReLU()
 
-    def forward(self, x: torch.Tensor):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        # Type check
+        if not isinstance(x, torch.Tensor):
+            raise TypeError('`x` must be instance of `Tensor`.')
+
         ht, _ = self.rnn_layer(x)
         return self.act_fn(self.dropout(ht + x))

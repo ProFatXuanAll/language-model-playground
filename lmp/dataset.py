@@ -11,6 +11,8 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from typing import Generator
+from typing import Iterable
 from typing import List
 from typing import Tuple
 
@@ -40,12 +42,23 @@ class BaseDataset(torch.utils.data.Dataset):
 
     def __init__(
             self,
-            batch_sequences: List[str]
+            batch_sequences: Iterable[str]
     ):
         super().__init__()
+        # Type check.
+        if not isinstance(batch_sequences, Iterable):
+            raise TypeError(
+                '`batch_sequences` must be instance of `Iterable[str]`.'
+            )
+        batch_sequences = list(batch_sequences)
+        if any(map(lambda sequence: not isinstance(sequence, str), batch_sequences)):
+            raise TypeError(
+                '`batch_sequences` must be instance of `Iterable[str]`.'
+            )
+
         self.batch_sequences = batch_sequences
 
-    def __iter__(self):
+    def __iter__(self) -> Generator[str, None, None]:
         r"""Iterate each sample in the dataset."""
         for sequence in self.batch_sequences:
             yield sequence
@@ -56,6 +69,10 @@ class BaseDataset(torch.utils.data.Dataset):
 
     def __getitem__(self, index: int) -> str:
         r"""Sample single sequence using index."""
+        # Type check.
+        if not isinstance(index, int):
+            raise TypeError('`index` must be instance of `int`.')
+
         return self.batch_sequences[index]
 
     @staticmethod
@@ -76,16 +93,36 @@ class BaseDataset(torch.utils.data.Dataset):
             max_seq_len:
                 Mini-batch's maximum encoded sequence length.
 
+        Raises:
+            TypeError:
+                When `tokenizer` is not instance of
+                `lmp.tokenizer.BaseTokenizer` or `max_seq_len` is not instance
+                of `int`.
+
         Returns:
             A function used by `torch.utils.data.DataLoader`.
         """
-        def collate_fn(batch_sequences: List[str]) -> CollateFnReturn:
+        # Type check
+        if not isinstance(tokenizer, lmp.tokenizer.BaseTokenizer):
+            raise TypeError(
+                '`tokenizer` must be instance of '
+                '`lmp.tokenizer.BaseTokenizer`.'
+            )
+        if not isinstance(max_seq_len, int):
+            raise TypeError(
+                '`max_seq_len` must be instance of `int`.'
+            )
+        def collate_fn(batch_sequences: Iterable[str]) -> CollateFnReturn:
             r"""Function used by `torch.utils.data.DataLoader`.
 
             Each sequence in `batch_sequences` will be first tokenized and
             encoded by `tokenizer`, the returned batch of tokens' ids will
             have exact same length. We construct training samples following
             language model format.
+
+            Raises:
+                TypeError:
+                    When `batch_sequences` is not instance of `Iterable[str]`.
 
             Returns:
                 x:
@@ -95,6 +132,14 @@ class BaseDataset(torch.utils.data.Dataset):
                     Model predict target for each token id in `x` with numeric
                     type `torch.int64`.
             """
+            if not isinstance(batch_sequences, Iterable):
+                raise TypeError(
+                    '`batch_sequences` must be instance of `Iterable[str]`.'
+                )
+            if any(map(lambda sequence: not isinstance(sequence, str), batch_sequences)):
+                raise TypeError(
+                    '`batch_sequences` must be instance of `Iterable[str]`.'
+                )
             batch_token_ids = torch.LongTensor(
                 tokenizer.batch_encode(
                     batch_sequences,

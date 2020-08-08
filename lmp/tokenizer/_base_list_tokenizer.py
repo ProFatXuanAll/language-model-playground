@@ -429,7 +429,7 @@ class BaseListTokenizer(BaseTokenizer):
 
         batch_sequences = list(batch_sequences)
 
-        if not any([isinstance(sequence, str) for sequence in batch_sequences]):
+        if any([not isinstance(sequence, str) for sequence in batch_sequences]):
             raise TypeError(
                 '`batch_sequences` must be instance of `Iterable[str]`.'
             )
