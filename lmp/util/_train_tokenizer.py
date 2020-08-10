@@ -21,7 +21,7 @@ import lmp.tokenizer
 
 
 def train_tokenizer(
-        dataset: lmp.dataset.BaseDataset,
+        dataset: lmp.dataset.LanguageModelDataset,
         min_count: int,
         tokenizer: lmp.tokenizer.BaseTokenizer
 ):
@@ -43,7 +43,7 @@ def train_tokenizer(
 
 def train_tokenizer_by_config(
         config: lmp.config.BaseConfig,
-        dataset: lmp.dataset.BaseDataset,
+        dataset: lmp.dataset.LanguageModelDataset,
         tokenizer: lmp.tokenizer.BaseTokenizer
 ):
     r"""Helper function for training tokenizer.

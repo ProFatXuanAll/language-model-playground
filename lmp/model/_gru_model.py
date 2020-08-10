@@ -6,7 +6,7 @@ Usage:
 
     model = lmp.model.GRUModel(...)
     tokenizer = lmp.tokenizer.CharDictTokenizer(...)
-    dataset = lmp.dataset.BaseDataset(...)
+    dataset = lmp.dataset.LanguageModelDataset(...)
     dataloader = DataLoader(
         dataset=dataset,
         collate_fn=dataset.create_collate_fn(tokenizer)

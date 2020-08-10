@@ -1,7 +1,9 @@
-r"""preprocessing training dataset.
+r"""Dataset for training language model.
 
 Usage:
-    dataset = lmp.dataset.BaseDataset(...)
+    import lmp.dataset
+
+    dataset = lmp.dataset.LanguageModelDataset(...)
 """
 
 # built-in modules
@@ -11,6 +13,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from typing import Callable
 from typing import List
 from typing import Tuple
 
@@ -28,9 +31,13 @@ CollateFnReturn = Tuple[
     torch.Tensor,
     torch.Tensor
 ]
+CollateFn = Callable[
+    [List[str]],
+    CollateFnReturn
+]
 
 
-class BaseDataset(torch.utils.data.Dataset):
+class LanguageModelDataset(torch.utils.data.Dataset):
     r"""Dataset class for generating language model samples.
 
     Attributes:

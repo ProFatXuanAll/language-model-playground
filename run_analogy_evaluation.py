@@ -1,3 +1,4 @@
+
 # built-in modules
 
 from __future__ import absolute_import
@@ -16,7 +17,7 @@ import torch
 import lmp
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     # Required arguments.
@@ -25,6 +26,12 @@ if __name__ == "__main__":
         help='Load specific checkpoint.',
         required=True,
         type=int
+    )
+    parser.add_argument(
+        '--dataset',
+        help='Name of the dataset to perform analogy.',
+        required=True,
+        type=str,
     )
     parser.add_argument(
         '--experiment',
@@ -50,14 +57,17 @@ if __name__ == "__main__":
         config=config,
         tokenizer=tokenizer
     )
-    dataset=lmp.analogy_dataset.AnalogyDataset()
+
+    dataset = lmp.util.load_dataset(args.dataset)
+
     dataloader= torch.utils.data.DataLoader(
         dataset,
         batch_size=32,
-        # shuffle=True,
+        collate_fn=lmp.dataset.AnalogyDataset.create_collate_fn(tokenizer=tokenizer)
     )
+
     # test syntatic and semantic score
-    lmp.util.syntatic_and_semantic_test(
+    lmp.util.analogy_evaluation(
         device=config.device,
         model=model,
         data_loader=dataloader,

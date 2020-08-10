@@ -204,7 +204,7 @@ def train_model(
 def train_model_by_config(
         checkpoint: int,
         config: lmp.config.BaseConfig,
-        dataset: lmp.dataset.BaseDataset,
+        dataset: lmp.dataset.LanguageModelDataset,
         model: lmp.model.BaseRNNModel,
         optimizer: Union[
             torch.optim.SGD,
@@ -233,7 +233,7 @@ def train_model_by_config(
             Tokenizer object with attribute `vocab_size`.
     """
     # Create collate_fn for sampling.
-    collate_fn = lmp.dataset.BaseDataset.create_collate_fn(
+    collate_fn = lmp.dataset.LanguageModelDataset.create_collate_fn(
         tokenizer=tokenizer,
         max_seq_len=config.max_seq_len
     )
