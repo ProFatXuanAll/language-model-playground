@@ -28,7 +28,7 @@ def predict_word(
     Args:
         model:
             Language model.
-        input:
+        test_data:
             To get test data.
         device:
             Compute running device.
@@ -80,7 +80,7 @@ def analogy_inference(
             Language model.
         tokenizer:
             Tokenizer for get vocab_size, convert word id to word and contrast.
-        input:
+        test_data:
             To get test data.
     """
     result = predict_word(
