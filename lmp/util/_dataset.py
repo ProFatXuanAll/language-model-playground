@@ -15,10 +15,12 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import os
+import re
 
 # 3rd-party modules
 
 import pandas as pd
+import torch.utils.data
 
 # self-made modules
 
@@ -27,9 +29,58 @@ import lmp.dataset
 import lmp.path
 
 
+def _Preprocess_news_collection(
+        column: str) -> lmp.dataset.LanguageModelDataset:
+    file_path = f'{lmp.path.DATA_PATH}/news_collection.csv'
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(
+            f'file {file_path} does not exist.'
+        )
+    df = pd.read_csv(file_path)
+    batch_sequences = df[column].to_list()
+    return lmp.dataset.LanguageModelDataset(batch_sequences)
+
+
+def _Preprocess_wiki_tokens(dataset: str) -> lmp.dataset.LanguageModelDataset:
+    # preprocess and convert to LanguageModelDataset
+    file_path = f'{lmp.path.DATA_PATH}/wiki.train.tokens'
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(
+            f'file {file_path} does not exist.'
+        )
+    with open(file_path, 'r', encoding='utf8') as f:
+        df = f.read()
+
+    batch_sequences = list(filter(None, re.split(' =', df.replace('\n', ' '))))
+    return lmp.dataset.LanguageModelDataset(batch_sequences)
+
+
+def _Preprocess_word_test_v1_tokens(
+) -> lmp.dataset.AnalogyDataset:
+    # preprocess and convert to LanguageModelDataset
+    file_path = f'{lmp.path.DATA_PATH}/word-test_v1.txt'
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(
+            f'file {file_path} does not exist.'
+        )
+    with open(file_path, 'r', encoding='utf8') as txt_file:
+        samples = [line.strip() for line in txt_file.readlines()]
+
+    # Parsing.
+    category = ''
+    parsing_samples = []
+    for sample in samples:
+        if re.match(r'^:', sample):
+            category = sample[2:]
+            continue
+
+        parsing_samples.append(re.split(r'\s+', sample)[:4] + [category])
+    return lmp.dataset.AnalogyDataset(parsing_samples)
+
+
 def load_dataset(
         dataset: str
-) -> lmp.dataset.BaseDataset:
+) -> torch.utils.data.Dataset:
     r"""Load dataset from downloaded files.
 
     Args:
@@ -43,46 +94,25 @@ def load_dataset(
             If `dataset` does not exist.
 
     Returns:
-        `lmp.dataset.BaseDataset` instance where samples are sequences.
+        `lmp.dataset.LanguageModelDataset` instance where samples are sequences.
     """
     if dataset == 'news_collection_desc':
-        file_path = f'{lmp.path.DATA_PATH}/news_collection.csv'
-        if not os.path.exists(file_path):
-            raise FileNotFoundError(
-                f'file {file_path} does not exist.'
-            )
-        df = pd.read_csv(file_path)
-        batch_sequences = df['desc'].to_list()
-        return lmp.dataset.BaseDataset(batch_sequences)
+        return _Preprocess_news_collection(column='desc')
+
     if dataset == 'news_collection_title':
-        file_path = f'{lmp.path.DATA_PATH}/news_collection.csv'
-        if not os.path.exists(file_path):
-            raise FileNotFoundError(
-                f'file {file_path} does not exist.'
-            )
-        df = pd.read_csv(file_path)
-        batch_sequences = df['title'].to_list()
-        return lmp.dataset.BaseDataset(batch_sequences)
-    if dataset[0:4] == 'data' and len(dataset)>4:
-        file_path = f'{lmp.path.DATA_PATH}/'+dataset+'.txt'
-        if not os.path.exists(file_path):
-            raise FileNotFoundError(
-                f'file {file_path} does not exist.'
-            )
-        with open(file_path,'r',encoding='utf8') as f:
-            df=f.read()
-        df=df.split('.')
-        return lmp.dataset.BaseDataset(df)
-    if dataset == 'data':
-        file_path = f'{lmp.path.DATA_PATH}/data.txt'
-        if not os.path.exists(file_path):
-            raise FileNotFoundError(
-                f'file {file_path} does not exist.'
-            )
-        with open(file_path,'r',encoding='utf8') as f:
-            df=f.read()
-        df=df.split('.')
-        return lmp.dataset.BaseDataset(df)
+        return _Preprocess_news_collection(column='title')
+
+    if dataset == 'wiki_train_tokens':
+        return _Preprocess_wiki_tokens(dataset='train')
+
+    if dataset == 'wiki_valid_tokens':
+        return _Preprocess_wiki_tokens(dataset='valid')
+
+    if dataset == 'wiki_test_tokens':
+        return _Preprocess_wiki_tokens(dataset='test')
+
+    if dataset == 'word_test_v1':
+        return _Preprocess_word_test_v1_tokens()
 
     raise ValueError(
         f'dataset `{dataset}` does not support.\nSupported options:' +
@@ -91,6 +121,10 @@ def load_dataset(
             [
                 'news_collection_desc',
                 'news_collection_title',
+                'wiki_test_tokens',
+                'wiki_train_tokens',
+                'wiki_valid_tokens',
+                'word_test_v1'
             ]
         )))
     )
@@ -98,7 +132,7 @@ def load_dataset(
 
 def load_dataset_by_config(
         config: lmp.config.BaseConfig
-) -> lmp.dataset.BaseDataset:
+) -> torch.utils.data.Dataset:
     r"""Load dataset from downloaded files.
 
     Args:

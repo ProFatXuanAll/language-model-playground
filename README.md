@@ -13,6 +13,22 @@
 
 2. CUDA 版本: 10.0+
 
+### 下載資料集
+
+1. 新增資料夾 `data` 。
+
+```sh
+mkdir data
+```
+
+2. 下載中文資料集：從 kaggle 上下載 [news_colleciton.csv](https://www.kaggle.com/ceshine/yet-another-chinese-news-dataset)，並解壓縮 `zip` 檔後把資料放到 `data/news_collection.csv`。
+
+```sh
+unzip yet-another-chinese-news-dataset.zip && chmod 666 news_collection.csv && mv news_collection.csv data/news_collection.csv
+```
+
+3. 下載英文資料集：從 The WikiText Long Term Dependency Language Modeling Dataset 上下載 [WikiText-2](https://blog.einstein.ai/the-wikitext-long-term-dependency-language-modeling-dataset/)，並解壓縮 `zip` 檔後把資料放到 `data/wiki.train.tokens`, `data/wiki.valid.tokens`, `data/wiki.test.tokens`。
+
 ### 安裝
 
 1. 從 github 複製專案。
@@ -47,52 +63,55 @@ source venv/bin/active # 啟動虛擬環境
 pip install -r requirements.txt
 ```
 
-5. 新增資料夾 `data` 。
+### 訓練
 
-```sh
-mkdir data
-```
-
-6. 從 kanews_collection.csv 上下載 [news_colleciton.csv](https://www.kaggle.com/ceshine/yet-another-chinese-news-dataset)，並解壓縮 `zip` 檔後把資料放到 `data/news_collection.csv`。
-
-```sh
-unzip yet-another-chinese-news-dataset.zip && chmod 666 news_collection.csv && mv news_collection.csv data/news_collection.csv
-```
-
-7. 訓練範例模型。
+1. 訓練範例中文模型。
 
 ```sh
 python run_train.py --experiment 1 --batch_size 32 --checkpoint -1 --checkpoint_step 500 --d_emb 100 --d_hid 300 --dataset news_collection_title --dropout 0.1 --epoch 10 --is_uncased --learning_rate 1e-4 --max_norm 1.0 --max_seq_len 60 --min_count 1 --model_class lstm --num_linear_layers 1 --num_rnn_layers 1 --optimizer_class adam --seed 42 --tokenizer_class char_dict
 ```
 
-8. 使用 `tensorboard` 觀察模型誤差表現。
+2. 使用 `tensorboard` 觀察模型誤差表現。
 
 ```sh
 # 在 Windows 上路徑請用 `.\data\log`
 tensorboard --logdir ./data/log
 ```
 
-9. 指定訓練模型存檔點並生成範例句子。
+### 評估
 
-```sh
-# 使用第 500 步的存檔點進行句子生成
-python run_generate.py --experiment 1 --checkpoint 500 --begin_of_sequence 今天 --beam_width 4 --max_seq_len 60
-```
-
-10. 評估模型在資料集上的 perplexity 表現。
+1. 評估模型在資料集上的 perplexity 表現。
 
 ```sh
 # 使用第 500 步的存檔點進行表現評估
 python run_perplexity_evaluation.py --experiment 1 --checkpoint 500 --dataset news_collection_title
 ```
 
-11. 試著使用不同的超參數或更換模型並使用 `run_train.py` 重新訓練。接著使用 `run_generate.py` 給予相同 `begin_of_sequence` 進行生成並比較生成結果之不同。
+2. 評估模型進行詞向量的句法及語意測試（目前只有英文測試資料集）。
 
-12. 指定訓練模型進行詞向量的句法及語意測試(目前只有英文測試資料集，使用前請先將word-test.v1.txt移動到指定資料夾下)。
 ```sh
 # 使用第 500 步的存檔點進行測試
-python run_syntatic_and_semantic_test.py --experiment 2 --checkpoint 500
+python run_analogy_evaluation.py --experiment 1 --checkpoint 500
 ```
+
+### 驗證
+
+1. 指定訓練模型存檔點並生成範例句子。
+
+```sh
+# 使用第 500 步的存檔點進行句子生成
+python run_generate.py --experiment 1 --checkpoint 500 --begin_of_sequence 今天 --beam_width 4 --max_seq_len 60
+```
+
+2. 指定訓練模型存檔點並生成類比文字。
+
+```sh
+# 使用第 500 步的存檔點進行句子生成
+python run_analogy.py --experiment 1 --checkpoint 500 --word_a a --word_b b --word_c c
+```
+
+3. 試著使用不同的超參數或更換模型並使用 `run_train.py` 重新訓練。接著使用 `run_generate.py` 給予相同 `begin_of_sequence` 進行生成並比較生成結果之不同。
+
 ### 開發
 
 1. 請參考 [Google python style guide](https://google.github.io/styleguide/pyguide.html) 撰寫程式碼並使程式碼符合其風格。

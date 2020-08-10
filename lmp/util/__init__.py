@@ -43,4 +43,4 @@ from lmp.util._train_model import train_model
 from lmp.util._train_model import train_model_by_config
 from lmp.util._train_tokenizer import train_tokenizer
 from lmp.util._train_tokenizer import train_tokenizer_by_config
-from lmp.util._syntatic_and_semaintic_test import syntatic_and_semantic_test
+from lmp.util._analogy_evaluation import analogy_evaluation
