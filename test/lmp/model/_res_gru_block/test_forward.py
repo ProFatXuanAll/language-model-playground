@@ -91,21 +91,22 @@ class TestInit(unittest.TestCase):
             'Must raise `TypeError` when `x` is invalid.'
         )
         msg2 = 'Inconsistent error message.'
+        error_msg = "'{}' object has no attribute 'size'"
         examples = (
             False, 0, -1, 0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf,
-            0j, 1j, '', b'', [], (), {}, set(), object(), lambda x: x, type,
-            None, NotImplemented, ...
+            0j, 1j, '', b'', [], (), {}, set(), object(), lambda x: x, None,
+            NotImplemented, ...
         )
 
         for invalid_input in examples:
             for model in self.models:
-                with self.assertRaises(TypeError, msg=msg1) as ctx_man:
+                with self.assertRaises(AttributeError, msg=msg1) as ctx_man:
                     model.forward(x=invalid_input)
 
-                if isinstance(ctx_man.exception, TypeError):
+                if isinstance(ctx_man.exception, AttributeError):
                     self.assertEqual(
                         ctx_man.exception.args[0],
-                        '`x` must be instance of `Tensor`.',
+                        error_msg.format(type(invalid_input).__name__),
                         msg=msg2
                     )
 

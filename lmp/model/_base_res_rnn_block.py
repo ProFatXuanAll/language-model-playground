@@ -62,9 +62,5 @@ class BaseResRNNBlock(torch.nn.Module):
         self.act_fn = torch.nn.ReLU()
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        # Type check
-        if not isinstance(x, torch.Tensor):
-            raise TypeError('`x` must be instance of `Tensor`.')
-
         ht, _ = self.rnn_layer(x)
         return self.act_fn(self.dropout(ht + x))
