@@ -107,6 +107,8 @@ class TestInit(unittest.TestCase):
             'Must raise `TypeError` when `batch_sequences` is invalid.'
         )
         msg2 = 'Inconsistent error message.'
+        error_msg = "embedding(): argument 'indices' (position 2) must be Tensor, not {}"
+
         examples = (
             False, 0, -1, 0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf,
             0j, 1j, '', b'', [], (), {}, set(), object(), lambda x: x, type,
@@ -121,7 +123,7 @@ class TestInit(unittest.TestCase):
                 if isinstance(ctx_man.exception, TypeError):
                     self.assertEqual(
                         ctx_man.exception.args[0],
-                        '`batch_sequences` must be instance of `Tensor`.',
+                        error_msg.format(type(invalid_input).__name__),
                         msg=msg2
                     )
 

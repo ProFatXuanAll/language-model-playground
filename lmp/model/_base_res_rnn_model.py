@@ -119,28 +119,23 @@ class BaseResRNNModel(torch.nn.Module):
 
         # Embedding layer
         # Dimension: (V, E)
-        self.embedding_layer = torch.nn.Embedding(
+        self.emb_layer = torch.nn.Embedding(
             num_embeddings=vocab_size,
             embedding_dim=d_emb,
             padding_idx=pad_token_id
         )
-        self.dropout = torch.nn.Dropout(dropout)
+        self.emb_dropout = torch.nn.Dropout(dropout)
 
 
         # Project d_emb to d_jid
         # Dimension: (E, H)
-        proj_emb_to_hid = []
-        proj_emb_to_hid.append(
+        self.proj_emb_to_hid = torch.nn.Sequential(
             torch.nn.Linear(
                 in_features=d_emb,
                 out_features=d_hid
-            )
-        )
-        proj_emb_to_hid.append(
+            ),
             torch.nn.Dropout(dropout)
         )
-        self.proj_emb_to_hid = torch.nn.Sequential(*proj_emb_to_hid)
-
 
         # Sequential RNN layers.
         # Dimension: (H, H)
@@ -180,7 +175,6 @@ class BaseResRNNModel(torch.nn.Module):
                 out_features=d_emb
             )
         )
-
         self.proj_hid_to_emb = torch.nn.Sequential(*proj_hid_to_emb)
 
     def forward(
@@ -197,17 +191,11 @@ class BaseResRNNModel(torch.nn.Module):
         Returns:
             Logits for each token in sequences with numeric type `torch.float32`.
         """
-        # Type check
-        if not isinstance(batch_sequences, torch.Tensor):
-            raise TypeError('`batch_sequences` must be instance of `Tensor`.')
-
         # 將 batch_sequences 中的所有 token_id 經過 embedding matrix
         # 轉換成 embedding vectors (共有 (B, S) 個維度為 E 的向量)
         # embedding 前的 batch_sequences 維度: (B, S)
         # embedding 後的 batch_sequences 維度: (B, S, E)
-        batch_sequences = self.embedding_layer(batch_sequences)
-
-        batch_sequences = self.dropout(batch_sequences)
+        batch_sequences = self.emb_dropout(self.emb_layer(batch_sequences))
 
         # 將每個 embedding vectors 經由 linear 轉換 得到輸出 hidden vectors
         # ht 維度: (B, S, H)
@@ -223,10 +211,8 @@ class BaseResRNNModel(torch.nn.Module):
 
         # 與轉置後的 embedding matrix 進行矩陣乘法取得預測文字
         # 重複使用 embedding matrix 的目的為節省參數數量
-        # yt 維度: (B, S, V)
-        yt = ht.matmul(self.embedding_layer.weight.transpose(0, 1))
-
-        return yt
+        # return 維度: (B, S, V)
+        return ht.matmul(self.emb_layer.weight.transpose(0, 1))
 
     def predict(
             self,

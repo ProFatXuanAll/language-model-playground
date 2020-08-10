@@ -107,29 +107,41 @@ class BaseRNNModel(torch.nn.Module):
                 '`num_rnn_layers` must be bigger than or equal to `1`.'
             )
 
-        # Embedding layer
+        # Embedding layer.
         # Dimension: (V, E)
-        self.embedding_layer = torch.nn.Embedding(
+        self.emb_layer = torch.nn.Embedding(
             num_embeddings=vocab_size,
             embedding_dim=d_emb,
             padding_idx=pad_token_id
         )
-        self.dropout = torch.nn.Dropout(dropout)
+        self.emb_dropout = torch.nn.Dropout(dropout)
 
+        # Project d_emb to d_jid
+        # Dimension: (E, H)
+        self.proj_emb_to_hid = torch.nn.Sequential(
+            torch.nn.Linear(
+                in_features=d_emb,
+                out_features=d_hid
+            ),
+            torch.nn.Dropout(dropout)
+        )
 
         # Dimension: (E, H)
         self.rnn_layer = torch.nn.RNN(
-                            input_size=d_emb,
-                            hidden_size=d_hid,
-                            num_layers=num_rnn_layers,
-                            dropout=dropout,
-                            batch_first=True
-                        )
+            input_size=d_hid,
+            hidden_size=d_hid,
+            num_layers=num_rnn_layers,
+            dropout=dropout,
+            batch_first=True
+        )
 
         # Sequential linear layer
         # Dimension: (H, E)
         proj_hid_to_emb = []
         for _ in range(num_linear_layers):
+            proj_hid_to_emb.append(
+                torch.nn.Dropout(dropout)
+            )
             proj_hid_to_emb.append(
                 torch.nn.Linear(
                     in_features=d_hid,
@@ -139,10 +151,10 @@ class BaseRNNModel(torch.nn.Module):
             proj_hid_to_emb.append(
                 torch.nn.ReLU()
             )
-            proj_hid_to_emb.append(
-                torch.nn.Dropout(dropout)
-            )
 
+        proj_hid_to_emb.append(
+            torch.nn.Dropout(dropout)
+        )
         proj_hid_to_emb.append(
             torch.nn.Linear(
                 in_features=d_hid,
@@ -165,24 +177,19 @@ class BaseRNNModel(torch.nn.Module):
         Returns:
             Logits for each token in sequences with numeric type `torch.float32`.
         """
-        # Type check
-        if not isinstance(batch_sequences, torch.Tensor):
-            raise TypeError('`batch_sequences` must be instance of `Tensor`.')
-
         # 將 batch_sequences 中的所有 token_id 經過 embedding matrix
         # 轉換成 embedding vectors (共有 (B, S) 個維度為 E 的向量)
         # embedding 前的 batch_sequences 維度: (B, S)
         # embedding 後的 batch_sequences 維度: (B, S, E)
-        batch_sequences = self.embedding_layer(batch_sequences)
+        batch_sequences = self.emb_dropout(self.emb_layer(batch_sequences))
 
-        batch_sequences = self.dropout(batch_sequences)
-
-
-        # 將每個 embedding vectors 依序經由 RNN 輸入 得到輸出 hidden vectors
+        # 將每個 embedding vectors 經由 linear 轉換 得到輸出 hidden vectors
         # ht 維度: (B, S, H)
-        ht, _ = self.rnn_layer(batch_sequences)
+        ht = self.proj_emb_to_hid(batch_sequences)
 
-        ht = self.dropout(ht)
+        # 將每個 embedding vectors 依序輸入 RNN 得到輸出 hidden vectors
+        # ht 維度: (B, S, H)
+        ht, _ = self.rnn_layer(ht)
 
         # 將每個 hidden vectors 轉換維度至 embedding dimension
         # ht 維度: (B, S, E)
@@ -190,10 +197,8 @@ class BaseRNNModel(torch.nn.Module):
 
         # 與轉置後的 embedding matrix 進行矩陣乘法取得預測文字
         # 重複使用 embedding matrix 的目的為節省參數數量
-        # yt 維度: (B, S, V)
-        yt = ht.matmul(self.embedding_layer.weight.transpose(0, 1))
-
-        return yt
+        # return 維度: (B, S, V)
+        return ht.matmul(self.emb_layer.weight.transpose(0, 1))
 
     def predict(
             self,
