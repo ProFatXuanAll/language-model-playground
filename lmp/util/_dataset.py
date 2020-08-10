@@ -58,7 +58,7 @@ def _Preprocess_wiki_tokens(dataset: str) -> lmp.dataset.LanguageModelDataset:
 def _Preprocess_word_test_v1_tokens(
 ) -> lmp.dataset.AnalogyDataset:
     # preprocess and convert to LanguageModelDataset
-    file_path = f'{lmp.path.DATA_PATH}/word-test_v1.txt'
+    file_path = f'{lmp.path.DATA_PATH}/word-test.v1.txt'
     if not os.path.exists(file_path):
         raise FileNotFoundError(
             f'file {file_path} does not exist.'
