@@ -27,15 +27,17 @@ if __name__ == '__main__':
         required=True,
         type=int
     )
-    parser.add_argument(
-        '--dataset',
-        help='Name of the dataset to perform analogy.',
-        required=True,
-        type=str,
-    )
+
     parser.add_argument(
         '--experiment',
         help='Current experiment name.',
+        required=True,
+        type=str,
+    )
+
+    parser.add_argument(
+        '--test_words',
+        help='Input 3 word in sequence word_a,word_b,word_c to calculate (word_b-word_a+word_c).Example: Taiwan,Taipei,Japan',
         required=True,
         type=str,
     )
@@ -58,18 +60,12 @@ if __name__ == '__main__':
         tokenizer=tokenizer
     )
 
-    dataset = lmp.util.load_dataset(args.dataset)
-
-    dataloader = torch.utils.data.DataLoader(
-        dataset,
-        batch_size=32,
-        collate_fn=lmp.dataset.AnalogyDataset.create_collate_fn(
-            tokenizer=tokenizer))
+    test_data = [word for word in args.test_words.split(',')]
 
     # test syntatic and semantic score
-    lmp.util.analogy_evaluation(
+    lmp.util.analogy_inference(
+        test_data=test_data,
         device=config.device,
         model=model,
-        data_loader=dataloader,
         tokenizer=tokenizer
     )

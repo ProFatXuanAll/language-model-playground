@@ -20,6 +20,7 @@ from tqdm import tqdm
 
 import lmp
 
+
 @torch.no_grad()
 def calc_correct_percent(
         data_loader: torch.utils.data.DataLoader,
