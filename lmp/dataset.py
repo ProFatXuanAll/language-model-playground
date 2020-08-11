@@ -1,6 +1,8 @@
 r"""preprocessing training dataset.
 
 Usage:
+    import lmp.dataset
+
     dataset = lmp.dataset.BaseDataset(...)
 """
 
@@ -11,6 +13,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from typing import Callable
 from typing import Generator
 from typing import Iterable
 from typing import List
@@ -26,11 +29,8 @@ import lmp.tokenizer
 
 
 # Define types for type annotation.
-CollateFnReturn = Tuple[
-    torch.Tensor,
-    torch.Tensor
-]
-
+CollateFnReturn = Tuple[torch.Tensor, torch.Tensor]
+CollateFn = Callable[[Iterable[str]], CollateFnReturn]
 
 class BaseDataset(torch.utils.data.Dataset):
     r"""Dataset class for generating language model samples.
@@ -38,6 +38,10 @@ class BaseDataset(torch.utils.data.Dataset):
     Attributes:
         batch_sequences:
             All sequences in the dataset.
+
+    Raises:
+        TypeError:
+            When `batch_sequences` is not instance of `Iterable[str]`.
     """
 
     def __init__(
@@ -50,8 +54,13 @@ class BaseDataset(torch.utils.data.Dataset):
             raise TypeError(
                 '`batch_sequences` must be instance of `Iterable[str]`.'
             )
+
         batch_sequences = list(batch_sequences)
-        if any(map(lambda sequence: not isinstance(sequence, str), batch_sequences)):
+
+        if not all(map(
+                lambda sequence: isinstance(sequence, str),
+                batch_sequences
+        )):
             raise TypeError(
                 '`batch_sequences` must be instance of `Iterable[str]`.'
             )
@@ -59,7 +68,11 @@ class BaseDataset(torch.utils.data.Dataset):
         self.batch_sequences = batch_sequences
 
     def __iter__(self) -> Generator[str, None, None]:
-        r"""Iterate each sample in the dataset."""
+        r"""Iterate through each sample in the dataset.
+
+        Yields:
+            Each sequence in `self.batch_sequences`.
+        """
         for sequence in self.batch_sequences:
             yield sequence
 
@@ -68,7 +81,11 @@ class BaseDataset(torch.utils.data.Dataset):
         return len(self.batch_sequences)
 
     def __getitem__(self, index: int) -> str:
-        r"""Sample single sequence using index."""
+        r"""Sample single sequence using index.
+
+        Raises:
+            When `index` is not instance of `int`.
+        """
         # Type check.
         if not isinstance(index, int):
             raise TypeError('`index` must be instance of `int`.')
@@ -79,7 +96,7 @@ class BaseDataset(torch.utils.data.Dataset):
     def create_collate_fn(
             tokenizer: lmp.tokenizer.BaseTokenizer,
             max_seq_len: int = -1
-    ):
+    ) -> CollateFn:
         r"""Create `collate_fn` for `torch.utils.data.DataLoader`.
 
         Use `tokenizer` to perform tokenization on each mini-batch. Each
@@ -108,10 +125,12 @@ class BaseDataset(torch.utils.data.Dataset):
                 '`tokenizer` must be instance of '
                 '`lmp.tokenizer.BaseTokenizer`.'
             )
+
         if not isinstance(max_seq_len, int):
             raise TypeError(
                 '`max_seq_len` must be instance of `int`.'
             )
+
         def collate_fn(batch_sequences: Iterable[str]) -> CollateFnReturn:
             r"""Function used by `torch.utils.data.DataLoader`.
 
@@ -132,14 +151,6 @@ class BaseDataset(torch.utils.data.Dataset):
                     Model predict target for each token id in `x` with numeric
                     type `torch.int64`.
             """
-            if not isinstance(batch_sequences, Iterable):
-                raise TypeError(
-                    '`batch_sequences` must be instance of `Iterable[str]`.'
-                )
-            if any(map(lambda sequence: not isinstance(sequence, str), batch_sequences)):
-                raise TypeError(
-                    '`batch_sequences` must be instance of `Iterable[str]`.'
-                )
             batch_token_ids = torch.LongTensor(
                 tokenizer.batch_encode(
                     batch_sequences,
