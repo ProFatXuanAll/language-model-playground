@@ -79,7 +79,7 @@ class TestConvertIdToToken(unittest.TestCase):
 
                 self.assertEqual(
                     cxt_man.exception.args[0],
-                    '`token_id` must be instance of `int`.',
+                    '`token_id` must be an instance of `int`.',
                     msg=msg2
                 )
 

@@ -25,7 +25,7 @@ from lmp.tokenizer import WhitespaceDictTokenizer
 
 
 class TestDetokenize(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.WhitespaceDictTokenizer.detokenize`."""
+    r"""Test case for `lmp.tokenizer.WhitespaceDictTokenizer.detokenize`."""
 
     def setUp(self):
         r"""Setup both cased and uncased tokenizer instances."""
@@ -70,7 +70,7 @@ class TestDetokenize(unittest.TestCase):
         msg1 = 'Must raise `TypeError` when input is invalid.'
         msg2 = 'Inconsistent error message.'
         examples = (
-            0, 1, -1, 0.0, 1.0, math.nan, math.inf, True, False,  0j, 1j,
+            0, 1, -1, 0.0, 1.0, math.nan, math.inf, True, False, 0j, 1j,
             (1, 2, 3), [1, 2, 3], {1, 2, 3}, None, NotImplemented, ...,
         )
 
@@ -81,7 +81,7 @@ class TestDetokenize(unittest.TestCase):
 
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`tokens` must be instance of `Iterable[str]`.',
+                    '`tokens` must be an instance of `Iterable[str]`.',
                     msg=msg2
                 )
 

@@ -25,7 +25,7 @@ from lmp.config import BaseConfig
 
 
 class TestLoad(unittest.TestCase):
-    r"""Test Case for `lmp.config.BaseConfig.load`."""
+    r"""Test case for `lmp.config.BaseConfig.load`."""
 
     @classmethod
     def setUpClass(cls):
@@ -96,7 +96,7 @@ class TestLoad(unittest.TestCase):
             elif isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`experiment` must be instance of `str`.',
+                    '`experiment` must be an instance of `str`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):

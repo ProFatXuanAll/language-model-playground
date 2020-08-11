@@ -25,7 +25,7 @@ from lmp.tokenizer import WhitespaceListTokenizer
 
 
 class TestEncode(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.WhitespaceListTokenizer.encode`."""
+    r"""Test case for `lmp.tokenizer.WhitespaceListTokenizer.encode`."""
 
     def setUp(self):
         r"""Setup both cased and uncased tokenizer instances."""
@@ -87,7 +87,7 @@ class TestEncode(unittest.TestCase):
 
                 self.assertEqual(
                     cxt_man.exception.args[0],
-                    '`sequence` must be instance of `str`.',
+                    '`sequence` must be an instance of `str`.',
                     msg=msg2
                 )
 
@@ -108,7 +108,7 @@ class TestEncode(unittest.TestCase):
 
                 self.assertEqual(
                     cxt_man.exception.args[0],
-                    '`max_seq_len` must be instance of `int`.',
+                    '`max_seq_len` must be an instance of `int`.',
                     msg=msg2
                 )
 

@@ -22,7 +22,7 @@ from lmp.tokenizer import WhitespaceDictTokenizer
 
 
 class TestResetVocab(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.WhitespaceDictTokenizer.reset_vocab`."""
+    r"""Test case for `lmp.tokenizer.WhitespaceDictTokenizer.reset_vocab`."""
 
     def setUp(self):
         r"""Setup both cased and uncased tokenizer instances."""
@@ -59,7 +59,7 @@ class TestResetVocab(unittest.TestCase):
     def test_token_to_id_existence(self):
         r"Test whether create `token_to_id` in `reset_vocab`"
         msg1 = 'Missing class attribute `{}`.'
-        msg2 = 'Class attribute `{}` must be instance of `{}`.'
+        msg2 = 'Class attribute `{}` must be an instance of `{}`.'
         msg3 = 'Class attribute `{}` must be `{}`.'
 
         examples = (
@@ -89,7 +89,7 @@ class TestResetVocab(unittest.TestCase):
     def test_id_to_token_existence(self):
         r"Test whether create `id_to_token` in `reset_vocab`"
         msg1 = 'Missing class attribute `{}`.'
-        msg2 = 'Class attribute `{}` must be instance of `{}`.'
+        msg2 = 'Class attribute `{}` must be an instance of `{}`.'
         msg3 = 'Class attribute `{}` must be `{}`.'
 
         examples = (

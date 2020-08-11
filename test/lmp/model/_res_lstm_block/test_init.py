@@ -27,7 +27,7 @@ from lmp.model import ResLSTMBlock
 
 
 class TestInit(unittest.TestCase):
-    r"""Test Case for `lmp.model.ResLSTMBlock.__init__`."""
+    r"""Test case for `lmp.model.ResLSTMBlock.__init__`."""
 
     def setUp(self):
         r"""Set up hyper parameters and construct ResLSTMBlock"""
@@ -116,7 +116,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`d_hid` must be instance of `int`.',
+                    '`d_hid` must be an instance of `int`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -153,7 +153,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`dropout` must be instance of `float`.',
+                    '`dropout` must be an instance of `float`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -168,7 +168,7 @@ class TestInit(unittest.TestCase):
     def test_instance_attribute_rnn_layer(self):
         r"""Declare required instance attributes."""
         msg1 = 'Missing instance attribute `{}`.'
-        msg2 = 'Instance attribute `{}` must be instance of `{}`.'
+        msg2 = 'Instance attribute `{}` must be an instance of `{}`.'
         msg3 = 'Instance {} attribute `{}` must include `{}`.'
 
         rnn_examples = (
@@ -178,10 +178,10 @@ class TestInit(unittest.TestCase):
         )
 
         rnn_layer = torch.nn.LSTM(
-                input_size=self.d_hid,
-                hidden_size=self.d_hid,
-                batch_first=True
-            )
+            input_size=self.d_hid,
+            hidden_size=self.d_hid,
+            batch_first=True
+        )
 
         for model in self.models:
             self.assertTrue(
@@ -204,9 +204,8 @@ class TestInit(unittest.TestCase):
     def test_instance_attribute_dropout(self):
         r"""Declare required instance attributes."""
         msg1 = 'Missing instance attribute `{}`.'
-        msg2 = 'Instance attribute `{}` must be instance of `{}`.'
+        msg2 = 'Instance attribute `{}` must be an instance of `{}`.'
         msg3 = 'Instance {} attribute `{}` must need `{}`.'
-
 
         dropout_examples = (
             ('p', self.dropout),
@@ -235,7 +234,7 @@ class TestInit(unittest.TestCase):
     def test_instance_attribute_act_fn(self):
         r"""Declare required instance attributes."""
         msg1 = 'Missing instance attribute `{}`.'
-        msg2 = 'Instance attribute `{}` must be instance of `{}`.'
+        msg2 = 'Instance attribute `{}` must be an instance of `{}`.'
         msg4 = 'Inconsitent activation function.'
 
         act_fn = torch.nn.ReLU()

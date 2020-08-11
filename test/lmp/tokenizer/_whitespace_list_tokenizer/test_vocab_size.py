@@ -22,7 +22,7 @@ from lmp.tokenizer import WhitespaceListTokenizer
 
 
 class TestVocabSize(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.WhitespaceListTokenizer.vocab_size`."""
+    r"""Test case for `lmp.tokenizer.WhitespaceListTokenizer.vocab_size`."""
 
     def setUp(self):
         r"""Setup both cased and uncased tokenizer instances."""

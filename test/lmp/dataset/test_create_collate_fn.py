@@ -33,6 +33,7 @@ CollateFnReturn = Tuple[
     torch.Tensor
 ]
 
+
 class TestInit(unittest.TestCase):
     r"""Test case for `lmp.dataset.BaseDataset.crate_collate_fn`."""
 
@@ -92,9 +93,8 @@ class TestInit(unittest.TestCase):
 
             self.assertEqual(
                 ctx_man.exception.args[0],
-                '`tokenizer` must be instance of `lmp.tokenizer.BaseTokenizer`.',
-                msg=msg2
-            )
+                '`tokenizer` must be an instance of `lmp.tokenizer.BaseTokenizer`.',
+                msg=msg2)
 
     def test_invalid_input_max_seq_len(self):
         r"""Raise when `max_seq_len` is invalid."""
@@ -115,7 +115,7 @@ class TestInit(unittest.TestCase):
 
             self.assertEqual(
                 ctx_man.exception.args[0],
-                '`max_seq_len` must be instance of `int`.',
+                '`max_seq_len` must be an instance of `int`.',
                 msg=msg2
             )
 
@@ -131,7 +131,7 @@ class TestInit(unittest.TestCase):
         )
 
         for batch_sequences in examples:
-            data_handled= self.collate_fn(batch_sequences)
+            data_handled = self.collate_fn(batch_sequences)
             self.assertIsInstance(data_handled, tuple, msg=msg)
             for tensor in data_handled:
                 self.assertIsInstance(
@@ -140,16 +140,15 @@ class TestInit(unittest.TestCase):
                     msg=msg
                 )
 
-
     def test_inner_method_return_value(self):
         r"""Return two tensor."""
         msg = 'Inconsistent error message.'
         examples = (
-                (
-                    ['Hello'],
-                    [0, 3, 3, 3, 3, 3, 1, 2, 2],
-                    [3, 3, 3, 3, 3, 1, 2, 2, 2],
-                ),
+            (
+                ['Hello'],
+                [0, 3, 3, 3, 3, 3, 1, 2, 2],
+                [3, 3, 3, 3, 3, 1, 2, 2, 2],
+            ),
         )
 
         for batch_sequences, ans_x, ans_y in examples:
@@ -165,6 +164,7 @@ class TestInit(unittest.TestCase):
                     ans_y,
                     msg=msg
                 )
+
 
 if __name__ == '__main__':
     unittest.main()

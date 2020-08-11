@@ -22,7 +22,7 @@ from lmp.tokenizer import CharDictTokenizer
 
 
 class TestVocabSize(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.CharDictTokenizer.vocab_size`."""
+    r"""Test case for `lmp.tokenizer.CharDictTokenizer.vocab_size`."""
 
     def setUp(self):
         r"""Setup both cased and uncased tokenizer instances."""

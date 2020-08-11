@@ -25,7 +25,7 @@ from lmp.tokenizer import CharDictTokenizer
 
 
 class TestSpecialTokens(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.CharDictTokenizer.special_tokens`."""
+    r"""Test case for `lmp.tokenizer.CharDictTokenizer.special_tokens`."""
 
     def setUp(self):
         r"""Setup both cased and uncased tokenizer instances."""

@@ -32,6 +32,7 @@ import lmp.tokenizer
 CollateFnReturn = Tuple[torch.Tensor, torch.Tensor]
 CollateFn = Callable[[Iterable[str]], CollateFnReturn]
 
+
 class BaseDataset(torch.utils.data.Dataset):
     r"""Dataset class for generating language model samples.
 
@@ -41,7 +42,7 @@ class BaseDataset(torch.utils.data.Dataset):
 
     Raises:
         TypeError:
-            When `batch_sequences` is not instance of `Iterable[str]`.
+            When `batch_sequences` is not an instance of `Iterable[str]`.
     """
 
     def __init__(
@@ -52,7 +53,7 @@ class BaseDataset(torch.utils.data.Dataset):
         # Type check.
         if not isinstance(batch_sequences, Iterable):
             raise TypeError(
-                '`batch_sequences` must be instance of `Iterable[str]`.'
+                '`batch_sequences` must be an instance of `Iterable[str]`.'
             )
 
         batch_sequences = list(batch_sequences)
@@ -62,7 +63,7 @@ class BaseDataset(torch.utils.data.Dataset):
                 batch_sequences
         )):
             raise TypeError(
-                '`batch_sequences` must be instance of `Iterable[str]`.'
+                '`batch_sequences` must be an instance of `Iterable[str]`.'
             )
 
         self.batch_sequences = batch_sequences
@@ -84,11 +85,11 @@ class BaseDataset(torch.utils.data.Dataset):
         r"""Sample single sequence using index.
 
         Raises:
-            When `index` is not instance of `int`.
+            When `index` is not an instance of `int`.
         """
         # Type check.
         if not isinstance(index, int):
-            raise TypeError('`index` must be instance of `int`.')
+            raise TypeError('`index` must be an instance of `int`.')
 
         return self.batch_sequences[index]
 
@@ -112,8 +113,8 @@ class BaseDataset(torch.utils.data.Dataset):
 
         Raises:
             TypeError:
-                When `tokenizer` is not instance of
-                `lmp.tokenizer.BaseTokenizer` or `max_seq_len` is not instance
+                When `tokenizer` is not an instance of
+                `lmp.tokenizer.BaseTokenizer` or `max_seq_len` is not an instance
                 of `int`.
 
         Returns:
@@ -122,13 +123,13 @@ class BaseDataset(torch.utils.data.Dataset):
         # Type check
         if not isinstance(tokenizer, lmp.tokenizer.BaseTokenizer):
             raise TypeError(
-                '`tokenizer` must be instance of '
+                '`tokenizer` must be an instance of '
                 '`lmp.tokenizer.BaseTokenizer`.'
             )
 
         if not isinstance(max_seq_len, int):
             raise TypeError(
-                '`max_seq_len` must be instance of `int`.'
+                '`max_seq_len` must be an instance of `int`.'
             )
 
         def collate_fn(batch_sequences: Iterable[str]) -> CollateFnReturn:
@@ -141,7 +142,7 @@ class BaseDataset(torch.utils.data.Dataset):
 
             Raises:
                 TypeError:
-                    When `batch_sequences` is not instance of `Iterable[str]`.
+                    When `batch_sequences` is not an instance of `Iterable[str]`.
 
             Returns:
                 x:

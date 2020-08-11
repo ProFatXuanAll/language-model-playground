@@ -25,7 +25,7 @@ from lmp.tokenizer import CharListTokenizer
 
 
 class TestEncode(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.CharListTokenizer.encode`."""
+    r"""Test case for `lmp.tokenizer.CharListTokenizer.encode`."""
 
     def setUp(self):
         r"""Setup both cased and uncased tokenizer instances."""
@@ -76,7 +76,7 @@ class TestEncode(unittest.TestCase):
         msg2 = 'Inconsistent error message.'
         examples = (
             0, 1, -1, 0.0, 1.0, math.nan, math.inf, True, False, b'',
-            [], (), {}, set(), object(), lambda x: x, type, None,  0j, 1j,
+            [], (), {}, set(), object(), lambda x: x, type, None, 0j, 1j,
             NotImplemented, ...,
         )
 
@@ -87,7 +87,7 @@ class TestEncode(unittest.TestCase):
 
                 self.assertEqual(
                     cxt_man.exception.args[0],
-                    '`sequence` must be instance of `str`.',
+                    '`sequence` must be an instance of `str`.',
                     msg=msg2
                 )
 
@@ -108,7 +108,7 @@ class TestEncode(unittest.TestCase):
 
                 self.assertEqual(
                     cxt_man.exception.args[0],
-                    '`max_seq_len` must be instance of `int`.',
+                    '`max_seq_len` must be an instance of `int`.',
                     msg=msg2
                 )
 

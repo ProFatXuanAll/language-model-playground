@@ -25,7 +25,7 @@ from lmp.tokenizer import WhitespaceDictTokenizer
 
 
 class TestSpecialTokens(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.WhitespaceDictTokenizer.special_tokens`."""
+    r"""Test case for `lmp.tokenizer.WhitespaceDictTokenizer.special_tokens`."""
 
     def setUp(self):
         r"""Setup both cased and uncased tokenizer instances."""

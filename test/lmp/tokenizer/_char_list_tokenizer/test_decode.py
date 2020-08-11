@@ -25,7 +25,7 @@ from lmp.tokenizer import CharListTokenizer
 
 
 class TestDecode(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.CharListTokenizer.decode`."""
+    r"""Test case for `lmp.tokenizer.CharListTokenizer.decode`."""
 
     def setUp(self):
         r"""Setup both cased and uncased tokenizer instances."""
@@ -98,7 +98,7 @@ class TestDecode(unittest.TestCase):
 
                 self.assertEqual(
                     cxt_man.exception.args[0],
-                    '`token_ids` must be instance of `Iterable[int]`.',
+                    '`token_ids` must be an instance of `Iterable[int]`.',
                     msg=msg2
                 )
 
@@ -122,7 +122,7 @@ class TestDecode(unittest.TestCase):
 
                 self.assertEqual(
                     cxt_man.exception.args[0],
-                    '`remove_special_tokens` must be instance of `bool`.',
+                    '`remove_special_tokens` must be an instance of `bool`.',
                     msg=msg2
                 )
 

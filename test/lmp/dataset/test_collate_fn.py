@@ -29,6 +29,7 @@ import lmp.tokenizer
 
 from lmp.dataset import BaseDataset
 
+
 class TestInit(unittest.TestCase):
     r"""Test case for `lmp.dataset.BaseDataset.create_collate_fn`'s return function."""
 
@@ -110,9 +111,8 @@ class TestInit(unittest.TestCase):
 
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`batch_sequences` must be instance of `Iterable[str]`.',
-                    msg=msg2
-                )
+                    '`batch_sequences` must be an instance of `Iterable[str]`.',
+                    msg=msg2)
 
     def test_return_type(self):
         r"""Return `Tuple[torch.Tensor, torch.Tensor]`."""
@@ -143,7 +143,6 @@ class TestInit(unittest.TestCase):
                     self.assertIsInstance(result, torch.Tensor, msg=msg)
                     self.assertEqual(result.dtype, torch.int64, msg=msg)
 
-
     def test_return_tensor_size(self):
         r"""Return tensors last dimension must have size `max_seq_len`."""
         msg = 'Return tensors last dimension must have size `max_seq_len`.'
@@ -170,6 +169,7 @@ class TestInit(unittest.TestCase):
                         result.size(-1),
                         msg=msg
                     )
+
 
 if __name__ == '__main__':
     unittest.main()

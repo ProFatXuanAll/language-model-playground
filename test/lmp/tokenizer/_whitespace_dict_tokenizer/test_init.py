@@ -23,7 +23,7 @@ from lmp.tokenizer import WhitespaceDictTokenizer
 
 
 class TestInit(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.WhitespaceDictTokenizer.__init__`."""
+    r"""Test case for `lmp.tokenizer.WhitespaceDictTokenizer.__init__`."""
 
     def setUp(self):
         r"""Setup both cased and uncased tokenizer instances."""
@@ -79,14 +79,14 @@ class TestInit(unittest.TestCase):
 
             self.assertEqual(
                 ctx_man.exception.args[0],
-                '`is_uncased` must be instance of `bool`.',
+                '`is_uncased` must be an instance of `bool`.',
                 msg=msg2
             )
 
     def test_class_attributes(self):
         r"""Declare required class attributes."""
         msg1 = 'Missing class attribute `{}`.'
-        msg2 = 'Class attribute `{}` must be instance of `{}`.'
+        msg2 = 'Class attribute `{}` must be an instance of `{}`.'
         msg3 = 'Class attribute `{}` must be `{}`.'
 
         examples = (

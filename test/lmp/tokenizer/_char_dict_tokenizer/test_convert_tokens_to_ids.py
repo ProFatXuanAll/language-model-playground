@@ -26,7 +26,7 @@ from lmp.tokenizer import CharDictTokenizer
 
 
 class TestConvertTokensToIds(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.CharDictTokenizer.convert_tokens_to_ids`."""
+    r"""Test case for `lmp.tokenizer.CharDictTokenizer.convert_tokens_to_ids`."""
 
     def setUp(self):
         r"""Setup both cased and uncased tokenizer instances."""
@@ -82,7 +82,7 @@ class TestConvertTokensToIds(unittest.TestCase):
 
                 self.assertEqual(
                     cxt_man.exception.args[0],
-                    '`tokens` must be instance of `Iterable[str]`.',
+                    '`tokens` must be an instance of `Iterable[str]`.',
                     msg=msg2
                 )
 

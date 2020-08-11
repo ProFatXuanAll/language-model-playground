@@ -40,10 +40,10 @@ class BaseResRNNBlock(torch.nn.Module):
         super().__init__()
         # Type check.
         if not isinstance(d_hid, int):
-            raise TypeError('`d_hid` must be instance of `int`.')
+            raise TypeError('`d_hid` must be an instance of `int`.')
 
         if not isinstance(dropout, float):
-            raise TypeError('`dropout` must be instance of `float`.')
+            raise TypeError('`dropout` must be an instance of `float`.')
 
         # Value Check.
         if d_hid < 1:

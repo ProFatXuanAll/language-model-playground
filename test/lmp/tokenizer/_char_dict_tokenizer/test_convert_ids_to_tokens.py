@@ -94,7 +94,7 @@ class TestConvertIdsToTokens(unittest.TestCase):
 
                 self.assertEqual(
                     cxt_man.exception.args[0],
-                    '`token_ids` must be instance of `Iterable[int]`.',
+                    '`token_ids` must be an instance of `Iterable[int]`.',
                     msg=msg2
                 )
 

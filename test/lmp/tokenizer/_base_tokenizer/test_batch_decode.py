@@ -1,8 +1,7 @@
 r"""Test `lmp.tokenizer.BaseTokenizer.batch_decode`.
 
 Usage:
-    python -m unittest \
-        test/lmp/tokenizer/_base_tokenizer/test_batch_decode.py
+    python -m unittest test/lmp/tokenizer/_base_tokenizer/test_batch_decode.py
 """
 
 # built-in modules
@@ -24,7 +23,7 @@ from lmp.tokenizer import BaseTokenizer
 
 
 class TestBatchDecode(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.BaseTokenizer.batch_decode`."""
+    r"""Test case for `lmp.tokenizer.BaseTokenizer.batch_decode`."""
 
     def test_signature(self):
         r"""Ensure signature consistency."""
@@ -68,7 +67,7 @@ class TestBatchDecode(unittest.TestCase):
         # pylint: disable=W0223
         # pylint: disable=W0231
         class SubClassTokenizer(BaseTokenizer):
-            r"""Intented to not implement `decode`."""
+            r"""Intented to not implement `convert_id_to_token`."""
 
             def reset_vocab(self):
                 pass
@@ -82,7 +81,7 @@ class TestBatchDecode(unittest.TestCase):
             self.assertEqual(
                 ctx_man.exception.args[0],
                 'In class `SubClassTokenizer`: '
-                'function `decode` not implemented yet.',
+                'method `convert_id_to_token` not implemented yet.',
                 msg=msg2
             )
 

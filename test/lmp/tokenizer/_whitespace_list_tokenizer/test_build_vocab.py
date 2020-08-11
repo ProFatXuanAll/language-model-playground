@@ -25,7 +25,7 @@ from lmp.tokenizer import WhitespaceListTokenizer
 
 
 class TestBuildVocab(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.WhitespaceListTokenizer.build_vocab`."""
+    r"""Test case for `lmp.tokenizer.WhitespaceListTokenizer.build_vocab`."""
 
     def setUp(self):
         r"""Setup both cased and uncased tokenizer instances."""
@@ -88,9 +88,8 @@ class TestBuildVocab(unittest.TestCase):
 
                 self.assertEqual(
                     cxt_man.exception.args[0],
-                    '`batch_sequences` must be instance of `Iterable[str]`.',
-                    msg=msg2
-                )
+                    '`batch_sequences` must be an instance of `Iterable[str]`.',
+                    msg=msg2)
 
     def test_invalid_input_min_count(self):
         r"""Raise `TypeError` when input is invalid."""
@@ -111,7 +110,7 @@ class TestBuildVocab(unittest.TestCase):
 
                 self.assertEqual(
                     cxt_man.exception.args[0],
-                    '`min_count` must be instance of `int`.',
+                    '`min_count` must be an instance of `int`.',
                     msg=msg2
                 )
 

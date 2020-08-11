@@ -24,7 +24,7 @@ from lmp.tokenizer import BaseTokenizer
 
 
 class TestSpecialTokens(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.BaseTokenizer.special_tokens`."""
+    r"""Test case for `lmp.tokenizer.BaseTokenizer.special_tokens`."""
 
     def test_signature(self):
         r"""Ensure signature consistency."""
