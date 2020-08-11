@@ -26,7 +26,7 @@ from lmp.tokenizer import CharListTokenizer
 
 
 class TestBatchEncode(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.CharListTokenizer.batch_encode`."""
+    r"""Test case for `lmp.tokenizer.CharListTokenizer.batch_encode`."""
 
     def setUp(self):
         r"""Setup both cased and uncased tokenizer instances."""
@@ -87,9 +87,8 @@ class TestBatchEncode(unittest.TestCase):
 
                 self.assertEqual(
                     cxt_man.exception.args[0],
-                    '`batch_sequences` must be instance of `Iterable[str]`.',
-                    msg=msg2
-                )
+                    '`batch_sequences` must be an instance of `Iterable[str]`.',
+                    msg=msg2)
 
     def test_invalid_input_max_seq_len(self):
         r"""Raise `TypeError` when input is invalid."""
@@ -110,7 +109,7 @@ class TestBatchEncode(unittest.TestCase):
 
                 self.assertEqual(
                     cxt_man.exception.args[0],
-                    '`max_seq_len` must be instance of `int`.',
+                    '`max_seq_len` must be an instance of `int`.',
                     msg=msg2
                 )
 

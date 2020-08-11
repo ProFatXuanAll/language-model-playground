@@ -25,7 +25,7 @@ from lmp.tokenizer import WhitespaceListTokenizer
 
 
 class TestTokenize(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.WhitespaceListTokenizer.tokenize`."""
+    r"""Test case for `lmp.tokenizer.WhitespaceListTokenizer.tokenize`."""
 
     def setUp(self):
         r"""Setup both cased and uncased tokenizer instances."""
@@ -82,7 +82,7 @@ class TestTokenize(unittest.TestCase):
 
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`sequence` must be instance of `str`.',
+                    '`sequence` must be an instance of `str`.',
                     msg=msg2
                 )
 

@@ -27,7 +27,7 @@ from lmp.model import ResGRUModel
 
 
 class TestInit(unittest.TestCase):
-    r"""Test Case for `lmp.model.ResGRUModel.forward`."""
+    r"""Test case for `lmp.model.ResGRUModel.forward`."""
 
     def setUp(self):
         r"""Set up hyper parameters and construct ResGRUModel"""
@@ -132,17 +132,18 @@ class TestInit(unittest.TestCase):
         examples = (
             torch.tensor(
                 [
-                    [1,2],
-                    [2,3],
-                    [3,4]
+                    [1, 2],
+                    [2, 3],
+                    [3, 4]
                 ]
             ),
         )
 
         for batch_sequences in examples:
             for model in self.models:
-                pred_y= model(batch_sequences)
+                pred_y = model(batch_sequences)
                 self.assertIsInstance(pred_y, torch.Tensor, msg=msg)
+
 
 if __name__ == '__main__':
     unittest.main()

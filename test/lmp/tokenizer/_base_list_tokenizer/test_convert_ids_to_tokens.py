@@ -67,24 +67,15 @@ class TestConvertIdsToTokens(unittest.TestCase):
         )
 
     def test_invalid_input_token_id(self):
-        r"""Raise `TypeError` when input is invalid."""
-        msg1 = 'Must raise `TypeError` when input is invalid.'
+        r"""Raise `TypeError` when input `token_ids` is invalid."""
+        msg1 = 'Must raise `TypeError` when input `token_ids` is invalid.'
         msg2 = 'Inconsistent error message.'
         examples = (
             False, True, 0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf,
             -math.inf, 0j, 1j, object(), lambda x: x, type, None,
-            NotImplemented, ..., (0.0,), (1.0,), (math.nan,), (-math.nan,),
-            (math.inf,), (-math.inf,), (0j,), (1j,), (object(),),
-            (lambda x: x,), (type,), (None,), (NotImplemented,), (...,), ('',),
-            [0.0], [1.0], [math.nan], [-math.nan], [math.inf], [-math.inf],
-            [0j], [1j], [object()], [lambda x: x], [type], [None],
-            [NotImplemented], [...], [''], {0.0}, {1.0}, {math.nan},
-            {-math.nan}, {math.inf}, {-math.inf}, {0j}, {1j}, {object()},
-            {lambda x: x}, {type}, {None}, {NotImplemented}, {...}, {''},
-            {0.0: 0}, {1.0: 0}, {math.nan: 0}, {-math.nan: 0},
-            {math.inf: 0}, {-math.inf: 0}, {0j: 0}, {1j: 0}, {object(): 0},
-            {lambda x: x: 0}, {type: 0}, {None: 0}, {NotImplemented: 0},
-            {...: 0}, {'': 0},
+            NotImplemented, ..., [0.0], [1.0], [math.nan], [-math.nan],
+            [math.inf], [-math.inf], [0j], [1j], [''], [b''], [object()],
+            [lambda x: x], [type], [None], [NotImplemented], [...],
         )
 
         for invalid_input in examples:
@@ -94,7 +85,7 @@ class TestConvertIdsToTokens(unittest.TestCase):
 
                 self.assertEqual(
                     cxt_man.exception.args[0],
-                    '`token_ids` must be instance of `Iterable[int]`.',
+                    '`token_ids` must be an instance of `Iterable[int]`.',
                     msg=msg2
                 )
 
@@ -102,7 +93,9 @@ class TestConvertIdsToTokens(unittest.TestCase):
         r"""Return `List[str]`."""
         msg = 'Must return `List[str]`.'
         examples = (
-            [0, 1, 2, ],
+            [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+            [0],
+            [],
         )
 
         for token_ids in examples:
@@ -112,13 +105,54 @@ class TestConvertIdsToTokens(unittest.TestCase):
                 for token in tokens:
                     self.assertIsInstance(token, str, msg=msg)
 
-    def test_convert_special_and_unknown_id_to_token(self):
-        r"""Return `List[str]`."""
-        msg = 'Must return batch tokens str.'
+    def test_return_special_tokens(self):
+        r"""Return special tokens."""
+        msg = 'Must return special tokens.'
         examples = (
             (
-                [0, 1, 2, 3, 6, ],
-                ['[BOS]', '[EOS]', '[PAD]', '[UNK]', '[UNK]', ]
+                [0, 1, 2, 3],
+                ['[BOS]', '[EOS]', '[PAD]', '[UNK]'],
+            ),
+            (
+                [0],
+                ['[BOS]'],
+            ),
+            (
+                [1],
+                ['[EOS]'],
+            ),
+            (
+                [2],
+                ['[PAD]'],
+            ),
+            (
+                [3],
+                ['[UNK]'],
+            ),
+        )
+
+        for token_ids, ans_tokens in examples:
+            for tokenizer in self.tokenizers:
+                self.assertEqual(
+                    tokenizer.convert_ids_to_tokens(token_ids=token_ids),
+                    ans_tokens,
+                    msg=msg
+                )
+
+    def test_return_unknown_tokens(self):
+        r"""Return unknown tokens when token ids are unknown."""
+        msg = 'Must return unknown tokens when token ids are unknown.'
+        examples = (
+            (
+                [4, 5, 6, 7, 8, 9],
+                ['[UNK]', '[UNK]', '[UNK]', '[UNK]', '[UNK]', '[UNK]'],
+            ),
+            (
+                [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+                [
+                    '[BOS]', '[EOS]', '[PAD]', '[UNK]', '[UNK]',
+                    '[UNK]', '[UNK]', '[UNK]', '[UNK]', '[UNK]',
+                ],
             ),
         )
 

@@ -1,8 +1,7 @@
 r"""Test `lmp.tokenizer.BaseTokenizer.load`.
 
 Usage:
-    python -m unittest \
-        test/lmp/tokenizer/_base_tokenizer/test_load.py
+    python -m unittest test/lmp/tokenizer/_base_tokenizer/test_load.py
 """
 
 # built-in modules
@@ -21,7 +20,7 @@ from lmp.tokenizer import BaseTokenizer
 
 
 class TestLoad(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.BaseTokenizer.load`."""
+    r"""Test case for `lmp.tokenizer.BaseTokenizer.load`."""
 
     def test_signature(self):
         r"""Ensure signature consistency."""
@@ -68,7 +67,7 @@ class TestLoad(unittest.TestCase):
             self.assertEqual(
                 ctx_man.exception.args[0],
                 'In class `SubClassTokenizer`: '
-                'function `load` not implemented yet.',
+                'class method `load` not implemented yet.',
                 msg=msg2
             )
 

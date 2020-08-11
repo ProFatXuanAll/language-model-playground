@@ -25,7 +25,7 @@ from lmp.tokenizer import CharDictTokenizer
 
 
 class TestDetokenize(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.CharDictTokenizer.detokenize`."""
+    r"""Test case for `lmp.tokenizer.CharDictTokenizer.detokenize`."""
 
     def setUp(self):
         r"""Setup both cased and uncased tokenizer instances."""
@@ -81,7 +81,7 @@ class TestDetokenize(unittest.TestCase):
 
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`tokens` must be instance of `Iterable[str]`.',
+                    '`tokens` must be an instance of `Iterable[str]`.',
                     msg=msg2
                 )
 

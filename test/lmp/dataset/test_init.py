@@ -21,6 +21,7 @@ from typing import Iterable
 
 from lmp.dataset import BaseDataset
 
+
 class TestInit(unittest.TestCase):
     r"""Test case for `lmp.dataset.BaseDataset.__init__`."""
 
@@ -76,14 +77,13 @@ class TestInit(unittest.TestCase):
                 if isinstance(ctx_man.exception, TypeError):
                     self.assertEqual(
                         ctx_man.exception.args[0],
-                        '`batch_sequences` must be instance of `Iterable[str]`.',
-                        msg=msg2
-                    )
+                        '`batch_sequences` must be an instance of `Iterable[str]`.',
+                        msg=msg2)
 
     def test_instance_attributes(self):
         r"""Declare required instance attributes."""
         msg1 = 'Missing instance attribute `{}`.'
-        msg2 = 'Instance attribute `{}` must be instance of `{}`.'
+        msg2 = 'Instance attribute `{}` must be an instance of `{}`.'
         msg3 = 'Instance attribute `{}` must be `{}`.'
         examples = (
             (
@@ -99,7 +99,7 @@ class TestInit(unittest.TestCase):
                 msg=msg1
             )
             self.assertIsInstance(
-                getattr(dataset,attr),
+                getattr(dataset, attr),
                 type(attr_val),
                 msg=msg2.format(attr, type(attr_val).__name__)
             )
@@ -108,6 +108,7 @@ class TestInit(unittest.TestCase):
                 attr_val,
                 msg=msg3.format(attr, attr_val)
             )
+
 
 if __name__ == '__main__':
     unittest.main()

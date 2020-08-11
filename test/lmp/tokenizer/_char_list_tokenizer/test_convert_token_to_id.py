@@ -23,7 +23,7 @@ from lmp.tokenizer import CharListTokenizer
 
 
 class TestConvertTokenToId(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.CharListTokenizer.convert_token_to_id`."""
+    r"""Test case for `lmp.tokenizer.CharListTokenizer.convert_token_to_id`."""
 
     def setUp(self):
         r"""Setup both cased and uncased tokenizer instances."""
@@ -80,7 +80,7 @@ class TestConvertTokenToId(unittest.TestCase):
 
                 self.assertEqual(
                     cxt_man.exception.args[0],
-                    '`token` must be instance of `str`.',
+                    '`token` must be an instance of `str`.',
                     msg=msg2
                 )
 

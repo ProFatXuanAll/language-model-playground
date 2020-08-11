@@ -77,25 +77,26 @@ class BaseResRNNModel(torch.nn.Module):
         super().__init__()
         # Type check.
         if not isinstance(d_emb, int):
-            raise TypeError('`d_emb` must be instance of `int`.')
+            raise TypeError('`d_emb` must be an instance of `int`.')
 
         if not isinstance(d_hid, int):
-            raise TypeError('`d_hid` must be instance of `int`.')
+            raise TypeError('`d_hid` must be an instance of `int`.')
 
         if not isinstance(dropout, float):
-            raise TypeError('`dropout` must be instance of `float`.')
+            raise TypeError('`dropout` must be an instance of `float`.')
 
         if not isinstance(num_linear_layers, int):
-            raise TypeError('`num_linear_layers` must be instance of `int`.')
+            raise TypeError(
+                '`num_linear_layers` must be an instance of `int`.')
 
         if not isinstance(num_rnn_layers, int):
-            raise TypeError('`num_rnn_layers` must be instance of `int`.')
+            raise TypeError('`num_rnn_layers` must be an instance of `int`.')
 
         if not isinstance(pad_token_id, int):
-            raise TypeError('`pad_token_id` must be instance of `int`.')
+            raise TypeError('`pad_token_id` must be an instance of `int`.')
 
         if not isinstance(vocab_size, int):
-            raise TypeError('`vocab_size` must be instance of `int`.')
+            raise TypeError('`vocab_size` must be an instance of `int`.')
 
         # Value Check.
         if d_emb < 1:
@@ -125,7 +126,6 @@ class BaseResRNNModel(torch.nn.Module):
             padding_idx=pad_token_id
         )
         self.emb_dropout = torch.nn.Dropout(dropout)
-
 
         # Project d_emb to d_jid
         # Dimension: (E, H)
@@ -230,6 +230,7 @@ class BaseResRNNModel(torch.nn.Module):
         """
         # Type check
         if not isinstance(batch_sequences, torch.Tensor):
-            raise TypeError('`batch_sequences` must be instance of `Tensor`.')
+            raise TypeError(
+                '`batch_sequences` must be an instance of `Tensor`.')
 
         return torch.nn.functional.softmax(self(batch_sequences), dim=-1)

@@ -24,7 +24,7 @@ from lmp.tokenizer import BaseListTokenizer
 
 
 class TestBatchEncode(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.BaseListTokenizer.batch_encode`."""
+    r"""Test case for `lmp.tokenizer.BaseListTokenizer.batch_encode`."""
 
     def test_signature(self):
         r"""Ensure signature consistency."""
@@ -64,21 +64,14 @@ class TestBatchEncode(unittest.TestCase):
         msg2 = 'Inconsistent error message.'
         examples = (True, False)
 
-        # pylint: disable=W0223
-        # pylint: disable=W0231
-        class SubClassTokenizer(BaseListTokenizer):
-            r"""Intented to not implement `tokenize`."""
-        # pylint: enable=W0231
-        # pylint: enable=W0223
-
         for is_uncased in examples:
             with self.assertRaises(NotImplementedError, msg=msg1) as ctx_man:
-                SubClassTokenizer(is_uncased=is_uncased).batch_encode(['H'])
+                BaseListTokenizer(is_uncased=is_uncased).batch_encode([''])
 
             self.assertEqual(
                 ctx_man.exception.args[0],
-                'In class `SubClassTokenizer`: '
-                'function `tokenize` not implemented yet.',
+                'In class `BaseListTokenizer`: '
+                'method `tokenize` not implemented yet.',
                 msg=msg2
             )
 

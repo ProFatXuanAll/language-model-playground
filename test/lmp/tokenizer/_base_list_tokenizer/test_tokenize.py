@@ -1,8 +1,7 @@
 r"""Test `lmp.tokenizer.BaseListTokenizer.tokenize`.
 
 Usage:
-    python -m unittest \
-        test/lmp/tokenizer/_base_list_tokenizer/test_tokenize.py
+    python -m unittest test/lmp/tokenizer/_base_list_tokenizer/test_tokenize.py
 """
 
 # built-in modules
@@ -13,8 +12,6 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import inspect
-import gc
-import math
 import unittest
 
 from typing import List
@@ -25,7 +22,7 @@ from lmp.tokenizer import BaseListTokenizer
 
 
 class TestTokenize(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.BaseListTokenizer.tokenize`."""
+    r"""Test case for `lmp.tokenizer.BaseListTokenizer.tokenize`."""
 
     def test_signature(self):
         r"""Ensure signature consistency."""
@@ -60,21 +57,14 @@ class TestTokenize(unittest.TestCase):
         msg2 = 'Inconsistent error message.'
         examples = (True, False)
 
-        # pylint: disable=W0223
-        # pylint: disable=W0231
-        class SubClassTokenizer(BaseListTokenizer):
-            r"""Intented to not implement `tokenize`."""
-        # pylint: enable=W0231
-        # pylint: enable=W0223
-
         for is_uncased in examples:
             with self.assertRaises(NotImplementedError, msg=msg1) as ctx_man:
-                SubClassTokenizer(is_uncased=is_uncased).tokenize('')
+                BaseListTokenizer(is_uncased=is_uncased).tokenize('')
 
             self.assertEqual(
                 ctx_man.exception.args[0],
-                'In class `SubClassTokenizer`: '
-                'function `tokenize` not implemented yet.',
+                'In class `BaseListTokenizer`: '
+                'method `tokenize` not implemented yet.',
                 msg=msg2
             )
 

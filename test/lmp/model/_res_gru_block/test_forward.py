@@ -27,7 +27,7 @@ from lmp.model import ResGRUBlock
 
 
 class TestInit(unittest.TestCase):
-    r"""Test Case for `lmp.model.ResGRUBlock.forward`."""
+    r"""Test case for `lmp.model.ResGRUBlock.forward`."""
 
     def setUp(self):
         r"""Set up hyper parameters and construct ResGRUBlock"""
@@ -121,8 +121,9 @@ class TestInit(unittest.TestCase):
 
         for x in examples:
             for model in self.models:
-                pred_y= model(x)
+                pred_y = model(x)
                 self.assertIsInstance(pred_y, torch.Tensor, msg=msg)
+
 
 if __name__ == '__main__':
     unittest.main()

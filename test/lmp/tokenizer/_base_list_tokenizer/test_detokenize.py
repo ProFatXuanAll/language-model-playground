@@ -13,12 +13,9 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import inspect
-import gc
-import math
 import unittest
 
 from typing import Iterable
-from typing import List
 
 # self-made modules
 
@@ -26,7 +23,7 @@ from lmp.tokenizer import BaseListTokenizer
 
 
 class TestDetokenize(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.BaseListTokenizer.detokenize`."""
+    r"""Test case for `lmp.tokenizer.BaseListTokenizer.detokenize`."""
 
     def test_signature(self):
         r"""Ensure signature consistency."""
@@ -61,21 +58,14 @@ class TestDetokenize(unittest.TestCase):
         msg2 = 'Inconsistent error message.'
         examples = (True, False)
 
-        # pylint: disable=W0223
-        # pylint: disable=W0231
-        class SubClassTokenizer(BaseListTokenizer):
-            r"""Intented to not implement `detokenize`."""
-        # pylint: enable=W0231
-        # pylint: enable=W0223
-
         for is_uncased in examples:
             with self.assertRaises(NotImplementedError, msg=msg1) as ctx_man:
-                SubClassTokenizer(is_uncased=is_uncased).detokenize('')
+                BaseListTokenizer(is_uncased=is_uncased).detokenize('')
 
             self.assertEqual(
                 ctx_man.exception.args[0],
-                'In class `SubClassTokenizer`: '
-                'function `detokenize` not implemented yet.',
+                'In class `BaseListTokenizer`: '
+                'method `detokenize` not implemented yet.',
                 msg=msg2
             )
 

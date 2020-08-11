@@ -27,7 +27,7 @@ from lmp.model import GRUModel
 
 
 class TestInit(unittest.TestCase):
-    r"""Test Case for `lmp.model.GRUModel.__init__`."""
+    r"""Test case for `lmp.model.GRUModel.__init__`."""
 
     def setUp(self):
         r"""Set up hyper parameters and construct GRUModel"""
@@ -167,7 +167,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`d_emb` must be instance of `int`.',
+                    '`d_emb` must be an instance of `int`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -209,7 +209,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`d_hid` must be instance of `int`.',
+                    '`d_hid` must be an instance of `int`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -251,7 +251,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`dropout` must be instance of `float`.',
+                    '`dropout` must be an instance of `float`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -294,7 +294,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`num_linear_layers` must be instance of `int`.',
+                    '`num_linear_layers` must be an instance of `int`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -337,7 +337,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`num_rnn_layers` must be instance of `int`.',
+                    '`num_rnn_layers` must be an instance of `int`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -377,7 +377,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`pad_token_id` must be instance of `int`.',
+                    '`pad_token_id` must be an instance of `int`.',
                     msg=msg2
                 )
 
@@ -409,48 +409,46 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`vocab_size` must be instance of `int`.',
+                    '`vocab_size` must be an instance of `int`.',
                     msg=msg2
                 )
 
     def test_instance_attribute_embedding_layer(self):
         r"""Declare required instance attributes."""
         msg1 = 'Missing instance attribute `{}`.'
-        msg2 = 'Instance attribute `{}` must be instance of `{}`.'
+        msg2 = 'Instance attribute `{}` must be an instance of `{}`.'
         msg3 = 'Instance attribute `{}` must be `{}`.'
 
-
         embedding_layer = torch.nn.Embedding(
-                            num_embeddings=self.vocab_size,
-                            embedding_dim=self.d_emb,
-                            padding_idx=self.pad_token_id
-                        )
+            num_embeddings=self.vocab_size,
+            embedding_dim=self.d_emb,
+            padding_idx=self.pad_token_id
+        )
 
         for model in self.models:
-                self.assertTrue(
-                    hasattr(model, 'embedding_layer'),
-                    msg=msg1.format('embedding_layer')
+            self.assertTrue(
+                hasattr(model, 'embedding_layer'),
+                msg=msg1.format('embedding_layer')
+            )
+            self.assertIsInstance(
+                getattr(model, 'embedding_layer'),
+                type(embedding_layer),
+                msg=msg2.format(
+                    'embedding_layer',
+                    type(embedding_layer).__name__
                 )
-                self.assertIsInstance(
-                    getattr(model, 'embedding_layer'),
-                    type(embedding_layer),
-                    msg=msg2.format(
-                            'embedding_layer',
-                            type(embedding_layer).__name__
-                        )
-                )
-                self.assertEqual(
-                    getattr(model, 'embedding_layer').weight,
-                    embedding_layer.weight,
-                    msg=msg3.format('embedding_layer', embedding_layer)
-                )
+            )
+            self.assertEqual(
+                getattr(model, 'embedding_layer').weight,
+                embedding_layer.weight,
+                msg=msg3.format('embedding_layer', embedding_layer)
+            )
 
     def test_instance_attribute_dropout(self):
         r"""Declare required instance attributes."""
         msg1 = 'Missing instance attribute `{}`.'
-        msg2 = 'Instance attribute `{}` must be instance of `{}`.'
+        msg2 = 'Instance attribute `{}` must be an instance of `{}`.'
         msg3 = 'Instance {} attribute `{}` must need `{}`.'
-
 
         dropout_examples = (
             ('p', self.dropout),
@@ -479,7 +477,7 @@ class TestInit(unittest.TestCase):
     def test_instance_attribute_rnn_layer(self):
         r"""Declare required instance attributes."""
         msg1 = 'Missing instance attribute `{}`.'
-        msg2 = 'Instance attribute `{}` must be instance of `{}`.'
+        msg2 = 'Instance attribute `{}` must be an instance of `{}`.'
         msg3 = 'Instance {} attribute `{}` must include `{}`.'
 
         rnn_examples = (
@@ -491,12 +489,12 @@ class TestInit(unittest.TestCase):
         )
 
         rnn_layer = torch.nn.GRU(
-                input_size=self.d_emb,
-                hidden_size=self.d_hid,
-                num_layers=self.num_rnn_layers,
-                dropout=self.dropout,
-                batch_first=True
-            )
+            input_size=self.d_emb,
+            hidden_size=self.d_hid,
+            num_layers=self.num_rnn_layers,
+            dropout=self.dropout,
+            batch_first=True
+        )
 
         for model in self.models:
             self.assertTrue(
@@ -519,7 +517,7 @@ class TestInit(unittest.TestCase):
     def test_instance_attribute_proj_hid_to_emb(self):
         r"""Declare required instance attributes."""
         msg1 = 'Missing instance attribute `{}`.'
-        msg2 = 'Instance attribute `{}` must be instance of `{}`.'
+        msg2 = 'Instance attribute `{}` must be an instance of `{}`.'
         msg3 = 'Instance {} attribute `{}` must include `{}`.'
         msg4 = 'Inconsitent activation function.'
 
@@ -535,16 +533,16 @@ class TestInit(unittest.TestCase):
             ('out_features', self.d_emb),
         )
 
-        linear =  torch.nn.Linear(
-                    in_features=self.d_hid,
-                    out_features=self.d_hid
-                )
+        linear = torch.nn.Linear(
+            in_features=self.d_hid,
+            out_features=self.d_hid
+        )
         act_fn = torch.nn.ReLU()
         dropout = torch.nn.Dropout(self.dropout)
         output_linear = torch.nn.Linear(
-                            in_features=self.d_hid,
-                            out_features=self.d_emb
-                        )
+            in_features=self.d_hid,
+            out_features=self.d_emb
+        )
         proj_hid_to_emb = []
         for _ in range(self.num_linear_layers):
             proj_hid_to_emb.append(linear)
@@ -553,7 +551,6 @@ class TestInit(unittest.TestCase):
 
         proj_hid_to_emb.append(output_linear)
         proj_hid_to_emb = torch.nn.Sequential(*proj_hid_to_emb)
-
 
         for model in self.models:
             self.assertTrue(
@@ -573,10 +570,10 @@ class TestInit(unittest.TestCase):
                 if isinstance(layer, torch.nn.modules.dropout.Dropout):
                     for dropout_attr, dropout_attr_val in dropout_examples:
                         self.assertEqual(
-                            getattr(layer, dropout_attr),
-                            getattr(dropout, dropout_attr),
-                            msg=msg3.format('dropout', dropout_attr, dropout_attr_val)
-                        )
+                            getattr(
+                                layer, dropout_attr), getattr(
+                                dropout, dropout_attr), msg=msg3.format(
+                                'dropout', dropout_attr, dropout_attr_val))
                     continue
                 if isinstance(layer, torch.nn.modules.activation.ReLU):
                     self.assertEqual(
@@ -588,17 +585,17 @@ class TestInit(unittest.TestCase):
                 if layer == model_layer[-1]:
                     for linear_attr, linear_attr_val in output_linear_examples:
                         self.assertEqual(
-                            getattr(layer, linear_attr),
-                            getattr(linear, linear_attr),
-                            msg=msg3.format('linear', linear_attr, linear_attr_val)
-                        )
+                            getattr(
+                                layer, linear_attr), getattr(
+                                linear, linear_attr), msg=msg3.format(
+                                'linear', linear_attr, linear_attr_val))
                 else:
                     for linear_attr, linear_attr_val in linear_examples:
                         self.assertEqual(
-                            getattr(layer, linear_attr),
-                            getattr(output_linear, linear_attr),
-                            msg=msg3.format('linear', linear_attr, linear_attr_val)
-                        )
+                            getattr(
+                                layer, linear_attr), getattr(
+                                output_linear, linear_attr), msg=msg3.format(
+                                'linear', linear_attr, linear_attr_val))
 
 
 if __name__ == '__main__':

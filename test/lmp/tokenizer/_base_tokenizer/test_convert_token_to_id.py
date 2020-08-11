@@ -21,7 +21,7 @@ from lmp.tokenizer import BaseTokenizer
 
 
 class TestConvertTokenToId(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.BaseTokenizer.convert_token_to_id`."""
+    r"""Test case for `lmp.tokenizer.BaseTokenizer.convert_token_to_id`."""
 
     def test_signature(self):
         r"""Ensure signature consistency."""
@@ -75,7 +75,7 @@ class TestConvertTokenToId(unittest.TestCase):
             self.assertEqual(
                 ctx_man.exception.args[0],
                 'In class `SubClassTokenizer`: '
-                'function `convert_token_to_id` not implemented yet.',
+                'method `convert_token_to_id` not implemented yet.',
                 msg=msg2
             )
 

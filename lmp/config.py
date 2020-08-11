@@ -103,61 +103,62 @@ class BaseConfig:
     ):
         # Type check.
         if not isinstance(batch_size, int):
-            raise TypeError('`batch_size` must be instance of `int`.')
+            raise TypeError('`batch_size` must be an instance of `int`.')
 
         if not isinstance(checkpoint_step, int):
-            raise TypeError('`checkpoint_step` must be instance of `int`.')
+            raise TypeError('`checkpoint_step` must be an instance of `int`.')
 
         if not isinstance(d_emb, int):
-            raise TypeError('`d_emb` must be instance of `int`.')
+            raise TypeError('`d_emb` must be an instance of `int`.')
 
         if not isinstance(d_hid, int):
-            raise TypeError('`d_hid` must be instance of `int`.')
+            raise TypeError('`d_hid` must be an instance of `int`.')
 
         if not isinstance(dataset, str):
-            raise TypeError('`dataset` must be instance of `str`.')
+            raise TypeError('`dataset` must be an instance of `str`.')
 
         if not isinstance(dropout, float):
-            raise TypeError('`dropout` must be instance of `float`.')
+            raise TypeError('`dropout` must be an instance of `float`.')
 
         if not isinstance(experiment, str):
-            raise TypeError('`experiment` must be instance of `str`.')
+            raise TypeError('`experiment` must be an instance of `str`.')
 
         if not isinstance(epoch, int):
-            raise TypeError('`epoch` must be instance of `int`.')
+            raise TypeError('`epoch` must be an instance of `int`.')
 
         if not isinstance(is_uncased, bool):
-            raise TypeError('`is_uncased` must be instance of `bool`.')
+            raise TypeError('`is_uncased` must be an instance of `bool`.')
 
         if not isinstance(learning_rate, float):
-            raise TypeError('`learning_rate` must be instance of `float`.')
+            raise TypeError('`learning_rate` must be an instance of `float`.')
 
         if not isinstance(max_norm, float):
-            raise TypeError('`max_norm` must be instance of `float`.')
+            raise TypeError('`max_norm` must be an instance of `float`.')
 
         if not isinstance(max_seq_len, int):
-            raise TypeError('`max_seq_len` must be instance of `int`.')
+            raise TypeError('`max_seq_len` must be an instance of `int`.')
 
         if not isinstance(min_count, int):
-            raise TypeError('`min_count` must be instance of `int`.')
+            raise TypeError('`min_count` must be an instance of `int`.')
 
         if not isinstance(model_class, str):
-            raise TypeError('`model_class` must be instance of `str`.')
+            raise TypeError('`model_class` must be an instance of `str`.')
 
         if not isinstance(num_linear_layers, int):
-            raise TypeError('`num_linear_layers` must be instance of `int`.')
+            raise TypeError(
+                '`num_linear_layers` must be an instance of `int`.')
 
         if not isinstance(num_rnn_layers, int):
-            raise TypeError('`num_rnn_layers` must be instance of `int`.')
+            raise TypeError('`num_rnn_layers` must be an instance of `int`.')
 
         if not isinstance(optimizer_class, str):
-            raise TypeError('`optimizer_class` must be instance of `str`.')
+            raise TypeError('`optimizer_class` must be an instance of `str`.')
 
         if not isinstance(seed, int):
-            raise TypeError('`seed` must be instance of `int`.')
+            raise TypeError('`seed` must be an instance of `int`.')
 
         if not isinstance(tokenizer_class, str):
-            raise TypeError('`tokenizer_class` must be instance of `str`.')
+            raise TypeError('`tokenizer_class` must be an instance of `str`.')
 
         # Value Check.
         if batch_size < 1:
@@ -262,13 +263,13 @@ class BaseConfig:
             JSONDecodeError:
                 If configuration is not in JSON format.
             TypeError:
-                When `experiment` is not instance of `str`.
+                When `experiment` is not an instance of `str`.
             ValueError:
                 When `experiment` is empty string.
         """
 
         if not isinstance(experiment, str):
-            raise TypeError('`experiment` must be instance of `str`.')
+            raise TypeError('`experiment` must be an instance of `str`.')
 
         if not experiment:
             raise ValueError('`experiment` must not be empty.')

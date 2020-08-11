@@ -45,35 +45,33 @@ class CharListTokenizer(BaseListTokenizer):
     r"""Character tokenizer using `list` structure.
 
     Attributes:
+
         bos_token:
-            Token represent the begining of a sequence.
-            Sequences will be encoded into following format:
-            [BOS] t1 t2 ... tn [EOS].
+            Token represent the begining of a sequence. Sequences will be
+            encoded into following format:
+                [BOS] t1 t2 ... tn [EOS] [PAD] [PAD] ... [PAD]
         eos_token:
-            Token represent the end of a sequence.
-            Sequences will be encoded into following format:
-            [BOS] t1 t2 ... tn [EOS].
-        id_to_token:
-            Token to id inverse look up data structure.
-            Implemented with `dict` data structure.
+            Token represent the end of a sequence. Sequences will be encoded
+            into following format:
+                [BOS] t1 t2 ... tn [EOS] [PAD] [PAD] ... [PAD]
         is_uncased:
             Whether to differentiate upper cases and lower cases.
         pad_token:
-            Padding token.
-            Only used when sequence length is shorter than must.
+            Token represent padding of a sequence. Only used when sequence
+            length is shorter than must.
         token_to_id:
-            Token to id look up data structure.
-            Implemented with `dict` data structure.
+            Token to id look up data structure. Implemented with `list` data
+            structure.
         unk_token:
-            Token represent unknown words.
-            If tokens are not in tokenizer's vocabulary, then tokens will be
-            replaced by unknown token.
+            Token represent unknown word in a sequence. If a token is not in
+            tokenizer's vocabulary, then that token will be replaced by unknown
+            token.
         vocab_size:
-            Vocabulary size of tokenizer.
+            Number of words in tokenizer's vocabulary.
 
     Raises:
         TypeError:
-            When `is_uncased` is not instance of `bool`.
+            When `is_uncased` is not an instance of `bool`.
     """
 
     def tokenize(self, sequence: str) -> List[str]:
@@ -94,14 +92,14 @@ class CharListTokenizer(BaseListTokenizer):
 
         Raises:
             TypeError:
-                When `sequence` is not instance of `str`.
+                When `sequence` is not an instance of `str`.
 
         Returns:
             Tokens (characters) represent input sequence.
         """
         # Type check.
         if not isinstance(sequence, str):
-            raise TypeError('`sequence` must be instance of `str`.')
+            raise TypeError('`sequence` must be an instance of `str`.')
 
         # NFKC normalization.
         sequence = unicodedata.normalize('NFKC', sequence)
@@ -132,19 +130,19 @@ class CharListTokenizer(BaseListTokenizer):
 
         Raises:
             TypeError:
-                When `tokens` is not instance of `Iterable[str]`.
+                When `tokens` is not an instance of `Iterable[str]`.
 
         Returns:
             Sequence converted from input tokens.
         """
         # Type check.
         if not isinstance(tokens, Iterable):
-            raise TypeError('`tokens` must be instance of `Iterable[str]`.')
+            raise TypeError('`tokens` must be an instance of `Iterable[str]`.')
 
         tokens = list(tokens)
 
         if any(map(lambda token: not isinstance(token, str), tokens)):
-            raise TypeError('`tokens` must be instance of `Iterable[str]`.')
+            raise TypeError('`tokens` must be an instance of `Iterable[str]`.')
 
         # Perform detokenization.
         return ''.join(tokens)

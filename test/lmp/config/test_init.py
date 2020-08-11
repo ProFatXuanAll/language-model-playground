@@ -21,7 +21,7 @@ from lmp.config import BaseConfig
 
 
 class TestInit(unittest.TestCase):
-    r"""Test Case for `lmp.config.BaseConfig.__init__`."""
+    r"""Test case for `lmp.config.BaseConfig.__init__`."""
 
     def test_signature(self):
         r"""Ensure signature consistency."""
@@ -179,7 +179,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`batch_size` must be instance of `int`.',
+                    '`batch_size` must be an instance of `int`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -214,7 +214,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`checkpoint_step` must be instance of `int`.',
+                    '`checkpoint_step` must be an instance of `int`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -248,7 +248,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`d_emb` must be instance of `int`.',
+                    '`d_emb` must be an instance of `int`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -282,7 +282,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`d_hid` must be instance of `int`.',
+                    '`d_hid` must be an instance of `int`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -317,7 +317,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`dataset` must be instance of `str`.',
+                    '`dataset` must be an instance of `str`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -352,7 +352,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`dropout` must be instance of `float`.',
+                    '`dropout` must be an instance of `float`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -386,7 +386,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`epoch` must be instance of `int`.',
+                    '`epoch` must be an instance of `int`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -421,7 +421,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`experiment` must be instance of `str`.',
+                    '`experiment` must be an instance of `str`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -453,7 +453,7 @@ class TestInit(unittest.TestCase):
 
             self.assertEqual(
                 ctx_man.exception.args[0],
-                '`is_uncased` must be instance of `bool`.',
+                '`is_uncased` must be an instance of `bool`.',
                 msg=msg2
             )
 
@@ -483,7 +483,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`learning_rate` must be instance of `float`.',
+                    '`learning_rate` must be an instance of `float`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -521,7 +521,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`max_norm` must be instance of `float`.',
+                    '`max_norm` must be an instance of `float`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -560,7 +560,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`max_seq_len` must be instance of `int`.',
+                    '`max_seq_len` must be an instance of `int`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -599,7 +599,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`min_count` must be instance of `int`.',
+                    '`min_count` must be an instance of `int`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -638,7 +638,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`model_class` must be instance of `str`.',
+                    '`model_class` must be an instance of `str`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -677,7 +677,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`num_linear_layers` must be instance of `int`.',
+                    '`num_linear_layers` must be an instance of `int`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -716,7 +716,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`num_rnn_layers` must be instance of `int`.',
+                    '`num_rnn_layers` must be an instance of `int`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -755,7 +755,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`optimizer_class` must be instance of `str`.',
+                    '`optimizer_class` must be an instance of `str`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -793,7 +793,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`seed` must be instance of `int`.',
+                    '`seed` must be an instance of `int`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -832,7 +832,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`tokenizer_class` must be instance of `str`.',
+                    '`tokenizer_class` must be an instance of `str`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -847,7 +847,7 @@ class TestInit(unittest.TestCase):
     def test_instance_attributes(self):
         r"""Declare required instance attributes."""
         msg1 = 'Missing instance attribute `{}`.'
-        msg2 = 'Instance attribute `{}` must be instance of `{}`.'
+        msg2 = 'Instance attribute `{}` must be an instance of `{}`.'
         msg3 = 'Instance attribute `{}` must be `{}`.'
 
         examples = (

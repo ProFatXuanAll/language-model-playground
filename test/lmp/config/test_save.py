@@ -24,7 +24,7 @@ from lmp.config import BaseConfig
 
 
 class TestSave(unittest.TestCase):
-    r"""Test Case for `lmp.config.BaseConfig.save`."""
+    r"""Test case for `lmp.config.BaseConfig.save`."""
 
     @classmethod
     def setUpClass(cls):

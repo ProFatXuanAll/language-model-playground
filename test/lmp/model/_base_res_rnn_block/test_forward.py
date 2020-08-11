@@ -27,7 +27,7 @@ from lmp.model import BaseResRNNBlock
 
 
 class TestInit(unittest.TestCase):
-    r"""Test Case for `lmp.model._base_res_rnn_block.BaseResRNNBlock`."""
+    r"""Test case for `lmp.model._base_res_rnn_block.BaseResRNNBlock`."""
 
     def setUp(self):
         r"""Set up hyper parameters and construct BaseResRNNBlock"""
@@ -119,8 +119,9 @@ class TestInit(unittest.TestCase):
 
         for x in examples:
             for model in self.models:
-                pred_y= model(x)
+                pred_y = model(x)
                 self.assertIsInstance(pred_y, torch.Tensor, msg=msg)
+
 
 if __name__ == '__main__':
     unittest.main()

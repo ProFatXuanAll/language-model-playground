@@ -1,8 +1,7 @@
 r"""Test `lmp.tokenizer.BaseTokenizer.batch_encode`.
 
 Usage:
-    python -m unittest \
-        test/lmp/tokenizer/_base_tokenizer/test_batch_encode.py
+    python -m unittest test/lmp/tokenizer/_base_tokenizer/test_batch_encode.py
 """
 
 # built-in modules
@@ -24,7 +23,7 @@ from lmp.tokenizer import BaseTokenizer
 
 
 class TestBatchEncode(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.BaseTokenizer.batch_encode`."""
+    r"""Test case for `lmp.tokenizer.BaseTokenizer.batch_encode`."""
 
     def test_signature(self):
         r"""Ensure signature consistency."""
@@ -68,7 +67,7 @@ class TestBatchEncode(unittest.TestCase):
         # pylint: disable=W0223
         # pylint: disable=W0231
         class SubClassTokenizer(BaseTokenizer):
-            r"""Intented to not implement `batch_encode`."""
+            r"""Intented to not implement `tokenize`."""
 
             def reset_vocab(self):
                 pass
@@ -82,7 +81,7 @@ class TestBatchEncode(unittest.TestCase):
             self.assertEqual(
                 ctx_man.exception.args[0],
                 'In class `SubClassTokenizer`: '
-                'function `batch_encode` not implemented yet.',
+                'method `tokenize` not implemented yet.',
                 msg=msg2
             )
 

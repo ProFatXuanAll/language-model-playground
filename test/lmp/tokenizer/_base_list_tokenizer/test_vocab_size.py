@@ -22,7 +22,7 @@ from lmp.tokenizer import BaseListTokenizer
 
 
 class TestVocabSize(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.BaseListTokenizer.vocab_size`."""
+    r"""Test case for `lmp.tokenizer.BaseListTokenizer.vocab_size`."""
 
     def setUp(self):
         r"""Setup both cased and uncased tokenizer instances."""
@@ -54,17 +54,19 @@ class TestVocabSize(unittest.TestCase):
             msg=msg
         )
 
-    def test_expected_return(self):
-        r"""Return expected number."""
+    def test_return_type(self):
+        r"""Return `int`"""
+        msg = 'Must return `int`.'
+
+        for tokenizer in self.tokenizers:
+            self.assertIsInstance(tokenizer.vocab_size, int, msg=msg)
+
+    def test_return_value(self):
+        r"""Return vocabulary size."""
         msg = 'Inconsistent vocabulary size.'
 
         for tokenizer in self.tokenizers:
-
-            self.assertEqual(
-                tokenizer.vocab_size,
-                len(tokenizer.token_to_id),
-                msg=msg
-            )
+            self.assertEqual(tokenizer.vocab_size, 4, msg=msg)
 
 
 if __name__ == '__main__':

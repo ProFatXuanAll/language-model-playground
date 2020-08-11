@@ -26,7 +26,7 @@ from lmp.tokenizer import CharListTokenizer
 
 
 class TestBatchDecode(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.CharListTokenizer.batch_decode`."""
+    r"""Test case for `lmp.tokenizer.CharListTokenizer.batch_decode`."""
 
     def setUp(self):
         r"""Setup both cased and uncased tokenizer instances."""
@@ -103,9 +103,8 @@ class TestBatchDecode(unittest.TestCase):
 
                 self.assertEqual(
                     cxt_man.exception.args[0],
-                    '`batch_token_ids` must be instance of `Iterable[Iterable[int]]`.',
-                    msg=msg2
-                )
+                    '`batch_token_ids` must be an instance of `Iterable[Iterable[int]]`.',
+                    msg=msg2)
 
     def test_invalid_input_remove_special_tokens(self):
         r"""Raise `TypeError` when input is invalid."""
@@ -127,7 +126,7 @@ class TestBatchDecode(unittest.TestCase):
 
                 self.assertEqual(
                     cxt_man.exception.args[0],
-                    '`remove_special_tokens` must be instance of `bool`.',
+                    '`remove_special_tokens` must be an instance of `bool`.',
                     msg=msg2
                 )
 

@@ -26,7 +26,7 @@ from lmp.tokenizer import CharListTokenizer
 
 
 class TestSave(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.BaseTokenizer.save`."""
+    r"""Test case for `lmp.tokenizer.BaseTokenizer.save`."""
 
     @classmethod
     def setUpClass(cls):
@@ -83,7 +83,7 @@ class TestSave(unittest.TestCase):
         msg1 = 'Must raise `TypeError` or `ValueError` when input is invalid.'
         msg2 = 'Inconsistent error message.'
         examples = (
-            0, 1, -1, 0.0, 1.0, math.nan, math.inf, '', b'', True, False,  0j, 1j,
+            0, 1, -1, 0.0, 1.0, math.nan, math.inf, '', b'', True, False, 0j, 1j,
             [], (), {}, set(), object(), lambda x: x, type, None,
             NotImplemented, ...,
         )
@@ -99,7 +99,7 @@ class TestSave(unittest.TestCase):
                 if isinstance(ctx_man.exception, TypeError):
                     self.assertEqual(
                         ctx_man.exception.args[0],
-                        '`experiment` must be instance of `str`.',
+                        '`experiment` must be an instance of `str`.',
                         msg=msg2
                     )
                 else:
