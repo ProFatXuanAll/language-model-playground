@@ -61,25 +61,27 @@ class TestResetVocab(unittest.TestCase):
         msg = 'Must reset `token_to_id` and `id_to_token`.'
 
         token_to_id = {
-            '[BOS]': 0,
-            '[EOS]': 1,
-            '[PAD]': 2,
-            '[UNK]': 3
+            '[bos]': 0,
+            '[eos]': 1,
+            '[pad]': 2,
+            '[unk]': 3
         }
         id_to_token = {
-            0: '[BOS]',
-            1: '[EOS]',
-            2: '[PAD]',
-            3: '[UNK]'
+            0: '[bos]',
+            1: '[eos]',
+            2: '[pad]',
+            3: '[unk]'
         }
 
         for tokenizer in self.tokenizers:
             tokenizer.reset_vocab()
+            self.assertTrue(hasattr(tokenizer, 'token_to_id'))
             self.assertIsInstance(
                 tokenizer.token_to_id,
                 type(token_to_id),
                 msg=msg
             )
+            self.assertTrue(hasattr(tokenizer, 'id_to_token'))
             self.assertIsInstance(
                 tokenizer.id_to_token,
                 type(id_to_token),

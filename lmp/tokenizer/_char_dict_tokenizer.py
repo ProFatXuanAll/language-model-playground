@@ -29,10 +29,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
-
-import re
-import unicodedata
-
 from typing import Iterable
 from typing import List
 
@@ -48,11 +44,11 @@ class CharDictTokenizer(BaseDictTokenizer):
         bos_token:
             Token represent the begining of a sequence. Sequences will be
             encoded into following format:
-                [BOS] t1 t2 ... tn [EOS] [PAD] [PAD] ... [PAD]
+                [bos] t1 t2 ... tn [eos] [pad] [pad] ... [pad]
         eos_token:
             Token represent the end of a sequence. Sequences will be encoded
             into following format:
-                [BOS] t1 t2 ... tn [EOS] [PAD] [PAD] ... [PAD]
+                [bos] t1 t2 ... tn [eos] [pad] [pad] ... [pad]
         id_to_token:
             Token to id inverse look up data structure. Implemented with `dict`
             data structure.
@@ -79,14 +75,11 @@ class CharDictTokenizer(BaseDictTokenizer):
     def tokenize(self, sequence: str) -> List[str]:
         r"""Perform tokenization on input sequence.
 
-        Input sequence will first be normalized using unicode's NFKC format.
-        If `self.is_uncased == True`, then convert input sequence to lower
-        cases. We define whitespace characters using python's `re` module with
-        pattern `r'\s'` (regular expression for all whitespace characters) for
-        the rest of the context. Then we stripped both leading and trailing
-        whitespace characters and convert all consecutive whitespace characters
-        into single whitespace character. Finally we split sequence into
-        characters by passing `str` to `list`.
+        Input sequence will first be normalized by
+        `lmp.tokenizer.BaseTokenizer.normalize(sequence)`. Then we split
+        input sequence by `list(sequence)`. See
+        `lmp.tokenizer.BaseTokenizer.normalize` for details on normalization
+        process.
 
         Args:
             sequence:
@@ -99,32 +92,20 @@ class CharDictTokenizer(BaseDictTokenizer):
         Returns:
             Tokens (characters) represent input sequence.
         """
-        # Type check.
-        if not isinstance(sequence, str):
+        try:
+            # First do normalization, then perform tokenization.
+            return list(self.normalize(sequence))
+        except TypeError:
             raise TypeError('`sequence` must be an instance of `str`.')
-
-        # NFKC normalization.
-        sequence = unicodedata.normalize('NFKC', sequence)
-
-        # Convert into lower cases.
-        if self.is_uncased:
-            sequence = sequence.lower()
-
-        # Stripping both leading and trailing whitespace characters.
-        sequence = sequence.strip()
-
-        # Convert consecutive whitespace characters into single whitespace
-        # character.
-        sequence = re.sub(r'\s+', ' ', sequence)
-
-        # Perform tokenization.
-        return list(sequence)
 
     def detokenize(self, tokens: Iterable[str]) -> str:
         r"""Convert tokens back to sequence.
 
         Since each tokens are originally tokenized as characters, we can simply
-        join them into single sequence.
+        join them into single sequence. Output sequence will be normalized
+        by `lmp.tokenizer.BaseTokenizer.normalize(sequence)`. See
+        `lmp.tokenizer.BaseTokenizer.normalize` for details on normalization
+        process.
 
         Args:
             tokens:
@@ -143,8 +124,8 @@ class CharDictTokenizer(BaseDictTokenizer):
 
         tokens = list(tokens)
 
-        if any(map(lambda token: not isinstance(token, str), tokens)):
+        if not all(map(lambda token: isinstance(token, str), tokens)):
             raise TypeError('`tokens` must be an instance of `Iterable[str]`.')
 
-        # Perform detokenization.
-        return ''.join(tokens)
+        # First perform detokenization, then do normalization.
+        return self.normalize(''.join(tokens))

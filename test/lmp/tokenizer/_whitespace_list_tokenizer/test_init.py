@@ -19,6 +19,7 @@ import unittest
 
 # self-made modules
 
+from lmp.tokenizer import BaseListTokenizer
 from lmp.tokenizer import WhitespaceListTokenizer
 
 
@@ -63,13 +64,20 @@ class TestInit(unittest.TestCase):
             msg=msg
         )
 
-    def test_invalid_input(self):
-        r"""Raise `TypeError` when input is invalid."""
-        msg1 = 'Must raise `TypeError` when input is invalid.'
+    def test_inheritance(self):
+        r""""Is subclass of `lmp.tokenizer.BaseListTokenizer`."""
+        msg = 'Must be subclass of `lmp.tokenizer.BaseListTokenizer`.'
+
+        for tokenizer in self.tokenizers:
+            self.assertIsInstance(tokenizer, BaseListTokenizer, msg=msg)
+
+    def test_invalid_input_is_uncased(self):
+        r"""Raise `TypeError` when input `is_uncased` is invalid."""
+        msg1 = 'Must raise `TypeError` when input `is_uncased` is invalid.'
         msg2 = 'Inconsistent error message.'
         examples = (
-            0, 1, -1, 0.0, 1.0, math.nan, math.inf, '', b'', 0j, 1j,
-            [], (), {}, set(), object(), lambda x: x, type, None,
+            0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf, 0j,
+            1j, '', b'', [], (), {}, set(), object(), lambda x: x, type, None,
             NotImplemented, ...,
         )
 
@@ -90,10 +98,10 @@ class TestInit(unittest.TestCase):
         msg3 = 'Class attribute `{}` must be `{}`.'
 
         examples = (
-            ('bos_token', '[BOS]'),
-            ('eos_token', '[EOS]'),
-            ('pad_token', '[PAD]'),
-            ('unk_token', '[UNK]'),
+            ('bos_token', '[bos]'),
+            ('eos_token', '[eos]'),
+            ('pad_token', '[pad]'),
+            ('unk_token', '[unk]'),
         )
 
         for attr, attr_val in examples:
@@ -113,6 +121,29 @@ class TestInit(unittest.TestCase):
                     getattr(tokenizer, attr),
                     attr_val,
                     msg=msg3.format(attr, attr_val)
+                )
+
+    def test_instance_attribute(self):
+        r"""Declare required instance attributes."""
+        msg1 = 'Missing instance attribute `{}`.'
+        msg2 = 'Instance attribute `{}` must be an instance of `{}`.'
+
+        examples = (
+            ('is_uncased', bool),
+            ('token_to_id', list),
+        )
+
+        for attr, attr_type in examples:
+            for tokenizer in self.tokenizers:
+                self.assertTrue(
+                    hasattr(tokenizer, attr),
+                    msg=msg1.format(attr)
+                )
+
+                self.assertIsInstance(
+                    getattr(tokenizer, attr),
+                    attr_type,
+                    msg=msg2.format(attr, attr_type.__name__)
                 )
 
 

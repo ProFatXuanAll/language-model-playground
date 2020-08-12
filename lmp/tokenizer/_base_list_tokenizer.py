@@ -46,11 +46,11 @@ class BaseListTokenizer(BaseTokenizer):
         bos_token:
             Token represent the begining of a sequence. Sequences will be
             encoded into following format:
-                [BOS] t1 t2 ... tn [EOS] [PAD] [PAD] ... [PAD]
+                [bos] t1 t2 ... tn [eos] [pad] [pad] ... [pad]
         eos_token:
             Token represent the end of a sequence. Sequences will be encoded
             into following format:
-                [BOS] t1 t2 ... tn [EOS] [PAD] [PAD] ... [PAD]
+                [bos] t1 t2 ... tn [eos] [pad] [pad] ... [pad]
         is_uncased:
             Whether to differentiate upper cases and lower cases.
         pad_token:
@@ -245,13 +245,18 @@ class BaseListTokenizer(BaseTokenizer):
         if not isinstance(min_count, int):
             raise TypeError('`min_count` must be an instance of `int`.')
 
-        token_freq_counter = {}
+        try:
+            token_freq_counter = {}
 
-        for sequence in batch_sequences:
-            for token in self.tokenize(sequence):
-                if token not in token_freq_counter:
-                    token_freq_counter[token] = 0
-                token_freq_counter[token] += 1
+            for sequence in batch_sequences:
+                for token in self.tokenize(sequence):
+                    if token not in token_freq_counter:
+                        token_freq_counter[token] = 0
+                    token_freq_counter[token] += 1
+        except TypeError:
+            raise TypeError(
+                '`batch_sequences` must be an instance of `Iterable[str]`.'
+            )
 
         # Sort tokens based on frequency.
         new_tokens = sorted(

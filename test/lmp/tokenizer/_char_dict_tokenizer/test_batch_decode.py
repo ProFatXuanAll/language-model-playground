@@ -12,8 +12,8 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import inspect
 import gc
+import inspect
 import math
 import unittest
 
@@ -97,10 +97,19 @@ class TestBatchDecode(unittest.TestCase):
             NotImplemented, ..., [False], [True], [0], [1], [-1], [0.0], [1.0],
             [math.nan], [-math.nan], [math.inf], [-math.inf], [0j], [1j],
             [object()], [lambda x: x], [type], [None], [NotImplemented], [...],
-            [[0.0]], [[1.0]], [[math.nan]], [[-math.nan]], [[math.inf]],
-            [[-math.inf]], [[0j]], [[1j]], [['']], [[b'']], [[()]], [[[]]],
-            [[{}]], [[set()]], [[object()]], [[lambda x: x]], [[type]],
-            [[None]], [[NotImplemented]], [[...]],
+            [[], False], [[], True], [[], 0], [[], 1], [[], -1], [[], 0.0],
+            [[], 1.0], [[], math.nan], [[], -math.nan], [[], math.inf],
+            [[], -math.inf], [[], 0j], [[], 1j], [[], object()],
+            [[], lambda x: x], [[], type], [[], None], [[], NotImplemented],
+            [[], ...], [[0.0]], [[1.0]], [[math.nan]], [[-math.nan]],
+            [[math.inf]], [[-math.inf]], [[0j]], [[1j]], [['']], [[b'']],
+            [[()]], [[[]]], [[{}]], [[set()]], [[object()]], [[lambda x: x]],
+            [[type]], [[None]], [[NotImplemented]], [[...]], [[0, 0.0]],
+            [[0, 1.0]], [[0, math.nan]], [[0, -math.nan]], [[0, math.inf]],
+            [[0, -math.inf]], [[0, 0j]], [[0, 1j]], [[0, '']], [[0, b'']],
+            [[0, ()]], [[0, []]], [[0, {}]], [[0, set()]], [[0, object()]],
+            [[0, lambda x: x]], [[0, type]], [[0, None]],
+            [[0, NotImplemented]], [[0, ...]],
         )
 
         for invalid_input in examples:
@@ -123,8 +132,8 @@ class TestBatchDecode(unittest.TestCase):
         )
         msg2 = 'Inconsistent error message.'
         examples = (
-            0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf, '',
-            b'', 0j, 1j, [], (), {}, set(), object(), lambda x: x, type, None,
+            0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf, 0j, 1j,
+            '', b'', 0j, 1j, [], (), {}, set(), object(), lambda x: x, type, None,
             NotImplemented, ...,
         )
 
@@ -174,14 +183,14 @@ class TestBatchDecode(unittest.TestCase):
                     [0, 19, 4, 6, 16, 6, 17, 8, 18, 1],
                 ],
                 [
-                    '[BOS]Hello World![EOS][PAD]',
-                    '[BOS]I am a [UNK][EOS][PAD][PAD]',
-                    '[BOS][UNK]legend.[EOS]',
+                    '[bos]Hello World![eos][pad]',
+                    '[bos]I am a [unk][eos][pad][pad]',
+                    '[bos][unk]legend.[eos]',
                 ],
                 [
-                    '[BOS]hello world![EOS][PAD]',
-                    '[BOS]i am a [UNK][EOS][PAD][PAD]',
-                    '[BOS][UNK]legend.[EOS]',
+                    '[bos]hello world![eos][pad]',
+                    '[bos]i am a [unk][eos][pad][pad]',
+                    '[bos][unk]legend.[eos]',
                 ],
             ),
             (
@@ -193,13 +202,13 @@ class TestBatchDecode(unittest.TestCase):
                 ],
                 [
                     'Hello World!',
-                    'I am a [UNK]',
-                    '[UNK]legend.',
+                    'I am a [unk]',
+                    '[unk]legend.',
                 ],
                 [
                     'hello world!',
-                    'i am a [UNK]',
-                    '[UNK]legend.',
+                    'i am a [unk]',
+                    '[unk]legend.',
                 ],
             ),
         )

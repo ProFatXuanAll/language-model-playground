@@ -11,6 +11,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import gc
 import inspect
 import json
 import math
@@ -37,6 +38,9 @@ class TestLoad(unittest.TestCase):
     def tearDownClass(cls):
         r"""Clean up test directory."""
         os.removedirs(cls.test_dir)
+        del cls.test_dir
+        del cls.experiment
+        gc.collect()
 
     def test_signature(self):
         r"""Ensure signature consistency."""
@@ -157,6 +161,8 @@ class TestLoad(unittest.TestCase):
                 tokenizer = BaseDictTokenizer.load(
                     experiment=self.__class__.experiment
                 )
+
+                self.assertIsInstance(tokenizer, BaseDictTokenizer, msg=msg)
 
                 for attr_key, attr_value in obj.items():
                     self.assertTrue(hasattr(tokenizer, attr_key), msg=msg)

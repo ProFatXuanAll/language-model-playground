@@ -12,8 +12,8 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import inspect
 import gc
+import inspect
 import math
 import unittest
 
@@ -76,7 +76,11 @@ class TestConvertTokensToIds(unittest.TestCase):
             NotImplemented, ..., [False], [True], [0], [1], [-1], [0.0], [1.0],
             [math.nan], [-math.nan], [math.inf], [-math.inf], [0j], [1j],
             [b''], [object()], [lambda x: x], [type], [None], [NotImplemented],
-            [...],
+            [...], ['', False], ['', True], ['', 0], ['', 1], ['', -1],
+            ['', 0.0], ['', 1.0], ['', math.nan], ['', -math.nan],
+            ['', math.inf], ['', -math.inf], ['', 0j], ['', 1j], ['', b''],
+            ['', object()], ['', lambda x: x], ['', type], ['', None],
+            ['', NotImplemented], ['', ...],
         )
 
         for invalid_input in examples:
@@ -112,23 +116,23 @@ class TestConvertTokensToIds(unittest.TestCase):
         msg = 'Must return special token ids.'
         examples = (
             (
-                ['[BOS]', '[EOS]', '[PAD]', '[UNK]'],
+                ['[bos]', '[eos]', '[pad]', '[unk]'],
                 [0, 1, 2, 3],
             ),
             (
-                ['[BOS]'],
+                ['[bos]'],
                 [0],
             ),
             (
-                ['[EOS]'],
+                ['[eos]'],
                 [1],
             ),
             (
-                ['[PAD]'],
+                ['[pad]'],
                 [2],
             ),
             (
-                ['[UNK]'],
+                ['[unk]'],
                 [3],
             ),
         )
@@ -151,8 +155,8 @@ class TestConvertTokensToIds(unittest.TestCase):
             ),
             (
                 [
-                    '[BOS]', 'H', 'e', 'l', 'l', 'o', ' ',
-                    'W', 'o', 'r', 'l', 'd', '[EOS]', '[PAD]', '[PAD]',
+                    '[bos]', 'H', 'e', 'l', 'l', 'o', ' ',
+                    'W', 'o', 'r', 'l', 'd', '[eos]', '[pad]', '[pad]',
                 ],
                 [0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 2, 2],
             ),

@@ -18,7 +18,8 @@ import argparse
 
 import lmp
 
-if __name__ == "__main__":
+if __name__ == '__main__':
+    # Parse argument from standard input.
     parser = argparse.ArgumentParser()
 
     # Required arguments.

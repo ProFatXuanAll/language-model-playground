@@ -38,6 +38,9 @@ class TestSave(unittest.TestCase):
     def tearDownClass(cls):
         r"""Clean up test directory."""
         os.removedirs(cls.test_dir)
+        del cls.test_dir
+        del cls.experiment
+        gc.collect()
 
     def setUp(self):
         r"""Setup both cased and uncased tokenizer instances."""

@@ -97,7 +97,12 @@ class TestBatchEncode(unittest.TestCase):
             NotImplemented, ..., [False], [True], [0], [1], [-1], [0.0], [1.0],
             [math.nan], [-math.nan], [math.inf], [-math.inf], [0j], [1j],
             [b''], [()], [[]], [{}], [set()], [object()], [lambda x: x],
-            [type], [None], [NotImplemented], [...],
+            [type], [None], [NotImplemented], [...], ['', False], ['', True],
+            ['', 0], ['', 1], ['', -1], ['', 0.0], ['', 1.0], ['', math.nan],
+            ['', -math.nan], ['', math.inf], ['', -math.inf], ['', 0j],
+            ['', 1j], ['', b''], ['', ()], ['', []], ['', {}], ['', set()],
+            ['', object()], ['', lambda x: x], ['', type], ['', None],
+            ['', NotImplemented], ['', ...],
         )
 
         for invalid_input in examples:
@@ -108,8 +113,7 @@ class TestBatchEncode(unittest.TestCase):
                 self.assertEqual(
                     cxt_man.exception.args[0],
                     '`batch_sequences` must be an instance of `Iterable[str]`.',
-                    msg=msg2
-                )
+                    msg=msg2)
 
     def test_invalid_input_max_seq_len(self):
         r"""Raise exception when input `max_seq_len` is invalid."""
@@ -153,8 +157,8 @@ class TestBatchEncode(unittest.TestCase):
         r"""Return `List[List[int]]`."""
         msg = 'Must return `List[List[int]]`.'
         examples = (
-            ['Hello world!', 'I am a legend.', 'y = f(x)'],
-            ['Hello world!', '', ''],
+            ['Hello World!', 'I am a legend.', 'y = f(x)'],
+            ['Hello World!', '', ''],
             ['', 'I am a legend.', ''],
             ['', '', 'y = f(x)'],
             ['', '', ''],
@@ -176,7 +180,7 @@ class TestBatchEncode(unittest.TestCase):
         r"""Follow encode format."""
         msg = (
             'Must follow encode format: '
-            '[BOS] t1 t2 ... tn [EOS] [PAD] ... [PAD].'
+            '[bos] t1 t2 ... tn [eos] [pad] ... [pad].'
         )
         examples = (
             (
@@ -222,73 +226,139 @@ class TestBatchEncode(unittest.TestCase):
             ([], [],),
         )
 
-        for batch_sequences, batch_tokens_ids in examples:
+        for batch_sequences, batch_token_ids in examples:
             for tokenizer in self.tokenizers:
                 self.assertEqual(
                     tokenizer.batch_encode(batch_sequences=batch_sequences),
-                    batch_tokens_ids,
+                    batch_token_ids,
                     msg=msg
                 )
 
-    # def test_truncate(self):
-    #     r"""Return List[List[int]] must make sure each `List[int]`'s length
-    #     must not exceed `max_seq_len`.
-    #     """
-    #     msg = (
-    #         'Return result must make sure  each `List[int]`\'s length must not \
-    #         exceed `max_seq_len`.')
-    #     examples = (
-    #         (
-    #             [
-    #                 'Hello',
-    #                 'world'
-    #             ],
-    #             [
-    #                 [0, 3, 1],
-    #                 [0, 3, 1]
-    #             ]
-    #         ),
-    #     )
+    def test_truncate(self):
+        r"""Batch token ids' length must not exceed `max_seq_len`."""
+        msg = 'Batch token ids\' length must not exceed `max_seq_len`.'
+        examples = (
+            (
+                ['Hello World!', 'I am a legend.', 'y = f(x)'],
+                [
+                    [0, 10, 6, 4, 4, 7, 5, 11, 7, 1],
+                    [0, 14, 5, 9, 15, 5, 9, 5, 4, 1],
+                    [0, 3, 5, 3, 5, 3, 3, 3, 3, 1],
+                ],
+                10,
+            ),
+            (
+                ['Hello World!', 'I am a legend.', 'y = f(x)'],
+                [
+                    [0, 10, 6, 4, 1],
+                    [0, 14, 5, 9, 1],
+                    [0, 3, 5, 3, 1],
+                ],
+                5,
+            ),
+            (
+                ['Hello World!', 'I am a legend.', 'y = f(x)'],
+                [
+                    [0, 1],
+                    [0, 1],
+                    [0, 1],
+                ],
+                2,
+            ),
+            (
+                ['', '', ''],
+                [
+                    [0, 1],
+                    [0, 1],
+                    [0, 1],
+                ],
+                2,
+            ),
+            ([], [], 2),
+        )
 
-    #     for batch_sequences, ans_tokens_ids in examples:
-    #         self.assertEqual(
-    #             self.cased_tokenizer.batch_encode(
-    #                 batch_sequences=batch_sequences,
-    #                 max_seq_len=3
-    #             ),
-    #             ans_tokens_ids,
-    #             msg=msg
-    #         )
+        for batch_sequences, batch_token_ids, max_seq_len in examples:
+            for tokenizer in self.tokenizers:
+                self.assertEqual(
+                    tokenizer.batch_encode(
+                        batch_sequences=batch_sequences,
+                        max_seq_len=max_seq_len
+                    ),
+                    batch_token_ids,
+                    msg=msg
+                )
 
-    # def test_padding(self):
-    #     r"""Return List[List[int]] must pad each `List[int]` the length to
-    #     `max_seq_len`.
-    #     """
-    #     msg = (
-    #         'Return result must pad each `List[int]` the length to `max_seq_len`.'
-    #     )
-    #     examples = (
-    #         (
-    #             [
-    #                 'Hello',
-    #                 'world'
-    #             ],
-    #             [
-    #                 [0, 3, 3, 3, 3, 3, 1, 2, 2, 2],
-    #                 [0, 3, 3, 3, 3, 3, 1, 2, 2, 2]
-    #             ]
-    #         ),
-    #     )
+    def test_padding(self):
+        r"""Batch token ids' length must pad to `max_seq_len`."""
+        msg = 'Batch token ids\' length must pad to `max_seq_len`.'
+        examples = (
+            (
+                ['Hello World!', 'I am a legend.', 'y = f(x)'],
+                [
+                    [
+                        0, 10, 6, 4, 4, 7, 5, 11, 7, 12,
+                        4, 8, 13, 1, 2, 2, 2, 2, 2, 2
+                    ],
+                    [
+                        0, 14, 5, 9, 15, 5, 9, 5, 4, 6,
+                        16, 6, 17, 8, 18, 1, 2, 2, 2, 2
+                    ],
+                    [
+                        0, 3, 5, 3, 5, 3, 3, 3, 3, 1,
+                        2, 2, 2, 2, 2, 2, 2, 2, 2, 2
+                    ],
+                ],
+                20,
+            ),
+            (
+                ['Hello World!', '', ''],
+                [
+                    [0, 10, 6, 4, 4, 7, 5, 11, 7, 12, 4, 8, 13, 1, 2],
+                    [0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+                    [0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+                ],
+                15,
+            ),
+            (
+                ['', 'I am a legend.', ''],
+                [
+                    [0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+                    [0, 14, 5, 9, 15, 5, 9, 5, 4, 6, 16, 6, 17, 8, 18, 1, 2],
+                    [0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+                ],
+                17,
+            ),
+            (
+                ['', '', 'y = f(x)'],
+                [
+                    [0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+                    [0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+                    [0, 3, 5, 3, 5, 3, 3, 3, 3, 1, 2, 2],
+                ],
+                12,
+            ),
+            (
+                ['', '', ''],
+                [
+                    [0, 1, 2, 2, 2, 2, 2, 2, 2, 2],
+                    [0, 1, 2, 2, 2, 2, 2, 2, 2, 2],
+                    [0, 1, 2, 2, 2, 2, 2, 2, 2, 2],
+                ],
+                10,
+            ),
+            ([], [], 100),
+        )
 
-    #     for batch_sequences, ans_tokens_ids in examples:
-    #         self.assertEqual(
-    #             self.cased_tokenizer.batch_encode(
-    #                 batch_sequences=batch_sequences,
-    #                 max_seq_len=10
-    #             ),
-    #             ans_tokens_ids,
-    #             msg=msg
-    #         )
+        for batch_sequences, batch_token_ids, max_seq_len in examples:
+            for tokenizer in self.tokenizers:
+                self.assertEqual(
+                    tokenizer.batch_encode(
+                        batch_sequences=batch_sequences,
+                        max_seq_len=max_seq_len
+                    ),
+                    batch_token_ids,
+                    msg=msg
+                )
 
 
 if __name__ == '__main__':
