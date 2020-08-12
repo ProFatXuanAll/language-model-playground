@@ -77,6 +77,14 @@ class BaseConfig:
             Control random seed. Must be bigger than or equal to `1`.
         tokenizer_class:
             Tokenizer's class. Must not be empty.
+
+    Raises:
+        TypeError:
+            When one of the arguments are not instance of their type annotation
+            respectively.
+        ValueError:
+            When one of the arguments do not follow their constraints. See
+            docstring for arguments constraints.
     """
 
     def __init__(
@@ -180,7 +188,7 @@ class BaseConfig:
         if not dataset:
             raise ValueError('`dataset` must not be empty.')
 
-        if not (0 <= dropout <= 1):
+        if not 0 <= dropout <= 1:
             raise ValueError('`dropout` must range from `0.0` to `1.0`.')
 
         if epoch < 1:

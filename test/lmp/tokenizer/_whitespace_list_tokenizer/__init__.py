@@ -39,6 +39,35 @@ class TestWhitespaceListTokenizer(unittest.TestCase):
         except ImportError:
             self.fail(msg=msg)
 
+    def test_module_attributes(self):
+        r"""Declare required module attributes."""
+        msg1 = 'Missing module attribute `{}`.'
+        msg2 = 'Module attribute `{}` must be a class.'
+        msg3 = 'Inconsistent module signature.'
+        examples = ('WhitespaceListTokenizer',)
+
+        try:
+            # pylint: disable=C0415
+            import lmp
+            import lmp.tokenizer
+            import lmp.tokenizer._whitespace_list_tokenizer
+            # pylint: enable=C0415
+
+            for attr in examples:
+                self.assertTrue(
+                    hasattr(lmp.tokenizer._whitespace_list_tokenizer, attr),
+                    msg=msg1.format(attr)
+                )
+                self.assertTrue(
+                    inspect.isclass(getattr(
+                        lmp.tokenizer._whitespace_list_tokenizer,
+                        attr
+                    )),
+                    msg=msg2.format(attr)
+                )
+        except ImportError:
+            self.fail(msg=msg3)
+
 
 if __name__ == '__main__':
     unittest.main()
