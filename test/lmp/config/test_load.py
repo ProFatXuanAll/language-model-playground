@@ -11,6 +11,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import gc
 import inspect
 import json
 import math
@@ -41,6 +42,9 @@ class TestLoad(unittest.TestCase):
     def tearDownClass(cls):
         r"""Remove test directory."""
         os.removedirs(cls.test_dir)
+        del cls.test_dir
+        del cls.experiment
+        gc.collect()
 
     def test_signature(self):
         r"""Ensure signature consistency."""
@@ -62,11 +66,11 @@ class TestLoad(unittest.TestCase):
             msg=msg
         )
 
-    def test_invalid_experiment(self):
-        r"""Raise when `experiment` is invalid."""
+    def test_invalid_input_experiment(self):
+        r"""Raise when input `experiment` is invalid."""
         msg1 = (
             'Must raise `FileNotFoundError`, `TypeError` or `ValueError` when '
-            '`experiment` is invalid.'
+            'input `experiment` is invalid.'
         )
         msg2 = 'Inconsistent error message.'
         examples = (
@@ -188,6 +192,8 @@ class TestLoad(unittest.TestCase):
                     json.dump(attributes, output_file)
 
                 config = BaseConfig.load(experiment=self.__class__.experiment)
+                self.assertIsInstance(config, BaseConfig)
+
                 for attr_key, attr_value in attributes.items():
                     self.assertTrue(hasattr(config, attr_key), msg=msg)
                     self.assertIsInstance(
