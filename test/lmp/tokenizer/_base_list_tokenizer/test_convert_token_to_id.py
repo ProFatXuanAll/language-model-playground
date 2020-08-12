@@ -12,8 +12,8 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import inspect
 import gc
+import inspect
 import math
 import unittest
 
@@ -88,10 +88,10 @@ class TestConvertTokenToId(unittest.TestCase):
         r"""Return `int`."""
         msg = 'Must return `int`.'
         examples = (
-            '[BOS]',
-            '[EOS]',
-            '[PAD]',
-            '[UNK]',
+            '[bos]',
+            '[eos]',
+            '[pad]',
+            '[unk]',
             'Hello World',
             '',
         )
@@ -108,10 +108,10 @@ class TestConvertTokenToId(unittest.TestCase):
         r"""Return special token id."""
         msg = 'Must return special token id.'
         examples = (
-            ('[BOS]', 0),
-            ('[EOS]', 1),
-            ('[PAD]', 2),
-            ('[UNK]', 3),
+            ('[bos]', 0),
+            ('[eos]', 1),
+            ('[pad]', 2),
+            ('[unk]', 3),
         )
 
         for token, ans_token_id in examples:

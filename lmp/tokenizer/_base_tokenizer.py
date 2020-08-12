@@ -15,6 +15,8 @@ from __future__ import unicode_literals
 import abc
 import json
 import os
+import re
+import unicodedata
 
 from typing import Generator
 from typing import Iterable
@@ -34,11 +36,11 @@ class BaseTokenizer:
         bos_token:
             Token represent the begining of a sequence. Sequences will be
             encoded into following format:
-                [BOS] t1 t2 ... tn [EOS] [PAD] [PAD] ... [PAD]
+                [bos] t1 t2 ... tn [eos] [pad] [pad] ... [pad]
         eos_token:
             Token represent the end of a sequence. Sequences will be encoded
             into following format:
-                [BOS] t1 t2 ... tn [EOS] [PAD] [PAD] ... [PAD]
+                [bos] t1 t2 ... tn [eos] [pad] [pad] ... [pad]
         is_uncased:
             Whether to differentiate upper cases and lower cases.
         pad_token:
@@ -57,10 +59,10 @@ class BaseTokenizer:
         TypeError:
             When `is_uncased` is not an instance of `bool`.
     """
-    bos_token: str = '[BOS]'
-    eos_token: str = '[EOS]'
-    pad_token: str = '[PAD]'
-    unk_token: str = '[UNK]'
+    bos_token: str = '[bos]'
+    eos_token: str = '[eos]'
+    pad_token: str = '[pad]'
+    unk_token: str = '[unk]'
 
     def __init__(self, is_uncased: bool = False):
         # Type check.
@@ -182,6 +184,44 @@ class BaseTokenizer:
 
                 if create_dir_flag and os.path.exists(file_dir):
                     os.removedirs(file_dir)
+
+    def normalize(self, sequence: str) -> str:
+        r"""Normalize input sequence.
+
+        Input sequence will first be normalized using unicode's NFKC format.
+        If `self.is_uncased == True`, then we will convert input sequence into
+        lower cases. Finally we stripped both leading and trailing whitespace
+        characters and convert all consecutive whitespace characters into
+        single whitespace character.
+
+        Args:
+            sequence:
+                Input sequence to be normalized.
+
+        Raises:
+            TypeError:
+                When `sequence` is not an instance of `str`.
+
+        Returns:
+            Normalized input sequence.
+        """
+        # Type check.
+        if not isinstance(sequence, str):
+            raise TypeError('`sequence` must be an instance of `str`.')
+
+        # NFKC normalization.
+        sequence = unicodedata.normalize('NFKC', sequence)
+
+        # Convert into lower cases.
+        if self.is_uncased:
+            sequence = sequence.lower()
+
+        # Stripping both leading and trailing whitespace characters.
+        sequence = sequence.strip()
+
+        # Convert consecutive whitespace characters into single whitespace
+        # character.
+        return re.sub(r'\s+', ' ', sequence)
 
     @abc.abstractmethod
     def tokenize(self, sequence: str) -> List[str]:
@@ -323,10 +363,10 @@ class BaseTokenizer:
         r"""Encode sequence into token ids.
 
         Token ids have following format (presented with tokens):
-            [BOS] t1 t2 ... tn [EOS] [PAD] ... [PAD]
+            [bos] t1 t2 ... tn [eos] [pad] ... [pad]
 
-        Returned token ids will include at least both `[BOS]` and `[EOS]`. In
-        extremem returned token ids are exactly `[BOS] [EOS]` when
+        Returned token ids will include at least both `[bos]` and `[eos]`. In
+        extremem returned token ids are exactly `[bos] [eos]` when
         `max_seq_len == 2`. This means `0 <= max_seq_len <= 1` are not allowed.
 
         Args:
@@ -366,11 +406,11 @@ class BaseTokenizer:
             raise TypeError('`sequence` must be an instance of `str`.')
 
         # Truncate to max sequence length,
-        # -2 for `[BOS]` and `[EOS]`.
+        # -2 for `[bos]` and `[eos]`.
         if max_seq_len != -1:
             token_ids = token_ids[:max_seq_len - 2]
 
-        # Prepend `[BOS]` and append `[EOS]`.
+        # Prepend `[bos]` and append `[eos]`.
         token_ids = (
             [self.convert_token_to_id(self.__class__.bos_token)] +
             token_ids +
@@ -454,8 +494,8 @@ class BaseTokenizer:
         r"""Encode batch of sequence into batch of token ids.
 
         Each token ids in returned batch token ids will include at least both
-        `[BOS]` and `[EOS]`. In extremem each returned token ids are exactly
-        `[BOS] [EOS]` when `max_seq_len == 2`. This means
+        `[bos]` and `[eos]`. In extremem each returned token ids are exactly
+        `[bos] [eos]` when `max_seq_len == 2`. This means
         `0 <= max_seq_len <= 1` are not allowed. See `encode` for each returned
         token ids' format.
 
@@ -494,7 +534,7 @@ class BaseTokenizer:
 
         try:
             # If `max_seq_len == -1`, then `max_seq_len` is the longest sequence
-            # length in the current mini-batch. `+2` for `[BOS]` and `[EOS]`.
+            # length in the current mini-batch. `+2` for `[bos]` and `[eos]`.
             if max_seq_len == -1:
                 max_seq_len = max([0] + list(map(
                     len,

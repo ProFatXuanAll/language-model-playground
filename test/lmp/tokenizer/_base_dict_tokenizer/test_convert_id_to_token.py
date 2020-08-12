@@ -12,8 +12,8 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import inspect
 import gc
+import inspect
 import math
 import unittest
 
@@ -101,10 +101,10 @@ class TestConvertIdToToken(unittest.TestCase):
         r"""Return special token."""
         msg = 'Must return special token.'
         examples = (
-            (0, '[BOS]'),
-            (1, '[EOS]'),
-            (2, '[PAD]'),
-            (3, '[UNK]'),
+            (0, '[bos]'),
+            (1, '[eos]'),
+            (2, '[pad]'),
+            (3, '[unk]'),
         )
 
         for token_id, ans_token in examples:
@@ -119,12 +119,12 @@ class TestConvertIdToToken(unittest.TestCase):
         r"""Return unknown token when token id is unknown."""
         msg = 'Must return unknown token when token id is unknown.'
         examples = (
-            (4, '[UNK]'),
-            (5, '[UNK]'),
-            (6, '[UNK]'),
-            (7, '[UNK]'),
-            (8, '[UNK]'),
-            (9, '[UNK]'),
+            (4, '[unk]'),
+            (5, '[unk]'),
+            (6, '[unk]'),
+            (7, '[unk]'),
+            (8, '[unk]'),
+            (9, '[unk]'),
         )
 
         for token_id, ans_token in examples:

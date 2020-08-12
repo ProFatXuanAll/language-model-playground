@@ -15,7 +15,7 @@ import inspect
 import unittest
 
 
-class TestPath(unittest.TestCase):
+class TestBaseTokenizer(unittest.TestCase):
     r"""Test case for `lmp.tokenizer._base_tokenizer.py`."""
 
     def test_signature(self):

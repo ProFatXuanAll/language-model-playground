@@ -42,7 +42,7 @@ class TestSpecialTokens(unittest.TestCase):
     def test_yield_value(self):
         r"""Return iterator which yield `str`."""
         msg = 'Must return iterator which yield `str`.'
-        examples = ('[BOS]', '[EOS]', '[PAD]', '[UNK]')
+        examples = ('[bos]', '[eos]', '[pad]', '[unk]')
 
         self.assertIsInstance(
             BaseTokenizer.special_tokens(),

@@ -31,7 +31,6 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import re
-import unicodedata
 
 from typing import Iterable
 from typing import List
@@ -49,11 +48,11 @@ class WhitespaceListTokenizer(BaseListTokenizer):
         bos_token:
             Token represent the begining of a sequence. Sequences will be
             encoded into following format:
-                [BOS] t1 t2 ... tn [EOS] [PAD] [PAD] ... [PAD]
+                [bos] t1 t2 ... tn [eos] [pad] [pad] ... [pad]
         eos_token:
             Token represent the end of a sequence. Sequences will be encoded
             into following format:
-                [BOS] t1 t2 ... tn [EOS] [PAD] [PAD] ... [PAD]
+                [bos] t1 t2 ... tn [eos] [pad] [pad] ... [pad]
         is_uncased:
             Whether to differentiate upper cases and lower cases.
         pad_token:
@@ -77,13 +76,11 @@ class WhitespaceListTokenizer(BaseListTokenizer):
     def tokenize(self, sequence: str) -> List[str]:
         r"""Perform tokenization on input sequence.
 
-        Input sequence will first be normalized using unicode's NFKC format.
-        If `self.is_uncased == True`, then convert input sequence to lower
-        cases. We define whitespace characters using python's `re` module with
-        pattern `r'\s'` (regular expression for all whitespace characters) for
-        the rest of the context. Then we stripped both leading and trailing
-        whitespace characters. Finally we split sequence using `re.split` with
-        pattern `r'\s+'`.
+        Input sequence will first be normalized by
+        `lmp.tokenizer.BaseTokenizer.normalize(sequence)`. Then we split
+        sequence by `re.split(r'\s+', sequence)`. See
+        `lmp.tokenizer.BaseTokenizer.normalize` for details on normalization
+        process.
 
         Args:
             sequence:
@@ -94,35 +91,29 @@ class WhitespaceListTokenizer(BaseListTokenizer):
                 When `sequence` is not an instance of `str`.
 
         Returns:
-            Tokens (characters) represent input sequence.
+            Tokens represent input sequence.
         """
-        # Type check.
-        if not isinstance(sequence, str):
+        try:
+            # First do normalization, then perform tokenization.
+            tokens = re.split(r'\s+', self.normalize(sequence))
+
+            # Return empty list when `sequence` is empty string. This is need since
+            # `re.split(r'\s+', '')` return `['']` instead of `[]`.
+            if tokens == ['']:
+                return []
+            return tokens
+        except TypeError:
             raise TypeError('`sequence` must be an instance of `str`.')
-
-        # NFKC normalization.
-        sequence = unicodedata.normalize('NFKC', sequence)
-
-        # Convert into lower cases.
-        if self.is_uncased:
-            sequence = sequence.lower()
-
-        # Stripping both leading and trailing whitespace characters.
-        sequence = sequence.strip()
-
-        # Return empty list when `sequence` is empty string. This is need since
-        # `re.split(r'\s+', '')` return `['']` instead of `[]`.
-        if not sequence:
-            return []
-
-        # Perform tokenization.
-        return re.split(r'\s+', sequence)
 
     def detokenize(self, tokens: Iterable[str]) -> str:
         r"""Convert tokens back to sequence.
 
         Since each tokens are originally tokenized by whitespace characters,
-        we can simply join them using single whitespace character.
+        we can simply join them using single whitespace character. Output
+        sequence will be normalized using
+        `lmp.tokenizer.BaseTokenizer.normalize`. See
+        `lmp.tokenizer.BaseTokenizer.normalize` for details on normalization
+        process.
 
         Args:
             tokens:
@@ -141,8 +132,8 @@ class WhitespaceListTokenizer(BaseListTokenizer):
 
         tokens = list(tokens)
 
-        if any(map(lambda token: not isinstance(token, str), tokens)):
+        if not all(map(lambda token: isinstance(token, str), tokens)):
             raise TypeError('`tokens` must be an instance of `Iterable[str]`.')
 
-        # Perform detokenization.
-        return ' '.join(tokens)
+        # First perform detokenization, then do normalization.
+        return self.normalize(' '.join(tokens))

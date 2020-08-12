@@ -75,7 +75,11 @@ class TestConvertIdsToTokens(unittest.TestCase):
             -math.inf, 0j, 1j, object(), lambda x: x, type, None,
             NotImplemented, ..., [0.0], [1.0], [math.nan], [-math.nan],
             [math.inf], [-math.inf], [0j], [1j], [''], [b''], [object()],
-            [lambda x: x], [type], [None], [NotImplemented], [...],
+            [lambda x: x], [type], [None], [NotImplemented], [...], [0, 0.0],
+            [0, 1.0], [0, math.nan], [0, -math.nan], [0, math.inf],
+            [0, -math.inf], [0, 0j], [0, 1j], [0, ''], [0, b''], [0, object()],
+            [0, lambda x: x], [0, type], [0, None], [0, NotImplemented],
+            [0, ...],
         )
 
         for invalid_input in examples:
@@ -111,23 +115,23 @@ class TestConvertIdsToTokens(unittest.TestCase):
         examples = (
             (
                 [0, 1, 2, 3],
-                ['[BOS]', '[EOS]', '[PAD]', '[UNK]'],
+                ['[bos]', '[eos]', '[pad]', '[unk]'],
             ),
             (
                 [0],
-                ['[BOS]'],
+                ['[bos]'],
             ),
             (
                 [1],
-                ['[EOS]'],
+                ['[eos]'],
             ),
             (
                 [2],
-                ['[PAD]'],
+                ['[pad]'],
             ),
             (
                 [3],
-                ['[UNK]'],
+                ['[unk]'],
             ),
         )
 
@@ -145,13 +149,13 @@ class TestConvertIdsToTokens(unittest.TestCase):
         examples = (
             (
                 [4, 5, 6, 7, 8, 9],
-                ['[UNK]', '[UNK]', '[UNK]', '[UNK]', '[UNK]', '[UNK]'],
+                ['[unk]', '[unk]', '[unk]', '[unk]', '[unk]', '[unk]'],
             ),
             (
                 [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
                 [
-                    '[BOS]', '[EOS]', '[PAD]', '[UNK]', '[UNK]',
-                    '[UNK]', '[UNK]', '[UNK]', '[UNK]', '[UNK]',
+                    '[bos]', '[eos]', '[pad]', '[unk]', '[unk]',
+                    '[unk]', '[unk]', '[unk]', '[unk]', '[unk]',
                 ],
             ),
         )

@@ -71,10 +71,10 @@ class TestInit(unittest.TestCase):
         msg3 = 'Class attribute `{}` must be `{}`.'
 
         examples = (
-            ('bos_token', '[BOS]'),
-            ('eos_token', '[EOS]'),
-            ('pad_token', '[PAD]'),
-            ('unk_token', '[UNK]'),
+            ('bos_token', '[bos]'),
+            ('eos_token', '[eos]'),
+            ('pad_token', '[pad]'),
+            ('unk_token', '[unk]'),
         )
 
         for attr, attr_val in examples:
