@@ -12,7 +12,6 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import inspect
-import math
 import unittest
 
 # self-made modules
@@ -20,8 +19,8 @@ import unittest
 from lmp.dataset import BaseDataset
 
 
-class TestInit(unittest.TestCase):
-    r"""Test case for `lmp.dataset.BaseDataset.__len`."""
+class TestLen(unittest.TestCase):
+    r"""Test case for `lmp.dataset.BaseDataset.__len__`."""
 
     def test_signature(self):
         r"""Ensure signature consistency."""
@@ -47,34 +46,62 @@ class TestInit(unittest.TestCase):
         msg = 'Must return `int`.'
         examples = (
             [
-                'Kimura lock.',
-                'Superman punch.'
-                'Close Guard.'
+                'Hello',
+                'World',
+                'Hello World',
             ],
+            [
+                'Mario use Kimura Lock on Luigi, and Luigi tap out.',
+                'Mario use Superman Punch.',
+                'Luigi get TKO.',
+                'Toad and Toadette are fightting over mushroom (weed).',
+            ],
+            [''],
+            [],
         )
 
         for batch_sequences in examples:
-            dataset = BaseDataset(batch_sequences=batch_sequences)
             self.assertIsInstance(
-                len(dataset),
+                len(BaseDataset(batch_sequences=batch_sequences)),
                 int,
                 msg=msg
             )
 
-    def test_return_value(self):
+    def test_return_dataset_size(self):
         r"""Return dataset size."""
-        msg = 'Inconsistent error message.'
+        msg = 'Must return dataset size.'
         examples = (
-            ['Hello world!', 'Hello apple.', 'Hello gogoro!'],
-            ['Goodbye world!', 'Goodbye apple.'],
-            ['Arm bar.', 'Short punch.', 'Right hook.', 'Front kick.'],
+            (
+                [
+                    'Hello',
+                    'World',
+                    'Hello World',
+                ],
+                3,
+            ),
+            (
+                [
+                    'Mario use Kimura Lock on Luigi, and Luigi tap out.',
+                    'Mario use Superman Punch.',
+                    'Luigi get TKO.',
+                    'Toad and Toadette are fightting over mushroom (weed).',
+                ],
+                4,
+            ),
+            (
+                [''],
+                1
+            ),
+            (
+                [],
+                0
+            ),
         )
 
-        for batch_sequences in examples:
-            dataset = BaseDataset(batch_sequences=batch_sequences)
+        for batch_sequences, dataset_size in examples:
             self.assertEqual(
-                len(dataset),
-                len(batch_sequences),
+                len(BaseDataset(batch_sequences=batch_sequences)),
+                dataset_size,
                 msg=msg
             )
 

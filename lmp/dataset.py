@@ -16,7 +16,6 @@ from __future__ import unicode_literals
 from typing import Callable
 from typing import Generator
 from typing import Iterable
-from typing import List
 from typing import Tuple
 
 # 3rd-party modules
@@ -45,10 +44,7 @@ class BaseDataset(torch.utils.data.Dataset):
             When `batch_sequences` is not an instance of `Iterable[str]`.
     """
 
-    def __init__(
-            self,
-            batch_sequences: Iterable[str]
-    ):
+    def __init__(self, batch_sequences: Iterable[str]):
         super().__init__()
         # Type check.
         if not isinstance(batch_sequences, Iterable):
@@ -85,7 +81,10 @@ class BaseDataset(torch.utils.data.Dataset):
         r"""Sample single sequence using index.
 
         Raises:
-            When `index` is not an instance of `int`.
+            IndexError:
+                When `index >= len(self)`.
+            TypeError:
+                When `index` is not an instance of `int`.
         """
         # Type check.
         if not isinstance(index, int):
@@ -116,6 +115,8 @@ class BaseDataset(torch.utils.data.Dataset):
                 When `tokenizer` is not an instance of
                 `lmp.tokenizer.BaseTokenizer` or `max_seq_len` is not an instance
                 of `int`.
+            ValueError:
+                When `0 <= max_seq_len <= 1` or `max_seq_len < -1`.
 
         Returns:
             A function used by `torch.utils.data.DataLoader`.
@@ -132,6 +133,12 @@ class BaseDataset(torch.utils.data.Dataset):
                 '`max_seq_len` must be an instance of `int`.'
             )
 
+        # Value check.
+        if (0 <= max_seq_len <= 1) or (max_seq_len < -1):
+            raise ValueError(
+                '`max_seq_len` must be greater than `1` or equal to `-1`.'
+            )
+
         def collate_fn(batch_sequences: Iterable[str]) -> CollateFnReturn:
             r"""Function used by `torch.utils.data.DataLoader`.
 
@@ -143,6 +150,8 @@ class BaseDataset(torch.utils.data.Dataset):
             Raises:
                 TypeError:
                     When `batch_sequences` is not an instance of `Iterable[str]`.
+                ValueError:
+                    When `batch_sequences` is empty.
 
             Returns:
                 x:
@@ -152,21 +161,29 @@ class BaseDataset(torch.utils.data.Dataset):
                     Model predict target for each token id in `x` with numeric
                     type `torch.int64`.
             """
-            batch_token_ids = torch.LongTensor(
-                tokenizer.batch_encode(
-                    batch_sequences,
-                    max_seq_len=max_seq_len
+            if not batch_sequences:
+                raise ValueError('`batch_sequences` must not be empty.')
+
+            try:
+                batch_token_ids = torch.LongTensor(
+                    tokenizer.batch_encode(
+                        batch_sequences,
+                        max_seq_len=max_seq_len
+                    )
                 )
-            )
 
-            # Construct sample following language model:
-            # `batch_sequences[0][0]` must predict `batch_sequences[0][1]`,
-            # `batch_sequences[0][1]` must predict `batch_sequences[0][2]`,
-            # ...
-            # `batch_sequences[n][m]` must predict `batch_sequences[n][m+1]`.
-            x = batch_token_ids[:, :-1]
-            y = batch_token_ids[:, 1:]
+                # Construct sample following language model:
+                # `batch_sequences[0][0]` must predict `batch_sequences[0][1]`,
+                # `batch_sequences[0][1]` must predict `batch_sequences[0][2]`,
+                # ...
+                # `batch_sequences[n][m]` must predict `batch_sequences[n][m+1]`.
+                x = batch_token_ids[:, :-1]
+                y = batch_token_ids[:, 1:]
 
-            return x, y
+                return x, y
+            except TypeError:
+                raise TypeError(
+                    '`batch_sequences` must be an instance of `Iterable[str]`.'
+                )
 
         return collate_fn
