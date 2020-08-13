@@ -27,22 +27,23 @@ from lmp.model._base_res_rnn_block import BaseResRNNBlock
 class ResLSTMBlock(BaseResRNNBlock):
     r"""LSTM residual block.
 
+    out = dropout(activate(LSTM(x))) + x
+
     Args:
         d_hid:
-            GRU layers hidden dimension.
+            Residual LSTM layer hidden dimension.
         dropout:
-            Dropout probability on all layers out (except output layer).
+            Dropout probability on residual LSTM layer output.
+
+    TypeError:
+            When `d_hid` is not an instance of `int` or `dropout` is not an
+            instance of `float`.
+        ValueError:
+            When `d_hid < 1` or `dropout < 0` or `dropout > 1`.
     """
 
-    def __init__(
-        self,
-        d_hid: int,
-        dropout: float
-    ):
-        super().__init__(
-            d_hid=d_hid,
-            dropout=dropout
-        )
+    def __init__(self, d_hid: int, dropout: float):
+        super().__init__(d_hid=d_hid, dropout=dropout)
 
         # Override RNN layer with LSTM layer.
         self.rnn_layer = torch.nn.LSTM(
