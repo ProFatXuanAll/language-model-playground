@@ -29,10 +29,14 @@ import lmp.tokenizer
 
 from lmp.dataset import BaseDataset
 
+CollateFnReturn = Tuple[
+    torch.Tensor,
+    torch.Tensor
+]
+
+
 class TestInit(unittest.TestCase):
-    r"""Test case for `lmp.dataset.BaseDataset.create_collate_fn`'s inner
-        method `collat_fn`.
-    """
+    r"""Test case for `lmp.dataset.BaseDataset.create_collate_fn`'s inner method `collat_fn`."""
 
     def setUp(self):
         r"""Setup `collate_fn` instances."""
@@ -61,7 +65,7 @@ class TestInit(unittest.TestCase):
                         default=inspect.Parameter.empty
                     ),
                 ],
-                return_annotation=Tuple[torch.Tensor, torch.tensor]
+                return_annotation=CollateFnReturn
             ),
             msg=msg
         )
@@ -72,8 +76,8 @@ class TestInit(unittest.TestCase):
         msg2 = 'Inconsistent error message.'
         examples = (
             True, False, 0, -1, 0.0, 1.0, math.nan, -math.nan, math.inf,
-            -math.inf, 0j, 1j, '', b'', [], (), {}, set(), object(),
-            lambda x: x, type, None, NotImplemented, ...
+            -math.inf, 0j, 1j, object(), lambda x: x, type, None,
+            NotImplemented, ...
         )
 
         for invalid_input in examples:
@@ -83,29 +87,6 @@ class TestInit(unittest.TestCase):
             self.assertEqual(
                 ctx_man.exception.args[0],
                 '`batch_sequences` must be instance of `Iterable[str]`.',
-                msg=msg2
-            )
-
-    def test_invalid_input_max_seq_len(self):
-        r"""Raise when `max_seq_len` is invalid."""
-        msg1 = 'Must raise `TypeError` when `max_seq_len` is invalid.'
-        msg2 = 'Inconsistent error message.'
-        examples = (
-            0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf, 0j, 1j, '',
-            b'', [], (), {}, set(), object(), lambda x: x, type, None,
-            NotImplemented, ...
-        )
-
-        for invalid_input in examples:
-            with self.assertRaises(TypeError, msg=msg1) as ctx_man:
-                BaseDataset(['a', 'b']).create_collate_fn(
-                    tokenizer=lmp.tokenizer.CharDictTokenizer(),
-                    max_seq_len=invalid_input
-                )
-
-            self.assertEqual(
-                ctx_man.exception.args[0],
-                '`max_seq_len` must be instance of `int`.',
                 msg=msg2
             )
 
@@ -121,25 +102,35 @@ class TestInit(unittest.TestCase):
         )
 
         for batch_sequences in examples:
-            data_handled= self.collate_fn(batch_sequences)
+            data_handled = self.collate_fn(batch_sequences)
             self.assertIsInstance(data_handled, tuple, msg=msg)
+            self.assertEqual(len(data_handled), 2, msg=msg)
             for tensor in data_handled:
                 self.assertIsInstance(
                     tensor,
                     torch.Tensor,
                     msg=msg
                 )
-
+                self.assertEqual(
+                    tensor.dtype,
+                    torch.int64,
+                    msg=msg
+                )
 
     def test_inner_method_return_value(self):
         r"""Return two tensor."""
         msg = 'Inconsistent error message.'
         examples = (
-                (
-                    ['Hello'],
-                    [0, 3, 3, 3, 3, 3, 1, 2, 2],
-                    [3, 3, 3, 3, 3, 1, 2, 2, 2],
-                ),
+            (
+                ['Hello'],
+                [0, 3, 3, 3, 3, 3, 1, 2, 2],
+                [3, 3, 3, 3, 3, 1, 2, 2, 2],
+            ),
+            (
+                ['Hello from the other side.'],
+                [0, 3, 3, 3, 3, 3, 3, 3, 3],
+                [3, 3, 3, 3, 3, 3, 3, 3, 1],
+            ),
         )
 
         for batch_sequences, ans_x, ans_y in examples:
@@ -155,6 +146,7 @@ class TestInit(unittest.TestCase):
                     ans_y,
                     msg=msg
                 )
+
 
 if __name__ == '__main__':
     unittest.main()

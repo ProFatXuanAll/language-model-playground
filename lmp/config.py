@@ -77,6 +77,32 @@ class BaseConfig:
             Control random seed. Must be bigger than or equal to `1`.
         tokenizer_class:
             Tokenizer's class. Must not be empty.
+
+    Raises:
+        TypeError:
+            When `batch_size` is not instance of `int`, `checkpoint_step` is
+            not instance of `int`,`d_emb` is not instance of `int`, `d_hid` is
+            not instance of `int`, `dataset` is not instance of `str`,
+            `dropout` is not instance of `float`, `epoch` is not instance of
+            `int`, `experiment` is not instance of `str`, `is_uncased` is not
+            instance of `bool`, `learning_rate` is not instance of `float`,
+            `max_norm` is not instance of `float`, `max_seq_len` is not
+            instance of `int`, `min_count` is not instance of `int`,
+            `model_class` is not instance of `str`, `num_rnn_layers` is not
+            instance of `int`, `num_linear_layers` is not instance of `int`,
+            `optimizer_class` is not instance of `str`, `seed` is not instance
+            of `int` or `tokenizer_class` is not instance of `str`.
+        ValueError:
+            When `batch_size` is smaller than 1, `checkpoint_step` is smaller
+            than 1, `d_emb` is smaller than 1, `d_hid` is smaller than 1,
+            `dataset` is empty string, `dropout` is out range from `0.0` to
+            `1.0`, `epoch` is smaller than 1, `experiment` is empty string,
+            `learning_rate` is smaller than 0.0, `max_norm` is smaller than
+            0.0, `max_seq_len` is smaller than 0, `min_count` is smaller than
+            1, `model_class` is empty string, `num_linear_layers` is smaller
+            than 1, num_rnn_layers is smaller than 1, `optimizer_class` is
+            empty string, `seed` is smaller than 1 or `tokenizer_class` is
+            empty string.
     """
 
     def __init__(

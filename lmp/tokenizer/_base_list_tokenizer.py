@@ -248,6 +248,7 @@ class BaseListTokenizer(BaseTokenizer):
         # Type check.
         if not isinstance(sequence, str):
             raise TypeError('`sequence` must be instance of `str`.')
+
         if not isinstance(max_seq_len, int):
             raise TypeError('`max_seq_len` must be instance of `int`.')
 
@@ -306,7 +307,8 @@ class BaseListTokenizer(BaseTokenizer):
 
         if not isinstance(remove_special_tokens, bool):
             raise TypeError(
-                '`remove_special_tokens` must be instance of `bool`.')
+                '`remove_special_tokens` must be instance of `bool`.'
+            )
 
         if remove_special_tokens:
             # Get special tokens' ids except unknown token.
@@ -425,11 +427,12 @@ class BaseListTokenizer(BaseTokenizer):
         # Type check.
         if not isinstance(batch_sequences, Iterable):
             raise TypeError(
-                '`batch_sequences` must be instance of `Iterable[str]`.')
+                '`batch_sequences` must be instance of `Iterable[str]`.'
+            )
 
         batch_sequences = list(batch_sequences)
 
-        if any([not isinstance(sequence, str) for sequence in batch_sequences]):
+        if not all([isinstance(sequence, str) for sequence in batch_sequences]):
             raise TypeError(
                 '`batch_sequences` must be instance of `Iterable[str]`.'
             )
@@ -437,20 +440,18 @@ class BaseListTokenizer(BaseTokenizer):
         if not isinstance(min_count, int):
             raise TypeError('`min_count` must be instance of `int`.')
 
-        # Convert upper cases into lower cases.
-        if self.is_uncased:
-            batch_sequences = [
-                sequence.lower()
-                for sequence in batch_sequences
-            ]
 
         token_freq_counter = {}
-
-        for tokens in self.batch_sequences_to_tokens(batch_sequences):
-            for token in tokens:
-                if token not in token_freq_counter:
-                    token_freq_counter[token] = 0
-                token_freq_counter[token] += 1
+        try:
+            for tokens in self.batch_sequences_to_tokens(batch_sequences):
+                for token in tokens:
+                    if token not in token_freq_counter:
+                        token_freq_counter[token] = 0
+                    token_freq_counter[token] += 1
+        except TypeError:
+            raise TypeError(
+                '`batch_sequences` must be instance of `Iterable[str]`.'
+            )
 
         # Sort tokens based on frequency.
         new_tokens = sorted(

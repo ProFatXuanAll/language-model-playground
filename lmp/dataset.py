@@ -51,7 +51,7 @@ class BaseDataset(torch.utils.data.Dataset):
                 '`batch_sequences` must be instance of `Iterable[str]`.'
             )
         batch_sequences = list(batch_sequences)
-        if any(map(lambda sequence: not isinstance(sequence, str), batch_sequences)):
+        if not all([isinstance(sequence, str) for sequence in batch_sequences]):
             raise TypeError(
                 '`batch_sequences` must be instance of `Iterable[str]`.'
             )
@@ -136,7 +136,7 @@ class BaseDataset(torch.utils.data.Dataset):
                 raise TypeError(
                     '`batch_sequences` must be instance of `Iterable[str]`.'
                 )
-            if any(map(lambda sequence: not isinstance(sequence, str), batch_sequences)):
+            if not all([isinstance(sequence, str) for sequence in batch_sequences]):
                 raise TypeError(
                     '`batch_sequences` must be instance of `Iterable[str]`.'
                 )

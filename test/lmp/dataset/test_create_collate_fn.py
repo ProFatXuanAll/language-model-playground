@@ -33,20 +33,9 @@ CollateFnReturn = Tuple[
     torch.Tensor
 ]
 
+
 class TestInit(unittest.TestCase):
     r"""Test case for `lmp.dataset.BaseDataset.crate_collate_fn`."""
-
-    def setUp(self):
-        r"""Setup `collate_fn` instances."""
-        self.collate_fn = BaseDataset.create_collate_fn(
-            tokenizer=lmp.tokenizer.CharDictTokenizer(),
-            max_seq_len=10
-        )
-
-    def tearDown(self):
-        r"""Delete `collate_fn` instances."""
-        del self.collate_fn
-        gc.collect()
 
     def test_signature(self):
         r"""Ensure signature consistency."""
@@ -120,51 +109,15 @@ class TestInit(unittest.TestCase):
             )
 
     def test_return_type(self):
-        r"""Return `Tuple(Tensor, Tensor)`."""
-        msg = 'Must return `Tuple(Tensor, Tensor)`.'
-        examples = (
-            [
-                'Kimura lock.',
-                'Superman punch.'
-                'Close Guard.'
-            ],
+        r"""Return `collate_fn`."""
+        msg = 'Must return callable function `collate_fn`.'
+
+        collate_fn = BaseDataset.create_collate_fn(
+            tokenizer=lmp.tokenizer.CharDictTokenizer(),
+            max_seq_len=10
         )
+        self.assertTrue(callable(collate_fn), msg=msg)
 
-        for batch_sequences in examples:
-            data_handled= self.collate_fn(batch_sequences)
-            self.assertIsInstance(data_handled, tuple, msg=msg)
-            for tensor in data_handled:
-                self.assertIsInstance(
-                    tensor,
-                    torch.Tensor,
-                    msg=msg
-                )
-
-
-    def test_inner_method_return_value(self):
-        r"""Return two tensor."""
-        msg = 'Inconsistent error message.'
-        examples = (
-                (
-                    ['Hello'],
-                    [0, 3, 3, 3, 3, 3, 1, 2, 2],
-                    [3, 3, 3, 3, 3, 1, 2, 2, 2],
-                ),
-        )
-
-        for batch_sequences, ans_x, ans_y in examples:
-            data_handled = self.collate_fn(batch_sequences)
-            for x, y in (data_handled,):
-                self.assertEqual(
-                    x.squeeze(0).tolist(),
-                    ans_x,
-                    msg=msg
-                )
-                self.assertEqual(
-                    y.squeeze(0).tolist(),
-                    ans_y,
-                    msg=msg
-                )
 
 if __name__ == '__main__':
     unittest.main()

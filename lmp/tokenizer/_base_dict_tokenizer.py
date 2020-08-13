@@ -260,6 +260,7 @@ class BaseDictTokenizer(BaseTokenizer):
         # Type check.
         if not isinstance(sequence, str):
             raise TypeError('`sequence` must be instance of `str`.')
+
         if not isinstance(max_seq_len, int):
             raise TypeError('`max_seq_len` must be instance of `int`.')
 
@@ -436,35 +437,21 @@ class BaseDictTokenizer(BaseTokenizer):
                 `min_count` is not instance of `int`.
         """
         # Type check.
-        if not isinstance(batch_sequences, Iterable):
-            raise TypeError(
-                '`batch_sequences` must be instance of `Iterable[str]`.'
-            )
-
-        batch_sequences = list(batch_sequences)
-
-        if any([not isinstance(sequence, str) for sequence in batch_sequences]):
-            raise TypeError(
-                '`batch_sequences` must be instance of `Iterable[str]`.'
-            )
-
         if not isinstance(min_count, int):
             raise TypeError('`min_count` must be instance of `int`.')
 
-        # Convert upper cases into lower cases.
-        if self.is_uncased:
-            batch_sequences = [
-                sequence.lower()
-                for sequence in batch_sequences
-            ]
-
         token_freq_counter = {}
 
-        for tokens in self.batch_sequences_to_tokens(batch_sequences):
-            for token in tokens:
-                if token not in token_freq_counter:
-                    token_freq_counter[token] = 0
-                token_freq_counter[token] += 1
+        try:
+            for tokens in self.batch_sequences_to_tokens(batch_sequences):
+                for token in tokens:
+                    if token not in token_freq_counter:
+                        token_freq_counter[token] = 0
+                    token_freq_counter[token] += 1
+        except TypeError:
+            raise TypeError(
+                '`batch_sequences` must be instance of `Iterable[str]`.'
+            )
 
         # Sort tokens based on frequency.
         new_tokens = sorted(

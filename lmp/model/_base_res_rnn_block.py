@@ -23,13 +23,21 @@ import torch.nn
 class BaseResRNNBlock(torch.nn.Module):
     r"""RNN residual block.
 
-    out = activate(F(x) + x)
+    out = x + dropout(activate(RNN(x)))
 
     Args:
         d_hid:
             GRU layers hidden dimension.
         dropout:
             Dropout probability on all layers out (except output layer).
+
+    Raises:
+        TypeError:
+            When `d_hid` is not instance of `int` or `dropout` is not instance
+            of `float`.
+        ValueError:
+            When `d_hid` is smaller than 1 or `dropout` is out range from `0.0`
+            to `1.0`.
     """
 
     def __init__(
@@ -63,4 +71,4 @@ class BaseResRNNBlock(torch.nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         ht, _ = self.rnn_layer(x)
-        return self.act_fn(self.dropout(ht + x))
+        return x + self.dropout(self.act_fn(ht))

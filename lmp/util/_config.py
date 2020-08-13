@@ -3,7 +3,7 @@ r"""Helper function for configuration construction.
 Usage:
     import lmp
 
-    config = lmp.util.load_optimizer(args)
+    config = lmp.util.load_config(args)
 """
 
 # built-in modules
@@ -32,9 +32,16 @@ def load_config(args: argparse.Namespace) -> lmp.config.BaseConfig:
             `max_seq_len`, `min_count`, `model_class`, `num_linear_layers`,
             `num_rnn_layers`, `optimizer_class`, `seed` and `tokenizer_class`.
 
+    Raises:
+        TypeError:
+            When `args` is not instance of `argparse.Namespace`.
+
     Returns:
         Configuration object which can be used with most of utilities.
     """
+    if not isinstance(args, argparse.Namespace):
+        raise TypeError('`args` must be instance of `argparse.Namespace`.')
+
     if args.checkpoint != -1:
         config = lmp.config.BaseConfig.load(experiment=args.experiment)
     else:

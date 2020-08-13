@@ -70,7 +70,7 @@ class TestDetokenize(unittest.TestCase):
         msg1 = 'Must raise `TypeError` when input is invalid.'
         msg2 = 'Inconsistent error message.'
         examples = (
-            0, 1, -1, 0.0, 1.0, math.nan, math.inf, True, False,  0j, 1j,
+            0, 1, -1, 0.0, 1.0, math.nan, math.inf, True, False, 0j, 1j,
             (1, 2, 3), [1, 2, 3], {1, 2, 3}, None, NotImplemented, ...,
         )
 

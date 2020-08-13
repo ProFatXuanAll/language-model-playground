@@ -52,6 +52,19 @@ class BaseRNNModel(torch.nn.Module):
             token's vector with zeros.
         vocab_size:
             Embedding matrix vocabulary dimension.
+
+    Raises:
+        TypeError:
+            When `d_emb` is not instance of `int`, `d_hid` is not instance of
+            `int`, `dropout` is not instance of `float`, `num_rnn_layers` is
+            not instance of `int`, `num_linear_layers` is not instance of `int`,
+            `pad_token_id` is not instance of `int` or `vocab_size` is not
+            instance of `int`.
+        ValueError:
+            When `d_emb` is smaller than 1, `d_hid` is smaller than 1,
+            `dropout` is out range from `0.0` to `1.0`, `num_rnn_layers` is
+            smaller than 0, num_rnn_layers is smaller than 0, `pad_token_id`
+            is smaller than 0 or `vocab_size` is smaller than 1.
     """
 
     def __init__(
@@ -116,7 +129,7 @@ class BaseRNNModel(torch.nn.Module):
         )
         self.emb_dropout = torch.nn.Dropout(dropout)
 
-        # Project d_emb to d_jid
+        # Project d_emb to d_hid
         # Dimension: (E, H)
         self.proj_emb_to_hid = torch.nn.Sequential(
             torch.nn.Linear(
@@ -138,7 +151,7 @@ class BaseRNNModel(torch.nn.Module):
         # Sequential linear layer
         # Dimension: (H, E)
         proj_hid_to_emb = []
-        for _ in range(num_linear_layers):
+        for _ in range(num_linear_layers - 1):
             proj_hid_to_emb.append(
                 torch.nn.Dropout(dropout)
             )

@@ -31,15 +31,15 @@ class TestInit(unittest.TestCase):
 
     def setUp(self):
         r"""Set up hyper parameters and construct GRUModel"""
-        self.d_emb = 1
-        self.d_hid = 1
+        self.d_emb = 10
+        self.d_hid = 10
         self.dropout = 0.1
         self.num_rnn_layers = 1
         self.num_linear_layers = 1
         self.pad_token_id = 0
-        self.vocab_size = 10
+        self.vocab_size = 30
 
-        Parameters = (
+        model_parameters = (
             (
                 ('d_emb', self.d_emb),
                 ('d_hid', self.d_hid),
@@ -51,7 +51,7 @@ class TestInit(unittest.TestCase):
             ),
         )
 
-        for parameters in Parameters:
+        for parameters in model_parameters:
             pos = []
             kwargs = {}
             for attr, attr_val in parameters:
@@ -133,17 +133,41 @@ class TestInit(unittest.TestCase):
         examples = (
             torch.tensor(
                 [
-                    [1,2],
-                    [2,3],
-                    [3,4]
+                    [1, 2],
+                    [2, 3],
+                    [3, 4]
                 ]
             ),
         )
 
         for batch_sequences in examples:
             for model in self.models:
-                pred_y= model(batch_sequences)
+                pred_y = model(batch_sequences)
                 self.assertIsInstance(pred_y, torch.Tensor, msg=msg)
+
+    def test_return_size(self):
+        r"""Test return size"""
+        msg = 'Return size must be {}.'
+        examples = (
+            (
+                torch.randint(low=0, high=10, size=(5, 10)),
+                torch.rand(5, 10, self.vocab_size),
+            ),
+            (
+                torch.randint(low=0, high=10, size=(32, 20)),
+                torch.rand(32, 20, self.vocab_size),
+            ),
+        )
+
+        for model in self.models:
+            for batch_sequences, ans_seq in examples:
+                yt = model(batch_sequences)
+                self.assertEqual(
+                    yt.size(),
+                    ans_seq.size(),
+                    msg=msg.format(ans_seq.size())
+                )
+
 
 if __name__ == '__main__':
     unittest.main()

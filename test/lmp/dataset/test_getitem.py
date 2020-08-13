@@ -19,6 +19,7 @@ import unittest
 
 from lmp.dataset import BaseDataset
 
+
 class TestInit(unittest.TestCase):
     r"""Test case for `lmp.dataset.BaseDataset.__getitem__`."""
 
@@ -90,9 +91,9 @@ class TestInit(unittest.TestCase):
         r"""Return Sample single sequence using index."""
         msg = 'Inconsistent error message.'
         examples = (
-                ['Hello world!', 'Hello apple.', 'Hello gogoro!'],
-                ['Goodbye world!', 'Goodbye apple.'],
-                ['Arm bar.', 'Short punch.', 'Right hook.', 'Front kick.'],
+            ['Hello world!', 'Hello apple.', 'Hello gogoro!'],
+            ['Goodbye world!', 'Goodbye apple.'],
+            ['Arm bar.', 'Short punch.', 'Right hook.', 'Front kick.'],
         )
 
         for batch_sequences in examples:
@@ -103,6 +104,7 @@ class TestInit(unittest.TestCase):
                     ans_sequence,
                     msg=msg
                 )
+
 
 if __name__ == '__main__':
     unittest.main()

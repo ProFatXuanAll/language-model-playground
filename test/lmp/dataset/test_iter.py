@@ -22,6 +22,7 @@ from typing import Generator
 
 from lmp.dataset import BaseDataset
 
+
 class TestInit(unittest.TestCase):
     r"""Test case for `lmp.dataset.BaseDataset.__iter__`."""
 
@@ -70,6 +71,7 @@ class TestInit(unittest.TestCase):
                     ans_batch_sequences[i],
                     msg=msg
                 )
+
 
 if __name__ == '__main__':
     unittest.main()

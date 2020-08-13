@@ -87,6 +87,7 @@ def load_model(
             pad_token_id=pad_token_id,
             vocab_size=vocab_size
         )
+
     elif model_class == 'gru':
         model = lmp.model.GRUModel(
             d_emb=d_emb,
@@ -97,6 +98,7 @@ def load_model(
             pad_token_id=pad_token_id,
             vocab_size=vocab_size
         )
+
     elif model_class == 'lstm':
         model = lmp.model.LSTMModel(
             d_emb=d_emb,
@@ -107,6 +109,7 @@ def load_model(
             pad_token_id=pad_token_id,
             vocab_size=vocab_size
         )
+
     elif model_class == 'res_rnn':
         model = lmp.model.BaseResRNNModel(
             d_emb=d_emb,
@@ -117,6 +120,7 @@ def load_model(
             pad_token_id=pad_token_id,
             vocab_size=vocab_size
         )
+
     elif model_class == 'res_gru':
         model = lmp.model.ResGRUModel(
             d_emb=d_emb,
@@ -127,6 +131,7 @@ def load_model(
             pad_token_id=pad_token_id,
             vocab_size=vocab_size
         )
+
     elif model_class == 'res_lstm':
         model = lmp.model.ResLSTMModel(
             d_emb=d_emb,
@@ -137,6 +142,7 @@ def load_model(
             pad_token_id=pad_token_id,
             vocab_size=vocab_size
         )
+
     else:
         raise ValueError(
             f'model `{model_class}` does not support.\nSupported options:' +
