@@ -76,8 +76,8 @@ class TestBuildVocab(unittest.TestCase):
         msg1 = 'Must raise `TypeError` when input is invalid.'
         msg2 = 'Inconsistent error message.'
         examples = (
-            0, 1, -1, 0.0, 1.0, math.nan, math.inf, True, False, b'', 0j, 1j,
-            (), {}, set(), object(), lambda x: x, type, None,
+            0, 1, -1, 0.0, 1.0, math.nan, math.inf, True, False, 0j, 1j,
+            object(), lambda x: x, type, None,
             NotImplemented, ...,
         )
 

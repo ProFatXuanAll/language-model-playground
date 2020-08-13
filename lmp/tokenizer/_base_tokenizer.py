@@ -257,7 +257,7 @@ class BaseTokenizer:
         try:
             return [
                 self.tokenize(sequence)
-                for sequence in list(batch_sequences)
+                for sequence in batch_sequences
             ]
         except TypeError:
             raise TypeError(
@@ -287,7 +287,7 @@ class BaseTokenizer:
             )
 
         try:
-            return [self.detokenize(tokens) for tokens in list(batch_tokens)]
+            return [self.detokenize(tokens) for tokens in batch_tokens]
         except TypeError:
             raise TypeError(
                 '`batch_tokens` must be instance of `Iterable[Iterable[str]]`.'
@@ -358,7 +358,7 @@ class BaseTokenizer:
         try:
             return [
                 self.convert_token_to_id(token)
-                for token in list(tokens)
+                for token in tokens
             ]
         except TypeError:
             raise TypeError('`tokens` must be instance of `Iterable[str]`.')
@@ -386,7 +386,7 @@ class BaseTokenizer:
         try:
             return [
                 self.convert_id_to_token(token_id)
-                for token_id in list(token_ids)
+                for token_id in token_ids
             ]
         except TypeError:
             raise TypeError('`token_ids` must be instance of `Iterable[int]`.')
@@ -417,7 +417,7 @@ class BaseTokenizer:
         try:
             return [
                 self.convert_tokens_to_ids(tokens)
-                for tokens in list(batch_tokens)
+                for tokens in batch_tokens
             ]
         except TypeError:
             raise TypeError(
@@ -450,7 +450,7 @@ class BaseTokenizer:
         try:
             return [
                 self.convert_ids_to_tokens(token_ids)
-                for token_ids in list(batch_token_ids)
+                for token_ids in batch_token_ids
             ]
         except TypeError:
             raise TypeError(
@@ -481,7 +481,7 @@ class BaseTokenizer:
 
         try:
             return self.batch_tokens_to_ids(
-                self.batch_sequences_to_tokens(list(batch_sequences))
+                self.batch_sequences_to_tokens(batch_sequences)
             )
         except TypeError:
             raise TypeError(
@@ -512,7 +512,7 @@ class BaseTokenizer:
 
         try:
             return self.batch_tokens_to_sequences(
-                self.batch_ids_to_tokens(list(batch_token_ids))
+                self.batch_ids_to_tokens(batch_token_ids)
             )
         except TypeError:
             raise TypeError(
@@ -648,6 +648,7 @@ class BaseTokenizer:
             raise TypeError(
                 '`batch_token_ids` must be instance of `Iterable[Iterable[int]]`.'
             )
+
         if not isinstance(remove_special_tokens, bool):
             raise TypeError(
                 '`remove_special_tokens` must be instance of `bool`.'
@@ -656,8 +657,9 @@ class BaseTokenizer:
         try:
             return [
                 self.decode(
-                    token_ids, remove_special_tokens=remove_special_tokens)
-                for token_ids in list(batch_token_ids)
+                    token_ids, remove_special_tokens=remove_special_tokens
+                )
+                for token_ids in batch_token_ids
             ]
         except TypeError:
             raise TypeError(

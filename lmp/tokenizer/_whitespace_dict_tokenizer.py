@@ -143,7 +143,7 @@ class WhitespaceDictTokenizer(BaseDictTokenizer):
 
         tokens = list(tokens)
 
-        if any(map(lambda token: not isinstance(token, str), tokens)):
+        if not all([isinstance(token, str) for token in tokens]):
             raise TypeError('`tokens` must be instance of `Iterable[str]`.')
 
         # Perform detokenization.

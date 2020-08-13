@@ -68,7 +68,7 @@ class TestConvertIdToToken(unittest.TestCase):
         msg1 = 'Must raise `TypeError` when input is invalid.'
         msg2 = 'Inconsistent error message.'
         examples = (
-            0.0, 1.0, math.nan, math.inf, b'',  0j, 1j, NotImplemented, ...,
+            0.0, 1.0, math.nan, math.inf, b'', 0j, 1j, NotImplemented, ...,
             [], (), {}, set(), object(), lambda x: x, type, None,
         )
 

@@ -31,17 +31,17 @@ class TestInit(unittest.TestCase):
 
     def setUp(self):
         r"""Set up hyper parameters and construct BaseResRNNBlock"""
-        self.d_hid = 2
+        self.d_hid = 10
         self.dropout = 0.1
 
-        Parameters = (
+        model_parameters = (
             (
                 ('d_hid', self.d_hid),
                 ('dropout', self.dropout),
             ),
         )
 
-        for parameters in Parameters:
+        for parameters in model_parameters:
             pos = []
             kwargs = {}
             for attr, attr_val in parameters:
@@ -58,6 +58,7 @@ class TestInit(unittest.TestCase):
         r"""Delete parameters and models."""
         del self.d_hid
         del self.dropout
+        del self.models
         gc.collect()
 
     def test_signature(self):
@@ -119,8 +120,25 @@ class TestInit(unittest.TestCase):
 
         for x in examples:
             for model in self.models:
-                pred_y= model(x)
+                pred_y = model(x)
                 self.assertIsInstance(pred_y, torch.Tensor, msg=msg)
+
+    def test_return_size(self):
+        r"""Test return size"""
+        msg = 'Return size must be {}.'
+        examples = (
+            torch.rand(5, 10, self.d_hid),
+            torch.rand(10, 20, self.d_hid),
+        )
+
+        for model in self.models:
+            for batch_sequences in examples:
+                yt = model(batch_sequences)
+                self.assertEqual(
+                    yt.size(),
+                    batch_sequences.size(),
+                    msg=msg.format(batch_sequences.size())
+                )
 
 if __name__ == '__main__':
     unittest.main()

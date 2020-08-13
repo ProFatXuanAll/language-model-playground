@@ -31,15 +31,15 @@ class TestInit(unittest.TestCase):
 
     def setUp(self):
         r"""Set up hyper parameters and construct LSTMModel"""
-        self.d_emb = 1
-        self.d_hid = 1
+        self.d_emb = 10
+        self.d_hid = 10
         self.dropout = 0.1
         self.num_rnn_layers = 1
         self.num_linear_layers = 1
         self.pad_token_id = 0
-        self.vocab_size = 1
+        self.vocab_size = 30
 
-        Parameters = (
+        self.model_parameters = (
             (
                 ('d_emb', self.d_emb),
                 ('d_hid', self.d_hid),
@@ -51,18 +51,6 @@ class TestInit(unittest.TestCase):
             ),
         )
 
-        for parameters in Parameters:
-            pos = []
-            kwargs = {}
-            for attr, attr_val in parameters:
-                pos.append(attr_val)
-                kwargs[attr] = attr_val
-
-            # Construct using positional and keyword arguments.
-            self.models = [
-                LSTMModel(*pos),
-                LSTMModel(**kwargs),
-            ]
 
     def tearDown(self):
         r"""Delete parameters and models."""
@@ -73,7 +61,7 @@ class TestInit(unittest.TestCase):
         del self.num_linear_layers
         del self.pad_token_id
         del self.vocab_size
-        del self.models
+        del self.model_parameters
         gc.collect()
 
     def test_signature(self):
@@ -417,134 +405,220 @@ class TestInit(unittest.TestCase):
         r"""Declare required instance attributes."""
         msg1 = 'Missing instance attribute `{}`.'
         msg2 = 'Instance attribute `{}` must be instance of `{}`.'
-        msg3 = 'Instance attribute `{}` must be `{}`.'
+        msg3 = 'Return size must be {}.'
+        examples = (
+            torch.randint(low=0, high=9, size=(5, 10)),
+            torch.randint(low=0, high=9, size=(10, 15)),
+        )
 
+        emb_layer = torch.nn.Embedding(
+            num_embeddings=self.vocab_size,
+            embedding_dim=self.d_emb,
+            padding_idx=self.pad_token_id
+        )
 
-        embedding_layer = torch.nn.Embedding(
-                            num_embeddings=self.vocab_size,
-                            embedding_dim=self.d_emb,
-                            padding_idx=self.pad_token_id
-                        )
+        for parameters in self.model_parameters:
+            pos = []
+            kwargs = {}
+            for attr, attr_val in parameters:
+                pos.append(attr_val)
+                kwargs[attr] = attr_val
 
-        for model in self.models:
-                self.assertTrue(
-                    hasattr(model, 'embedding_layer'),
-                    msg=msg1.format('embedding_layer')
+            # Construct using positional and keyword arguments.
+            models = [
+                LSTMModel(*pos),
+                LSTMModel(**kwargs),
+            ]
+
+        for model in models:
+            self.assertTrue(
+                hasattr(model, 'emb_layer'),
+                msg=msg1.format('emb_layer')
+            )
+            self.assertIsInstance(
+                model.emb_layer,
+                type(emb_layer),
+                msg=msg2.format(
+                    'emb_layer',
+                    type(emb_layer).__name__
                 )
-                self.assertIsInstance(
-                    getattr(model, 'embedding_layer'),
-                    type(embedding_layer),
-                    msg=msg2.format(
-                            'embedding_layer',
-                            type(embedding_layer).__name__
-                        )
-                )
+            )
+            for x in examples:
+                ht = model.emb_layer(x)
+                ans_out = emb_layer(x)
                 self.assertEqual(
-                    getattr(model, 'embedding_layer').weight,
-                    embedding_layer.weight,
-                    msg=msg3.format('embedding_layer', embedding_layer)
+                    ht.size(),
+                    ans_out.size(),
+                    msg=msg3.format(ans_out.size())
                 )
 
-    def test_instance_attribute_dropout(self):
+    def test_instance_attribute_emb_dropout(self):
         r"""Declare required instance attributes."""
         msg1 = 'Missing instance attribute `{}`.'
         msg2 = 'Instance attribute `{}` must be instance of `{}`.'
-        msg3 = 'Instance {} attribute `{}` must need `{}`.'
-
-
-        dropout_examples = (
-            ('p', self.dropout),
+        msg3 = 'Return size must be {}.'
+        examples = (
+            torch.rand(5, 10, self.d_emb),
+            torch.rand(10, 20, self.d_emb),
         )
 
-        dropout = torch.nn.Dropout(self.dropout)
+        emb_dropout = torch.nn.Dropout(self.dropout)
 
-        for model in self.models:
+        for parameters in self.model_parameters:
+            pos = []
+            kwargs = {}
+            for attr, attr_val in parameters:
+                pos.append(attr_val)
+                kwargs[attr] = attr_val
+
+            # Construct using positional and keyword arguments.
+            models = [
+                LSTMModel(*pos),
+                LSTMModel(**kwargs),
+            ]
+
+        for model in models:
             self.assertTrue(
-                hasattr(model, 'dropout'),
-                msg=msg1.format('dropout')
+                hasattr(model, 'emb_dropout'),
+                msg=msg1.format('emb_dropout')
             )
             self.assertIsInstance(
-                getattr(model, 'dropout'),
-                type(dropout),
-                msg=msg2.format('dropout', type(dropout).__name__)
+                getattr(model, 'emb_dropout'),
+                type(emb_dropout),
+                msg=msg2.format('emb_dropout', type(emb_dropout).__name__)
             )
-            dropout_layer = getattr(model, 'dropout')
-            for dropout_attr, dropout_attr_val in dropout_examples:
+            for x in examples:
+                ht = model.emb_dropout(x)
+                ans_out = emb_dropout(x)
                 self.assertEqual(
-                    getattr(dropout_layer, dropout_attr),
-                    getattr(dropout, dropout_attr),
-                    msg=msg3.format('dropout', dropout_attr, dropout_attr_val)
+                    ht.size(),
+                    ans_out.size(),
+                    msg=msg3.format(ans_out.size())
+                )
+
+    def test_instance_attribute_proj_emb_to_hid(self):
+        r"""Declare required instance attributes."""
+        msg1 = 'Missing instance attribute `{}`.'
+        msg2 = 'Instance attribute `{}` must be instance of `{}`.'
+        msg3 = 'Return size must be {}.'
+        examples = (
+            torch.rand(5, 10, self.d_emb),
+            torch.rand(10, 20, self.d_emb),
+        )
+
+        proj_emb_to_hid = torch.nn.Sequential(
+            torch.nn.Linear(
+                in_features=self.d_emb,
+                out_features=self.d_hid
+            ),
+            torch.nn.Dropout(self.dropout)
+        )
+
+        for parameters in self.model_parameters:
+            pos = []
+            kwargs = {}
+            for attr, attr_val in parameters:
+                pos.append(attr_val)
+                kwargs[attr] = attr_val
+
+            # Construct using positional and keyword arguments.
+            models = [
+                LSTMModel(*pos),
+                LSTMModel(**kwargs),
+            ]
+
+        for model in models:
+            self.assertTrue(
+                hasattr(model, 'proj_emb_to_hid'),
+                msg=msg1.format('proj_emb_to_hid')
+            )
+            self.assertIsInstance(
+                model.proj_emb_to_hid,
+                type(proj_emb_to_hid),
+                msg=msg2.format(
+                    'proj_emb_to_hid',
+                    type(proj_emb_to_hid).__name__
+                )
+            )
+            for x in examples:
+                ht = model.proj_emb_to_hid(x)
+                ans_out = proj_emb_to_hid(x)
+                self.assertEqual(
+                    ht.size(),
+                    ans_out.size(),
+                    msg=msg3.format(ans_out.size())
                 )
 
     def test_instance_attribute_rnn_layer(self):
         r"""Declare required instance attributes."""
         msg1 = 'Missing instance attribute `{}`.'
         msg2 = 'Instance attribute `{}` must be instance of `{}`.'
-        msg3 = 'Instance {} attribute `{}` must include `{}`.'
-
-        rnn_examples = (
-            ('input_size', self.d_emb),
-            ('hidden_size', self.d_hid),
-            ('num_layers', self.num_rnn_layers),
-            ('dropout', self.dropout),
-            ('batch_first', True),
+        msg3 = 'Return size must be {}.'
+        examples = (
+            torch.rand(5, 10, self.d_hid),
+            torch.rand(10, 20, self.d_hid),
         )
 
         rnn_layer = torch.nn.LSTM(
-                input_size=self.d_emb,
-                hidden_size=self.d_hid,
-                num_layers=self.num_rnn_layers,
-                dropout=self.dropout,
-                batch_first=True
-            )
+            input_size=self.d_emb,
+            hidden_size=self.d_hid,
+            num_layers=self.num_rnn_layers,
+            dropout=self.dropout,
+            batch_first=True
+        )
 
-        for model in self.models:
+        for parameters in self.model_parameters:
+            pos = []
+            kwargs = {}
+            for attr, attr_val in parameters:
+                pos.append(attr_val)
+                kwargs[attr] = attr_val
+
+            # Construct using positional and keyword arguments.
+            models = [
+                LSTMModel(*pos),
+                LSTMModel(**kwargs),
+            ]
+
+        for model in models:
             self.assertTrue(
                 hasattr(model, 'rnn_layer'),
                 msg=msg1.format('rnn_layer')
             )
             self.assertIsInstance(
-                getattr(model, 'rnn_layer'),
+                model.rnn_layer,
                 type(rnn_layer),
                 msg=msg2.format('rnn_layer', type(rnn_layer).__name__)
             )
-            model_layer = getattr(model, 'rnn_layer')
-            for rnn_attr, rnn_attr_val in rnn_examples:
+            for x in examples:
+                ht, _ = model.rnn_layer(x)
+                ans_out, _ = rnn_layer(x)
                 self.assertEqual(
-                    getattr(model_layer, rnn_attr),
-                    getattr(rnn_layer, rnn_attr),
-                    msg=msg3.format('rnn', rnn_attr, rnn_attr_val)
+                    ht.size(),
+                    ans_out.size(),
+                    msg=msg3.format(ans_out.size())
                 )
 
     def test_instance_attribute_proj_hid_to_emb(self):
         r"""Declare required instance attributes."""
         msg1 = 'Missing instance attribute `{}`.'
         msg2 = 'Instance attribute `{}` must be instance of `{}`.'
-        msg3 = 'Instance {} attribute `{}` must include `{}`.'
-        msg4 = 'Inconsitent activation function.'
-
-        linear_examples = (
-            ('in_features', self.d_hid),
-            ('out_features', self.d_hid),
-        )
-        dropout_examples = (
-            ('p', self.dropout),
-        )
-        output_linear_examples = (
-            ('in_features', self.d_hid),
-            ('out_features', self.d_emb),
+        msg3 = 'Return size must be {}.'
+        examples = (
+            torch.rand(5, 10, self.d_hid),
+            torch.rand(10, 20, self.d_hid),
         )
 
-        linear =  torch.nn.Linear(
-                    in_features=self.d_hid,
-                    out_features=self.d_hid
-                )
+        linear = torch.nn.Linear(
+            in_features=self.d_hid,
+            out_features=self.d_hid
+        )
         act_fn = torch.nn.ReLU()
         dropout = torch.nn.Dropout(self.dropout)
         output_linear = torch.nn.Linear(
-                            in_features=self.d_hid,
-                            out_features=self.d_emb
-                        )
+            in_features=self.d_hid,
+            out_features=self.d_emb
+        )
         proj_hid_to_emb = []
         for _ in range(self.num_linear_layers):
             proj_hid_to_emb.append(linear)
@@ -554,51 +628,40 @@ class TestInit(unittest.TestCase):
         proj_hid_to_emb.append(output_linear)
         proj_hid_to_emb = torch.nn.Sequential(*proj_hid_to_emb)
 
+        for parameters in self.model_parameters:
+            pos = []
+            kwargs = {}
+            for attr, attr_val in parameters:
+                pos.append(attr_val)
+                kwargs[attr] = attr_val
 
-        for model in self.models:
+            # Construct using positional and keyword arguments.
+            models = [
+                LSTMModel(*pos),
+                LSTMModel(**kwargs),
+            ]
+
+        for model in models:
             self.assertTrue(
                 hasattr(model, 'proj_hid_to_emb'),
                 msg=msg1.format('proj_hid_to_emb')
             )
             self.assertIsInstance(
-                getattr(model, 'proj_hid_to_emb'),
+                model.proj_hid_to_emb,
                 type(proj_hid_to_emb),
                 msg=msg2.format(
                     'proj_hid_to_emb',
                     type(proj_hid_to_emb).__name__
                 )
             )
-            model_layer = getattr(model, 'proj_hid_to_emb')
-            for layer in model_layer:
-                if isinstance(layer, torch.nn.modules.dropout.Dropout):
-                    for dropout_attr, dropout_attr_val in dropout_examples:
-                        self.assertEqual(
-                            getattr(layer, dropout_attr),
-                            getattr(dropout, dropout_attr),
-                            msg=msg3.format('dropout', dropout_attr, dropout_attr_val)
-                        )
-                    continue
-                if isinstance(layer, torch.nn.modules.activation.ReLU):
-                    self.assertEqual(
-                        layer(torch.tensor([0])),
-                        act_fn(torch.tensor([0])),
-                        msg=msg4
-                    )
-                    continue
-                if layer == model_layer[-1]:
-                    for linear_attr, linear_attr_val in output_linear_examples:
-                        self.assertEqual(
-                            getattr(layer, linear_attr),
-                            getattr(linear, linear_attr),
-                            msg=msg3.format('linear', linear_attr, linear_attr_val)
-                        )
-                else:
-                    for linear_attr, linear_attr_val in linear_examples:
-                        self.assertEqual(
-                            getattr(layer, linear_attr),
-                            getattr(output_linear, linear_attr),
-                            msg=msg3.format('linear', linear_attr, linear_attr_val)
-                        )
+            for x in examples:
+                ht = model.proj_hid_to_emb(x)
+                ans_out = proj_hid_to_emb(x)
+                self.assertEqual(
+                    ht.size(),
+                    ans_out.size(),
+                    msg=msg3.format(ans_out.size())
+                )
 
 
 if __name__ == '__main__':

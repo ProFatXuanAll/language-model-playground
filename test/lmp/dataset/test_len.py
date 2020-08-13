@@ -19,6 +19,7 @@ import unittest
 
 from lmp.dataset import BaseDataset
 
+
 class TestInit(unittest.TestCase):
     r"""Test case for `lmp.dataset.BaseDataset.__len`."""
 
@@ -64,9 +65,9 @@ class TestInit(unittest.TestCase):
         r"""Return dataset size."""
         msg = 'Inconsistent error message.'
         examples = (
-                ['Hello world!', 'Hello apple.', 'Hello gogoro!'],
-                ['Goodbye world!', 'Goodbye apple.'],
-                ['Arm bar.', 'Short punch.', 'Right hook.', 'Front kick.'],
+            ['Hello world!', 'Hello apple.', 'Hello gogoro!'],
+            ['Goodbye world!', 'Goodbye apple.'],
+            ['Arm bar.', 'Short punch.', 'Right hook.', 'Front kick.'],
         )
 
         for batch_sequences in examples:
@@ -76,6 +77,7 @@ class TestInit(unittest.TestCase):
                 len(batch_sequences),
                 msg=msg
             )
+
 
 if __name__ == '__main__':
     unittest.main()
