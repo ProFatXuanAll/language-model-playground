@@ -23,21 +23,25 @@ import torch.nn
 class BaseResRNNBlock(torch.nn.Module):
     r"""RNN residual block.
 
-    out = activate(F(x) + x)
+    out = dropout(activate(RNN(x))) + x
 
     Args:
         d_hid:
-            GRU layers hidden dimension.
+            Residual RNN layer hidden dimension.
         dropout:
-            Dropout probability on all layers out (except output layer).
+            Dropout probability on residual RNN layer output.
+
+    Raises:
+        TypeError:
+            When `d_hid` is not an instance of `int` or `dropout` is not an
+            instance of `float`.
+        ValueError:
+            When `d_hid < 1` or `dropout < 0` or `dropout > 1`.
     """
 
-    def __init__(
-        self,
-        d_hid: int,
-        dropout: float
-    ):
+    def __init__(self, d_hid: int, dropout: float):
         super().__init__()
+
         # Type check.
         if not isinstance(d_hid, int):
             raise TypeError('`d_hid` must be an instance of `int`.')
@@ -49,7 +53,7 @@ class BaseResRNNBlock(torch.nn.Module):
         if d_hid < 1:
             raise ValueError('`d_hid` must be bigger than or equal to `1`.')
 
-        if not (0 <= dropout <= 1):
+        if not 0 <= dropout <= 1:
             raise ValueError('`dropout` must range from `0.0` to `1.0`.')
 
         self.rnn_layer = torch.nn.RNN(
@@ -62,5 +66,14 @@ class BaseResRNNBlock(torch.nn.Module):
         self.act_fn = torch.nn.ReLU()
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        r"""Perform forward pass.
+
+        Args:
+            x:
+                Batch of hidden vectors with numeric type `torch.float32`.
+
+        Returns:
+            Residual blocks output tensors.
+        """
         ht, _ = self.rnn_layer(x)
-        return self.act_fn(self.dropout(ht + x))
+        return self.dropout(self.act_fn(ht)) + x
