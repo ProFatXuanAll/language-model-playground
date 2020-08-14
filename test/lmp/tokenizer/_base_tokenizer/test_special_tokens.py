@@ -24,7 +24,7 @@ from lmp.tokenizer import BaseTokenizer
 
 
 class TestSpecialTokens(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.BaseTokenizer.special_tokens`."""
+    r"""Test case for `lmp.tokenizer.BaseTokenizer.special_tokens`."""
 
     def test_signature(self):
         r"""Ensure signature consistency."""
@@ -42,7 +42,7 @@ class TestSpecialTokens(unittest.TestCase):
     def test_yield_value(self):
         r"""Return iterator which yield `str`."""
         msg = 'Must return iterator which yield `str`.'
-        examples = ('[BOS]', '[EOS]', '[PAD]', '[UNK]')
+        examples = ('[bos]', '[eos]', '[pad]', '[unk]')
 
         self.assertIsInstance(
             BaseTokenizer.special_tokens(),

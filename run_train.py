@@ -21,6 +21,9 @@ import time
 import lmp
 
 if __name__ == '__main__':
+    # Record total execution time.
+    start_time = time.time()
+
     # Parse argument from standard input.
     parser = argparse.ArgumentParser()
 
@@ -166,7 +169,6 @@ if __name__ == '__main__':
         config=config
     )
 
-    start_time = time.time()
     # Load tokenizer.
     tokenizer = lmp.util.load_tokenizer_by_config(
         checkpoint=args.checkpoint,
@@ -206,4 +208,9 @@ if __name__ == '__main__':
         tokenizer=tokenizer
     )
 
-    print(f'{config.tokenizer_class} train_time: ', time.time()-start_time)
+    total_exec_time = time.time() - start_time
+    print('Total execution time: {} hrs {} mins {} secs'.format(
+        int(total_exec_time // 3600),
+        int(total_exec_time // 60),
+        int(total_exec_time % 60)
+    ))

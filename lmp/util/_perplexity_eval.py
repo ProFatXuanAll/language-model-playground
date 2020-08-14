@@ -56,8 +56,8 @@ def perplexity_eval(
     # New sequence length: S + 2.
     sequence = tokenizer.encode(sequence, max_seq_len=-1)
 
-    # `sequence[:-2]` means predict tokens include [BOS] output but exclude
-    # [EOS] input. `x.shape = (S)`.
+    # `sequence[:-2]` means predict tokens include [bos] output but exclude
+    # [eos] input. `x.shape = (S)`.
     x = torch.LongTensor(sequence[:-2]).to(device)
 
     # `y.shape = (S)`.
