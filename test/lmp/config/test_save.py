@@ -11,6 +11,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import gc
 import inspect
 import json
 import os
@@ -24,7 +25,7 @@ from lmp.config import BaseConfig
 
 
 class TestSave(unittest.TestCase):
-    r"""Test Case for `lmp.config.BaseConfig.save`."""
+    r"""Test case for `lmp.config.BaseConfig.save`."""
 
     @classmethod
     def setUpClass(cls):
@@ -40,6 +41,9 @@ class TestSave(unittest.TestCase):
     def tearDownClass(cls):
         r"""Remove test directory."""
         os.removedirs(cls.test_dir)
+        del cls.test_dir
+        del cls.experiment
+        gc.collect()
 
     def test_signature(self):
         r"""Ensure signature consistency."""

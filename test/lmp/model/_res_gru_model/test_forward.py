@@ -27,7 +27,7 @@ from lmp.model import ResGRUModel
 
 
 class TestInit(unittest.TestCase):
-    r"""Test Case for `lmp.model.ResGRUModel.forward`."""
+    r"""Test case for `lmp.model.ResGRUModel.forward`."""
 
     def setUp(self):
         r"""Set up hyper parameters and construct ResGRUModel"""
@@ -166,6 +166,7 @@ class TestInit(unittest.TestCase):
                     ans_seq.size(),
                     msg=msg.format(ans_seq.size())
                 )
+
 
 if __name__ == '__main__':
     unittest.main()

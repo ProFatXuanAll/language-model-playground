@@ -51,63 +51,51 @@ class TestInit(unittest.TestCase):
         )
 
     def test_invalid_input_batch_sequences(self):
-        r"""Raise when `batch_sequences` is invalid."""
-        msg1 = 'Must raise `TypeError` when `batch_sequences` is invalid.'
+        r"""Raise `TypeError` when input `batch_sequences` is invalid."""
+        msg1 = (
+            'Must raise `TypeError` when input `batch_sequences` is invalid.'
+        )
         msg2 = 'Inconsistent error message.'
         examples = (
             False, True, 0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf,
             -math.inf, 0j, 1j, object(), lambda x: x, type, None,
-            NotImplemented, ..., (0.0,), (1.0,), (math.nan,), (-math.nan,),
-            (math.inf,), (-math.inf,), (0j,), (1j,), (object(),),
-            (lambda x: x,), (type,), (None,), (NotImplemented,), (...,),
-            [0.0], [1.0], [math.nan], [-math.nan], [math.inf], [-math.inf],
-            [0j], [1j], [object()], [lambda x: x], [type], [None],
-            [NotImplemented], [...], {0.0}, {1.0}, {math.nan}, {-math.nan},
-            {math.inf}, {-math.inf}, {0j}, {1j}, {object()}, {lambda x: x},
-            {type}, {None}, {NotImplemented}, {...}, {0.0: 0}, {1.0: 0},
-            {math.nan: 0}, {-math.nan: 0}, {math.inf: 0}, {-math.inf: 0},
-            {0j: 0}, {1j: 0}, {object(): 0}, {lambda x: x: 0}, {type: 0},
-            {None: 0}, {NotImplemented: 0}, {...: 0},
+            NotImplemented, ..., [False], [True], [0], [1], [-1], [0.0], [1.0],
+            [math.nan], [-math.nan], [math.inf], [-math.inf], [0j], [1j],
+            [b''], [()], [[]], [{}], [set()], [object()], [lambda x: x],
+            [type], [None], [NotImplemented], [...], ['', False], ['', True],
+            ['', 0], ['', 1], ['', -1], ['', 0.0], ['', 1.0], ['', math.nan],
+            ['', -math.nan], ['', math.inf], ['', -math.inf], ['', 0j],
+            ['', 1j], ['', b''], ['', ()], ['', []], ['', {}], ['', set()],
+            ['', object()], ['', lambda x: x], ['', type], ['', None],
+            ['', NotImplemented], ['', ...],
         )
 
         for invalid_input in examples:
             with self.assertRaises(TypeError, msg=msg1) as ctx_man:
                 BaseDataset(batch_sequences=invalid_input)
 
-                if isinstance(ctx_man.exception, TypeError):
-                    self.assertEqual(
-                        ctx_man.exception.args[0],
-                        '`batch_sequences` must be instance of `Iterable[str]`.',
-                        msg=msg2
-                    )
+            self.assertEqual(
+                ctx_man.exception.args[0],
+                '`batch_sequences` must be an instance of `Iterable[str]`.',
+                msg=msg2
+            )
 
     def test_instance_attributes(self):
         r"""Declare required instance attributes."""
         msg1 = 'Missing instance attribute `{}`.'
-        msg2 = 'Instance attribute `{}` must be instance of `{}`.'
-        msg3 = 'Instance attribute `{}` must be `{}`.'
-        examples = (
-            (
-                'batch_sequences',
-                ['Hello world!', 'Hello apple.', 'Hello gogoro!']
-            ),
-        )
+        msg2 = 'Instance attribute `{}` must be an instance of `{}`.'
+        examples = (('batch_sequences', list),)
 
-        for attr, attr_val in examples:
-            dataset = BaseDataset(batch_sequences=attr_val)
+        for attr, attr_type in examples:
+            dataset = BaseDataset(batch_sequences=[])
             self.assertTrue(
                 hasattr(dataset, attr),
-                msg=msg1
+                msg=msg1.format(attr)
             )
             self.assertIsInstance(
                 getattr(dataset, attr),
-                type(attr_val),
-                msg=msg2.format(attr, type(attr_val).__name__)
-            )
-            self.assertEqual(
-                getattr(dataset, attr),
-                attr_val,
-                msg=msg3.format(attr, attr_val)
+                attr_type,
+                msg=msg2.format(attr, attr_type.__name__)
             )
 
 

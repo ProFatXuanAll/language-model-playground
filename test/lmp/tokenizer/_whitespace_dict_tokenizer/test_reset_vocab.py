@@ -22,7 +22,7 @@ from lmp.tokenizer import WhitespaceDictTokenizer
 
 
 class TestResetVocab(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.WhitespaceDictTokenizer.reset_vocab`."""
+    r"""Test case for `lmp.tokenizer.WhitespaceDictTokenizer.reset_vocab`."""
 
     def setUp(self):
         r"""Setup both cased and uncased tokenizer instances."""
@@ -56,66 +56,40 @@ class TestResetVocab(unittest.TestCase):
             msg=msg
         )
 
-    def test_token_to_id_existence(self):
-        r"Test whether create `token_to_id` in `reset_vocab`"
-        msg1 = 'Missing class attribute `{}`.'
-        msg2 = 'Class attribute `{}` must be instance of `{}`.'
-        msg3 = 'Class attribute `{}` must be `{}`.'
+    def test_reset_token_to_id_and_id_to_token(self):
+        r"""Reset `token_to_id` and `id_to_token`."""
+        msg = 'Must reset `token_to_id` and `id_to_token`.'
 
-        examples = (
-            (
-                'token_to_id',
-                {'[BOS]': 0, '[EOS]': 1, '[PAD]': 2, '[UNK]': 3}
-            ),
-        )
+        token_to_id = {
+            '[bos]': 0,
+            '[eos]': 1,
+            '[pad]': 2,
+            '[unk]': 3
+        }
+        id_to_token = {
+            0: '[bos]',
+            1: '[eos]',
+            2: '[pad]',
+            3: '[unk]'
+        }
 
-        for attr, attr_val in examples:
-            for tokenizer in self.tokenizers:
-                self.assertTrue(
-                    hasattr(tokenizer, attr),
-                    msg=msg1.format(attr)
-                )
-                self.assertIsInstance(
-                    getattr(tokenizer, attr),
-                    type(attr_val),
-                    msg=msg2.format(attr, type(attr_val).__name__)
-                )
-                self.assertEqual(
-                    getattr(tokenizer, attr),
-                    attr_val,
-                    msg=msg3.format(attr, attr_val)
-                )
-
-    def test_id_to_token_existence(self):
-        r"Test whether create `id_to_token` in `reset_vocab`"
-        msg1 = 'Missing class attribute `{}`.'
-        msg2 = 'Class attribute `{}` must be instance of `{}`.'
-        msg3 = 'Class attribute `{}` must be `{}`.'
-
-        examples = (
-            (
-                'id_to_token',
-                {0: '[BOS]', 1: '[EOS]', 2: '[PAD]', 3: '[UNK]'}
-
-            ),
-        )
-
-        for attr, attr_val in examples:
-            for tokenizer in self.tokenizers:
-                self.assertTrue(
-                    hasattr(tokenizer, attr),
-                    msg=msg1.format(attr)
-                )
-                self.assertIsInstance(
-                    getattr(tokenizer, attr),
-                    type(attr_val),
-                    msg=msg2.format(attr, type(attr_val).__name__)
-                )
-                self.assertEqual(
-                    getattr(tokenizer, attr),
-                    attr_val,
-                    msg=msg3.format(attr, attr_val)
-                )
+        for tokenizer in self.tokenizers:
+            tokenizer.build_vocab(['Hello World!', 'I am a legend.'])
+            tokenizer.reset_vocab()
+            self.assertTrue(hasattr(tokenizer, 'token_to_id'))
+            self.assertIsInstance(
+                tokenizer.token_to_id,
+                type(token_to_id),
+                msg=msg
+            )
+            self.assertTrue(hasattr(tokenizer, 'id_to_token'))
+            self.assertIsInstance(
+                tokenizer.id_to_token,
+                type(id_to_token),
+                msg=msg
+            )
+            self.assertEqual(tokenizer.token_to_id, token_to_id, msg=msg)
+            self.assertEqual(tokenizer.id_to_token, id_to_token, msg=msg)
 
 
 if __name__ == '__main__':

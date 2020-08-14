@@ -27,7 +27,7 @@ from lmp.model import BaseResRNNModel
 
 
 class TestInit(unittest.TestCase):
-    r"""Test Case for `lmp.model.BaseResRNNModel.predict`."""
+    r"""Test case for `lmp.model.BaseResRNNModel.predict`."""
 
     def setUp(self):
         r"""Set up hyper parameters and construct BaseResRNNModel"""
@@ -120,7 +120,7 @@ class TestInit(unittest.TestCase):
                 if isinstance(ctx_man.exception, TypeError):
                     self.assertEqual(
                         ctx_man.exception.args[0],
-                        '`batch_sequences` must be instance of `Tensor`.',
+                        '`batch_sequences` must be an instance of `Tensor`.',
                         msg=msg2
                     )
 

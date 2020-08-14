@@ -1,8 +1,7 @@
 r"""Test `lmp.tokenizer.BaseTokenizer.build_vocab`.
 
 Usage:
-    python -m unittest \
-        test/lmp/tokenizer/_base_tokenizer/test_build_vocab.py
+    python -m unittest test/lmp/tokenizer/_base_tokenizer/test_build_vocab.py
 """
 
 # built-in modules
@@ -23,7 +22,7 @@ from lmp.tokenizer import BaseTokenizer
 
 
 class TestBuildVocab(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.BaseTokenizer.build_vocab`."""
+    r"""Test case for `lmp.tokenizer.BaseTokenizer.build_vocab`."""
 
     def test_signature(self):
         r"""Ensure signature consistency."""
@@ -81,7 +80,7 @@ class TestBuildVocab(unittest.TestCase):
             self.assertEqual(
                 ctx_man.exception.args[0],
                 'In class `SubClassTokenizer`: '
-                'function `build_vocab` not implemented yet.',
+                'method `build_vocab` not implemented yet.',
                 msg=msg2
             )
 

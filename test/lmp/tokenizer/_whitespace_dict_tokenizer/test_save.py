@@ -26,7 +26,7 @@ from lmp.tokenizer import WhitespaceDictTokenizer
 
 
 class TestSave(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.BaseTokenizer.save`."""
+    r"""Test case for `lmp.tokenizer.BaseTokenizer.save`."""
 
     @classmethod
     def setUpClass(cls):
@@ -39,6 +39,9 @@ class TestSave(unittest.TestCase):
     def tearDownClass(cls):
         r"""Clean up test directory."""
         os.removedirs(cls.test_dir)
+        del cls.test_dir
+        del cls.experiment
+        gc.collect()
 
     def setUp(self):
         r"""Setup both cased and uncased tokenizer instances."""
@@ -78,14 +81,17 @@ class TestSave(unittest.TestCase):
             msg=msg
         )
 
-    def test_invalid_input(self):
-        r"""Raise `TypeError` or `ValueError` when input is invalid."""
-        msg1 = 'Must raise `TypeError` or `ValueError` when input is invalid.'
+    def test_invalid_input_experiment(self):
+        r"""Raise exception when input `experiment` is invalid."""
+        msg1 = (
+            'Must raise `TypeError` or `ValueError` when input `experiment` '
+            'is invalid.'
+        )
         msg2 = 'Inconsistent error message.'
         examples = (
-            0, 1, -1, 0.0, 1.0, math.nan, math.inf, '', b'', True, False, 0j, 1j,
-            [], (), {}, set(), object(), lambda x: x, type, None,
-            NotImplemented, ...,
+            False, True, 0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf,
+            -math.inf, 0j, 1j, '', b'', [], (), {}, set(), object(),
+            lambda x: x, type, None, NotImplemented, ...,
         )
 
         for invalid_input in examples:
@@ -94,12 +100,12 @@ class TestSave(unittest.TestCase):
                         (TypeError, ValueError),
                         msg=msg1
                 ) as ctx_man:
-                    tokenizer.save(invalid_input)
+                    tokenizer.save(experiment=invalid_input)
 
                 if isinstance(ctx_man.exception, TypeError):
                     self.assertEqual(
                         ctx_man.exception.args[0],
-                        '`experiment` must be instance of `str`.',
+                        '`experiment` must be an instance of `str`.',
                         msg=msg2
                     )
                 else:
@@ -109,18 +115,14 @@ class TestSave(unittest.TestCase):
                         msg=msg2
                     )
 
-    def test_output_file(self):
+    def test_save_result(self):
         r"""Create `tokenizer.json`."""
         msg1 = 'Must create `tokenizer.json`.'
         msg2 = 'Inconsistent `tokenizer.json` format.'
-        examples = (
-            ('is_uncased', bool),
-            ('token_to_id', dict),
-        )
+        examples = ('is_uncased', 'token_to_id')
 
+        test_path = os.path.join(self.__class__.test_dir, 'tokenizer.json')
         for tokenizer in self.tokenizers:
-            test_path = os.path.join(self.__class__.test_dir, 'tokenizer.json')
-
             try:
                 # Create test file.
                 tokenizer.save(experiment=self.__class__.experiment)
@@ -129,9 +131,13 @@ class TestSave(unittest.TestCase):
                 with open(test_path, 'r') as input_file:
                     obj = json.load(input_file)
 
-                for attr_key, attr_type in examples:
+                for attr_key in examples:
                     self.assertIn(attr_key, obj, msg=msg2)
-                    self.assertIsInstance(obj[attr_key], attr_type, msg=msg2)
+                    self.assertIsInstance(
+                        obj[attr_key],
+                        type(getattr(tokenizer, attr_key)),
+                        msg=msg2
+                    )
                     self.assertEqual(
                         obj[attr_key],
                         getattr(tokenizer, attr_key),

@@ -22,7 +22,7 @@ from lmp.tokenizer import BaseListTokenizer
 
 
 class TestResetVocab(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.BaseListTokenizer.reset_vocab`."""
+    r"""Test case for `lmp.tokenizer.BaseListTokenizer.reset_vocab`."""
 
     def setUp(self):
         r"""Setup both cased and uncased tokenizer instances."""
@@ -56,16 +56,21 @@ class TestResetVocab(unittest.TestCase):
             msg=msg
         )
 
-    def test_token_to_id_existence(self):
-        r"Test whether create `token_to_id` in `reset_vocab`"
-        msg1 = '`token_to_id` must be `list`'
-        msg2 = 'Inconsistent error message.'
+    def test_reset_token_to_id(self):
+        r"""Reset `token_to_id`."""
+        msg = 'Must reset `token_to_id`.'
 
-        token_to_id = ['[BOS]', '[EOS]', '[PAD]', '[UNK]']
+        token_to_id = ['[bos]', '[eos]', '[pad]', '[unk]']
 
         for tokenizer in self.tokenizers:
-            self.assertIsInstance(tokenizer.token_to_id, list, msg=msg1)
-            self.assertEqual(tokenizer.token_to_id, token_to_id, msg=msg2)
+            tokenizer.reset_vocab()
+            self.assertTrue(hasattr(tokenizer, 'token_to_id'))
+            self.assertIsInstance(
+                tokenizer.token_to_id,
+                type(token_to_id),
+                msg=msg
+            )
+            self.assertEqual(tokenizer.token_to_id, token_to_id, msg=msg)
 
 
 if __name__ == '__main__':

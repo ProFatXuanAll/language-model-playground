@@ -27,7 +27,7 @@ from lmp.model import GRUModel
 
 
 class TestInit(unittest.TestCase):
-    r"""Test Case for `lmp.model.GRUModel.forward`."""
+    r"""Test case for `lmp.model.GRUModel.forward`."""
 
     def setUp(self):
         r"""Set up hyper parameters and construct GRUModel"""

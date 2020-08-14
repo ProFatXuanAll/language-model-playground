@@ -15,15 +15,12 @@ from __future__ import unicode_literals
 
 import argparse
 
-# 3rd-party modules
-
-import torch
-
 # self-made modules
 
 import lmp
 
 if __name__ == '__main__':
+    # Parse argument from standard input.
     parser = argparse.ArgumentParser()
 
     # Required arguments.

@@ -27,7 +27,7 @@ from lmp.model import ResLSTMModel
 
 
 class TestInit(unittest.TestCase):
-    r"""Test Case for `lmp.model.ResLSTMModel.forward`."""
+    r"""Test case for `lmp.model.ResLSTMModel.forward`."""
 
     def setUp(self):
         r"""Set up hyper parameters and construct ResLSTMModel"""

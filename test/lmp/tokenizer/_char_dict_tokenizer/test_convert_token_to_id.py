@@ -12,8 +12,8 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import inspect
 import gc
+import inspect
 import math
 import unittest
 
@@ -23,7 +23,7 @@ from lmp.tokenizer import CharDictTokenizer
 
 
 class TestConvertTokenToId(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.CharDictTokenizer.convert_token_to_id`."""
+    r"""Test case for `lmp.tokenizer.CharDictTokenizer.convert_token_to_id`."""
 
     def setUp(self):
         r"""Setup both cased and uncased tokenizer instances."""
@@ -64,13 +64,13 @@ class TestConvertTokenToId(unittest.TestCase):
         )
 
     def test_invalid_input_token(self):
-        r"""Raise `TypeError` when input is invalid."""
-        msg1 = 'Must raise `TypeError` when input is invalid.'
+        r"""Raise `TypeError` when input `token` is invalid."""
+        msg1 = 'Must raise `TypeError` when input `token` is invalid.'
         msg2 = 'Inconsistent error message.'
         examples = (
-            0, 1, -1, 0.0, 1.0, math.nan, math.inf, True, False, b'', 0j, 1j,
-            [], (), {}, set(), object(), lambda x: x, type, None,
-            NotImplemented, ...,
+            False, True, 0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf,
+            -math.inf, 0j, 1j, b'', [], (), {}, set(), object(), lambda x: x,
+            type, None, NotImplemented, ...,
         )
 
         for invalid_input in examples:
@@ -80,7 +80,7 @@ class TestConvertTokenToId(unittest.TestCase):
 
                 self.assertEqual(
                     cxt_man.exception.args[0],
-                    '`token` must be instance of `str`.',
+                    '`token` must be an instance of `str`.',
                     msg=msg2
                 )
 
@@ -88,23 +88,52 @@ class TestConvertTokenToId(unittest.TestCase):
         r"""Return `int`."""
         msg = 'Must return `int`.'
         examples = (
-            'H',
+            '[bos]',
+            '[eos]',
+            '[pad]',
+            '[unk]',
+            'Hello World',
             '',
         )
 
         for token in examples:
             for tokenizer in self.tokenizers:
-                token_id = tokenizer.convert_token_to_id(token=token)
-                self.assertIsInstance(token_id, int, msg=msg)
+                self.assertIsInstance(
+                    tokenizer.convert_token_to_id(token=token),
+                    int,
+                    msg=msg
+                )
 
-    def test_convert_unknown_token_to_id(self):
-        r"""Return `int` must be [UNK] id."""
-        msg = 'Must return [UNK] id.'
+    def test_return_special_token_id(self):
+        r"""Return special token id."""
+        msg = 'Must return special token id.'
         examples = (
-            (
-                'H',
-                3
-            ),
+            ('[bos]', 0),
+            ('[eos]', 1),
+            ('[pad]', 2),
+            ('[unk]', 3),
+        )
+
+        for token, ans_token_id in examples:
+            for tokenizer in self.tokenizers:
+                self.assertEqual(
+                    tokenizer.convert_token_to_id(token=token),
+                    ans_token_id,
+                    msg=msg
+                )
+
+    def test_return_unknown_token_id(self):
+        r"""Return unknown token id when token is unknown."""
+        msg = 'Must return unknown token id when token is unknown.'
+        examples = (
+            ('H', 3),
+            ('e', 3),
+            ('l', 3),
+            ('o', 3),
+            ('W', 3),
+            ('r', 3),
+            ('d', 3),
+            ('', 3),
         )
 
         for token, ans_token_id in examples:
