@@ -28,10 +28,13 @@ unzip yet-another-chinese-news-dataset.zip && chmod 666 news_collection.csv && m
 ```
 
 3. 下載英文資料集：從 The WikiText Long Term Dependency Language Modeling Dataset 上下載 [WikiText-2](https://blog.einstein.ai/the-wikitext-long-term-dependency-language-modeling-dataset/)，並解壓縮 `zip` 檔後把資料放到 `data/wiki.train.tokens`, `data/wiki.valid.tokens`, `data/wiki.test.tokens`。
+
 4. 下載句法及語意測試資料集：從以下網站上下載word-test.v1.txt後移動至data資料夾下
-```
+
+```sh
 wget -c  http://www.fit.vutbr.cz/~imikolov/rnnlm/word-test.v1.txt && chmod 666 word-test.v1.txt && mv word-test.v1.txt data/word-test.v1.txt
 ```
+
 ### 安裝
 
 1. 從 github 複製專案。
@@ -74,7 +77,14 @@ pip install -r requirements.txt
 python run_train.py --experiment 1 --batch_size 32 --checkpoint -1 --checkpoint_step 500 --d_emb 100 --d_hid 300 --dataset news_collection_title --dropout 0.1 --epoch 10 --is_uncased --learning_rate 1e-4 --max_norm 1.0 --max_seq_len 60 --min_count 1 --model_class lstm --num_linear_layers 1 --num_rnn_layers 1 --optimizer_class adam --seed 42 --tokenizer_class char_dict
 ```
 
-2. 使用 `tensorboard` 觀察模型誤差表現。
+2. 訓練範例英文模型
+
+```sh
+# 使用 wiki_train_tokens 資料集訓練英文模型並保存為 experiment 2
+python run_train.py --experiment 2 --batch_size 32 --checkpoint -1 --checkpoint_step 500 --d_emb 100 --d_hid 300 --dataset wiki_train_tokens --dropout 0.1 --epoch 10 --is_uncased --learning_rate 1e-4 --max_norm 1.0 --max_seq_len 60 --min_count 1 --model_class lstm --num_linear_layers 1 --num_rnn_layers 1 --optimizer_class adam --seed 42 --tokenizer_class whitespace_dict
+```
+
+3. 使用 `tensorboard` 觀察模型誤差表現。
 
 ```sh
 # 在 Windows 上路徑請用 `.\data\log`
@@ -93,10 +103,9 @@ python run_perplexity_evaluation.py --experiment 1 --checkpoint 500 --dataset ne
 2. 評估模型進行詞向量的句法及語意測試（目前只有英文測試資料集）。
 
 ```sh
-# 使用第 500 步的存檔點進行測試
-python run_analogy_evaluation.py --experiment 1 --checkpoint 500
+# 使用experiment 2 （英文訓練結果）的第 500 步的存檔點進行測試
+python run_analogy_evaluation.py --experiment 2 --checkpoint 500
 ```
-
 
 ### 驗證
 
@@ -110,8 +119,8 @@ python run_generate.py --experiment 1 --checkpoint 500 --begin_of_sequence 今�
 2. 指定訓練模型存檔點並生成類比文字。
 
 ```sh
-# 使用第 500 步的存檔點進行句子生成 (test_word example: Taiwan:Taipei=Japan:_)
-python run_analogy_inference.py --experiment 1 --checkpoint 500 --test_word Taiwan,Taipei,Japan
+# 使用experiment 2 （英文訓練結果）的第 500 步的存檔點生成類比文字 (test_word example: Taiwan:Taipei=Japan:_)
+python run_analogy_inference.py --experiment 2 --checkpoint 500 --test_word Taiwan,Taipei,Japan
 ```
 
 3. 試著使用不同的超參數或更換模型並使用 `run_train.py` 重新訓練。接著使用 `run_generate.py` 給予相同 `begin_of_sequence` 進行生成並比較生成結果之不同。
@@ -145,7 +154,9 @@ Language Model implemented with PyTorch.
 2. CUDA version: 10.0+
 
 ### Download dataset
+
 1. Add a folder `data`.
+
 ```sh
 mkdir data
 ```
@@ -159,9 +170,11 @@ unzip yet-another-chinese-news-dataset.zip && chmod 666 news_collection.csv && m
 3. Download the English data set: Download from The WikiText Long Term Dependency Language Modeling Dataset [WikiText-2](https://blog.einstein.ai/the-wikitext-long-term-dependency-language-modeling-dataset/ ), and unzip the `zip` file, and put the data in `data/wiki.train.tokens`, `data/wiki.valid.tokens`, `data/wiki.test.tokens`.
 
 4. Download the analogy test data set: download word-test.v1.txt from the following website and move it to the data folder
-```
+
+```sh
 wget -c http://www.fit.vutbr.cz/~imikolov/rnnlm/word-test.v1.txt && chmod 666 word-test.v1.txt && mv word-test.v1.txt data/word- test.v1.txt
 ```
+
 ### Install
 
 1. Clone the project.
@@ -196,15 +209,22 @@ source venv/bin/active # Launch virtual environment.
 pip install -r requirements.txt
 ```
 
-
 ### Train model
+
 1. Train example model.
 
 ```sh
 python run_train.py --experiment 1 --batch_size 32 --checkpoint -1 --checkpoint_step 500 --d_emb 100 --d_hid 300 --dataset news_collection_title --dropout 0.1 --epoch 10 --is_uncased --learning_rate 1e-4 --max_norm 1.0 --max_seq_len 60 --min_count 1 --model_class lstm --num_linear_layers 1 --num_rnn_layers 1 --optimizer_class adam --seed 42 --tokenizer_class char_dict
 ```
 
-2. Use `tensorboard` to observe model training loss performance.
+2. Train english model.
+
+```sh
+# Use wiki_train_tokens dataset to train english model and save as experiment 2.
+python run_train.py --experiment 2 --batch_size 32 --checkpoint -1 --checkpoint_step 500 --d_emb 100 --d_hid 300 --dataset wiki_train_tokens --dropout 0.1 --epoch 10 --is_uncased --learning_rate 1e-4 --max_norm 1.0 --max_seq_len 60 --min_count 1 --model_class lstm --num_linear_layers 1 --num_rnn_layers 1 --optimizer_class adam --seed 42 --tokenizer_class whitespace_dict
+```
+
+3. Use `tensorboard` to observe model training loss performance.
 
 ```sh
 # On Windows use path `.\data\log`
@@ -212,7 +232,6 @@ tensorboard --logdir ./data/log
 ```
 
 ### Evaluate
-
 
 1. Evaluate model performance on dataset by calculating perplexity.
 
@@ -222,12 +241,14 @@ python run_perplexity_evaluation.py --experiment 1 --checkpoint 500 --dataset ne
 ```
 
 2. Analogy test of word embedding using model checkpoints(only english test dataset.Please move word-test.v1.txt to the specified folder before use)
+
 ```sh
-# Using checkpoint 500 to test
-python run_analogy_evaluation.py --experiment 1 --checkpoint 500
+# Using checkpoint 500 of experiment 2 (english model) to test.
+python run_analogy_evaluation.py --experiment 2 --checkpoint 500
 ```
 
 ### Verification
+
 1. Generate sequences using model checkpoints.
 
 ```sh
@@ -236,14 +257,15 @@ python run_generate.py --experiment 1 --checkpoint 500 --begin_of_sequence 今�
 ```
 
 2. Specify the training model archive point and generate analog text.
+
 ```sh
-# Using checkpoint 500 to test (test_word example: Taiwan:Taipei=Japan:_)
+#  Using checkpoint 500 of experiment 2 (english model) to test. (test_word example: Taiwan:Taipei=Japan:_)
 python run_analogy_inference.py --experiment 1 --checkpoint 500 --test_word Taiwan,Taipei,Japan
 ```
 
 3. Try using different hyperparameters or change model, then use `run_train.py` to perform training as above example. Then run `run_generate.py` to compare generated results given exactly same `begin_of_sequence`.
 
-### Development.
+### Development
 
 1. Make sure your code conform [Google python style guide](https://google.github.io/styleguide/pyguide.html).
 

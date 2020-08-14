@@ -29,8 +29,18 @@ import lmp.dataset
 import lmp.path
 
 
-def _Preprocess_news_collection(
+def _preprocess_news_collection(
         column: str) -> lmp.dataset.LanguageModelDataset:
+    r"""Preprocessing of news collection dataset and convert to 
+    LanguageModelDataset.
+    
+    Args:
+        column:
+            Select the part of the data which want to use.
+
+    Returns:
+        lmp.dataset.LanguageModelDataset
+    """
     file_path = f'{lmp.path.DATA_PATH}/news_collection.csv'
     if not os.path.exists(file_path):
         raise FileNotFoundError(
@@ -41,8 +51,16 @@ def _Preprocess_news_collection(
     return lmp.dataset.LanguageModelDataset(batch_sequences)
 
 
-def _Preprocess_wiki_tokens(dataset: str) -> lmp.dataset.LanguageModelDataset:
-    # preprocess and convert to LanguageModelDataset
+def _preprocess_wiki_tokens(dataset: str) -> lmp.dataset.LanguageModelDataset:
+    r"""Preprocess of wiki dataset and convert to LanguageModelDataset.
+    
+    Args:
+        column:
+            Select the data which want to use.
+
+    Returns:
+        lmp.dataset.LanguageModelDataset
+    """
     file_path = f'{lmp.path.DATA_PATH}/wiki.train.tokens'
     if not os.path.exists(file_path):
         raise FileNotFoundError(
@@ -55,9 +73,13 @@ def _Preprocess_wiki_tokens(dataset: str) -> lmp.dataset.LanguageModelDataset:
     return lmp.dataset.LanguageModelDataset(batch_sequences)
 
 
-def _Preprocess_word_test_v1_tokens(
+def _preprocess_word_test_v1_tokens(
 ) -> lmp.dataset.AnalogyDataset:
-    # preprocess and convert to LanguageModelDataset
+    r"""Preprocess word_test_v1 dataset and convert to LanguageModelDataset.
+    
+    Returns:
+        lmp.dataset.AnalogyDataset
+    """
     file_path = f'{lmp.path.DATA_PATH}/word-test.v1.txt'
     if not os.path.exists(file_path):
         raise FileNotFoundError(
@@ -97,22 +119,22 @@ def load_dataset(
         `lmp.dataset.LanguageModelDataset` instance where samples are sequences.
     """
     if dataset == 'news_collection_desc':
-        return _Preprocess_news_collection(column='desc')
+        return _preprocess_news_collection(column='desc')
 
     if dataset == 'news_collection_title':
-        return _Preprocess_news_collection(column='title')
+        return _preprocess_news_collection(column='title')
 
     if dataset == 'wiki_train_tokens':
-        return _Preprocess_wiki_tokens(dataset='train')
+        return _preprocess_wiki_tokens(dataset='train')
 
     if dataset == 'wiki_valid_tokens':
-        return _Preprocess_wiki_tokens(dataset='valid')
+        return _preprocess_wiki_tokens(dataset='valid')
 
     if dataset == 'wiki_test_tokens':
-        return _Preprocess_wiki_tokens(dataset='test')
+        return _preprocess_wiki_tokens(dataset='test')
 
     if dataset == 'word_test_v1':
-        return _Preprocess_word_test_v1_tokens()
+        return _preprocess_word_test_v1_tokens()
 
     raise ValueError(
         f'dataset `{dataset}` does not support.\nSupported options:' +
