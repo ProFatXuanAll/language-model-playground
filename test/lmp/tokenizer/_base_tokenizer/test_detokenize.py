@@ -1,8 +1,7 @@
 r"""Test `lmp.tokenizer.BaseTokenizer.detokenize`.
 
 Usage:
-    python -m unittest \
-        test/lmp/tokenizer/_base_tokenizer/test_detokenize.py
+    python -m unittest test/lmp/tokenizer/_base_tokenizer/test_detokenize.py
 """
 
 # built-in modules
@@ -23,7 +22,7 @@ from lmp.tokenizer import BaseTokenizer
 
 
 class TestDetokenize(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.BaseTokenizer.detokenize`."""
+    r"""Test case for `lmp.tokenizer.BaseTokenizer.detokenize`."""
 
     def test_signature(self):
         r"""Ensure signature consistency."""
@@ -53,8 +52,7 @@ class TestDetokenize(unittest.TestCase):
     def test_abstract_method(self):
         r"""Raise `NotImplementedError` when subclass did not implement."""
         msg1 = (
-            'Must raise `NotImplementedError` when subclass did not '
-            'implement.'
+            'Must raise `NotImplementedError` when subclass did not implement.'
         )
         msg2 = 'Inconsistent error message.'
         examples = (True, False)
@@ -76,7 +74,7 @@ class TestDetokenize(unittest.TestCase):
             self.assertEqual(
                 ctx_man.exception.args[0],
                 'In class `SubClassTokenizer`: '
-                'function `detokenize` not implemented yet.',
+                'method `detokenize` not implemented yet.',
                 msg=msg2
             )
 

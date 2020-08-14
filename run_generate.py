@@ -15,15 +15,12 @@ from __future__ import unicode_literals
 
 import argparse
 
-# 3rd-party modules
-
-import torch
-
 # self-made modules
 
 import lmp
 
-if __name__ == "__main__":
+if __name__ == '__main__':
+    # Parse argument from standard input.
     parser = argparse.ArgumentParser()
 
     # Required arguments.
@@ -48,9 +45,9 @@ if __name__ == "__main__":
 
     # Optional arguments.
     parser.add_argument(
-        "--beam_width",
+        '--beam_width',
         default=4,
-        help="using for generating `beam_width` sentences",
+        help='using for generating `beam_width` sentences',
         type=int
     )
     parser.add_argument(

@@ -12,9 +12,10 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import inspect
 import gc
+import inspect
 import math
+import unicodedata
 import unittest
 
 from typing import Iterable
@@ -25,12 +26,26 @@ from lmp.tokenizer import CharDictTokenizer
 
 
 class TestDetokenize(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.CharDictTokenizer.detokenize`."""
+    r"""Test case for `lmp.tokenizer.CharDictTokenizer.detokenize`."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.vocab_source = [
+            'Hello World!',
+            'I am a legend.',
+        ]
+
+    @classmethod
+    def tearDownClass(cls):
+        del cls.vocab_source
+        gc.collect()
 
     def setUp(self):
         r"""Setup both cased and uncased tokenizer instances."""
         self.cased_tokenizer = CharDictTokenizer()
+        self.cased_tokenizer.build_vocab(self.__class__.vocab_source)
         self.uncased_tokenizer = CharDictTokenizer(is_uncased=True)
+        self.uncased_tokenizer.build_vocab(self.__class__.vocab_source)
         self.tokenizers = [self.cased_tokenizer, self.uncased_tokenizer]
 
     def tearDown(self):
@@ -65,58 +80,111 @@ class TestDetokenize(unittest.TestCase):
             msg=msg
         )
 
-    def test_invalid_input(self):
-        r"""Raise `TypeError` when input is invalid."""
-        msg1 = 'Must raise `TypeError` when input is invalid.'
+    def test_invalid_input_tokens(self):
+        r"""Raise `TypeError` when input `tokens` is invalid."""
+        msg1 = 'Must raise `TypeError` when input `tokens` is invalid.'
         msg2 = 'Inconsistent error message.'
         examples = (
-            0, 1, -1, 0.0, 1.0, math.nan, math.inf, True, False,
-            (1, 2, 3), [1, 2, 3], {1, 2, 3}, None,
+            False, True, 0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf,
+            -math.inf, 0j, 1j, object(), lambda x: x, type, None,
+            NotImplemented, ..., [False], [True], [0], [1], [-1], [0.0], [1.0],
+            [math.nan], [-math.nan], [math.inf], [-math.inf], [0j], [1j],
+            [b''], [()], [[]], [{}], [set()], [object()], [lambda x: x],
+            [type], [None], [NotImplemented], [...], ['', False], ['', True],
+            ['', 0], ['', 1], ['', -1], ['', 0.0], ['', 1.0], ['', math.nan],
+            ['', -math.nan], ['', math.inf], ['', -math.inf], ['', 0j],
+            ['', 1j], ['', b''], ['', ()], ['', []], ['', {}], ['', set()],
+            ['', object()], ['', lambda x: x], ['', type], ['', None],
+            ['', NotImplemented], ['', ...],
         )
 
         for invalid_input in examples:
             for tokenizer in self.tokenizers:
                 with self.assertRaises(TypeError, msg=msg1) as ctx_man:
-                    tokenizer.detokenize(invalid_input)
+                    tokenizer.detokenize(tokens=invalid_input)
 
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`tokens` must be instance of `Iterable[str]`.',
+                    '`tokens` must be an instance of `Iterable[str]`.',
                     msg=msg2
                 )
 
-    def test_expected_return(self):
-        r"""Return expected strings."""
-        msg = 'Inconsistent detokenization result.'
+    def test_return_type(self):
+        r"""Return `str`."""
+        msg = 'Must return `str`.'
         examples = (
-            (
-                ['H', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', '!'],
-                'Hello world!'
-            ),
-            (
-                [],
-                ''
-            )
-        )
-
-        for tokens, ans_sequence in examples:
-            for tokenizer in self.tokenizers:
-                out_sequence = tokenizer.detokenize(tokens)
-                self.assertIsInstance(out_sequence, str, msg=msg)
-                self.assertEqual(out_sequence, ans_sequence, msg=msg)
-
-    def test_case_insensitive(self):
-        r"""Detokenize does not consider cases."""
-        msg = 'Inconsistent detokenization result.'
-        examples = (
-            ['H', 'e', 'L', 'l', 'O', ' ', 'W', 'o', 'R', 'l', 'D', '!'],
-            ['h', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', '!'],
+            ('H', 'e', 'L', 'l', 'O', ' ', 'W', 'o', 'R', 'l', 'd', '!'),
+            (''),
+            (),
         )
 
         for tokens in examples:
+            for tokenizer in self.tokenizers:
+                self.assertIsInstance(
+                    tokenizer.detokenize(tokens),
+                    str,
+                    msg=msg
+                )
+
+    def test_normalize(self):
+        r"""Return sequence is normalized."""
+        msg = 'Return sequence must be normalized.'
+        examples = (
+            (
+                (
+                    ' ', 'H', 'e', 'L', 'l', 'O', ' ',
+                    'W', 'o', 'R', 'l', 'D', '!',
+                ),
+                'HeLlO WoRlD!',
+                'hello world!',
+            ),
+            (
+                (
+                    'H', 'e', 'L', 'l', 'O', ' ',
+                    'W', 'o', 'R', 'l', 'D', '!', ' ',
+                ),
+                'HeLlO WoRlD!',
+                'hello world!',
+            ),
+            (
+                (
+                    ' ', ' ', 'H', 'e', 'L', 'l', 'O', ' ', ' ',
+                    'W', 'o', 'R', 'l', 'D', '!', ' ', ' ',
+                ),
+                'HeLlO WoRlD!',
+                'hello world!',
+            ),
+            (
+                ('０'),
+                '0',
+                '0',
+            ),
+            (
+                ('é'),
+                unicodedata.normalize('NFKC', 'é'),
+                unicodedata.normalize('NFKC', 'é'),
+            ),
+            (
+                ('０', 'é'),
+                unicodedata.normalize('NFKC', '0é'),
+                unicodedata.normalize('NFKC', '0é'),
+            ),
+            (
+                (),
+                '',
+                '',
+            ),
+        )
+
+        for tokens, cased_sequence, uncased_sequence in examples:
             self.assertEqual(
                 self.cased_tokenizer.detokenize(tokens),
+                cased_sequence,
+                msg=msg
+            )
+            self.assertEqual(
                 self.uncased_tokenizer.detokenize(tokens),
+                uncased_sequence,
                 msg=msg
             )
 

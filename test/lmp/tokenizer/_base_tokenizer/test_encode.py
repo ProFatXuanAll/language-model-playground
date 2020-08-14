@@ -1,8 +1,7 @@
 r"""Test `lmp.tokenizer.BaseTokenizer.encode`.
 
 Usage:
-    python -m unittest \
-        test/lmp/tokenizer/_base_tokenizer/test_encode.py
+    python -m unittest test/lmp/tokenizer/_base_tokenizer/test_encode.py
 """
 
 # built-in modules
@@ -23,7 +22,7 @@ from lmp.tokenizer import BaseTokenizer
 
 
 class TestEncode(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.BaseTokenizer.encode`."""
+    r"""Test case for `lmp.tokenizer.BaseTokenizer.encode`."""
 
     def test_signature(self):
         r"""Ensure signature consistency."""
@@ -59,8 +58,7 @@ class TestEncode(unittest.TestCase):
     def test_abstract_method(self):
         r"""Raise `NotImplementedError` when subclass did not implement."""
         msg1 = (
-            'Must raise `NotImplementedError` when subclass did not '
-            'implement.'
+            'Must raise `NotImplementedError` when subclass did not implement.'
         )
         msg2 = 'Inconsistent error message.'
         examples = (True, False)
@@ -68,7 +66,7 @@ class TestEncode(unittest.TestCase):
         # pylint: disable=W0223
         # pylint: disable=W0231
         class SubClassTokenizer(BaseTokenizer):
-            r"""Intented to not implement `encode`."""
+            r"""Intented to not implement `tokenize`."""
 
             def reset_vocab(self):
                 pass
@@ -82,7 +80,7 @@ class TestEncode(unittest.TestCase):
             self.assertEqual(
                 ctx_man.exception.args[0],
                 'In class `SubClassTokenizer`: '
-                'function `encode` not implemented yet.',
+                'method `tokenize` not implemented yet.',
                 msg=msg2
             )
 

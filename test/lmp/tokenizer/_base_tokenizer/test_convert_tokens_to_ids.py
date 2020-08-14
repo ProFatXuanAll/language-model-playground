@@ -24,7 +24,7 @@ from lmp.tokenizer import BaseTokenizer
 
 
 class TestConvertTokensToIds(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.BaseTokenizer.convert_tokens_to_ids`."""
+    r"""Test case for `lmp.tokenizer.BaseTokenizer.convert_tokens_to_ids`."""
 
     def test_signature(self):
         r"""Ensure signature consistency."""
@@ -54,8 +54,7 @@ class TestConvertTokensToIds(unittest.TestCase):
     def test_abstract_method(self):
         r"""Raise `NotImplementedError` when subclass did not implement."""
         msg1 = (
-            'Must raise `NotImplementedError` when subclass did not '
-            'implement.'
+            'Must raise `NotImplementedError` when subclass did not implement.'
         )
         msg2 = 'Inconsistent error message.'
         examples = (True, False)
@@ -63,7 +62,7 @@ class TestConvertTokensToIds(unittest.TestCase):
         # pylint: disable=W0223
         # pylint: disable=W0231
         class SubClassTokenizer(BaseTokenizer):
-            r"""Intented to not implement `convert_tokens_to_ids`."""
+            r"""Intented to not implement `convert_token_to_id`."""
 
             def reset_vocab(self):
                 pass
@@ -79,7 +78,7 @@ class TestConvertTokensToIds(unittest.TestCase):
             self.assertEqual(
                 ctx_man.exception.args[0],
                 'In class `SubClassTokenizer`: '
-                'function `convert_token_to_id` not implemented yet.',
+                'method `convert_token_to_id` not implemented yet.',
                 msg=msg2
             )
 

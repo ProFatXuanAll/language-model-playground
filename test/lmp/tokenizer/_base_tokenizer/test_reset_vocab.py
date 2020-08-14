@@ -1,8 +1,7 @@
 r"""Test `lmp.tokenizer.BaseTokenizer.reset_vocab`.
 
 Usage:
-    python -m unittest \
-        test/lmp/tokenizer/_base_tokenizer/test_reset_vocab.py
+    python -m unittest test/lmp/tokenizer/_base_tokenizer/test_reset_vocab.py
 """
 
 # built-in modules
@@ -21,7 +20,7 @@ from lmp.tokenizer import BaseTokenizer
 
 
 class TestResetVocab(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.BaseTokenizer.reset_vocab`."""
+    r"""Test case for `lmp.tokenizer.BaseTokenizer.reset_vocab`."""
 
     def test_signature(self):
         r"""Ensure signature consistency."""
@@ -45,8 +44,7 @@ class TestResetVocab(unittest.TestCase):
     def test_abstract_method(self):
         r"""Raise `NotImplementedError` when subclass did not implement."""
         msg1 = (
-            'Must raise `NotImplementedError` when subclass did not '
-            'implement.'
+            'Must raise `NotImplementedError` when subclass did not implement.'
         )
         msg2 = 'Inconsistent error message.'
         examples = (True, False)
@@ -68,7 +66,7 @@ class TestResetVocab(unittest.TestCase):
             self.assertEqual(
                 ctx_man.exception.args[0],
                 'In class `SubClassTokenizer`: '
-                'function `reset_vocab` not implemented yet.',
+                'method `reset_vocab` not implemented yet.',
                 msg=msg2
             )
 
