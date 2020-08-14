@@ -25,127 +25,211 @@ import torch
 
 # self-made modules
 
-import lmp.tokenizer
-
 from lmp.dataset import BaseDataset
+from lmp.tokenizer import CharDictTokenizer
+from lmp.tokenizer import CharListTokenizer
+from lmp.tokenizer import WhitespaceDictTokenizer
+from lmp.tokenizer import WhitespaceListTokenizer
 
-CollateFnReturn = Tuple[
-    torch.Tensor,
-    torch.Tensor
-]
 
+class TestCollateFn(unittest.TestCase):
+    r"""Test case for `lmp.dataset.BaseDataset.collate_fn`."""
 
-class TestInit(unittest.TestCase):
-    r"""Test case for `lmp.dataset.BaseDataset.create_collate_fn`'s inner method `collat_fn`."""
+    @classmethod
+    def setUpClass(cls):
+        cls.is_uncased_range = [True, False]
+        cls.max_seq_len_range = [-1] + list(range(2, 10))
+        cls.tokenizer_class_range = [
+            CharDictTokenizer,
+            CharListTokenizer,
+            WhitespaceDictTokenizer,
+            WhitespaceListTokenizer,
+        ]
+
+    @classmethod
+    def tearDownClass(cls):
+        del cls.is_uncased_range
+        del cls.max_seq_len_range
+        del cls.tokenizer_class_range
+        gc.collect()
 
     def setUp(self):
         r"""Setup `collate_fn` instances."""
-        self.collate_fn = BaseDataset.create_collate_fn(
-            tokenizer=lmp.tokenizer.CharDictTokenizer(),
-            max_seq_len=10
-        )
+        self.collate_fn_objs = []
+
+        cls = self.__class__
+        for is_uncased in cls.is_uncased_range:
+            for max_seq_len in cls.max_seq_len_range:
+                for tokenizer_class in cls.tokenizer_class_range:
+                    self.collate_fn_objs.append({
+                        'collate_fn': BaseDataset.create_collate_fn(
+                            tokenizer=tokenizer_class(is_uncased=is_uncased),
+                            max_seq_len=max_seq_len
+                        ),
+                        'is_uncased': is_uncased,
+                        'max_seq_len': max_seq_len,
+                        'tokeizer_class': tokenizer_class,
+                    })
 
     def tearDown(self):
         r"""Delete `collate_fn` instances."""
-        del self.collate_fn
+        del self.collate_fn_objs
         gc.collect()
 
     def test_signature(self):
         r"""Ensure signature consistency."""
-        msg = 'Inconsistenct method signature.'
+        msg = 'Inconsistenct function signature.'
 
-        self.assertEqual(
-            inspect.signature(self.collate_fn),
-            inspect.Signature(
-                parameters=[
-                    inspect.Parameter(
-                        name='batch_sequences',
-                        kind=inspect.Parameter.POSITIONAL_OR_KEYWORD,
-                        annotation=Iterable[str],
-                        default=inspect.Parameter.empty
-                    ),
-                ],
-                return_annotation=CollateFnReturn
-            ),
-            msg=msg
-        )
+        for collate_fn_obj in self.collate_fn_objs:
+            self.assertEqual(
+                inspect.signature(collate_fn_obj['collate_fn']),
+                inspect.Signature(
+                    parameters=[
+                        inspect.Parameter(
+                            name='batch_sequences',
+                            kind=inspect.Parameter.POSITIONAL_OR_KEYWORD,
+                            annotation=Iterable[str],
+                            default=inspect.Parameter.empty
+                        ),
+                    ],
+                    return_annotation=Tuple[torch.Tensor, torch.Tensor]
+                ),
+                msg=msg
+            )
 
     def test_invalid_input_batch_sequences(self):
-        r"""Raise when `batch_sequences` is invalid."""
-        msg1 = 'Must raise `TypeError` when `batch_sequences` is invalid.'
+        r"""Raise exception when input `batch_sequences` is invalid."""
+        msg1 = (
+            'Must raise `TypeError` or `ValueError` when input '
+            '`batch_sequences` is invalid.'
+        )
         msg2 = 'Inconsistent error message.'
         examples = (
-            True, False, 0, -1, 0.0, 1.0, math.nan, -math.nan, math.inf,
-            -math.inf, 0j, 1j, object(), lambda x: x, type, None,
-            NotImplemented, ...
+            False, True, 0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf,
+            -math.inf, 0j, 1j, '', b'', (), [], {}, set(), object(),
+            lambda x: x, type, None, NotImplemented, ..., [False], [True], [0],
+            [1], [-1], [0.0], [1.0], [math.nan], [-math.nan], [math.inf],
+            [-math.inf], [0j], [1j], [b''], [()], [[]], [{}], [set()],
+            [object()], [lambda x: x], [type], [None], [NotImplemented], [...],
+            ['', False], ['', True], ['', 0], ['', 1], ['', -1], ['', 0.0],
+            ['', 1.0], ['', math.nan], ['', -math.nan], ['', math.inf],
+            ['', -math.inf], ['', 0j], ['', 1j], ['', b''], ['', ()], ['', []],
+            ['', {}], ['', set()], ['', object()], ['', lambda x: x],
+            ['', type], ['', None], ['', NotImplemented], ['', ...],
         )
 
         for invalid_input in examples:
-            with self.assertRaises(TypeError, msg=msg1) as ctx_man:
-                self.collate_fn(batch_sequences=invalid_input)
+            for collate_fn_obj in self.collate_fn_objs:
+                with self.assertRaises(
+                        (TypeError, ValueError),
+                        msg=msg1
+                ) as ctx_man:
+                    collate_fn_obj['collate_fn'](batch_sequences=invalid_input)
 
-            self.assertEqual(
-                ctx_man.exception.args[0],
-                '`batch_sequences` must be instance of `Iterable[str]`.',
-                msg=msg2
-            )
+                if isinstance(ctx_man.exception, TypeError):
+                    self.assertEqual(
+                        ctx_man.exception.args[0],
+                        '`batch_sequences` must be an instance of '
+                        '`Iterable[str]`.',
+                        msg=msg2
+                    )
+                else:
+                    self.assertEqual(
+                        ctx_man.exception.args[0],
+                        '`batch_sequences` must not be empty.',
+                        msg=msg2
+                    )
 
     def test_return_type(self):
-        r"""Return `Tuple(Tensor, Tensor)`."""
-        msg = 'Must return `Tuple(Tensor, Tensor)`.'
+        r"""Return `Tuple[torch.Tensor, torch.Tensor]`."""
+        msg = (
+            'Must return `Tuple[torch.Tensor, torch.Tensor]` with numeric '
+            'type `torch.int64`.'
+        )
         examples = (
             [
-                'Kimura lock.',
-                'Superman punch.'
-                'Close Guard.'
+                'Hello',
+                'World',
+                'Hello World',
             ],
+            [
+                'Mario use Kimura Lock on Luigi, and Luigi tap out.',
+                'Mario use Superman Punch.',
+                'Luigi get TKO.',
+                'Toad and Toadette are fightting over mushroom (weed).',
+            ],
+            [''],
         )
 
         for batch_sequences in examples:
-            data_handled = self.collate_fn(batch_sequences)
-            self.assertIsInstance(data_handled, tuple, msg=msg)
-            self.assertEqual(len(data_handled), 2, msg=msg)
-            for tensor in data_handled:
-                self.assertIsInstance(
-                    tensor,
-                    torch.Tensor,
-                    msg=msg
-                )
-                self.assertEqual(
-                    tensor.dtype,
-                    torch.int64,
-                    msg=msg
-                )
+            for collate_fn_obj in self.collate_fn_objs:
+                results = collate_fn_obj['collate_fn'](batch_sequences)
+                self.assertIsInstance(results, tuple, msg=msg)
+                self.assertEqual(len(results), 2, msg=msg)
+                for result in results:
+                    self.assertIsInstance(result, torch.Tensor, msg=msg)
+                    self.assertEqual(result.dtype, torch.int64, msg=msg)
 
-    def test_inner_method_return_value(self):
-        r"""Return two tensor."""
-        msg = 'Inconsistent error message.'
+    def test_return_value(self):
+        r"""Return tensors have exact same size and shift one position."""
+        msg = (
+            'Return tensors must have exact same size and shift one position.'
+        )
         examples = (
-            (
-                ['Hello'],
-                [0, 3, 3, 3, 3, 3, 1, 2, 2],
-                [3, 3, 3, 3, 3, 1, 2, 2, 2],
-            ),
-            (
-                ['Hello from the other side.'],
-                [0, 3, 3, 3, 3, 3, 3, 3, 3],
-                [3, 3, 3, 3, 3, 3, 3, 3, 1],
-            ),
+            [
+                'Hello',
+                'World',
+                'Hello World',
+            ],
+            [
+                'Mario use Kimura Lock on Luigi, and Luigi tap out.',
+                'Mario use Superman Punch.',
+                'Luigi get TKO.',
+                'Toad and Toadette are fightting over mushroom (weed).',
+            ],
+            [''],
         )
 
-        for batch_sequences, ans_x, ans_y in examples:
-            data_handled = self.collate_fn(batch_sequences)
-            for x, y in (data_handled,):
-                self.assertEqual(
-                    x.squeeze(0).tolist(),
-                    ans_x,
-                    msg=msg
-                )
-                self.assertEqual(
-                    y.squeeze(0).tolist(),
-                    ans_y,
-                    msg=msg
-                )
+        for batch_sequences in examples:
+            for collate_fn_obj in self.collate_fn_objs:
+                x, y = collate_fn_obj['collate_fn'](batch_sequences)
+                self.assertEqual(x.size(), y.size(), msg=msg)
+                self.assertEqual(len(x.size()), 2, msg=msg)
+                self.assertEqual(x.size(0), len(batch_sequences), msg=msg)
+
+                batch_bool = x[:, 1:] == y[:, :-1]
+                for bool_sequence in batch_bool:
+                    for each_bool in bool_sequence:
+                        self.assertTrue(each_bool.item(), msg=msg)
+
+    def test_truncate_and_pad(self):
+        r"""Batch token ids' length must be `max_seq_len - 1`."""
+        msg = 'Batch token ids\' length must be `max_seq_len - 1`.'
+        examples = (
+            [
+                'Hello',
+                'World',
+                'Hello World',
+            ],
+            [
+                'Mario use Kimura Lock on Luigi, and Luigi tap out.',
+                'Mario use Superman Punch.',
+                'Luigi get TKO.',
+                'Toad and Toadette are fightting over mushroom (weed).',
+            ],
+            [''],
+        )
+
+        for batch_sequences in examples:
+            for collate_fn_obj in self.collate_fn_objs:
+                x, y = collate_fn_obj['collate_fn'](batch_sequences)
+                max_seq_len = collate_fn_obj['max_seq_len']
+
+                if max_seq_len == -1:
+                    continue
+
+                self.assertEqual(x.size(-1), max_seq_len - 1, msg=msg)
+                self.assertEqual(y.size(-1), max_seq_len - 1, msg=msg)
 
 
 if __name__ == '__main__':

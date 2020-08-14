@@ -27,7 +27,7 @@ from lmp.model import BaseResRNNModel
 
 
 class TestInit(unittest.TestCase):
-    r"""Test Case for `lmp.model.BaseResRNNModel.forward`."""
+    r"""Test case for `lmp.model.BaseResRNNModel.forward`."""
 
     def setUp(self):
         r"""Set up hyper parameters and construct BaseResRNNModel"""

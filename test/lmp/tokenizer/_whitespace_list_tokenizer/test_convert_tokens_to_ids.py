@@ -12,8 +12,8 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import inspect
 import gc
+import inspect
 import math
 import unittest
 
@@ -26,7 +26,7 @@ from lmp.tokenizer import WhitespaceListTokenizer
 
 
 class TestConvertTokensToIds(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.WhitespaceListTokenizer.convert_tokens_to_ids`."""
+    r"""Test case for `lmp.tokenizer.WhitespaceListTokenizer.convert_tokens_to_ids`."""
 
     def setUp(self):
         r"""Setup both cased and uncased tokenizer instances."""
@@ -67,12 +67,20 @@ class TestConvertTokensToIds(unittest.TestCase):
         )
 
     def test_invalid_input_tokens(self):
-        r"""Raise `TypeError` when input is invalid."""
-        msg1 = 'Must raise `TypeError` when input is invalid.'
+        r"""Raise `TypeError` when input `tokens` is invalid."""
+        msg1 = 'Must raise `TypeError` when input `tokens` is invalid.'
         msg2 = 'Inconsistent error message.'
         examples = (
-            0, 1, -1, 0.0, 1.0, math.nan, math.inf, True, False,
-            object(), lambda x: x, type, None, 0j, 1j, NotImplemented, ...,
+            False, True, 0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf,
+            -math.inf, 0j, 1j, object(), lambda x: x, type, None,
+            NotImplemented, ..., [False], [True], [0], [1], [-1], [0.0], [1.0],
+            [math.nan], [-math.nan], [math.inf], [-math.inf], [0j], [1j],
+            [b''], [object()], [lambda x: x], [type], [None], [NotImplemented],
+            [...], ['', False], ['', True], ['', 0], ['', 1], ['', -1],
+            ['', 0.0], ['', 1.0], ['', math.nan], ['', -math.nan],
+            ['', math.inf], ['', -math.inf], ['', 0j], ['', 1j], ['', b''],
+            ['', object()], ['', lambda x: x], ['', type], ['', None],
+            ['', NotImplemented], ['', ...],
         )
 
         for invalid_input in examples:
@@ -82,7 +90,7 @@ class TestConvertTokensToIds(unittest.TestCase):
 
                 self.assertEqual(
                     cxt_man.exception.args[0],
-                    '`tokens` must be instance of `Iterable[str]`.',
+                    '`tokens` must be an instance of `Iterable[str]`.',
                     msg=msg2
                 )
 
@@ -90,8 +98,10 @@ class TestConvertTokensToIds(unittest.TestCase):
         r"""Return `List[int]`."""
         msg = 'Must return `List[int]`.'
         examples = (
-            ['H', 'e', 'l', 'l', 'o'],
+            ['H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd'],
+            ['H'],
             [''],
+            [],
         )
 
         for tokens in examples:
@@ -101,13 +111,29 @@ class TestConvertTokensToIds(unittest.TestCase):
                 for token_id in token_ids:
                     self.assertIsInstance(token_id, int, msg=msg)
 
-    def test_convert_unknown_tokens_to_ids(self):
-        r"""Return `List[int]` must be [UNK] id."""
-        msg = 'Must return [UNK] id.'
+    def test_return_special_token_ids(self):
+        r"""Return special token ids."""
+        msg = 'Must return special token ids.'
         examples = (
             (
-                ['H', 'e', 'l', 'l', 'o'],
-                [3, 3, 3, 3, 3]
+                ['[bos]', '[eos]', '[pad]', '[unk]'],
+                [0, 1, 2, 3],
+            ),
+            (
+                ['[bos]'],
+                [0],
+            ),
+            (
+                ['[eos]'],
+                [1],
+            ),
+            (
+                ['[pad]'],
+                [2],
+            ),
+            (
+                ['[unk]'],
+                [3],
             ),
         )
 
@@ -119,13 +145,20 @@ class TestConvertTokensToIds(unittest.TestCase):
                     msg=msg
                 )
 
-    def test_convert_special_tokens_to_ids(self):
-        r"""Return `List[int]` must be [UNK] id."""
-        msg = 'Must return [UNK] id.'
+    def test_return_unknown_token_ids(self):
+        r"""Return unknown token ids when tokens are unknown."""
+        msg = 'Must return unknown token ids when tokens are unknown.'
         examples = (
             (
-                ['[BOS]', '[EOS]', '[PAD]', '[UNK]'],
-                [0, 1, 2, 3]
+                ['H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd'],
+                [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+            ),
+            (
+                [
+                    '[bos]', 'H', 'e', 'l', 'l', 'o', ' ',
+                    'W', 'o', 'r', 'l', 'd', '[eos]', '[pad]', '[pad]',
+                ],
+                [0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 2, 2],
             ),
         )
 

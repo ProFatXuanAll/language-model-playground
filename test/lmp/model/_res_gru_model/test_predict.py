@@ -27,7 +27,7 @@ from lmp.model import ResGRUModel
 
 
 class TestInit(unittest.TestCase):
-    r"""Test Case for `lmp.model.ResGRUModel.predict`."""
+    r"""Test case for `lmp.model.ResGRUModel.predict`."""
 
     def setUp(self):
         r"""Set up hyper parameters and construct ResGRUModel"""
@@ -121,7 +121,7 @@ class TestInit(unittest.TestCase):
                 if isinstance(ctx_man.exception, TypeError):
                     self.assertEqual(
                         ctx_man.exception.args[0],
-                        '`batch_sequences` must be instance of `Tensor`.',
+                        '`batch_sequences` must be an instance of `Tensor`.',
                         msg=msg2
                     )
 
@@ -165,6 +165,7 @@ class TestInit(unittest.TestCase):
                     ans_seq.size(),
                     msg=msg.format(ans_seq.size())
                 )
+
 
 if __name__ == '__main__':
     unittest.main()

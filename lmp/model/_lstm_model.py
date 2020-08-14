@@ -1,18 +1,11 @@
 r"""Language model with LSTM layers.
 
 Usage:
-    from torch.utils.data import DataLoader
     import lmp
 
     model = lmp.model.LSTMModel(...)
-    tokenizer = lmp.tokenizer.CharDictTokenizer(...)
-    dataset = lmp.dataset.BaseDataset(...)
-    dataloader = DataLoader(
-        dataset=dataset,
-        collate_fn=dataset.create_collate_fn(tokenizer)
-    )
-    for x, y in dataloader:
-        pred = model(x)
+    logits = model(...)
+    pred = model.predict(...)
 """
 
 # built-in modules
@@ -35,10 +28,11 @@ from lmp.model._base_rnn_model import BaseRNNModel
 class LSTMModel(BaseRNNModel):
     r"""Language model with LSTM layers.
 
-    Each input token will first be embedded into vectors, then sequentially
-    feed into LSTM layers. Output vectors of LSTM layer then go through
-    fully-connected layer and project back to embedding dimension in order to
-    perform vocabulary prediction.
+    Each input token will first be embedded into vectors, then project to
+    hidden dimension. We then sequentially feed vectors into LSTM layer(s).
+    Output vectors of LSTM layer(s) then go through fully-connected layer(s)
+    and project back to embedding dimension in order to perform vocabulary
+    prediction.
 
     Args:
         d_emb:
@@ -46,7 +40,7 @@ class LSTMModel(BaseRNNModel):
         d_hid:
             LSTM layers hidden dimension.
         dropout:
-            Dropout probability on all layers out (except output layer).
+            Dropout probability on all layers output (except output layer).
         num_rnn_layers:
             Number of LSTM layers to use.
         num_linear_layers:
@@ -56,6 +50,14 @@ class LSTMModel(BaseRNNModel):
             token's vector with zeros.
         vocab_size:
             Embedding matrix vocabulary dimension.
+
+    Raises:
+        TypeError:
+            When one of the arguments are not instance of their type annotation
+            respectively.
+        ValueError:
+            When one of the arguments do not follow their constraints. See
+            docstring for arguments constraints.
     """
 
     def __init__(
@@ -79,10 +81,17 @@ class LSTMModel(BaseRNNModel):
         )
 
         # Override RNN layer with LSTM layer.
-        self.rnn_layer = torch.nn.LSTM(
-            input_size=d_hid,
-            hidden_size=d_hid,
-            num_layers=num_rnn_layers,
-            dropout=dropout,
-            batch_first=True
-        )
+        if num_rnn_layers == 1:
+            self.rnn_layer = torch.nn.LSTM(
+                input_size=d_hid,
+                hidden_size=d_hid,
+                batch_first=True
+            )
+        else:
+            self.rnn_layer = torch.nn.LSTM(
+                input_size=d_hid,
+                hidden_size=d_hid,
+                num_layers=num_rnn_layers,
+                dropout=dropout,
+                batch_first=True
+            )

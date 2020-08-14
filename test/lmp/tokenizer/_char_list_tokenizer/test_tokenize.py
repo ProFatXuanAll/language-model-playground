@@ -1,8 +1,7 @@
 r"""Test `lmp.tokenizer.CharListTokenizer.tokenize`.
 
 Usage:
-    python -m unittest \
-        test/lmp/tokenizer/_char_list_tokenizer/test_tokenize.py
+    python -m unittest test/lmp/tokenizer/_char_list_tokenizer/test_tokenize.py
 """
 
 # built-in modules
@@ -12,9 +11,10 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import inspect
 import gc
+import inspect
 import math
+import unicodedata
 import unittest
 
 from typing import List
@@ -25,12 +25,26 @@ from lmp.tokenizer import CharListTokenizer
 
 
 class TestTokenize(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.CharListTokenizer.tokenize`."""
+    r"""Test case for `lmp.tokenizer.CharListTokenizer.tokenize`."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.vocab_source = [
+            'Hello World!',
+            'I am a legend.',
+        ]
+
+    @classmethod
+    def tearDownClass(cls):
+        del cls.vocab_source
+        gc.collect()
 
     def setUp(self):
         r"""Setup both cased and uncased tokenizer instances."""
         self.cased_tokenizer = CharListTokenizer()
+        self.cased_tokenizer.build_vocab(self.__class__.vocab_source)
         self.uncased_tokenizer = CharListTokenizer(is_uncased=True)
+        self.uncased_tokenizer.build_vocab(self.__class__.vocab_source)
         self.tokenizers = [self.cased_tokenizer, self.uncased_tokenizer]
 
     def tearDown(self):
@@ -65,13 +79,14 @@ class TestTokenize(unittest.TestCase):
             msg=msg
         )
 
-    def test_invalid_input(self):
-        r"""Raise `TypeError` when input is invalid."""
-        msg1 = 'Must raise `TypeError` when input is invalid.'
+    def test_invalid_input_sequence(self):
+        r"""Raise `TypeError` when input `sequence` is invalid."""
+        msg1 = 'Must raise `TypeError` when input `sequence` is invalid.'
         msg2 = 'Inconsistent error message.'
         examples = (
-            0, 1, -1, 0.0, 1.0, math.nan, math.inf, True, False, b'', 0j, 1j,
-            [], (), {}, set(), object(), lambda x: x, type, None, NotImplemented, ...,
+            False, True, 0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf,
+            -math.inf, b'', 0j, 1j, [], (), {}, set(), object(), lambda x: x,
+            type, None, NotImplemented, ...,
         )
 
         for invalid_input in examples:
@@ -81,7 +96,7 @@ class TestTokenize(unittest.TestCase):
 
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`sequence` must be instance of `str`.',
+                    '`sequence` must be an instance of `str`.',
                     msg=msg2
                 )
 
@@ -90,6 +105,7 @@ class TestTokenize(unittest.TestCase):
         msg = 'Must return `List[str]`.'
         examples = (
             'Hello world!',
+            'H',
             '',
         )
 
@@ -100,209 +116,82 @@ class TestTokenize(unittest.TestCase):
                 for token in tokens:
                     self.assertIsInstance(token, str, msg=msg)
 
-    def test_unicode_normalize(self):
-        r"""Return NFKC normalized characters."""
-        msg = 'Must return NFKC normalized characters.'
-        examples = (
-            ('０', ['0']),
-            ('é', ['é']),
-            ('０é', ['0', 'é']),
-        )
-
-        for sequence, ans_tokens in examples:
-            for tokenizer in self.tokenizers:
-                out_tokens = tokenizer.tokenize(sequence)
-                self.assertEqual(out_tokens, ans_tokens, msg=msg)
-                for out_token in out_tokens:
-                    self.assertEqual(len(out_token), 1, msg=msg)
-
-    def test_cased_sensitive(self):
-        r"""Return cased sensitive characters when `is_uncased=False`."""
-        msg = (
-            'Return result must be case-sensitive when construct with '
-            '`is_uncased=False`.'
-        )
+    def test_normalize(self):
+        r"""Return sequence is normalized."""
+        msg = 'Return sequence must be normalized.'
         examples = (
             (
-                'HeLlO WoRlD!',
+                ' HeLlO WoRlD!',
                 [
                     'H', 'e', 'L', 'l', 'O', ' ',
-                    'W', 'o', 'R', 'l', 'D', '!'
-                ]
-            ),
-            (
-                'HELLO WORLD!',
-                [
-                    'H', 'E', 'L', 'L', 'O', ' ',
-                    'W', 'O', 'R', 'L', 'D', '!'
-                ]
-            ),
-            (
-                'hello world!',
+                    'W', 'o', 'R', 'l', 'D', '!',
+                ],
                 [
                     'h', 'e', 'l', 'l', 'o', ' ',
-                    'w', 'o', 'r', 'l', 'd', '!'
-                ]
+                    'w', 'o', 'r', 'l', 'd', '!',
+                ],
             ),
             (
-                'H',
-                ['H']
-            ),
-            (
-                'h',
-                ['h']
-            ),
-        )
-
-        for sequence, ans_tokens in examples:
-            self.assertEqual(
-                self.cased_tokenizer.tokenize(sequence),
-                ans_tokens,
-                msg=msg
-            )
-
-    def test_cased_insensitive(self):
-        r"""Return cased insensitive characters when `is_uncased=True`."""
-        msg = (
-            'Return result must be case-insensitive when construct with '
-            '`is_uncased=True`.'
-        )
-        examples = (
-            (
-                'HeLlO WoRlD!',
+                'HeLlO WoRlD! ',
+                [
+                    'H', 'e', 'L', 'l', 'O', ' ',
+                    'W', 'o', 'R', 'l', 'D', '!',
+                ],
                 [
                     'h', 'e', 'l', 'l', 'o', ' ',
-                    'w', 'o', 'r', 'l', 'd', '!'
-                ]
+                    'w', 'o', 'r', 'l', 'd', '!',
+                ],
             ),
             (
-                'HELLO WORLD!',
+                '  HeLlO  WoRlD!  ',
+                [
+                    'H', 'e', 'L', 'l', 'O', ' ',
+                    'W', 'o', 'R', 'l', 'D', '!',
+                ],
                 [
                     'h', 'e', 'l', 'l', 'o', ' ',
-                    'w', 'o', 'r', 'l', 'd', '!'
-                ]
+                    'w', 'o', 'r', 'l', 'd', '!',
+                ],
             ),
             (
-                'hello world!',
+                '０',
+                ['0'],
+                ['0'],
+            ),
+            (
+                'é',
+                [unicodedata.normalize('NFKC', 'é')],
+                [unicodedata.normalize('NFKC', 'é')],
+            ),
+            (
+                '０é',
                 [
-                    'h', 'e', 'l', 'l', 'o', ' ',
-                    'w', 'o', 'r', 'l', 'd', '!'
-                ]
-            ),
-            (
-                'H',
-                ['h']
-            ),
-            (
-                'h',
-                ['h']
-            ),
-        )
-
-        for sequence, ans_tokens in examples:
-            self.assertEqual(
-                self.uncased_tokenizer.tokenize(sequence),
-                ans_tokens,
-                msg=msg
-            )
-
-    def test_whitespace_strip(self):
-        r"""Strip input sequence."""
-        msg = (
-            'Input sequence must strip both leading and trailing whitespace '
-            'characters.'
-        )
-        examples = (
-            (
-                '  hello world!  ',
+                    unicodedata.normalize('NFKC', '0'),
+                    unicodedata.normalize('NFKC', 'é'),
+                ],
                 [
-                    'h', 'e', 'l', 'l', 'o', ' ',
-                    'w', 'o', 'r', 'l', 'd', '!'
-                ]
-            ),
-            (
-                '  hello world!',
-                [
-                    'h', 'e', 'l', 'l', 'o', ' ',
-                    'w', 'o', 'r', 'l', 'd', '!'
-                ]
-            ),
-            (
-                'hello world!  ',
-                [
-                    'h', 'e', 'l', 'l', 'o', ' ',
-                    'w', 'o', 'r', 'l', 'd', '!'
-                ]
-            ),
-            (
-                '\nhello world!\n',
-                [
-                    'h', 'e', 'l', 'l', 'o', ' ',
-                    'w', 'o', 'r', 'l', 'd', '!'
-                ]
-            ),
-            (
-                ' ',
-                []
+                    unicodedata.normalize('NFKC', '0'),
+                    unicodedata.normalize('NFKC', 'é'),
+                ],
             ),
             (
                 '',
-                []
+                [],
+                [],
             ),
         )
 
-        for sequence, ans_tokens in examples:
-            for tokenizer in self.tokenizers:
-                self.assertEqual(
-                    tokenizer.tokenize(sequence),
-                    ans_tokens,
-                    msg=msg
-                )
-
-    def test_whitespace_collapse(self):
-        r"""Collapse whitespace characters."""
-        msg = (
-            'Input sequence must convert consecutive whitespace characters '
-            'into single whitespace character.'
-        )
-        examples = (
-            (
-                'hello  world  !',
-                [
-                    'h', 'e', 'l', 'l', 'o', ' ',
-                    'w', 'o', 'r', 'l', 'd', ' ', '!'
-                ]
-            ),
-            (
-                'hello   world  !',
-                [
-                    'h', 'e', 'l', 'l', 'o', ' ',
-                    'w', 'o', 'r', 'l', 'd', ' ', '!'
-                ]
-            ),
-            (
-                'hello  world   !',
-                [
-                    'h', 'e', 'l', 'l', 'o', ' ',
-                    'w', 'o', 'r', 'l', 'd', ' ', '!'
-                ]
-            ),
-            (
-                'hello  world\n\n!',
-                [
-                    'h', 'e', 'l', 'l', 'o', ' ',
-                    'w', 'o', 'r', 'l', 'd', ' ', '!'
-                ]
-            ),
-        )
-
-        for sequence, ans_tokens in examples:
-            for tokenizer in self.tokenizers:
-                self.assertEqual(
-                    tokenizer.tokenize(sequence),
-                    ans_tokens,
-                    msg=msg
-                )
+        for sequence, cased_tokens, uncased_tokens in examples:
+            self.assertEqual(
+                self.cased_tokenizer.tokenize(sequence),
+                cased_tokens,
+                msg=msg
+            )
+            self.assertEqual(
+                self.uncased_tokenizer.tokenize(sequence),
+                uncased_tokens,
+                msg=msg
+            )
 
 
 if __name__ == '__main__':

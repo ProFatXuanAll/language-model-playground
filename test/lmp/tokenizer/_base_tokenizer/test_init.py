@@ -1,8 +1,7 @@
 r"""Test `lmp.tokenizer.BaseTokenizer.__init__`.
 
 Usage:
-    python -m unittest \
-        test/lmp/tokenizer/_base_tokenizer/test_init.py
+    python -m unittest test/lmp/tokenizer/_base_tokenizer/test_init.py
 """
 
 # built-in modules
@@ -13,7 +12,6 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import inspect
-import math
 import unittest
 
 # self-made modules
@@ -22,7 +20,7 @@ from lmp.tokenizer import BaseTokenizer
 
 
 class TestInit(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.BaseTokenizer.__init__`."""
+    r"""Test case for `lmp.tokenizer.BaseTokenizer.__init__`."""
 
     def test_signature(self):
         r"""Ensure signature consistency."""
@@ -49,26 +47,6 @@ class TestInit(unittest.TestCase):
             msg=msg
         )
 
-    def test_invalid_input(self):
-        r"""Raise `TypeError` when input is invalid."""
-        msg1 = 'Must raise `TypeError` when input is invalid.'
-        msg2 = 'Inconsistent error message.'
-        examples = (
-            0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf, '',
-            b'', 0j, 1j, [], (), {}, set(), object(), lambda x: x, type, None,
-            NotImplemented, ...,
-        )
-
-        for invalid_input in examples:
-            with self.assertRaises(TypeError, msg=msg1) as ctx_man:
-                BaseTokenizer(is_uncased=invalid_input)
-
-            self.assertEqual(
-                ctx_man.exception.args[0],
-                '`is_uncased` must be instance of `bool`.',
-                msg=msg2
-            )
-
     def test_abstract_class(self):
         r"""Raise `NotImplementedError` when construct instance."""
         msg1 = 'Must raise `NotImplementedError` when construct instance.'
@@ -82,21 +60,21 @@ class TestInit(unittest.TestCase):
             self.assertEqual(
                 ctx_man.exception.args[0],
                 'In class `BaseTokenizer`: '
-                'function `reset_vocab` not implemented yet.',
+                'method `reset_vocab` not implemented yet.',
                 msg=msg2
             )
 
     def test_class_attributes(self):
         r"""Declare required class attributes."""
         msg1 = 'Missing class attribute `{}`.'
-        msg2 = 'Class attribute `{}` must be instance of `{}`.'
+        msg2 = 'Class attribute `{}` must be an instance of `{}`.'
         msg3 = 'Class attribute `{}` must be `{}`.'
 
         examples = (
-            ('bos_token', '[BOS]'),
-            ('eos_token', '[EOS]'),
-            ('pad_token', '[PAD]'),
-            ('unk_token', '[UNK]'),
+            ('bos_token', '[bos]'),
+            ('eos_token', '[eos]'),
+            ('pad_token', '[pad]'),
+            ('unk_token', '[unk]'),
         )
 
         for attr, attr_val in examples:

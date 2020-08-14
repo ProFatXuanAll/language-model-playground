@@ -58,7 +58,7 @@ def generate_sequence(
     # Evaluation mode.
     model.eval()
 
-    # Encode sequence and convert into tensor. Remove [EOS] since we are using
+    # Encode sequence and convert into tensor. Remove [eos] since we are using
     # begin of sentence.
     cur_seq = tokenizer.encode(begin_of_sequence, max_seq_len=-1)
     cur_seq = torch.LongTensor(cur_seq)[:-1].to(device)

@@ -25,7 +25,7 @@ from lmp.config import BaseConfig
 
 
 class TestIter(unittest.TestCase):
-    r"""Test Case for `lmp.config.BaseConfig.__iter__`."""
+    r"""Test case for `lmp.config.BaseConfig.__iter__`."""
 
     def test_signature(self):
         r"""Ensure signature consistency."""

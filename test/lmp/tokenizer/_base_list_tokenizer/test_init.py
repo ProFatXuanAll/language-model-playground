@@ -1,8 +1,7 @@
 r"""Test `lmp.tokenizer.BaseListTokenizer.__init__`.
 
 Usage:
-    python -m unittest \
-        test/lmp/tokenizer/_base_list_tokenizer/test_init.py
+    python -m unittest test/lmp/tokenizer/_base_list_tokenizer/test_init.py
 """
 
 # built-in modules
@@ -20,10 +19,11 @@ import unittest
 # self-made modules
 
 from lmp.tokenizer import BaseListTokenizer
+from lmp.tokenizer import BaseTokenizer
 
 
 class TestInit(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.BaseListTokenizer.__init__`."""
+    r"""Test case for `lmp.tokenizer.BaseListTokenizer.__init__`."""
 
     def setUp(self):
         r"""Setup both cased and uncased tokenizer instances."""
@@ -63,13 +63,20 @@ class TestInit(unittest.TestCase):
             msg=msg
         )
 
-    def test_invalid_input(self):
-        r"""Raise `TypeError` when input is invalid."""
-        msg1 = 'Must raise `TypeError` when input is invalid.'
+    def test_inheritance(self):
+        r""""Is subclass of `lmp.tokenizer.BaseTokenizer`."""
+        msg = 'Must be subclass of `lmp.tokenizer.BaseTokenizer`.'
+
+        for tokenizer in self.tokenizers:
+            self.assertIsInstance(tokenizer, BaseTokenizer, msg=msg)
+
+    def test_invalid_input_is_uncased(self):
+        r"""Raise `TypeError` when input `is_uncased` is invalid."""
+        msg1 = 'Must raise `TypeError` when input `is_uncased` is invalid.'
         msg2 = 'Inconsistent error message.'
         examples = (
-            0, 1, -1, 0.0, 1.0, math.nan, math.inf, '', b'', 0j, 1j,
-            [], (), {}, set(), object(), lambda x: x, type, None,
+            0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf, 0j,
+            1j, '', b'', [], (), {}, set(), object(), lambda x: x, type, None,
             NotImplemented, ...,
         )
 
@@ -79,21 +86,21 @@ class TestInit(unittest.TestCase):
 
             self.assertEqual(
                 ctx_man.exception.args[0],
-                '`is_uncased` must be instance of `bool`.',
+                '`is_uncased` must be an instance of `bool`.',
                 msg=msg2
             )
 
     def test_class_attributes(self):
         r"""Declare required class attributes."""
         msg1 = 'Missing class attribute `{}`.'
-        msg2 = 'Class attribute `{}` must be instance of `{}`.'
+        msg2 = 'Class attribute `{}` must be an instance of `{}`.'
         msg3 = 'Class attribute `{}` must be `{}`.'
 
         examples = (
-            ('bos_token', '[BOS]'),
-            ('eos_token', '[EOS]'),
-            ('pad_token', '[PAD]'),
-            ('unk_token', '[UNK]'),
+            ('bos_token', '[bos]'),
+            ('eos_token', '[eos]'),
+            ('pad_token', '[pad]'),
+            ('unk_token', '[unk]'),
         )
 
         for attr, attr_val in examples:
@@ -113,6 +120,29 @@ class TestInit(unittest.TestCase):
                     getattr(tokenizer, attr),
                     attr_val,
                     msg=msg3.format(attr, attr_val)
+                )
+
+    def test_instance_attribute(self):
+        r"""Declare required instance attributes."""
+        msg1 = 'Missing instance attribute `{}`.'
+        msg2 = 'Instance attribute `{}` must be an instance of `{}`.'
+
+        examples = (
+            ('is_uncased', bool),
+            ('token_to_id', list),
+        )
+
+        for attr, attr_type in examples:
+            for tokenizer in self.tokenizers:
+                self.assertTrue(
+                    hasattr(tokenizer, attr),
+                    msg=msg1.format(attr)
+                )
+
+                self.assertIsInstance(
+                    getattr(tokenizer, attr),
+                    attr_type,
+                    msg=msg2.format(attr, attr_type.__name__)
                 )
 
 

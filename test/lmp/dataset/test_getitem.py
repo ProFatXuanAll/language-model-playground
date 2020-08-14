@@ -1,7 +1,7 @@
-r"""Test `lmp.dataset.BaseDataset.__len__`.
+r"""Test `lmp.dataset.BaseDataset.__getitem__`.
 
 Usage:
-    python -m unittest test/lmp/dataset/test_len.py
+    python -m unittest test/lmp/dataset/test_getitem.py
 """
 
 # built-in modules
@@ -49,61 +49,80 @@ class TestInit(unittest.TestCase):
         )
 
     def test_invalid_input_index(self):
-        r"""Raise when `index` is invalid."""
-        msg1 = 'Must raise `TypeError` when `index` is invalid.'
+        r"""Raise `IndexError` or `TypeError` when `index` is invalid."""
+        msg1 = (
+            'Must raise `IndexError` or `TypeError` when `index` is invalid.'
+        )
         msg2 = 'Inconsistent error message.'
         examples = (
-            0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf, 0j, 1j, '',
+            -1, 0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf, 0j, 1j, '',
             b'', [], (), {}, set(), object(), lambda x: x, type, None,
             NotImplemented, ...
         )
 
         for invalid_input in examples:
-            with self.assertRaises(TypeError, msg=msg1) as ctx_man:
-                BaseDataset(['a', 'b'])[invalid_input]
+            with self.assertRaises(
+                    (IndexError, TypeError),
+                    msg=msg1
+            ) as ctx_man:
+                BaseDataset([])[invalid_input]
 
-            self.assertEqual(
-                ctx_man.exception.args[0],
-                '`index` must be instance of `int`.',
-                msg=msg2
-            )
+            if isinstance(ctx_man.exception, TypeError):
+                self.assertEqual(
+                    ctx_man.exception.args[0],
+                    '`index` must be an instance of `int`.',
+                    msg=msg2
+                )
+            else:
+                self.assertIsInstance(ctx_man.exception, IndexError)
 
     def test_return_type(self):
         r"""Return `str`."""
         msg = 'Must return `str`.'
         examples = (
             [
-                'Kimura lock.',
-                'Superman punch.'
-                'Close Guard.'
+                'Hello',
+                'World',
+                'Hello World',
             ],
-        )
-
-        for batch_sequences in examples:
-            for sequence in BaseDataset(batch_sequences=batch_sequences):
-                self.assertIsInstance(
-                    sequence,
-                    str,
-                    msg=msg
-                )
-
-    def test_return_value(self):
-        r"""Return Sample single sequence using index."""
-        msg = 'Inconsistent error message.'
-        examples = (
-            ['Hello world!', 'Hello apple.', 'Hello gogoro!'],
-            ['Goodbye world!', 'Goodbye apple.'],
-            ['Arm bar.', 'Short punch.', 'Right hook.', 'Front kick.'],
+            [
+                'Mario use Kimura Lock on Luigi, and Luigi tap out.',
+                'Mario use Superman Punch.',
+                'Luigi get TKO.',
+                'Toad and Toadette are fightting over mushroom (weed).',
+            ],
+            [''],
+            [],
         )
 
         for batch_sequences in examples:
             dataset = BaseDataset(batch_sequences=batch_sequences)
-            for i, ans_sequence in enumerate(batch_sequences):
-                self.assertEqual(
-                    dataset[i],
-                    ans_sequence,
-                    msg=msg
-                )
+            for i in range(len(dataset)):
+                self.assertIsInstance(dataset[i], str, msg=msg)
+
+    def test_return_value(self):
+        r"""Sample single sequence using index."""
+        msg = 'Must sample single sequence using index.'
+        examples = (
+            [
+                'Hello',
+                'World',
+                'Hello World',
+            ],
+            [
+                'Mario use Kimura Lock on Luigi, and Luigi tap out.',
+                'Mario use Superman Punch.',
+                'Luigi get TKO.',
+                'Toad and Toadette are fightting over mushroom (weed).',
+            ],
+            [''],
+            [],
+        )
+
+        for batch_sequences in examples:
+            dataset = BaseDataset(batch_sequences=batch_sequences)
+            for i in range(len(dataset)):
+                self.assertEqual(dataset[i], batch_sequences[i], msg=msg)
 
 
 if __name__ == '__main__':

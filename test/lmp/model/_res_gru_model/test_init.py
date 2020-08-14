@@ -29,7 +29,7 @@ from lmp.model import ResGRUModel
 
 
 class TestInit(unittest.TestCase):
-    r"""Test Case for `lmp.model.ResGRUModel.__init__`."""
+    r"""Test case for `lmp.model.ResGRUModel.__init__`."""
 
     def setUp(self):
         r"""Set up hyper parameters and construct ResGRUModel"""
@@ -156,7 +156,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`d_emb` must be instance of `int`.',
+                    '`d_emb` must be an instance of `int`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -198,7 +198,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`d_hid` must be instance of `int`.',
+                    '`d_hid` must be an instance of `int`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -240,7 +240,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`dropout` must be instance of `float`.',
+                    '`dropout` must be an instance of `float`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -283,7 +283,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`num_linear_layers` must be instance of `int`.',
+                    '`num_linear_layers` must be an instance of `int`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -326,7 +326,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`num_rnn_layers` must be instance of `int`.',
+                    '`num_rnn_layers` must be an instance of `int`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -366,7 +366,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`pad_token_id` must be instance of `int`.',
+                    '`pad_token_id` must be an instance of `int`.',
                     msg=msg2
                 )
 
@@ -398,7 +398,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`vocab_size` must be instance of `int`.',
+                    '`vocab_size` must be an instance of `int`.',
                     msg=msg2
                 )
 

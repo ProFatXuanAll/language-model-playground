@@ -1,8 +1,7 @@
 r"""Test `lmp.tokenizer.BaseTokenizer.tokenize`.
 
 Usage:
-    python -m unittest \
-        test/lmp/tokenizer/_base_tokenizer/test_tokenize.py
+    python -m unittest test/lmp/tokenizer/_base_tokenizer/test_tokenize.py
 """
 
 # built-in modules
@@ -23,7 +22,7 @@ from lmp.tokenizer import BaseTokenizer
 
 
 class TestTokenize(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.BaseTokenizer.tokenize`."""
+    r"""Test case for `lmp.tokenizer.BaseTokenizer.tokenize`."""
 
     def test_signature(self):
         r"""Ensure signature consistency."""
@@ -75,7 +74,7 @@ class TestTokenize(unittest.TestCase):
             self.assertEqual(
                 ctx_man.exception.args[0],
                 'In class `SubClassTokenizer`: '
-                'function `tokenize` not implemented yet.',
+                'method `tokenize` not implemented yet.',
                 msg=msg2
             )
 

@@ -1,18 +1,11 @@
 r"""Language model with residual RNN blocks.
 
 Usage:
-    from torch.utils.data import DataLoader
     import lmp
 
     model = lmp.model.BaseResRNNModel(...)
-    tokenizer = lmp.tokenizer.CharDictTokenizer(...)
-    dataset = lmp.dataset.BaseDataset(...)
-    dataloader = DataLoader(
-        dataset=dataset,
-        collate_fn=dataset.create_collate_fn(tokenizer)
-    )
-    for x, y in dataloader:
-        pred_logits = model(x)
+    logits = model(...)
+    pred = model.predict(...)
 """
 
 # built-in modules
@@ -33,10 +26,11 @@ import lmp.model
 class BaseResRNNModel(torch.nn.Module):
     r"""Language model with residual RNN blocks.
 
-    Each input token will first be embedded into vectors, then sequentially
-    feed into residual RNN blocks. Output vectors of blocks then go through
-    fully-connected layer and project back to embedding dimension in order to
-    perform vocabulary prediction.
+    Each input token will first be embedded into vectors, then project to
+    hidden dimension. We then sequentially feed vectors into residual RNN
+    layer(s). Output vectors of residual RNN layer(s) then go through
+    fully-connected layer(s) and project back to embedding dimension in order
+    to perform vocabulary prediction.
 
     In the comment below, we use following symbols to denote the size of
     each tensors:
@@ -52,7 +46,7 @@ class BaseResRNNModel(torch.nn.Module):
         d_hid:
             RNN layers hidden dimension.
         dropout:
-            Dropout probability on all layers out (except output layer).
+            Dropout probability on all layers output (except output layer).
         num_rnn_layers:
             Number of RNN layers to use.
         num_linear_layers:
@@ -65,16 +59,11 @@ class BaseResRNNModel(torch.nn.Module):
 
     Raises:
         TypeError:
-            When `d_emb` is not instance of `int`, `d_hid` is not instance of
-            `int`, `dropout` is not instance of `float`, `num_rnn_layers` is
-            not instance of `int`, `num_linear_layers` is not instance of `int`,
-            `pad_token_id` is not instance of `int` or `vocab_size` is not
-            instance of `int`.
+            When one of the arguments are not instance of their type annotation
+            respectively.
         ValueError:
-            When `d_emb` is smaller than 1, `d_hid` is smaller than 1,
-            `dropout` is out range from `0.0` to `1.0`, `num_rnn_layers` is
-            smaller than 0, num_rnn_layers is smaller than 0, `pad_token_id`
-            is smaller than 0 or `vocab_size` is smaller than 1.
+            When one of the arguments do not follow their constraints. See
+            docstring for arguments constraints.
     """
 
     def __init__(
@@ -88,27 +77,30 @@ class BaseResRNNModel(torch.nn.Module):
             vocab_size: int
     ):
         super().__init__()
+
         # Type check.
         if not isinstance(d_emb, int):
-            raise TypeError('`d_emb` must be instance of `int`.')
+            raise TypeError('`d_emb` must be an instance of `int`.')
 
         if not isinstance(d_hid, int):
-            raise TypeError('`d_hid` must be instance of `int`.')
+            raise TypeError('`d_hid` must be an instance of `int`.')
 
         if not isinstance(dropout, float):
-            raise TypeError('`dropout` must be instance of `float`.')
+            raise TypeError('`dropout` must be an instance of `float`.')
 
         if not isinstance(num_linear_layers, int):
-            raise TypeError('`num_linear_layers` must be instance of `int`.')
+            raise TypeError(
+                '`num_linear_layers` must be an instance of `int`.'
+            )
 
         if not isinstance(num_rnn_layers, int):
-            raise TypeError('`num_rnn_layers` must be instance of `int`.')
+            raise TypeError('`num_rnn_layers` must be an instance of `int`.')
 
         if not isinstance(pad_token_id, int):
-            raise TypeError('`pad_token_id` must be instance of `int`.')
+            raise TypeError('`pad_token_id` must be an instance of `int`.')
 
         if not isinstance(vocab_size, int):
-            raise TypeError('`vocab_size` must be instance of `int`.')
+            raise TypeError('`vocab_size` must be an instance of `int`.')
 
         # Value Check.
         if d_emb < 1:
@@ -117,7 +109,7 @@ class BaseResRNNModel(torch.nn.Module):
         if d_hid < 1:
             raise ValueError('`d_hid` must be bigger than or equal to `1`.')
 
-        if not (0 <= dropout <= 1):
+        if not 0 <= dropout <= 1:
             raise ValueError('`dropout` must range from `0.0` to `1.0`.')
 
         if num_linear_layers < 1:
@@ -130,18 +122,8 @@ class BaseResRNNModel(torch.nn.Module):
                 '`num_rnn_layers` must be bigger than or equal to `1`.'
             )
 
-        if pad_token_id < 0:
-            raise ValueError(
-                '`pad_token_id` must be bigger than or equal to `0`.'
-            )
-
-        if vocab_size < 1:
-            raise ValueError(
-                '`vocab_size` must be bigger than or equal to `1`.'
-            )
-
-        # Embedding layer
-        # Dimension: (V, E)
+        # Token embedding layer.
+        # Dimension: (V, E).
         self.emb_layer = torch.nn.Embedding(
             num_embeddings=vocab_size,
             embedding_dim=d_emb,
@@ -149,9 +131,8 @@ class BaseResRNNModel(torch.nn.Module):
         )
         self.emb_dropout = torch.nn.Dropout(dropout)
 
-
-        # Project d_emb to d_hid
-        # Dimension: (E, H)
+        # Project from `d_emb` into `d_hid`.
+        # Dimension: (E, H).
         self.proj_emb_to_hid = torch.nn.Sequential(
             torch.nn.Linear(
                 in_features=d_emb,
@@ -160,8 +141,8 @@ class BaseResRNNModel(torch.nn.Module):
             torch.nn.Dropout(dropout)
         )
 
-        # Sequential RNN layers.
-        # Dimension: (H, H)
+        # Sequential RNN layer(s).
+        # Dimension: (H, H).
         rnn_blocks = []
         for _ in range(num_rnn_layers):
             rnn_blocks.append(
@@ -170,13 +151,10 @@ class BaseResRNNModel(torch.nn.Module):
                     dropout=dropout
                 )
             )
-        rnn_blocks.append(
-            torch.nn.Dropout(dropout)
-        )
         self.rnn_layer = torch.nn.Sequential(*rnn_blocks)
 
-        # Sequential linear layer.
-        # Dimension: (H, E)
+        # Sequential linear layer(s).
+        # Dimension: (H, H).
         proj_hid_to_emb = []
         for _ in range(num_linear_layers):
             proj_hid_to_emb.append(
@@ -185,13 +163,11 @@ class BaseResRNNModel(torch.nn.Module):
                     out_features=d_hid
                 )
             )
-            proj_hid_to_emb.append(
-                torch.nn.ReLU()
-            )
-            proj_hid_to_emb.append(
-                torch.nn.Dropout(dropout)
-            )
+            proj_hid_to_emb.append(torch.nn.ReLU())
+            proj_hid_to_emb.append(torch.nn.Dropout(dropout))
 
+        # Sequential linear layer(s)' last layer.
+        # Dimension: (H, E).
         proj_hid_to_emb.append(
             torch.nn.Linear(
                 in_features=d_hid,
@@ -200,10 +176,7 @@ class BaseResRNNModel(torch.nn.Module):
         )
         self.proj_hid_to_emb = torch.nn.Sequential(*proj_hid_to_emb)
 
-    def forward(
-            self,
-            batch_sequences: torch.Tensor
-    ) -> torch.Tensor:
+    def forward(self, batch_sequences: torch.Tensor) -> torch.Tensor:
         r"""Perform forward pass.
 
         Args:
@@ -220,11 +193,11 @@ class BaseResRNNModel(torch.nn.Module):
         # embedding 後的 batch_sequences 維度: (B, S, E)
         batch_sequences = self.emb_dropout(self.emb_layer(batch_sequences))
 
-        # 將每個 embedding vectors 經由 linear 轉換 得到輸出 hidden vectors
+        # 將每個 embedding vectors 經由 linear 轉換得到輸出 hidden vectors
         # ht 維度: (B, S, H)
         ht = self.proj_emb_to_hid(batch_sequences)
 
-        # 將每個 embedding vectors 依序經由 RNN 輸入 得到輸出 hidden vectors
+        # 將每個 embedding vectors 依序輸入 RNN 得到輸出 hidden vectors
         # ht 維度: (B, S, H)
         ht = self.rnn_layer(ht)
 
@@ -237,10 +210,7 @@ class BaseResRNNModel(torch.nn.Module):
         # return 維度: (B, S, V)
         return ht.matmul(self.emb_layer.weight.transpose(0, 1))
 
-    def predict(
-            self,
-            batch_sequences: torch.Tensor
-    ) -> torch.Tensor:
+    def predict(self, batch_sequences: torch.Tensor) -> torch.Tensor:
         r"""Convert model output logits into prediction.
 
         Args:
@@ -248,11 +218,17 @@ class BaseResRNNModel(torch.nn.Module):
                 Batch of sequences which have been encoded by
                 `lmp.tokenizer.BaseTokenizer` with numeric type `torch.int64`.
 
+        Raises:
+            TypeError:
+                When `batch_sequences` is not an instance of `Tensor`.
+
         Returns:
             Predicition using softmax on model output logits with numeric type `torch.float32`.
         """
         # Type check
         if not isinstance(batch_sequences, torch.Tensor):
-            raise TypeError('`batch_sequences` must be instance of `Tensor`.')
+            raise TypeError(
+                '`batch_sequences` must be an instance of `Tensor`.'
+            )
 
         return torch.nn.functional.softmax(self(batch_sequences), dim=-1)

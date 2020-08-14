@@ -1,18 +1,11 @@
 r"""Language model with residual GRU blocks.
 
 Usage:
-    from torch.utils.data import DataLoader
     import lmp
 
     model = lmp.model.ResGRUModel(...)
-    tokenizer = lmp.tokenizer.CharDictTokenizer(...)
-    dataset = lmp.dataset.BaseDataset(...)
-    dataloader = DataLoader(
-        dataset=dataset,
-        collate_fn=dataset.create_collate_fn(tokenizer)
-    )
-    for x, y in dataloader:
-        pred_logits = model(x)
+    logits = model(...)
+    pred = model.predict(...)
 """
 
 # built-in modules
@@ -37,10 +30,11 @@ from lmp.model._base_res_rnn_model import BaseResRNNModel
 class ResGRUModel(BaseResRNNModel):
     r"""Language model with residual GRU blocks.
 
-    Each input token will first be embedded into vectors, then sequentially
-    feed into residual GRU blocks. Output vectors of blocks then go through
-    fully-connected layer and project back to embedding dimension in order to
-    perform vocabulary prediction.
+    Each input token will first be embedded into vectors, then project to
+    hidden dimension. We then sequentially feed vectors into residual GRU
+    layer(s). Output vectors of residual GRU layer(s) then go through
+    fully-connected layer(s) and project back to embedding dimension in order
+    to perform vocabulary prediction.
 
     In the comment below, we use following symbols to denote the size of
     each tensors:
@@ -56,9 +50,9 @@ class ResGRUModel(BaseResRNNModel):
         d_hid:
             RNN layers hidden dimension.
         dropout:
-            Dropout probability on all layers out (except output layer).
+            Dropout probability on all layers output (except output layer).
         num_rnn_layers:
-            Number of RNN layers to use.
+            Number of residual GRU layers to use.
         num_linear_layers:
             Number of Linear layers to use.
         pad_token_id:
@@ -66,6 +60,14 @@ class ResGRUModel(BaseResRNNModel):
             token's vector with zeros.
         vocab_size:
             Embedding matrix vocabulary dimension.
+
+    Raises:
+        TypeError:
+            When one of the arguments are not instance of their type annotation
+            respectively.
+        ValueError:
+            When one of the arguments do not follow their constraints. See
+            docstring for arguments constraints.
     """
 
     def __init__(
@@ -98,7 +100,4 @@ class ResGRUModel(BaseResRNNModel):
                     dropout=dropout
                 )
             )
-        rnn_blocks.append(
-            torch.nn.Dropout(dropout)
-        )
         self.rnn_layer = torch.nn.Sequential(*rnn_blocks)

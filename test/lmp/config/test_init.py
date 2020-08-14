@@ -21,7 +21,7 @@ from lmp.config import BaseConfig
 
 
 class TestInit(unittest.TestCase):
-    r"""Test Case for `lmp.config.BaseConfig.__init__`."""
+    r"""Test case for `lmp.config.BaseConfig.__init__`."""
 
     def test_signature(self):
         r"""Ensure signature consistency."""
@@ -156,11 +156,11 @@ class TestInit(unittest.TestCase):
             msg=msg
         )
 
-    def test_invalid_batch_size(self):
-        r"""Raise when `batch_size` is invalid."""
+    def test_invalid_input_batch_size(self):
+        r"""Raise when input `batch_size` is invalid."""
         msg1 = (
-            'Must raise `TypeError` or `ValueError` when `batch_size` is '
-            'invalid.'
+            'Must raise `TypeError` or `ValueError` when input `batch_size` '
+            'is invalid.'
         )
         msg2 = 'Inconsistent error message.'
         examples = (
@@ -179,7 +179,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`batch_size` must be instance of `int`.',
+                    '`batch_size` must be an instance of `int`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -191,11 +191,11 @@ class TestInit(unittest.TestCase):
             else:
                 self.fail(msg=msg1)
 
-    def test_invalid_checkpoint_step(self):
-        r"""Raise when `checkpoint_step` is invalid."""
+    def test_invalid_input_checkpoint_step(self):
+        r"""Raise when input `checkpoint_step` is invalid."""
         msg1 = (
-            'Must raise `TypeError` or `ValueError` when `checkpoint_step` is '
-            'invalid.'
+            'Must raise `TypeError` or `ValueError` when input '
+            '`checkpoint_step` is invalid.'
         )
         msg2 = 'Inconsistent error message.'
         examples = (
@@ -214,7 +214,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`checkpoint_step` must be instance of `int`.',
+                    '`checkpoint_step` must be an instance of `int`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -226,10 +226,11 @@ class TestInit(unittest.TestCase):
             else:
                 self.fail(msg=msg1)
 
-    def test_invalid_d_emb(self):
-        r"""Raise when `d_emb` is invalid."""
+    def test_invalid_input_d_emb(self):
+        r"""Raise when input `d_emb` is invalid."""
         msg1 = (
-            'Must raise `TypeError` or `ValueError` when `d_emb` is invalid.'
+            'Must raise `TypeError` or `ValueError` when input `d_emb` is '
+            'invalid.'
         )
         msg2 = 'Inconsistent error message.'
         examples = (
@@ -248,7 +249,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`d_emb` must be instance of `int`.',
+                    '`d_emb` must be an instance of `int`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -260,10 +261,11 @@ class TestInit(unittest.TestCase):
             else:
                 self.fail(msg=msg1)
 
-    def test_invalid_d_hid(self):
-        r"""Raise when `d_hid` is invalid."""
+    def test_invalid_input_d_hid(self):
+        r"""Raise when input `d_hid` is invalid."""
         msg1 = (
-            'Must raise `TypeError` or `ValueError` when `d_hid` is invalid.'
+            'Must raise `TypeError` or `ValueError` when input `d_hid` is '
+            'invalid.'
         )
         msg2 = 'Inconsistent error message.'
         examples = (
@@ -282,7 +284,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`d_hid` must be instance of `int`.',
+                    '`d_hid` must be an instance of `int`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -294,10 +296,10 @@ class TestInit(unittest.TestCase):
             else:
                 self.fail(msg=msg1)
 
-    def test_invalid_dataset(self):
-        r"""Raise when `dataset` is invalid."""
+    def test_invalid_input_dataset(self):
+        r"""Raise when input `dataset` is invalid."""
         msg1 = (
-            'Must raise `TypeError` or `ValueError` when `dataset` is '
+            'Must raise `TypeError` or `ValueError` when input `dataset` is '
             'invalid.'
         )
         msg2 = 'Inconsistent error message.'
@@ -317,7 +319,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`dataset` must be instance of `str`.',
+                    '`dataset` must be an instance of `str`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -329,10 +331,10 @@ class TestInit(unittest.TestCase):
             else:
                 self.fail(msg=msg1)
 
-    def test_invalid_dropout(self):
-        r"""Raise when `dropout` is invalid."""
+    def test_invalid_input_dropout(self):
+        r"""Raise when input `dropout` is invalid."""
         msg1 = (
-            'Must raise `TypeError` or `ValueError` when `dropout` is '
+            'Must raise `TypeError` or `ValueError` when input `dropout` is '
             'invalid.'
         )
         msg2 = 'Inconsistent error message.'
@@ -352,7 +354,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`dropout` must be instance of `float`.',
+                    '`dropout` must be an instance of `float`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -364,10 +366,11 @@ class TestInit(unittest.TestCase):
             else:
                 self.fail(msg=msg1)
 
-    def test_invalid_epoch(self):
-        r"""Raise when `epoch` is invalid."""
+    def test_invalid_input_epoch(self):
+        r"""Raise when input `epoch` is invalid."""
         msg1 = (
-            'Must raise `TypeError` or `ValueError` when `epoch` is invalid.'
+            'Must raise `TypeError` or `ValueError` when input `epoch` is '
+            'invalid.'
         )
         msg2 = 'Inconsistent error message.'
         examples = (
@@ -386,7 +389,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`epoch` must be instance of `int`.',
+                    '`epoch` must be an instance of `int`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -398,11 +401,11 @@ class TestInit(unittest.TestCase):
             else:
                 self.fail(msg=msg1)
 
-    def test_invalid_experiment(self):
-        r"""Raise when `experiment` is invalid."""
+    def test_invalid_input_experiment(self):
+        r"""Raise when input `experiment` is invalid."""
         msg1 = (
-            'Must raise `TypeError` or `ValueError` when `experiment` is '
-            'invalid.'
+            'Must raise `TypeError` or `ValueError` when input `experiment` '
+            'is invalid.'
         )
         msg2 = 'Inconsistent error message.'
         examples = (
@@ -421,7 +424,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`experiment` must be instance of `str`.',
+                    '`experiment` must be an instance of `str`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -433,9 +436,9 @@ class TestInit(unittest.TestCase):
             else:
                 self.fail(msg=msg1)
 
-    def test_invalid_is_uncased(self):
-        r"""Raise when `is_uncased` is invalid."""
-        msg1 = 'Must raise `TypeError` when `is_uncased` is invalid.'
+    def test_invalid_input_is_uncased(self):
+        r"""Raise when input `is_uncased` is invalid."""
+        msg1 = 'Must raise `TypeError` when input `is_uncased` is invalid.'
         msg2 = 'Inconsistent error message.'
         examples = (
             0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf, 0j,
@@ -453,15 +456,15 @@ class TestInit(unittest.TestCase):
 
             self.assertEqual(
                 ctx_man.exception.args[0],
-                '`is_uncased` must be instance of `bool`.',
+                '`is_uncased` must be an instance of `bool`.',
                 msg=msg2
             )
 
-    def test_invalid_learning_rate(self):
-        r"""Raise when `learning_rate` is invalid."""
+    def test_invalid_input_learning_rate(self):
+        r"""Raise when input `learning_rate` is invalid."""
         msg1 = (
-            'Must raise `TypeError` or `ValueError` when `learning_rate` is '
-            'invalid.'
+            'Must raise `TypeError` or `ValueError` when input '
+            '`learning_rate` is invalid.'
         )
         msg2 = 'Inconsistent error message.'
         examples = (
@@ -483,7 +486,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`learning_rate` must be instance of `float`.',
+                    '`learning_rate` must be an instance of `float`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -495,10 +498,10 @@ class TestInit(unittest.TestCase):
             else:
                 self.fail(msg=msg1)
 
-    def test_invalid_max_norm(self):
-        r"""Raise when `max_norm` is invalid."""
+    def test_invalid_input_max_norm(self):
+        r"""Raise when input `max_norm` is invalid."""
         msg1 = (
-            'Must raise `TypeError` or `ValueError` when `max_norm` is '
+            'Must raise `TypeError` or `ValueError` when input `max_norm` is '
             'invalid.'
         )
         msg2 = 'Inconsistent error message.'
@@ -521,7 +524,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`max_norm` must be instance of `float`.',
+                    '`max_norm` must be an instance of `float`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -533,11 +536,11 @@ class TestInit(unittest.TestCase):
             else:
                 self.fail(msg=msg1)
 
-    def test_invalid_max_seq_len(self):
-        r"""Raise when `max_seq_len` is invalid."""
+    def test_invalid_input_max_seq_len(self):
+        r"""Raise when input `max_seq_len` is invalid."""
         msg1 = (
-            'Must raise `TypeError` or `ValueError` when `max_seq_len` is '
-            'invalid.'
+            'Must raise `TypeError` or `ValueError` when input `max_seq_len` '
+            'is invalid.'
         )
         msg2 = 'Inconsistent error message.'
         examples = (
@@ -560,7 +563,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`max_seq_len` must be instance of `int`.',
+                    '`max_seq_len` must be an instance of `int`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -572,10 +575,10 @@ class TestInit(unittest.TestCase):
             else:
                 self.fail(msg=msg1)
 
-    def test_invalid_min_count(self):
-        r"""Raise when `min_count` is invalid."""
+    def test_invalid_input_min_count(self):
+        r"""Raise when input `min_count` is invalid."""
         msg1 = (
-            'Must raise `TypeError` or `ValueError` when `min_count` is '
+            'Must raise `TypeError` or `ValueError` when input `min_count` is '
             'invalid.'
         )
         msg2 = 'Inconsistent error message.'
@@ -599,7 +602,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`min_count` must be instance of `int`.',
+                    '`min_count` must be an instance of `int`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -611,11 +614,11 @@ class TestInit(unittest.TestCase):
             else:
                 self.fail(msg=msg1)
 
-    def test_invalid_model_class(self):
-        r"""Raise when `model_class` is invalid."""
+    def test_invalid_input_model_class(self):
+        r"""Raise when input `model_class` is invalid."""
         msg1 = (
-            'Must raise `TypeError` or `ValueError` when `model_class` is '
-            'invalid.'
+            'Must raise `TypeError` or `ValueError` when input `model_class` '
+            'is invalid.'
         )
         msg2 = 'Inconsistent error message.'
         examples = (
@@ -638,7 +641,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`model_class` must be instance of `str`.',
+                    '`model_class` must be an instance of `str`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -650,11 +653,11 @@ class TestInit(unittest.TestCase):
             else:
                 self.fail(msg=msg1)
 
-    def test_invalid_num_linear_layers(self):
-        r"""Raise when `num_linear_layers` is invalid."""
+    def test_invalid_input_num_linear_layers(self):
+        r"""Raise when input `num_linear_layers` is invalid."""
         msg1 = (
-            'Must raise `TypeError` or `ValueError` when `num_linear_layers` '
-            'is invalid.'
+            'Must raise `TypeError` or `ValueError` when input '
+            '`num_linear_layers` is invalid.'
         )
         msg2 = 'Inconsistent error message.'
         examples = (
@@ -677,7 +680,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`num_linear_layers` must be instance of `int`.',
+                    '`num_linear_layers` must be an instance of `int`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -689,11 +692,11 @@ class TestInit(unittest.TestCase):
             else:
                 self.fail(msg=msg1)
 
-    def test_invalid_num_rnn_layers(self):
-        r"""Raise when `num_rnn_layers` is invalid."""
+    def test_invalid_input_num_rnn_layers(self):
+        r"""Raise when input `num_rnn_layers` is invalid."""
         msg1 = (
-            'Must raise `TypeError` or `ValueError` when `num_rnn_layers` '
-            'is invalid.'
+            'Must raise `TypeError` or `ValueError` when input '
+            '`num_rnn_layers` is invalid.'
         )
         msg2 = 'Inconsistent error message.'
         examples = (
@@ -716,7 +719,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`num_rnn_layers` must be instance of `int`.',
+                    '`num_rnn_layers` must be an instance of `int`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -728,11 +731,11 @@ class TestInit(unittest.TestCase):
             else:
                 self.fail(msg=msg1)
 
-    def test_invalid_optimizer_class(self):
-        r"""Raise when `optimizer_class` is invalid."""
+    def test_invalid_input_optimizer_class(self):
+        r"""Raise when input `optimizer_class` is invalid."""
         msg1 = (
-            'Must raise `TypeError` or `ValueError` when `optimizer_class` is '
-            'invalid.'
+            'Must raise `TypeError` or `ValueError` when input '
+            '`optimizer_class` is invalid.'
         )
         msg2 = 'Inconsistent error message.'
         examples = (
@@ -755,7 +758,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`optimizer_class` must be instance of `str`.',
+                    '`optimizer_class` must be an instance of `str`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -767,10 +770,11 @@ class TestInit(unittest.TestCase):
             else:
                 self.fail(msg=msg1)
 
-    def test_invalid_seed(self):
-        r"""Raise when `seed` is invalid."""
+    def test_invalid_input_seed(self):
+        r"""Raise when input `seed` is invalid."""
         msg1 = (
-            'Must raise `TypeError` or `ValueError` when `seed` is invalid.'
+            'Must raise `TypeError` or `ValueError` when input `seed` is '
+            'invalid.'
         )
         msg2 = 'Inconsistent error message.'
         examples = (
@@ -793,7 +797,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`seed` must be instance of `int`.',
+                    '`seed` must be an instance of `int`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -805,11 +809,11 @@ class TestInit(unittest.TestCase):
             else:
                 self.fail(msg=msg1)
 
-    def test_invalid_tokenizer_class(self):
-        r"""Raise when `tokenizer_class` is invalid."""
+    def test_invalid_input_tokenizer_class(self):
+        r"""Raise when input `tokenizer_class` is invalid."""
         msg1 = (
-            'Must raise `TypeError` or `ValueError` when `tokenizer_class` is '
-            'invalid.'
+            'Must raise `TypeError` or `ValueError` when input '
+            '`tokenizer_class` is invalid.'
         )
         msg2 = 'Inconsistent error message.'
         examples = (
@@ -832,7 +836,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`tokenizer_class` must be instance of `str`.',
+                    '`tokenizer_class` must be an instance of `str`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -847,7 +851,7 @@ class TestInit(unittest.TestCase):
     def test_instance_attributes(self):
         r"""Declare required instance attributes."""
         msg1 = 'Missing instance attribute `{}`.'
-        msg2 = 'Instance attribute `{}` must be instance of `{}`.'
+        msg2 = 'Instance attribute `{}` must be an instance of `{}`.'
         msg3 = 'Instance attribute `{}` must be `{}`.'
 
         examples = (

@@ -12,7 +12,6 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import inspect
-import math
 import unittest
 
 from typing import Iterable
@@ -23,7 +22,7 @@ from typing import Generator
 from lmp.dataset import BaseDataset
 
 
-class TestInit(unittest.TestCase):
+class TestIter(unittest.TestCase):
     r"""Test case for `lmp.dataset.BaseDataset.__iter__`."""
 
     def test_signature(self):
@@ -46,31 +45,31 @@ class TestInit(unittest.TestCase):
         )
 
     def test_yield_value(self):
-        r"""Is an iterable which yield attributes in order."""
-        msg = 'Must be an iterable which yield attributes in order.'
+        r"""Is an iterable which yield sequences in order."""
+        msg = 'Must be an iterable which yield sequences in order.'
         examples = (
-            (
-                ['Hello world!', 'Hello apple.', 'Hello gogoro!'],
-                ['Hello world!', 'Hello apple.', 'Hello gogoro!'],
-            ),
-            (
-                ['Goodbye world!', 'Goodbye apple.', 'Goodbye gogoro!'],
-                ['Goodbye world!', 'Goodbye apple.', 'Goodbye gogoro!'],
-            ),
+            [
+                'Hello',
+                'World',
+                'Hello World',
+            ],
+            [
+                'Mario use Kimura Lock on Luigi, and Luigi tap out.',
+                'Mario use Superman Punch.',
+                'Luigi get TKO.',
+                'Toad and Toadette are fightting over mushroom (weed).',
+            ],
+            [''],
+            [],
         )
 
-        for batch_sequences, ans_batch_sequences in examples:
+        for batch_sequences in examples:
             dataset = BaseDataset(batch_sequences=batch_sequences)
             self.assertIsInstance(dataset, Iterable, msg=msg)
 
-            for i, sequence in enumerate(dataset):
-                self.assertIn(sequence, ans_batch_sequences, msg=msg)
+            for ans_sequence, sequence in zip(batch_sequences, dataset):
                 self.assertIsInstance(sequence, str, msg=msg)
-                self.assertEqual(
-                    sequence,
-                    ans_batch_sequences[i],
-                    msg=msg
-                )
+                self.assertEqual(sequence, ans_sequence, msg=msg)
 
 
 if __name__ == '__main__':

@@ -27,7 +27,7 @@ from lmp.model import ResGRUBlock
 
 
 class TestInit(unittest.TestCase):
-    r"""Test Case for `lmp.model.ResGRUBlock.forward`."""
+    r"""Test case for `lmp.model.ResGRUBlock.forward`."""
 
     def setUp(self):
         r"""Set up hyper parameters and construct ResGRUBlock"""
@@ -139,6 +139,7 @@ class TestInit(unittest.TestCase):
                     batch_sequences.size(),
                     msg=msg.format(batch_sequences.size())
                 )
+
 
 if __name__ == '__main__':
     unittest.main()

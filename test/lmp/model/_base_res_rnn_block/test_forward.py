@@ -27,7 +27,7 @@ from lmp.model import BaseResRNNBlock
 
 
 class TestInit(unittest.TestCase):
-    r"""Test Case for `lmp.model._base_res_rnn_block.BaseResRNNBlock`."""
+    r"""Test case for `lmp.model._base_res_rnn_block.BaseResRNNBlock`."""
 
     def setUp(self):
         r"""Set up hyper parameters and construct BaseResRNNBlock"""
@@ -139,6 +139,7 @@ class TestInit(unittest.TestCase):
                     batch_sequences.size(),
                     msg=msg.format(batch_sequences.size())
                 )
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -22,7 +22,7 @@ from lmp.tokenizer import CharDictTokenizer
 
 
 class TestVocabSize(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.CharDictTokenizer.vocab_size`."""
+    r"""Test case for `lmp.tokenizer.CharDictTokenizer.vocab_size`."""
 
     def setUp(self):
         r"""Setup both cased and uncased tokenizer instances."""
@@ -54,17 +54,65 @@ class TestVocabSize(unittest.TestCase):
             msg=msg
         )
 
-    def test_expected_return(self):
-        r"""Return expected number."""
+    def test_return_type(self):
+        r"""Return `int`"""
+        msg = 'Must return `int`.'
+
+        for tokenizer in self.tokenizers:
+            self.assertIsInstance(tokenizer.vocab_size, int, msg=msg)
+
+    def test_return_value(self):
+        r"""Return vocabulary size."""
         msg = 'Inconsistent vocabulary size.'
 
         for tokenizer in self.tokenizers:
+            self.assertEqual(tokenizer.vocab_size, 4, msg=msg)
 
+    def test_increase_vocab_size(self):
+        r"""Increase vocabulary size after `build_vocab`."""
+        msg = 'Must increase vocabulary size after `build_vocab`.'
+        examples = (
+            (('HeLlO WoRlD!', 'I aM a LeGeNd.'), 18, 15),
+            (('y = f(x)',), 24, 21),
+            (('',), 24, 21),
+        )
+
+        sp_tokens_size = len(list(CharDictTokenizer.special_tokens()))
+
+        for batch_sequences, cased_vocab_size, uncased_vocab_size in examples:
+            self.cased_tokenizer.build_vocab(batch_sequences)
             self.assertEqual(
-                tokenizer.vocab_size,
-                len(tokenizer.token_to_id),
+                self.cased_tokenizer.vocab_size,
+                cased_vocab_size + sp_tokens_size,
                 msg=msg
             )
+            self.uncased_tokenizer.build_vocab(batch_sequences)
+            self.assertEqual(
+                self.uncased_tokenizer.vocab_size,
+                uncased_vocab_size + sp_tokens_size,
+                msg=msg
+            )
+
+    def test_reset_vocab_size(self):
+        r"""Reset vocabulary size after `reset_vocab`."""
+        msg = 'Must reset vocabulary size after `reset_vocab`.'
+        examples = (
+            ('HeLlO WoRlD!', 'I aM a LeGeNd.'),
+            ('y = f(x)',),
+            ('',),
+        )
+
+        sp_tokens_size = len(list(CharDictTokenizer.special_tokens()))
+
+        for batch_sequences in examples:
+            for tokenizer in self.tokenizers:
+                tokenizer.build_vocab(batch_sequences)
+                tokenizer.reset_vocab()
+                self.assertEqual(
+                    tokenizer.vocab_size,
+                    sp_tokens_size,
+                    msg=msg
+                )
 
 
 if __name__ == '__main__':

@@ -25,7 +25,7 @@ from lmp.tokenizer import CharDictTokenizer
 
 
 class TestBuildVocab(unittest.TestCase):
-    r"""Test Case for `lmp.tokenizer.CharDictTokenizer.build_vocab`."""
+    r"""Test case for `lmp.tokenizer.CharDictTokenizer.build_vocab`."""
 
     def setUp(self):
         r"""Setup both cased and uncased tokenizer instances."""
@@ -71,14 +71,24 @@ class TestBuildVocab(unittest.TestCase):
             msg=msg
         )
 
-    def test_invalid_input_batch_sequence(self):
-        r"""Raise `TypeError` when input is invalid."""
-        msg1 = 'Must raise `TypeError` when input is invalid.'
+    def test_invalid_input_batch_sequences(self):
+        r"""Raise `TypeError` when input `batch_sequences` is invalid."""
+        msg1 = (
+            'Must raise `TypeError` when input `batch_sequences` is invalid.'
+        )
         msg2 = 'Inconsistent error message.'
         examples = (
-            0, 1, -1, 0.0, 1.0, math.nan, math.inf, True, False,
-            object(), lambda x: x, type, None, 0j, 1j,
-            NotImplemented, ...,
+            False, True, 0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf,
+            -math.inf, 0j, 1j, object(), lambda x: x, type, None,
+            NotImplemented, ..., [False], [True], [0], [1], [-1], [0.0], [1.0],
+            [math.nan], [-math.nan], [math.inf], [-math.inf], [0j], [1j],
+            [b''], [()], [[]], [{}], [set()], [object()], [lambda x: x],
+            [type], [None], [NotImplemented], [...], ['', False], ['', True],
+            ['', 0], ['', 1], ['', -1], ['', 0.0], ['', 1.0], ['', math.nan],
+            ['', -math.nan], ['', math.inf], ['', -math.inf], ['', 0j],
+            ['', 1j], ['', b''], ['', ()], ['', []], ['', {}], ['', set()],
+            ['', object()], ['', lambda x: x], ['', type], ['', None],
+            ['', NotImplemented], ['', ...],
         )
 
         for invalid_input in examples:
@@ -88,74 +98,198 @@ class TestBuildVocab(unittest.TestCase):
 
                 self.assertEqual(
                     cxt_man.exception.args[0],
-                    '`batch_sequences` must be instance of `Iterable[str]`.',
+                    '`batch_sequences` must be an instance of '
+                    '`Iterable[str]`.',
                     msg=msg2
                 )
 
     def test_invalid_input_min_count(self):
-        r"""Raise `TypeError` when input is invalid."""
-        msg1 = 'Must raise `TypeError` when input is invalid.'
+        r"""Raise `TypeError` when input `min_count` is invalid."""
+        msg1 = 'Must raise `TypeError` when input `min_count` is invalid.'
         msg2 = 'Inconsistent error message.'
         examples = (
-            0.0, 1.0, math.nan, math.inf, b'', 0j, 1j, NotImplemented, ...,
-            (), {}, set(), object(), lambda x: x, type, None,
+            0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf, 0j, 1j, '',
+            b'', (), [], {}, set(), object(), lambda x: x, type, None,
+            NotImplemented, ...,
         )
 
         for invalid_input in examples:
             for tokenizer in self.tokenizers:
                 with self.assertRaises(TypeError, msg=msg1) as cxt_man:
                     tokenizer.build_vocab(
-                        batch_sequences=['apple', 'banana'],
+                        batch_sequences=[],
                         min_count=invalid_input
                     )
 
                 self.assertEqual(
                     cxt_man.exception.args[0],
-                    '`min_count` must be instance of `int`.',
+                    '`min_count` must be an instance of `int`.',
                     msg=msg2
                 )
 
-    def test_build_vocabulary_cased_sensitive(self):
-        r"""Test whether build vocabulary correctly."""
-        msg = 'Inconsistent error message.'
+    def test_cased_sensitive(self):
+        r"""Vocabulary must be case sensitive."""
+        msg = 'Vocabulary must be case sensitive.'
         examples = (
-            (
-                [
-                    'HeLLo',
-                    'world'
-                ],
-                8 + 4
-            ),
+            (('ABCD', 'abcd'), 8, 4),
+            (('efghi', 'EFGHI'), 10, 5),
         )
 
-        for batch_sequences, vocab_size in examples:
+        sp_tokens_size = len(list(CharDictTokenizer.special_tokens()))
+
+        for batch_sequences, cased_vocab_size, uncased_vocab_size in examples:
+            self.cased_tokenizer.reset_vocab()
             self.cased_tokenizer.build_vocab(batch_sequences=batch_sequences)
             self.assertEqual(
                 self.cased_tokenizer.vocab_size,
-                vocab_size,
+                cased_vocab_size + sp_tokens_size,
                 msg=msg
             )
-
-    def test_build_vocabulary_cased_insensitive(self):
-        r"""Test whether build vocabulary correctly."""
-        msg = 'Inconsistent error message.'
-        examples = (
-            (
-                [
-                    'HeLLo',
-                    'world'
-                ],
-                7 + 4
-            ),
-        )
-
-        for batch_sequences, vocab_size in examples:
+            self.uncased_tokenizer.reset_vocab()
             self.uncased_tokenizer.build_vocab(batch_sequences=batch_sequences)
             self.assertEqual(
                 self.uncased_tokenizer.vocab_size,
-                vocab_size,
+                uncased_vocab_size + sp_tokens_size,
                 msg=msg
             )
+
+    def test_sort_by_token_frequency_in_descending_order(self):
+        r"""Sort vocabulary by token frequency in descending order."""
+        msg = (
+            'Must sort vocabulary by token frequency in descending order.'
+        )
+        examples = (
+            (
+                ('AaAa', 'bBb', 'cC', 'd'),
+                ('A', 'a', 'b', 'B', 'c', 'C', 'd'),
+                ('a', 'b', 'c', 'd'),
+            ),
+            (
+                ('EeEeE', 'FfFf', 'GgG', 'Hh', 'I'),
+                ('E', 'e', 'F', 'f', 'G', 'g', 'H', 'h', 'I'),
+                ('e', 'f', 'g', 'h', 'i'),
+            ),
+        )
+
+        for (
+                batch_sequences,
+                cased_vocab_order,
+                uncased_vocab_order
+        ) in examples:
+            self.cased_tokenizer.reset_vocab()
+            self.cased_tokenizer.build_vocab(batch_sequences=batch_sequences)
+
+            for (
+                    vocab1,
+                    vocab2
+            ) in zip(cased_vocab_order[:-1], cased_vocab_order[1:]):
+                self.assertLessEqual(
+                    self.cased_tokenizer.convert_token_to_id(vocab1),
+                    self.cased_tokenizer.convert_token_to_id(vocab2),
+                    msg=msg
+                )
+
+            self.uncased_tokenizer.reset_vocab()
+            self.uncased_tokenizer.build_vocab(batch_sequences=batch_sequences)
+
+            for (
+                    vocab1,
+                    vocab2
+            ) in zip(uncased_vocab_order[:-1], uncased_vocab_order[1:]):
+                self.assertLessEqual(
+                    self.uncased_tokenizer.convert_token_to_id(vocab1),
+                    self.uncased_tokenizer.convert_token_to_id(vocab2),
+                    msg=msg
+                )
+
+    def test_min_count(self):
+        r"""Filter out tokens whose frequency is smaller than `min_count`."""
+        msg = (
+            'Must filter out tokens whose frequency is smaller than '
+            '`min_count`.'
+        )
+        examples = (
+            (
+                ('AaAa', 'bBb', 'cC', 'd'),
+                ('A', 'a', 'b'),
+                ('B', 'c', 'C', 'd'),
+                ('a', 'b', 'c'),
+                ('d'),
+                2,
+            ),
+            (
+                ('EeEeE', 'FfFf', 'GgG', 'Hh', 'I'),
+                ('E'),
+                ('e', 'F', 'f', 'G', 'g', 'H', 'h', 'I'),
+                ('e', 'f', 'g'),
+                ('h', 'i'),
+                3,
+            ),
+            (
+                ('EeEeE', 'FfFf', 'GgG', 'Hh', 'I'),
+                (),
+                ('E', 'e', 'F', 'f', 'G', 'g', 'H', 'h', 'I'),
+                (),
+                ('e', 'f', 'g', 'h', 'i'),
+                10,
+            ),
+        )
+
+        for (
+                batch_sequences,
+                cased_known_token,
+                cased_unknown_token,
+                uncased_known_token,
+                uncased_unknown_token,
+                min_count
+        ) in examples:
+            self.cased_tokenizer.reset_vocab()
+            self.cased_tokenizer.build_vocab(
+                batch_sequences=batch_sequences,
+                min_count=min_count
+            )
+
+            for token in cased_known_token:
+                token_id = self.cased_tokenizer.convert_token_to_id(token)
+                self.assertEqual(
+                    token,
+                    self.cased_tokenizer.convert_id_to_token(token_id),
+                    msg=msg
+                )
+
+            unk_token_id = self.cased_tokenizer.convert_token_to_id(
+                CharDictTokenizer.unk_token
+            )
+            for unk_token in cased_unknown_token:
+                self.assertEqual(
+                    self.cased_tokenizer.convert_token_to_id(unk_token),
+                    unk_token_id,
+                    msg=msg
+                )
+
+            self.uncased_tokenizer.reset_vocab()
+            self.uncased_tokenizer.build_vocab(
+                batch_sequences=batch_sequences,
+                min_count=min_count
+            )
+
+            for token in uncased_known_token:
+                token_id = self.uncased_tokenizer.convert_token_to_id(token)
+                self.assertEqual(
+                    token,
+                    self.uncased_tokenizer.convert_id_to_token(token_id),
+                    msg=msg
+                )
+
+            unk_token_id = self.uncased_tokenizer.convert_token_to_id(
+                CharDictTokenizer.unk_token
+            )
+            for unk_token in uncased_unknown_token:
+                self.assertEqual(
+                    self.uncased_tokenizer.convert_token_to_id(unk_token),
+                    unk_token_id,
+                    msg=msg
+                )
 
 
 if __name__ == '__main__':

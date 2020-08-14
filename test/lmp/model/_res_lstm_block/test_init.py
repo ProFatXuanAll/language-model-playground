@@ -27,7 +27,7 @@ from lmp.model import ResLSTMBlock
 
 
 class TestInit(unittest.TestCase):
-    r"""Test Case for `lmp.model.ResLSTMBlock.__init__`."""
+    r"""Test case for `lmp.model.ResLSTMBlock.__init__`."""
 
     def setUp(self):
         r"""Set up hyper parameters and construct ResLSTMBlock"""
@@ -40,7 +40,6 @@ class TestInit(unittest.TestCase):
                 ('dropout', self.dropout),
             ),
         )
-
 
     def tearDown(self):
         r"""Delete parameters and models."""
@@ -103,7 +102,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`d_hid` must be instance of `int`.',
+                    '`d_hid` must be an instance of `int`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):
@@ -137,7 +136,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`dropout` must be instance of `float`.',
+                    '`dropout` must be an instance of `float`.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, ValueError):

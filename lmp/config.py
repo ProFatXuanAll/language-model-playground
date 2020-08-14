@@ -80,29 +80,11 @@ class BaseConfig:
 
     Raises:
         TypeError:
-            When `batch_size` is not instance of `int`, `checkpoint_step` is
-            not instance of `int`,`d_emb` is not instance of `int`, `d_hid` is
-            not instance of `int`, `dataset` is not instance of `str`,
-            `dropout` is not instance of `float`, `epoch` is not instance of
-            `int`, `experiment` is not instance of `str`, `is_uncased` is not
-            instance of `bool`, `learning_rate` is not instance of `float`,
-            `max_norm` is not instance of `float`, `max_seq_len` is not
-            instance of `int`, `min_count` is not instance of `int`,
-            `model_class` is not instance of `str`, `num_rnn_layers` is not
-            instance of `int`, `num_linear_layers` is not instance of `int`,
-            `optimizer_class` is not instance of `str`, `seed` is not instance
-            of `int` or `tokenizer_class` is not instance of `str`.
+            When one of the arguments are not instance of their type annotation
+            respectively.
         ValueError:
-            When `batch_size` is smaller than 1, `checkpoint_step` is smaller
-            than 1, `d_emb` is smaller than 1, `d_hid` is smaller than 1,
-            `dataset` is empty string, `dropout` is out range from `0.0` to
-            `1.0`, `epoch` is smaller than 1, `experiment` is empty string,
-            `learning_rate` is smaller than 0.0, `max_norm` is smaller than
-            0.0, `max_seq_len` is smaller than 0, `min_count` is smaller than
-            1, `model_class` is empty string, `num_linear_layers` is smaller
-            than 1, num_rnn_layers is smaller than 1, `optimizer_class` is
-            empty string, `seed` is smaller than 1 or `tokenizer_class` is
-            empty string.
+            When one of the arguments do not follow their constraints. See
+            docstring for arguments constraints.
     """
 
     def __init__(
@@ -129,61 +111,62 @@ class BaseConfig:
     ):
         # Type check.
         if not isinstance(batch_size, int):
-            raise TypeError('`batch_size` must be instance of `int`.')
+            raise TypeError('`batch_size` must be an instance of `int`.')
 
         if not isinstance(checkpoint_step, int):
-            raise TypeError('`checkpoint_step` must be instance of `int`.')
+            raise TypeError('`checkpoint_step` must be an instance of `int`.')
 
         if not isinstance(d_emb, int):
-            raise TypeError('`d_emb` must be instance of `int`.')
+            raise TypeError('`d_emb` must be an instance of `int`.')
 
         if not isinstance(d_hid, int):
-            raise TypeError('`d_hid` must be instance of `int`.')
+            raise TypeError('`d_hid` must be an instance of `int`.')
 
         if not isinstance(dataset, str):
-            raise TypeError('`dataset` must be instance of `str`.')
+            raise TypeError('`dataset` must be an instance of `str`.')
 
         if not isinstance(dropout, float):
-            raise TypeError('`dropout` must be instance of `float`.')
+            raise TypeError('`dropout` must be an instance of `float`.')
 
         if not isinstance(experiment, str):
-            raise TypeError('`experiment` must be instance of `str`.')
+            raise TypeError('`experiment` must be an instance of `str`.')
 
         if not isinstance(epoch, int):
-            raise TypeError('`epoch` must be instance of `int`.')
+            raise TypeError('`epoch` must be an instance of `int`.')
 
         if not isinstance(is_uncased, bool):
-            raise TypeError('`is_uncased` must be instance of `bool`.')
+            raise TypeError('`is_uncased` must be an instance of `bool`.')
 
         if not isinstance(learning_rate, float):
-            raise TypeError('`learning_rate` must be instance of `float`.')
+            raise TypeError('`learning_rate` must be an instance of `float`.')
 
         if not isinstance(max_norm, float):
-            raise TypeError('`max_norm` must be instance of `float`.')
+            raise TypeError('`max_norm` must be an instance of `float`.')
 
         if not isinstance(max_seq_len, int):
-            raise TypeError('`max_seq_len` must be instance of `int`.')
+            raise TypeError('`max_seq_len` must be an instance of `int`.')
 
         if not isinstance(min_count, int):
-            raise TypeError('`min_count` must be instance of `int`.')
+            raise TypeError('`min_count` must be an instance of `int`.')
 
         if not isinstance(model_class, str):
-            raise TypeError('`model_class` must be instance of `str`.')
+            raise TypeError('`model_class` must be an instance of `str`.')
 
         if not isinstance(num_linear_layers, int):
-            raise TypeError('`num_linear_layers` must be instance of `int`.')
+            raise TypeError(
+                '`num_linear_layers` must be an instance of `int`.')
 
         if not isinstance(num_rnn_layers, int):
-            raise TypeError('`num_rnn_layers` must be instance of `int`.')
+            raise TypeError('`num_rnn_layers` must be an instance of `int`.')
 
         if not isinstance(optimizer_class, str):
-            raise TypeError('`optimizer_class` must be instance of `str`.')
+            raise TypeError('`optimizer_class` must be an instance of `str`.')
 
         if not isinstance(seed, int):
-            raise TypeError('`seed` must be instance of `int`.')
+            raise TypeError('`seed` must be an instance of `int`.')
 
         if not isinstance(tokenizer_class, str):
-            raise TypeError('`tokenizer_class` must be instance of `str`.')
+            raise TypeError('`tokenizer_class` must be an instance of `str`.')
 
         # Value Check.
         if batch_size < 1:
@@ -205,7 +188,7 @@ class BaseConfig:
         if not dataset:
             raise ValueError('`dataset` must not be empty.')
 
-        if not (0 <= dropout <= 1):
+        if not 0 <= dropout <= 1:
             raise ValueError('`dropout` must range from `0.0` to `1.0`.')
 
         if epoch < 1:
@@ -288,13 +271,13 @@ class BaseConfig:
             JSONDecodeError:
                 If configuration is not in JSON format.
             TypeError:
-                When `experiment` is not instance of `str`.
+                When `experiment` is not an instance of `str`.
             ValueError:
                 When `experiment` is empty string.
         """
 
         if not isinstance(experiment, str):
-            raise TypeError('`experiment` must be instance of `str`.')
+            raise TypeError('`experiment` must be an instance of `str`.')
 
         if not experiment:
             raise ValueError('`experiment` must not be empty.')
