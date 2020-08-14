@@ -60,9 +60,10 @@ if __name__ == '__main__':
         tokenizer=tokenizer
     )
 
+    # Get test data.
     test_data = [word for word in args.test_words.split(',')]
 
-    # test syntatic and semantic score
+    # Test syntatic and semantic score.
     lmp.util.analogy_inference(
         test_data=test_data,
         device=config.device,

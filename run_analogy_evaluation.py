@@ -58,6 +58,7 @@ if __name__ == '__main__':
         tokenizer=tokenizer
     )
 
+    # Get dataset.
     dataset = lmp.util.load_dataset(args.dataset)
 
     dataloader = torch.utils.data.DataLoader(
