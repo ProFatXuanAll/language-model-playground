@@ -1,7 +1,7 @@
 r"""Test `lmp.tokenizer.CharListTokenizer.decode`.
 
 Usage:
-    python -m unittest test/lmp/tokenizer/_char_list_tokenizer/test_decode.py
+    python -m unittest test.lmp.tokenizer._char_list_tokenizer.test_decode
 """
 
 # built-in modules

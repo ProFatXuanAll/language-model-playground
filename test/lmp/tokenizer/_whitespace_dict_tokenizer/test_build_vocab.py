@@ -2,7 +2,7 @@ r"""Test `lmp.tokenizer.WhitespaceDictTokenizer.build_vocab`.
 
 Usage:
     python -m unittest \
-        test/lmp/tokenizer/_whitespace_dict_tokenizer/test_build_vocab.py
+        test.lmp.tokenizer._whitespace_dict_tokenizer.test_build_vocab
 """
 
 # built-in modules

@@ -2,7 +2,7 @@ r"""Test `lmp.tokenizer.WhitespaceDictTokenizer.decode`.
 
 Usage:
     python -m unittest \
-        test/lmp/tokenizer/_whitespace_dict_tokenizer/test_decode.py
+        test.lmp.tokenizer._whitespace_dict_tokenizer.test_decode
 """
 
 # built-in modules

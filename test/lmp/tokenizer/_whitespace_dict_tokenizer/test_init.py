@@ -1,8 +1,7 @@
 r"""Test `lmp.tokenizer.WhitespaceDictTokenizer.__init__`.
 
 Usage:
-    python -m unittest \
-        test/lmp/tokenizer/_whitespace_dict_tokenizer/test_init.py
+    python -m unittest test.lmp.tokenizer._whitespace_dict_tokenizer.test_init
 """
 
 # built-in modules

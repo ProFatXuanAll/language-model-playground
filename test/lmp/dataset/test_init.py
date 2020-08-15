@@ -1,7 +1,7 @@
 r"""Test `lmp.dataset.BaseDataset.__init__`.
 
 Usage:
-    python -m unittest test/lmp/dataset/test_init.py
+    python -m unittest test.lmp.dataset.test_init
 """
 
 # built-in modules

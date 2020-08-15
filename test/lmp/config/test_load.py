@@ -1,7 +1,7 @@
 r"""Test `lmp.config.BaseConfig.load`.
 
 Usage:
-    python -m unittest test/lmp/config/test_load.py
+    python -m unittest test.lmp.config.test_load
 """
 
 # built-in modules

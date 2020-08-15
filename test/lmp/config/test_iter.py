@@ -1,7 +1,7 @@
 r"""Test `lmp.config.BaseConfig.__iter__`.
 
 Usage:
-    python -m unittest test/lmp/config/test_iter.py
+    python -m unittest test.lmp.config.test_iter
 """
 
 # built-in modules
