@@ -1,7 +1,7 @@
 r"""Test `lmp.tokenizer.BaseTokenizer.batch_decode`.
 
 Usage:
-    python -m unittest test/lmp/tokenizer/_base_tokenizer/test_batch_decode.py
+    python -m unittest test.lmp.tokenizer._base_tokenizer.test_batch_decode
 """
 
 # built-in modules

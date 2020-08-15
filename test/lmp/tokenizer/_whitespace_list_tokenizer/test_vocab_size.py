@@ -2,7 +2,7 @@ r"""Test `lmp.tokenizer.WhitespaceListTokenizer.vocab_size`.
 
 Usage:
     python -m unittest \
-        test/lmp/tokenizer/_whitespace_list_tokenizer/test_vocab_size.py
+        test.lmp.tokenizer._whitespace_list_tokenizer.test_vocab_size
 """
 
 # built-in modules

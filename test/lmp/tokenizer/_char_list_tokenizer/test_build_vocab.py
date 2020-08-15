@@ -1,8 +1,7 @@
 r"""Test `lmp.tokenizer.CharListTokenizer.build_vocab`.
 
 Usage:
-    python -m unittest \
-        test/lmp/tokenizer/_char_list_tokenizer/test_build_vocab.py
+    python -m unittest test.lmp.tokenizer._char_list_tokenizer.test_build_vocab
 """
 
 # built-in modules

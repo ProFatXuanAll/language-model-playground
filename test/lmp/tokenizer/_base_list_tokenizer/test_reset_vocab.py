@@ -1,8 +1,7 @@
 r"""Test `lmp.tokenizer.BaseListTokenizer.reset_vocab`.
 
 Usage:
-    python -m unittest \
-        test/lmp/tokenizer/_base_list_tokenizer/test_reset_vocab.py
+    python -m unittest test.lmp.tokenizer._base_list_tokenizer.test_reset_vocab
 """
 
 # built-in modules

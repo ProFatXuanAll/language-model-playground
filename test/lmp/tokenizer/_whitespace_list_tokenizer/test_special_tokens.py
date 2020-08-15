@@ -2,7 +2,7 @@ r"""Test `lmp.tokenizer.WhitespaceListTokenizer.special_tokens`.
 
 Usage:
     python -m unittest \
-        test/lmp/tokenizer/_whitespace_list_tokenizer/test_special_tokens.py
+        test.lmp.tokenizer._whitespace_list_tokenizer.test_special_tokens
 """
 
 # built-in modules

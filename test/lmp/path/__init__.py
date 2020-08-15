@@ -1,7 +1,7 @@
 r"""Test `lmp.path`.
 
 Usage:
-    python -m unittest test/lmp/path/__init__.py
+    python -m unittest test.lmp.path.__init__
 """
 
 # built-in modules
