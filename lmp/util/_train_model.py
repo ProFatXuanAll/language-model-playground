@@ -45,7 +45,7 @@ def train_model(
         epoch: int,
         experiment: str,
         max_norm: float,
-        model: lmp.model.BaseRNNModel,
+        model: Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel],
         optimizer: Union[
             torch.optim.SGD,
             torch.optim.Adam,
@@ -205,7 +205,7 @@ def train_model_by_config(
         checkpoint: int,
         config: lmp.config.BaseConfig,
         dataset: lmp.dataset.BaseDataset,
-        model: lmp.model.BaseRNNModel,
+        model: Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel],
         optimizer: Union[
             torch.optim.SGD,
             torch.optim.Adam,

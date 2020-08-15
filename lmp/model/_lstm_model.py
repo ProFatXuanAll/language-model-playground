@@ -36,24 +36,29 @@ class LSTMModel(BaseRNNModel):
 
     Args:
         d_emb:
-            Embedding matrix vector dimension.
+            Embedding matrix vector dimension. Must be bigger than or equal to
+            `1`.
         d_hid:
-            LSTM layers hidden dimension.
+            LSTM layers hidden dimension. Must be bigger than or equal to `1`.
         dropout:
             Dropout probability on all layers output (except output layer).
-        num_rnn_layers:
-            Number of LSTM layers to use.
+            Must range from `0.0` to `1.0`.
         num_linear_layers:
-            Number of Linear layers to use.
+            Number of Linear layers to use. Must be bigger than or equal to
+            `1`.
+        num_rnn_layers:
+            Number of LSTM layers to use. Must be bigger than or equal to `1`.
         pad_token_id:
-            Padding token's id. Embedding layers will initialize padding
-            token's vector with zeros.
+            Padding token's id. Embedding layer will initialize padding
+            token's vector with zeros. Must be bigger than or equal to `0`, and
+            must be smaller than `vocab_size`.
         vocab_size:
-            Embedding matrix vocabulary dimension.
+            Embedding matrix vocabulary dimension. Must be bigger than or equal
+            to `1`.
 
     Raises:
         TypeError:
-            When one of the arguments are not instance of their type annotation
+            When one of the arguments are not an instance of their type annotation
             respectively.
         ValueError:
             When one of the arguments do not follow their constraints. See
@@ -65,8 +70,8 @@ class LSTMModel(BaseRNNModel):
             d_emb: int,
             d_hid: int,
             dropout: float,
-            num_rnn_layers: int,
             num_linear_layers: int,
+            num_rnn_layers: int,
             pad_token_id: int,
             vocab_size: int
     ):
@@ -74,13 +79,13 @@ class LSTMModel(BaseRNNModel):
             d_emb=d_emb,
             d_hid=d_hid,
             dropout=dropout,
-            num_rnn_layers=num_rnn_layers,
             num_linear_layers=num_linear_layers,
+            num_rnn_layers=num_rnn_layers,
             pad_token_id=pad_token_id,
             vocab_size=vocab_size
         )
 
-        # Override RNN layer with LSTM layer.
+        # Override RNN layer(s) with LSTM layer(s).
         if num_rnn_layers == 1:
             self.rnn_layer = torch.nn.LSTM(
                 input_size=d_hid,

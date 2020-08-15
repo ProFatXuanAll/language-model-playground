@@ -16,6 +16,8 @@ from __future__ import unicode_literals
 
 import os
 
+from typing import Union
+
 # 3rd-party modules
 
 import torch
@@ -39,7 +41,7 @@ def load_model(
         num_rnn_layers: int,
         pad_token_id: int,
         vocab_size: int
-) -> lmp.model.BaseRNNModel:
+) -> Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel]:
     r"""Helper function for constructing language model.
 
     Load optimizer from pre-trained checkpoint when `checkpoint != -1`.
@@ -50,11 +52,11 @@ def load_model(
         d_emb:
             Embedding matrix vector dimension.
         d_hid:
-            GRU layers hidden dimension.
+            Model layers hidden dimension.
         device:
             Model running device.
         dropout:
-            Dropout probability on all layers out (except output layer).
+            Dropout probability on all layers output (except output layer).
         experiment:
             Name of the pre-trained experiment.
         num_rnn_layers:
@@ -74,7 +76,10 @@ def load_model(
     Returns:
         `lmp.model.BaseRNNModel` if `model_class == 'rnn'`;
         `lmp.model.GRUModel` if `model_class == 'gru'`;
-        `lmp.model.LSTMModel` if `model_class == 'lstm'`.
+        `lmp.model.LSTMModel` if `model_class == 'lstm'`;
+        `lmp.model.BaseResRNNModel` if `model_class == 'res_rnn'`;
+        `lmp.model.ResGRUModel` if `model_class == 'res_gru'`;
+        `lmp.model.ResLSTMModel` if `model_class == 'res_lstm'`.
     """
 
     if model_class == 'rnn':
@@ -172,7 +177,7 @@ def load_model_by_config(
         checkpoint: int,
         config: lmp.config.BaseConfig,
         tokenizer: lmp.tokenizer.BaseTokenizer
-) -> lmp.model.BaseRNNModel:
+) -> Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel]:
     r"""Helper function for constructing language model.
 
     Load model from pre-trained checkpoint when `checkpoint != -1`.

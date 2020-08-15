@@ -40,24 +40,29 @@ class BaseRNNModel(torch.nn.Module):
 
     Args:
         d_emb:
-            Embedding matrix vector dimension.
+            Embedding matrix vector dimension. Must be bigger than or equal to
+            `1`.
         d_hid:
-            RNN layers hidden dimension.
+            RNN layers hidden dimension. Must be bigger than or equal to `1`.
         dropout:
             Dropout probability on all layers output (except output layer).
-        num_rnn_layers:
-            Number of RNN layers to use.
+            Must range from `0.0` to `1.0`.
         num_linear_layers:
-            Number of Linear layers to use.
+            Number of Linear layers to use. Must be bigger than or equal to
+            `1`.
+        num_rnn_layers:
+            Number of RNN layers to use. Must be bigger than or equal to `1`.
         pad_token_id:
-            Padding token's id. Embedding layers will initialize padding
-            token's vector with zeros.
+            Padding token's id. Embedding layer will initialize padding
+            token's vector with zeros. Must be bigger than or equal to `0`, and
+            must be smaller than `vocab_size`.
         vocab_size:
-            Embedding matrix vocabulary dimension.
+            Embedding matrix vocabulary dimension. Must be bigger than or equal
+            to `1`.
 
     Raises:
         TypeError:
-            When one of the arguments are not instance of their type annotation
+            When one of the arguments are not an instance of their type annotation
             respectively.
         ValueError:
             When one of the arguments do not follow their constraints. See
@@ -69,8 +74,8 @@ class BaseRNNModel(torch.nn.Module):
             d_emb: int,
             d_hid: int,
             dropout: float,
-            num_rnn_layers: int,
             num_linear_layers: int,
+            num_rnn_layers: int,
             pad_token_id: int,
             vocab_size: int
     ):
@@ -120,6 +125,21 @@ class BaseRNNModel(torch.nn.Module):
                 '`num_rnn_layers` must be bigger than or equal to `1`.'
             )
 
+        if pad_token_id < 0:
+            raise ValueError(
+                '`pad_token_id` must be bigger than or equal to `0`.'
+            )
+
+        if vocab_size < 1:
+            raise ValueError(
+                '`vocab_size` must be bigger than or equal to `1`.'
+            )
+
+        if vocab_size <= pad_token_id:
+            raise ValueError(
+                '`pad_token_id` must be smaller than `vocab_size`.'
+            )
+
         # Token embedding layer.
         # Dimension: (V, E).
         self.emb_layer = torch.nn.Embedding(
@@ -159,7 +179,7 @@ class BaseRNNModel(torch.nn.Module):
         # Sequential linear layer(s).
         # Dimension: (H, H).
         proj_hid_to_emb = []
-        for _ in range(num_linear_layers):
+        for _ in range(num_linear_layers - 1):
             proj_hid_to_emb.append(torch.nn.Dropout(dropout))
             proj_hid_to_emb.append(
                 torch.nn.Linear(
