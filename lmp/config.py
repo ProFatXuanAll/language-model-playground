@@ -80,7 +80,7 @@ class BaseConfig:
 
     Raises:
         TypeError:
-            When one of the arguments are not instance of their type annotation
+            When one of the arguments are not an instance of their type annotation
             respectively.
         ValueError:
             When one of the arguments do not follow their constraints. See

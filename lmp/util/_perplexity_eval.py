@@ -14,6 +14,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 from typing import List
+from typing import Union
 
 # 3rd-party modules
 
@@ -30,7 +31,7 @@ import lmp.tokenizer
 @torch.no_grad()
 def perplexity_eval(
         device: torch.device,
-        model: lmp.model.BaseRNNModel,
+        model: Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel],
         sequence: str,
         tokenizer: lmp.tokenizer.BaseTokenizer
 ) -> float:
@@ -93,7 +94,7 @@ def perplexity_eval(
 def batch_perplexity_eval(
         dataset: List[str],
         device: torch.device,
-        model: lmp.model.BaseRNNModel,
+        model: Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel],
         tokenizer: lmp.tokenizer.BaseTokenizer
 ) -> List[float]:
     r"""Helper function for calculating dataset perplexity.
