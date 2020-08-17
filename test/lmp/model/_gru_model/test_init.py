@@ -541,12 +541,13 @@ class TestInit(unittest.TestCase):
         )
 
         for proj_layer, d_emb, d_hid, dropout in examples:
-            self.assertEqual(len(proj_layer), 2, msg=msg)
+            self.assertEqual(len(proj_layer), 3, msg=msg)
             self.assertIsInstance(proj_layer[0], torch.nn.Linear, msg=msg)
             self.assertEqual(proj_layer[0].in_features, d_emb, msg=msg)
             self.assertEqual(proj_layer[0].out_features, d_hid, msg=msg)
-            self.assertIsInstance(proj_layer[1], torch.nn.Dropout, msg=msg)
-            self.assertEqual(proj_layer[1].p, dropout, msg=msg)
+            self.assertIsInstance(proj_layer[1], torch.nn.ReLU, msg=msg)
+            self.assertIsInstance(proj_layer[2], torch.nn.Dropout, msg=msg)
+            self.assertEqual(proj_layer[2].p, dropout, msg=msg)
 
     def test_gru_layer(self):
         r"""Declare correct GRU layer(s)."""
@@ -590,7 +591,7 @@ class TestInit(unittest.TestCase):
         for proj_layer, d_emb, d_hid, dropout, num_linear_layers in examples:
             self.assertEqual(
                 len(proj_layer),
-                3 * num_linear_layers - 1,
+                3 * num_linear_layers + 1,
                 msg=msg
             )
             for i in range(0, num_linear_layers - 1, 3):
@@ -612,11 +613,14 @@ class TestInit(unittest.TestCase):
                     torch.nn.ReLU,
                     msg=msg
                 )
-            self.assertIsInstance(proj_layer[-2], torch.nn.Dropout, msg=msg)
-            self.assertEqual(proj_layer[-2].p, dropout, msg=msg)
-            self.assertIsInstance(proj_layer[-1], torch.nn.Linear, msg=msg)
-            self.assertEqual(proj_layer[-1].in_features, d_hid, msg=msg)
-            self.assertEqual(proj_layer[-1].out_features, d_emb, msg=msg)
+            self.assertIsInstance(proj_layer[-4], torch.nn.Dropout, msg=msg)
+            self.assertEqual(proj_layer[-4].p, dropout, msg=msg)
+            self.assertIsInstance(proj_layer[-3], torch.nn.Linear, msg=msg)
+            self.assertEqual(proj_layer[-3].in_features, d_hid, msg=msg)
+            self.assertEqual(proj_layer[-3].out_features, d_emb, msg=msg)
+            self.assertIsInstance(proj_layer[-2], torch.nn.ReLU, msg=msg)
+            self.assertIsInstance(proj_layer[-1], torch.nn.Dropout, msg=msg)
+            self.assertEqual(proj_layer[-1].p, dropout, msg=msg)
 
 
 if __name__ == '__main__':
