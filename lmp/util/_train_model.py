@@ -1,7 +1,7 @@
 r"""Helper function for training model.
 
 Usage:
-    import lmp
+    import lmp.util
 
     lmp.util.train_model(...)
     lmp.util.train_model_by_config(...)
@@ -46,10 +46,7 @@ def train_model(
         experiment: str,
         max_norm: float,
         model: Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel],
-        optimizer: Union[
-            torch.optim.SGD,
-            torch.optim.Adam,
-        ],
+        optimizer: Union[torch.optim.SGD, torch.optim.Adam],
         vocab_size: int
 ):
     r"""Helper function for training language model.
@@ -206,10 +203,7 @@ def train_model_by_config(
         config: lmp.config.BaseConfig,
         dataset: lmp.dataset.BaseDataset,
         model: Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel],
-        optimizer: Union[
-            torch.optim.SGD,
-            torch.optim.Adam,
-        ],
+        optimizer: Union[torch.optim.SGD, torch.optim.Adam],
         tokenizer: lmp.tokenizer.BaseTokenizer,
 ):
     r"""Helper function for training language model.

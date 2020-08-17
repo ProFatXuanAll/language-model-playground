@@ -27,7 +27,7 @@ from lmp.model._base_res_rnn_block import BaseResRNNBlock
 class ResGRUBlock(BaseResRNNBlock):
     r"""GRU residual block.
 
-    out = dropout(activate(GRU(x))) + x
+    out = dropout(ReLU(GRU(x))) + x
 
     Args:
         d_hid:

@@ -20,6 +20,8 @@ from __future__ import unicode_literals
 import torch
 import torch.nn
 
+# self-made modules
+
 from lmp.model._base_res_rnn_block import BaseResRNNBlock
 
 
@@ -217,7 +219,7 @@ class BaseResRNNModel(torch.nn.Module):
         # ht 維度: (B, S, H)
         ht = self.proj_emb_to_hid(batch_sequences)
 
-        # 將每個 embedding vectors 依序輸入 RNN 得到輸出 hidden vectors
+        # 將每個 embedding vectors 依序輸入 residual RNN 得到輸出 hidden vectors
         # ht 維度: (B, S, H)
         ht = self.rnn_layer(ht)
 

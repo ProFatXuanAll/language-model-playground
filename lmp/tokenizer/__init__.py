@@ -1,14 +1,14 @@
 r"""Tokenizer module.
 
-All tokenizer must be import from this file.
+All tokenizer must import from this file.
 
 Usage:
     import lmp.tokenizer
 
-    tokenize = lmp.tokenizer.CharDictTokenizer(...)
-    tokenize = lmp.tokenizer.CharListTokenizer(...)
-    tokenize = lmp.tokenizer.WhitespaceDictTokenizer(...)
-    tokenize = lmp.tokenizer.WhitespaceListTokenizer(...)
+    tokenizer = lmp.tokenizer.CharDictTokenizer(...)
+    tokenizer = lmp.tokenizer.CharListTokenizer(...)
+    tokenizer = lmp.tokenizer.WhitespaceDictTokenizer(...)
+    tokenizer = lmp.tokenizer.WhitespaceListTokenizer(...)
 """
 
 # built-in modules

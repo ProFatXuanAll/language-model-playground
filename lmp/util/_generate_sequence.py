@@ -1,7 +1,7 @@
 r"""Helper function for sequences generation.
 
 Usage:
-    import lmp
+    import lmp.util
 
     generated = lmp.util.generate_sequence(...)
     generated = lmp.util.generate_sequence_by_config(...)

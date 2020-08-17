@@ -27,7 +27,7 @@ from lmp.model._base_res_rnn_block import BaseResRNNBlock
 class ResLSTMBlock(BaseResRNNBlock):
     r"""LSTM residual block.
 
-    out = dropout(activate(LSTM(x))) + x
+    out = dropout(ReLU(LSTM(x))) + x
 
     Args:
         d_hid:

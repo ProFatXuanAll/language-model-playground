@@ -1,10 +1,10 @@
 r"""Helper function for calculating perplexity.
 
 Usage:
-    import lmp
+    import lmp.util
 
-    generated = lmp.util.batch_perplexity_eval(...)
-    generated = lmp.util.perplexity_eval(...)
+    perplexities = lmp.util.batch_perplexity_eval(...)
+    perplexity = lmp.util.perplexity_eval(...)
 """
 
 # built-in modules

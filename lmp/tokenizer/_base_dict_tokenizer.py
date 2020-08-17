@@ -1,6 +1,8 @@
 r"""Tokenizer base class using `dict` structure.
 
 Usage:
+    from lmp.tokenizer import BaseDictTokenizer
+
     class CustomTokenizer(BaseDictTokenizer):
         ...
 """
@@ -129,9 +131,7 @@ class BaseDictTokenizer(BaseTokenizer):
 
         self = cls(is_uncased=obj['is_uncased'])
         self.token_to_id = obj['token_to_id']
-        self.id_to_token = {
-            v: i for i, v in self.token_to_id.items()
-        }
+        self.id_to_token = {v: i for i, v in self.token_to_id.items()}
 
         return self
 

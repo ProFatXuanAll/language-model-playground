@@ -1,4 +1,4 @@
-r"""preprocessing training dataset.
+r"""Language model dataset.
 
 Usage:
     import lmp.dataset
