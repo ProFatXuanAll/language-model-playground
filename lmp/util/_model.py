@@ -1,7 +1,7 @@
 r"""Helper function for loading model.
 
 Usage:
-    import lmp
+    import lmp.util
 
     model = lmp.util.load_model(...)
     model = lmp.util.load_model_by_config(...)

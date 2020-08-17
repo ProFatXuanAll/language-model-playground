@@ -1,7 +1,7 @@
 r"""Helper function for loading optimizer.
 
 Usage:
-    import lmp
+    import lmp.util
 
     optimizer = lmp.util.load_optimizer(...)
     optimizer = lmp.util.load_optimizer_by_config(...)
@@ -65,15 +65,11 @@ def load_optimizer(
         `torch.optim.Adam` if `optimizer_class == 'adam'`.
     """
     if optimizer_class == 'sgd':
-        optimizer = torch.optim.SGD(
-            params=parameters,
-            lr=learning_rate
-        )
+        optimizer = torch.optim.SGD(params=parameters, lr=learning_rate)
+
     elif optimizer_class == 'adam':
-        optimizer = torch.optim.Adam(
-            params=parameters,
-            lr=learning_rate
-        )
+        optimizer = torch.optim.Adam(params=parameters, lr=learning_rate)
+
     else:
         raise ValueError(
             f'`{optimizer_class}` does not support\nSupported options:' +

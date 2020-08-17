@@ -1,7 +1,7 @@
 r"""Helper function for configuration construction.
 
 Usage:
-    import lmp
+    import lmp.util
 
     config = lmp.util.load_config(args)
 """

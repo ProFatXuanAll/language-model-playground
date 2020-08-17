@@ -1,7 +1,7 @@
 r"""Helper function for loading dataset.
 
 Usage:
-    import lmp
+    import lmp.util
 
     dataset = lmp.util.load_dataset(...)
     dataset = lmp.util.load_dataset_by_config(...)
@@ -27,9 +27,7 @@ import lmp.dataset
 import lmp.path
 
 
-def load_dataset(
-        dataset: str
-) -> lmp.dataset.BaseDataset:
+def load_dataset(dataset: str) -> lmp.dataset.BaseDataset:
     r"""Load dataset from downloaded files.
 
     Args:

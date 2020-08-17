@@ -1,6 +1,8 @@
 r"""Tokenizer base class.
 
 Usage:
+    from lmp.tokenizer import BaseTokenizer
+
     class CustomTokenizer(BaseTokenizer):
         ...
 """
@@ -406,7 +408,7 @@ class BaseTokenizer:
             raise TypeError('`sequence` must be an instance of `str`.')
 
         # Truncate to max sequence length,
-        # -2 for `[bos]` and `[eos]`.
+        # `-2` for `[bos]` and `[eos]`.
         if max_seq_len != -1:
             token_ids = token_ids[:max_seq_len - 2]
 

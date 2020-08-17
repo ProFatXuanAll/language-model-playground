@@ -1,7 +1,7 @@
 r"""Helper function for loading tokenizer.
 
 Usage:
-    import lmp
+    import lmp.util
 
     tokenizer = lmp.util.load_tokenizer(...)
     tokenizer = lmp.util.load_tokenizer_by_config(...)
@@ -52,16 +52,20 @@ def load_tokenizer(
     """
     if tokenizer_class == 'char_dict':
         tokenizer = lmp.tokenizer.CharDictTokenizer(is_uncased=is_uncased)
+
     elif tokenizer_class == 'char_list':
         tokenizer = lmp.tokenizer.CharListTokenizer(is_uncased=is_uncased)
+
     elif tokenizer_class == 'whitespace_dict':
         tokenizer = lmp.tokenizer.WhitespaceDictTokenizer(
             is_uncased=is_uncased
         )
+
     elif tokenizer_class == 'whitespace_list':
         tokenizer = lmp.tokenizer.WhitespaceListTokenizer(
             is_uncased=is_uncased
         )
+
     else:
         raise ValueError(
             f'`{tokenizer_class}` does not support.\nSupported options:' +
