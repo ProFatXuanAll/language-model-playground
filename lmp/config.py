@@ -61,7 +61,8 @@ class BaseConfig:
             Max norm of gradient. Used when cliping gradient norm. Must be
             bigger than `0.0`.
         max_seq_len
-            Maximum input sequence length. Must be bigger than or equal to `1`.
+            Maximum input sequence length. Must be greater than `1` or equal to
+            `-1`.'
         min_count:
             Filter out tokens occur less than `min_count`. Must be bigger than
             or equal to `1`.
@@ -203,9 +204,9 @@ class BaseConfig:
         if max_norm < 0.0 or math.isnan(max_norm):
             raise ValueError('`max_norm` must be bigger than `0.0`.')
 
-        if max_seq_len <= 0:
+        if 0 <= max_seq_len <= 1:
             raise ValueError(
-                '`max_seq_len` must be bigger than or equal to `1`.'
+                '`max_seq_len` must be greater than `1` or equal to `-1`.'
             )
 
         if min_count < 1:

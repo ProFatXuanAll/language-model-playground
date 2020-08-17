@@ -156,6 +156,7 @@ class BaseRNNModel(torch.nn.Module):
                 in_features=d_emb,
                 out_features=d_hid
             ),
+            torch.nn.ReLU(),
             torch.nn.Dropout(dropout)
         )
 
@@ -198,6 +199,8 @@ class BaseRNNModel(torch.nn.Module):
                 out_features=d_emb
             )
         )
+        proj_hid_to_emb.append(torch.nn.ReLU())
+        proj_hid_to_emb.append(torch.nn.Dropout(dropout))
         self.proj_hid_to_emb = torch.nn.Sequential(*proj_hid_to_emb)
 
     def forward(self, batch_sequences: torch.Tensor) -> torch.Tensor:
