@@ -26,6 +26,7 @@ import torch
 
 import lmp
 
+
 class TestLoadModelSetSeedByConfig(unittest.TestCase):
     r"""Test Case for `lmp.util.set_seed_by_config`."""
 
@@ -53,7 +54,7 @@ class TestLoadModelSetSeedByConfig(unittest.TestCase):
             lmp.util.set_seed_by_config(config)
             num = torch.rand(seed)
             self.rand_obj.append(num)
-    
+
     def tearDown(self):
         r"""Delete parameters for `set_seed`."""
         del self.config_obj
@@ -103,7 +104,7 @@ class TestLoadModelSetSeedByConfig(unittest.TestCase):
 
     def test_rand_num(self):
         r"""Test `set_seed_by_config` function normally."""
-        msg='Inconsistent error message.'
+        msg = 'Inconsistent error message.'
         examples = (
             (
                 self.config_obj[i],
@@ -121,6 +122,3 @@ class TestLoadModelSetSeedByConfig(unittest.TestCase):
                     ans[i].item(),
                     msg=msg
                 )
-
-
-

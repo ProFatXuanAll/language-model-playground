@@ -2,7 +2,7 @@ r"""Test `lmp.tokenizer.BaseListTokenizer.convert_id_to_token`.
 
 Usage:
     python -m unittest \
-        test/lmp/tokenizer/_base_list_tokenizer/test_convert_id_to_token.py
+        test.lmp.tokenizer._base_list_tokenizer.test_convert_id_to_token
 """
 
 # built-in modules
@@ -68,8 +68,9 @@ class TestConvertIdToToken(unittest.TestCase):
         msg1 = 'Must raise `TypeError` when input `token_id` is invalid.'
         msg2 = 'Inconsistent error message.'
         examples = (
-            0.0, 1.0, math.nan, math.inf, b'', 0j, 1j, NotImplemented, ...,
-            [], (), {}, set(), object(), lambda x: x, type, None,
+            0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf, 0j, 1j, '',
+            b'', [], (), {}, set(), object(), lambda x: x, type, None,
+            NotImplemented, ...
         )
 
         for invalid_input in examples:

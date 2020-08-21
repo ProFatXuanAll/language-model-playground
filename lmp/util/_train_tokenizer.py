@@ -1,7 +1,7 @@
 r"""Helper function for training tokenizer.
 
 Usage:
-    import lmp
+    import lmp.util
 
     lmp.util.train_tokenizer(...)
     lmp.util.train_tokenizer_by_config(...)

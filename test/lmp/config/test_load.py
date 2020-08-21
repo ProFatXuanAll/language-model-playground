@@ -1,7 +1,7 @@
 r"""Test `lmp.config.BaseConfig.load`.
 
 Usage:
-    python -m unittest test/lmp/config/test_load.py
+    python -m unittest test.lmp.config.test_load
 """
 
 # built-in modules
@@ -103,14 +103,12 @@ class TestLoad(unittest.TestCase):
                     '`experiment` must be an instance of `str`.',
                     msg=msg2
                 )
-            elif isinstance(ctx_man.exception, ValueError):
+            else:
                 self.assertEqual(
                     ctx_man.exception.args[0],
                     '`experiment` must not be empty.',
                     msg=msg2
                 )
-            else:
-                self.fail(msg=msg1)
 
     def test_invalid_json(self):
         r"""Raise when configuration is invalid."""

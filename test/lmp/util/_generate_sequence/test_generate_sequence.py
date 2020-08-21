@@ -28,9 +28,8 @@ import torch
 # self-made modules
 
 import lmp
-import lmp.config
 import lmp.dataset
-import lmp.path
+
 
 class TestGenerateSequence(unittest.TestCase):
     r"""Test Case for `lmp.util.generate_sequence`."""
@@ -39,7 +38,7 @@ class TestGenerateSequence(unittest.TestCase):
         r"""Set up parameters for `generate_sequence`."""
         self.beam_width = 4
         self.begin_of_sequence = '明日黃花'
-        self.device =torch.tensor([10]).device
+        self.device = torch.tensor([10]).device
         self.max_seq_len = 20
         self.model = lmp.model.BaseResRNNModel(
             d_emb=15,
@@ -57,7 +56,7 @@ class TestGenerateSequence(unittest.TestCase):
         del self.beam_width
         del self.begin_of_sequence
         del self.device
-        del self.max_seq_len 
+        del self.max_seq_len
         del self.model
         del self.tokenizer
         gc.collect()
@@ -142,7 +141,7 @@ class TestGenerateSequence(unittest.TestCase):
                     '`beam_width` must be an instance of `int`.',
                     msg=msg2
                 )
-    
+
     def test_invalid_input_begin_of_sequence(self):
         r"""Raise when `begin_of_sequence` is invalid."""
         msg1 = 'Must raise `TypeError`  when `begin_of_sequence` is invalid.'
@@ -170,7 +169,7 @@ class TestGenerateSequence(unittest.TestCase):
                     '`begin_of_sequence` must be an instance of `str`.',
                     msg=msg2
                 )
-    
+
     def test_invalid_input_device(self):
         r"""Raise when `device` is invalid."""
         msg1 = 'Must raise `TypeError`  when `device` is invalid.'
@@ -198,7 +197,7 @@ class TestGenerateSequence(unittest.TestCase):
                     '`device` must be an instance of `torch.device`.',
                     msg=msg2
                 )
-    
+
     def test_invalid_input_max_seq_len(self):
         r"""Raise when `max_seq_len` is invalid."""
         msg1 = 'Must raise `TypeError`  when `max_seq_len` is invalid.'
@@ -226,7 +225,7 @@ class TestGenerateSequence(unittest.TestCase):
                     '`max_seq_len` must be an instance of `int`.',
                     msg=msg2
                 )
-    
+
     def test_invalid_input_model(self):
         r"""Raise when `model` is invalid."""
         msg1 = 'Must raise `TypeError`  when `model` is invalid.'
@@ -253,12 +252,12 @@ class TestGenerateSequence(unittest.TestCase):
                     ctx_man.exception.args[0],
                     '`model` must be an instance of '
                     '`Union['
-                        'lmp.model.BaseRNNModel,'
-                        'lmp.model.BaseResRNNModel'
+                    'lmp.model.BaseRNNModel,'
+                    'lmp.model.BaseResRNNModel'
                     ']`.',
                     msg=msg2
                 )
-    
+
     def test_invalid_input_tokenizer(self):
         r"""Raise when `tokenizer` is invalid."""
         msg1 = 'Must raise `TypeError`  when `tokenizer` is invalid.'
@@ -330,6 +329,7 @@ class TestGenerateSequence(unittest.TestCase):
             self.assertIsInstance(batch_sequences, List, msg=msg)
             for sequence in batch_sequences:
                 self.assertIsInstance(sequence, str, msg=msg)
+
 
 if __name__ == '__main__':
     unittest.main()

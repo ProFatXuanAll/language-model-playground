@@ -27,7 +27,10 @@ class TestUtilPerplexityEval(unittest.TestCase):
             import lmp.util._perplexity_eval
             # pylint: enable=C0415
 
-            self.assertTrue(inspect.ismodule(lmp.util._perplexity_eval), msg=msg)
+            self.assertTrue(
+                inspect.ismodule(
+                    lmp.util._perplexity_eval),
+                msg=msg)
         except ImportError:
             self.fail(msg=msg)
 

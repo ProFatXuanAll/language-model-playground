@@ -23,7 +23,7 @@ import torch.nn
 class BaseResRNNBlock(torch.nn.Module):
     r"""RNN residual block.
 
-    out = dropout(activate(RNN(x))) + x
+    out = dropout(ReLU(RNN(x))) + x
 
     Args:
         d_hid:

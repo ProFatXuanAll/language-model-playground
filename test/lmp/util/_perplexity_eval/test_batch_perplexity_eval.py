@@ -27,9 +27,7 @@ import torch
 # self-made modules
 
 import lmp
-import lmp.config
 import lmp.model
-import lmp.path
 
 
 class TestLoadOptimizerByConfig(unittest.TestCase):
@@ -209,7 +207,7 @@ class TestLoadOptimizerByConfig(unittest.TestCase):
                     '`device` must be an instance of `torch.device`.',
                     msg=msg2
                 )
-    
+
     def test_invalid_input_model(self):
         r"""Raise when `model` is invalid."""
         msg1 = (
@@ -237,8 +235,8 @@ class TestLoadOptimizerByConfig(unittest.TestCase):
                     ctx_man.exception.args[0],
                     '`model` must be an instance of '
                     '`Union['
-                        'lmp.model.BaseRNNModel,'
-                        'lmp.model.BaseResRNNModel'
+                    'lmp.model.BaseRNNModel,'
+                    'lmp.model.BaseResRNNModel'
                     ']`.',
                     msg=msg2
                 )
@@ -284,7 +282,7 @@ class TestLoadOptimizerByConfig(unittest.TestCase):
                 model,
             )
             for tokenizer in self.tokenizer_obj
-            for model in  self.model_obj
+            for model in self.model_obj
         )
 
         for tokenizer, model in examples:
@@ -294,7 +292,7 @@ class TestLoadOptimizerByConfig(unittest.TestCase):
                 model=model,
                 tokenizer=tokenizer
             )
-            
+
             self.assertIsInstance(batch_ppls, List, msg=msg)
             for ppl in batch_ppls:
                 self.assertIsInstance(ppl, float, msg=msg)

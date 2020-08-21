@@ -1,7 +1,7 @@
 r"""Test `lmp.path.PROJECT_ROOT`.
 
 Usage:
-    python -m unittest test/lmp/path/test_project_root.py
+    python -m unittest test.lmp.path.test_project_root
 """
 
 # built-in modules

@@ -24,10 +24,9 @@ import torch
 
 # self-made modules
 
-import lmp
 import lmp.config
 import lmp.model
-import lmp.path
+import lmp.util
 
 
 class TestTrainModelByConfig(unittest.TestCase):
@@ -111,8 +110,8 @@ class TestTrainModelByConfig(unittest.TestCase):
                         name='optimizer',
                         kind=inspect.Parameter.POSITIONAL_OR_KEYWORD,
                         annotation=Union[
-                           torch.optim.SGD,
-                           torch.optim.Adam,
+                            torch.optim.SGD,
+                            torch.optim.Adam,
                         ],
                         default=inspect.Parameter.empty
                     ),
@@ -244,12 +243,12 @@ class TestTrainModelByConfig(unittest.TestCase):
                     ctx_man.exception.args[0],
                     '`model` must be an instance of '
                     '`Union['
-                        'lmp.model.BaseRNNModel,'
-                        'lmp.model.BaseResRNNModel'
+                    'lmp.model.BaseRNNModel,'
+                    'lmp.model.BaseResRNNModel'
                     ']`.',
                     msg=msg2
                 )
- 
+
     def test_invalid_input_optimizer(self):
         r"""Raise when `optimizer` is invalid."""
         msg1 = (
@@ -279,8 +278,8 @@ class TestTrainModelByConfig(unittest.TestCase):
                     ctx_man.exception.args[0],
                     '`optimizer` must be an instance of '
                     '`Union['
-                        'torch.optim.SGD,'
-                        'torch.optim.Adam'
+                    'torch.optim.SGD,'
+                    'torch.optim.Adam'
                     ']`.',
                     msg=msg2
                 )
@@ -316,6 +315,7 @@ class TestTrainModelByConfig(unittest.TestCase):
                     '`lmp.tokenizer.BaseTokenizer`.',
                     msg=msg2
                 )
+
 
 if __name__ == '__main__':
     unittest.main()

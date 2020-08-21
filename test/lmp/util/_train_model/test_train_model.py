@@ -14,6 +14,7 @@ from __future__ import unicode_literals
 import gc
 import inspect
 import math
+import os
 import unittest
 
 from typing import Union
@@ -25,6 +26,7 @@ import torch
 # self-made modules
 
 import lmp
+
 
 class TestTrainModel(unittest.TestCase):
     r"""Test Case for `lmp.util.train_model`."""
@@ -46,7 +48,7 @@ class TestTrainModel(unittest.TestCase):
         )
 
         self.checkpoint = -1
-        self.checkpoint_step = 200 
+        self.checkpoint_step = 200
         self.data_loader = data_loader
         self.device = torch.tensor([10]).device
         self.epoch = 2
@@ -144,8 +146,8 @@ class TestTrainModel(unittest.TestCase):
                         name='optimizer',
                         kind=inspect.Parameter.POSITIONAL_OR_KEYWORD,
                         annotation=Union[
-                           torch.optim.SGD,
-                           torch.optim.Adam,
+                            torch.optim.SGD,
+                            torch.optim.Adam,
                         ],
                         default=inspect.Parameter.empty
                     ),
@@ -470,12 +472,12 @@ class TestTrainModel(unittest.TestCase):
                     ctx_man.exception.args[0],
                     '`model` must be an instance of '
                     '`Union['
-                        'lmp.model.BaseRNNModel,'
-                        'lmp.model.BaseResRNNModel'
+                    'lmp.model.BaseRNNModel,'
+                    'lmp.model.BaseResRNNModel'
                     ']`.',
                     msg=msg2
                 )
- 
+
     def test_invalid_input_optimizer(self):
         r"""Raise when `optimizer` is invalid."""
         msg1 = (
@@ -509,8 +511,8 @@ class TestTrainModel(unittest.TestCase):
                     ctx_man.exception.args[0],
                     '`optimizer` must be an instance of '
                     '`Union['
-                        'torch.optim.SGD,'
-                        'torch.optim.Adam'
+                    'torch.optim.SGD,'
+                    'torch.optim.Adam'
                     ']`.',
                     msg=msg2
                 )
@@ -558,6 +560,7 @@ class TestTrainModel(unittest.TestCase):
                     '`vocab_size` must be bigger than or equal to `1`.',
                     msg=msg2
                 )
+
 
 if __name__ == '__main__':
     unittest.main()

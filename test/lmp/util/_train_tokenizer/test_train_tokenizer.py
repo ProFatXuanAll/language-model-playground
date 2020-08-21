@@ -24,11 +24,8 @@ import torch
 
 # self-made modules
 
-import lmp
-import lmp.config
-import lmp.model
-import lmp.path
-
+import lmp.dataset
+import lmp.util
 
 class TestTrainTokenizer(unittest.TestCase):
     r"""Test Case for `lmp.util.train_tokenizer`."""
@@ -169,6 +166,7 @@ class TestTrainTokenizer(unittest.TestCase):
                     '`lmp.tokenizer.BaseTokenizer`.',
                     msg=msg2
                 )
+
 
 if __name__ == '__main__':
     unittest.main()

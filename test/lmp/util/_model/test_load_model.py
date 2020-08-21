@@ -28,7 +28,6 @@ import torch
 # self-made modules
 
 import lmp
-import lmp.config
 import lmp.model
 import lmp.path
 
@@ -65,7 +64,6 @@ class TestLoadModel(unittest.TestCase):
             'vocab_size': [10, 15]
         }
         cls.param_values = [v for v in cls.parameters.values()]
-
 
     @classmethod
     def tearDownClass(cls):
@@ -686,7 +684,8 @@ class TestLoadModel(unittest.TestCase):
             try:
                 self.assertIsInstance(model, lmp.model.BaseRNNModel, msg=msg)
             except AssertionError:
-                self.assertIsInstance(model, lmp.model.BaseResRNNModel, msg=msg)
+                self.assertIsInstance(
+                    model, lmp.model.BaseResRNNModel, msg=msg)
 
     def test_load_model_by_checkpoint(self):
         r"""Save result must be consistent."""
@@ -736,7 +735,7 @@ class TestLoadModel(unittest.TestCase):
                 'd_emb',
             ),
             (
-                'out_features', 
+                'out_features',
                 'd_hid',
             ),
         )
@@ -771,7 +770,7 @@ class TestLoadModel(unittest.TestCase):
                 for attr_key, attr_dict in attr_examples:
                     self.assertTrue(hasattr(model, attr_key), msg=msg2)
                     model_attr = getattr(model, attr_key)
-                        
+
                     for model_key, ans_key in attr_dict.items():
                         self.assertEqual(
                             getattr(model_attr, model_key),
@@ -784,7 +783,10 @@ class TestLoadModel(unittest.TestCase):
                     msg=msg2
                 )
                 for layer in model.proj_emb_to_hid:
-                    if isinstance(layer, torch.nn.Dropout):
+                    if isinstance(layer, torch.nn.Dropout) or isinstance(
+                        layer,
+                        torch.nn.ReLU
+                    ):
                         continue
                     for layer_key, ans_key in proj_emb_to_hid_examples:
                         self.assertEqual(
@@ -797,7 +799,7 @@ class TestLoadModel(unittest.TestCase):
                     if isinstance(layer, torch.nn.Linear):
                         nums += 1
                 self.assertEqual(
-                    nums-1,
+                    nums,
                     ans_attributes['num_linear_layers'],
                     msg=msg2
                 )

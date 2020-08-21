@@ -1,8 +1,7 @@
 r"""Test `lmp.tokenizer.CharDictTokenizer.vocab_size`.
 
 Usage:
-    python -m unittest \
-        test/lmp/tokenizer/_char_dict_tokenizer/test_vocab_size.py
+    python -m unittest test.lmp.tokenizer._char_dict_tokenizer.test_vocab_size
 """
 
 # built-in modules

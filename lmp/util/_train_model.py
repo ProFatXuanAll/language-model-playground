@@ -1,7 +1,7 @@
 r"""Helper function for training model.
 
 Usage:
-    import lmp
+    import lmp.util
 
     lmp.util.train_model(...)
     lmp.util.train_model_by_config(...)
@@ -46,14 +46,8 @@ def train_model(
         epoch: int,
         experiment: str,
         max_norm: float,
-        model: Union[
-            lmp.model.BaseRNNModel,
-            lmp.model.BaseResRNNModel
-        ],
-        optimizer: Union[
-            torch.optim.SGD,
-            torch.optim.Adam,
-        ],
+        model: Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel],
+        optimizer: Union[torch.optim.SGD, torch.optim.Adam],
         vocab_size: int
 ):
     r"""Helper function for training language model.
@@ -81,6 +75,18 @@ def train_model(
             Language model's optimizer.
         vocab_size:
             Number of classes to predict.
+
+    Raises:
+        TypeError:
+            When `checkpoint` is not an instance of `int`, `checkpoint_step` is
+            not an instance of `int`, `data_loader` is not an instance of
+            `torch.utils.data.DataLoader`, `device` is not an instance of
+            `torch.device`, `epoch` is not an instance of `int`, `experiment`
+            is not an instance of `str`, `max_norm` is not an instance of
+            `float`, `model` is not an instance of `lmp.model.BaseRNNModel` and
+            `lmp.model.BaseResRNNModel`, `optimizer` is not an instance of
+            `torch.optim.SGD` and `torch.optim.Adam` or `vocab_size` is not an
+            instance of `int`. 
     """
     # Type check.
     if not isinstance(checkpoint, int):
@@ -282,14 +288,8 @@ def train_model_by_config(
         checkpoint: int,
         config: lmp.config.BaseConfig,
         dataset: lmp.dataset.BaseDataset,
-        model: Union[
-            lmp.model.BaseRNNModel,
-            lmp.model.BaseResRNNModel
-        ],
-        optimizer: Union[
-            torch.optim.SGD,
-            torch.optim.Adam,
-        ],
+        model: Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel],
+        optimizer: Union[torch.optim.SGD, torch.optim.Adam],
         tokenizer: lmp.tokenizer.BaseTokenizer,
 ):
     r"""Helper function for training language model.
@@ -311,6 +311,12 @@ def train_model_by_config(
             Language model's optimizer.
         tokenizer:
             Tokenizer object with attribute `vocab_size`.
+
+    Raises:
+        TypeError:
+            When `config` is not an instance of `lmp.config.BaseConfig`,
+            `dataset` is not an instance of `lmp.dataset.BaseDataset` or
+            `tokenizer` is not an instance of `lmp.tokenizer.BaseTokenizer`.
     """
     # Type check.
     if not isinstance(config, lmp.config.BaseConfig):

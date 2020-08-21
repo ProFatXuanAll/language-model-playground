@@ -52,8 +52,7 @@ class TestLoadOptimizerByConfig(unittest.TestCase):
         }
         cls.model_param_values = [v for v in cls.model_parameters.values()]
         cls.config_param_values = [v for v in cls.config_parameters.values()]
-        
-    
+
     @classmethod
     def tearDownClass(cls):
         del cls.model_parameters
@@ -65,7 +64,7 @@ class TestLoadOptimizerByConfig(unittest.TestCase):
     def setUp(self):
         r"""Set up parameters for `load_optimizer_by_config`."""
         self.checkpoint = -1
-        self.config= lmp.config.BaseConfig(
+        self.config = lmp.config.BaseConfig(
             dataset='news_collection',
             experiment='util_load_by_config_optimizer_unittest'
         )
@@ -78,7 +77,6 @@ class TestLoadOptimizerByConfig(unittest.TestCase):
             pad_token_id=0,
             vocab_size=10
         )
-        
 
         cls = self.__class__
         self.model_obj = []
@@ -103,7 +101,7 @@ class TestLoadOptimizerByConfig(unittest.TestCase):
                 vocab_size=vocab_size
             )
             self.model_obj.append(model)
-        
+
         self.config_obj = []
         for (
             learning_rate,
@@ -216,7 +214,7 @@ class TestLoadOptimizerByConfig(unittest.TestCase):
                     '`config` must be an instance of `lmp.config.BaseConfig`.',
                     msg=msg2
                 )
-    
+
     def test_invalid_input_model(self):
         r"""Raise when `model` is invalid."""
         msg1 = (
@@ -243,8 +241,8 @@ class TestLoadOptimizerByConfig(unittest.TestCase):
                     ctx_man.exception.args[0],
                     '`model` must be an instance of '
                     '`Union['
-                        'lmp.model.BaseRNNModel,'
-                        'lmp.model.BaseResRNNModel'
+                    'lmp.model.BaseRNNModel,'
+                    'lmp.model.BaseResRNNModel'
                     ']`.',
                     msg=msg2
                 )
@@ -260,7 +258,7 @@ class TestLoadOptimizerByConfig(unittest.TestCase):
                 model,
             )
             for config in self.config_obj
-            for model in  self.model_obj
+            for model in self.model_obj
         )
 
         for config, model in examples:
@@ -269,7 +267,7 @@ class TestLoadOptimizerByConfig(unittest.TestCase):
                 config=config,
                 model=model
             )
-            
+
             try:
                 self.assertIsInstance(optimizer, torch.optim.SGD, msg=msg)
             except AssertionError:

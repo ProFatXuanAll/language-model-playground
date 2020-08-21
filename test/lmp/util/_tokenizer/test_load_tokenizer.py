@@ -26,9 +26,6 @@ import torch
 # self-made modules
 
 import lmp
-import lmp.config
-import lmp.model
-import lmp.path
 
 
 class TestLoadTokenizer(unittest.TestCase):
@@ -53,7 +50,7 @@ class TestLoadTokenizer(unittest.TestCase):
     def setUp(self):
         r"""Set up parameters for `load_tokenizer`."""
         self.checkpoint = -1
-        self.experiment= 'util_tokenizer_load_tokenizer_unittest'
+        self.experiment = 'util_tokenizer_load_tokenizer_unittest'
         self.is_uncased = True
         self.tokenizer_class = 'char_dict'
 
@@ -185,7 +182,7 @@ class TestLoadTokenizer(unittest.TestCase):
                     '`is_uncased` must be an instance of `bool`.',
                     msg=msg2
                 )
-    
+
     def test_invalid_input_tokenizer_class(self):
         r"""Raise when `tokenizer_class` is invalid."""
         msg1 = (
@@ -243,7 +240,7 @@ class TestLoadTokenizer(unittest.TestCase):
                 is_uncased,
                 tokenizer_class,
             )
-            for is_uncased in  self.__class__.is_uncased_range
+            for is_uncased in self.__class__.is_uncased_range
             for tokenizer_class in self.__class__.tokenizer_class_range
         )
 
@@ -260,6 +257,7 @@ class TestLoadTokenizer(unittest.TestCase):
                 lmp.tokenizer.BaseTokenizer,
                 msg=msg
             )
-            
+
+
 if __name__ == '__main__':
     unittest.main()

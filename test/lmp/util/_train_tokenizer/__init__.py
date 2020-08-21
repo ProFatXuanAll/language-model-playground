@@ -27,7 +27,10 @@ class TestUtilTrainTokenizer(unittest.TestCase):
             import lmp.util._train_tokenizer
             # pylint: enable=C0415
 
-            self.assertTrue(inspect.ismodule(lmp.util._train_tokenizer), msg=msg)
+            self.assertTrue(
+                inspect.ismodule(
+                    lmp.util._train_tokenizer),
+                msg=msg)
         except ImportError:
             self.fail(msg=msg)
 
@@ -53,7 +56,10 @@ class TestUtilTrainTokenizer(unittest.TestCase):
                     msg=msg1.format(attr)
                 )
                 self.assertTrue(
-                    inspect.isfunction(getattr(lmp.util._train_tokenizer, attr)),
+                    inspect.isfunction(
+                        getattr(
+                            lmp.util._train_tokenizer,
+                            attr)),
                     msg=msg2.format(attr)
                 )
         except ImportError:

@@ -1,7 +1,7 @@
 r"""Helper function for loading model.
 
 Usage:
-    import lmp
+    import lmp.util
 
     model = lmp.util.load_model(...)
     model = lmp.util.load_model_by_config(...)
@@ -41,10 +41,7 @@ def load_model(
         num_rnn_layers: int,
         pad_token_id: int,
         vocab_size: int
-) -> Union[
-        lmp.model.BaseRNNModel,
-        lmp.model.BaseResRNNModel
-    ]:
+) -> Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel]:
     r"""Helper function for constructing language model.
 
     Load optimizer from pre-trained checkpoint when `checkpoint != -1`.
@@ -55,11 +52,11 @@ def load_model(
         d_emb:
             Embedding matrix vector dimension.
         d_hid:
-            GRU layers hidden dimension.
+            Model layers hidden dimension.
         device:
             Model running device.
         dropout:
-            Dropout probability on all layers out (except output layer).
+            Dropout probability on all layers output (except output layer).
         experiment:
             Name of the pre-trained experiment.
         num_rnn_layers:
@@ -73,8 +70,6 @@ def load_model(
             Embedding matrix vocabulary dimension.
 
     Raises:
-        ValueError:
-            If `model` does not supported.
         TypeError:
             When `checkpoint` is not an instance of `int`, `d_emb` is not an
             instance of `int`, `d_hid` is not an instance of `int`, `device`
@@ -84,12 +79,21 @@ def load_model(
             of `int`, `num_rnn_layers` is not an instance of `int`,
             `pad_token_id` is not an instance of `int` or `vocab_size` is not
             an instance of `int`.
+        ValueError:
+            If `model` does not supported, `d_emb` is samller than `1`, `d_hid`
+            is samller than `1`, `dropout` is not in range[0,1], `experiment`
+            is empty, `model_class` is empty, `num_linear_layers` is smaller
+            than `1`, `num_rnn_layers` is smaller than `1` or `pad_token_id`
+            is smaller than `0`.  
 
 
     Returns:
         `lmp.model.BaseRNNModel` if `model_class == 'rnn'`;
         `lmp.model.GRUModel` if `model_class == 'gru'`;
-        `lmp.model.LSTMModel` if `model_class == 'lstm'`.
+        `lmp.model.LSTMModel` if `model_class == 'lstm'`;
+        `lmp.model.BaseResRNNModel` if `model_class == 'res_rnn'`;
+        `lmp.model.ResGRUModel` if `model_class == 'res_gru'`;
+        `lmp.model.ResLSTMModel` if `model_class == 'res_lstm'`.
     """
     # Type check.
     if not isinstance(checkpoint, int):
@@ -252,10 +256,7 @@ def load_model_by_config(
         checkpoint: int,
         config: lmp.config.BaseConfig,
         tokenizer: lmp.tokenizer.BaseTokenizer
-) -> Union[
-        lmp.model.BaseRNNModel,
-        lmp.model.BaseResRNNModel
-    ]:
+) -> Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel]:
     r"""Helper function for constructing language model.
 
     Load model from pre-trained checkpoint when `checkpoint != -1`.
