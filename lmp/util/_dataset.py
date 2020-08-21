@@ -33,7 +33,7 @@ def _preprocess_news_collection(
         column: str) -> lmp.dataset.LanguageModelDataset:
     r"""Preprocessing of news collection dataset and convert to 
     LanguageModelDataset.
-    
+
     Args:
         column:
             Select the part of the data which want to use.
@@ -53,7 +53,7 @@ def _preprocess_news_collection(
 
 def _preprocess_wiki_tokens(dataset: str) -> lmp.dataset.LanguageModelDataset:
     r"""Preprocess of wiki dataset and convert to LanguageModelDataset.
-    
+
     Args:
         column:
             Select the data which want to use.
@@ -76,7 +76,7 @@ def _preprocess_wiki_tokens(dataset: str) -> lmp.dataset.LanguageModelDataset:
 def _preprocess_word_test_v1_tokens(
 ) -> lmp.dataset.AnalogyDataset:
     r"""Preprocess word_test_v1 dataset and convert to LanguageModelDataset.
-    
+
     Returns:
         lmp.dataset.AnalogyDataset
     """
@@ -119,19 +119,29 @@ def load_dataset(
         `lmp.dataset.LanguageModelDataset` instance where samples are sequences.
     """
     if dataset == 'news_collection_desc':
-        return _preprocess_news_collection(column='desc')
+        return _preprocess_news_collection(
+            column='desc'
+        )
 
     if dataset == 'news_collection_title':
-        return _preprocess_news_collection(column='title')
+        return _preprocess_news_collection(
+            column='title'
+        )
 
     if dataset == 'wiki_train_tokens':
-        return _preprocess_wiki_tokens(dataset='train')
+        return _preprocess_wiki_tokens(
+            dataset='train'
+        )
 
     if dataset == 'wiki_valid_tokens':
-        return _preprocess_wiki_tokens(dataset='valid')
+        return _preprocess_wiki_tokens(
+            dataset='valid'
+        )
 
     if dataset == 'wiki_test_tokens':
-        return _preprocess_wiki_tokens(dataset='test')
+        return _preprocess_wiki_tokens(
+            dataset='test'
+        )
 
     if dataset == 'word_test_v1':
         return _preprocess_word_test_v1_tokens()

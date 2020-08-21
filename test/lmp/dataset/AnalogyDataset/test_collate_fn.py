@@ -164,7 +164,14 @@ class TestCollateFn(unittest.TestCase):
                     'Japan',
                     'Tokyo',
                     'capital',
-                ]
+                ],
+                [
+                    'write',
+                    'writes',
+                    'sad',
+                    'sads',
+                    'grammer',
+                ],
             ],
             [
                 [
@@ -186,7 +193,9 @@ class TestCollateFn(unittest.TestCase):
                     self.assertIsInstance(result, torch.Tensor, msg=msg)
                     self.assertEqual(result.dtype, torch.int64, msg=msg)
                 for result in results[3:5]:
-                    self.assertIsInstance(result[0], str, msg=msg)
+                    self.assertIsInstance(result, Iterable, msg=msg)
+                    for word in result:
+                        self.assertIsInstance(word, str, msg=msg)
 
     def test_return_value(self):
         r"""Return value must have three word id and two string.

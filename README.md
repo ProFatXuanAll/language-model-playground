@@ -260,7 +260,7 @@ python run_generate.py --experiment 1 --checkpoint 500 --begin_of_sequence ä»Šå¤
 
 ```sh
 #  Using checkpoint 500 of experiment 2 (english model) to test. (test_word example: Taiwan:Taipei=Japan:_)
-python run_analogy_inference.py --experiment 1 --checkpoint 500 --test_word Taiwan,Taipei,Japan
+python run_analogy_inference.py --experiment 2 --checkpoint 500 --test_word Taiwan,Taipei,Japan
 ```
 
 3. Try using different hyperparameters or change model, then use `run_train.py` to perform training as above example. Then run `run_generate.py` to compare generated results given exactly same `begin_of_sequence`.
