@@ -46,7 +46,7 @@ def _preprocess_news_collection(
         raise FileNotFoundError(
             f'file {file_path} does not exist.'
         )
-    df = pd.read_csv(file_path)
+    df = pd.read_csv(file_path).dropna()
     batch_sequences = df[column].to_list()
     return lmp.dataset.LanguageModelDataset(batch_sequences)
 
