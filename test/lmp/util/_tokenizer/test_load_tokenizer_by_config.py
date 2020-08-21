@@ -27,9 +27,6 @@ import torch
 # self-made modules
 
 import lmp
-import lmp.config
-import lmp.model
-import lmp.path
 
 
 class TestLoadTokenizer(unittest.TestCase):
@@ -69,7 +66,6 @@ class TestLoadTokenizer(unittest.TestCase):
             ]
         }
         cls.param_values = [v for v in cls.parameters.values()]
-        
 
     @classmethod
     def tearDownClass(cls):
@@ -128,7 +124,6 @@ class TestLoadTokenizer(unittest.TestCase):
                 tokenizer_class=tokenizer_class
             )
             self.config_obj.append(config)
-
 
     def tearDown(self):
         r"""Delete parameters for `load_tokenizer_by_config`."""
@@ -235,6 +230,7 @@ class TestLoadTokenizer(unittest.TestCase):
                 lmp.tokenizer.BaseTokenizer,
                 msg=msg
             )
-            
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -22,7 +22,6 @@ import unittest
 import lmp
 import lmp.config
 import lmp.dataset
-import lmp.path
 
 
 class TestLoadDatasetByConfig(unittest.TestCase):
@@ -33,7 +32,7 @@ class TestLoadDatasetByConfig(unittest.TestCase):
         msg = 'Inconsistent method signature.'
 
         self.assertEqual(
-            inspect.signature(lmp.util.load_dataset),
+            inspect.signature(lmp.util.load_dataset_by_config),
             inspect.Signature(
                 parameters=[
                     inspect.Parameter(
@@ -47,7 +46,6 @@ class TestLoadDatasetByConfig(unittest.TestCase):
             ),
             msg=msg
         )
-
 
     def test_invalid_input_dataset(self):
         r"""Raise when `dataset` is invalid."""
@@ -69,7 +67,6 @@ class TestLoadDatasetByConfig(unittest.TestCase):
                     '`config` must be an instance of `lmp.config.BaseConfig`.',
                     msg=msg2
                 )
-
 
     def test_return_type(self):
         r"""Return `lmp.config.BaseDataset`."""
@@ -124,6 +121,7 @@ class TestLoadDatasetByConfig(unittest.TestCase):
             config = lmp.config.BaseConfig(**args)
             dataset = lmp.util.load_dataset_by_config(config)
             self.assertIsInstance(dataset, lmp.dataset.BaseDataset, msg=msg)
+
 
 if __name__ == '__main__':
     unittest.main()

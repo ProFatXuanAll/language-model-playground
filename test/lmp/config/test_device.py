@@ -1,7 +1,7 @@
 r"""Test `lmp.config.BaseConfig.device`.
 
 Usage:
-    python -m unittest test/lmp/config/test_device.py
+    python -m unittest test.lmp.config.test_device
 """
 
 # built-in modules
@@ -23,7 +23,7 @@ import torch
 from lmp.config import BaseConfig
 
 
-class TestIter(unittest.TestCase):
+class TestDevice(unittest.TestCase):
     r"""Test case for `lmp.config.BaseConfig.device`."""
 
     def test_signature(self):

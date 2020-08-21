@@ -27,7 +27,7 @@ from lmp.model._base_res_rnn_block import BaseResRNNBlock
 class ResGRUBlock(BaseResRNNBlock):
     r"""GRU residual block.
 
-    out = dropout(activate(GRU(x))) + x
+    out = dropout(ReLU(GRU(x))) + x
 
     Args:
         d_hid:
@@ -45,7 +45,7 @@ class ResGRUBlock(BaseResRNNBlock):
     def __init__(self, d_hid: int, dropout: float):
         super().__init__(d_hid=d_hid, dropout=dropout)
 
-        # Override RNN layer with GRU layer.
+        # Override residual RNN block(s) with residual LSTM block(s).
         self.rnn_layer = torch.nn.GRU(
             input_size=d_hid,
             hidden_size=d_hid,

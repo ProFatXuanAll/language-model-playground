@@ -43,15 +43,15 @@ class TestModel(unittest.TestCase):
         msg2 = 'Module attribute `{}` must be a class.'
         msg3 = 'Inconsistent module signature.'
         examples = (
+            'BaseResRNNBlock',
+            'BaseResRNNModel',
             'BaseRNNModel',
             'GRUModel',
             'LSTMModel',
-            'BaseResRNNModel',
-            'ResGRUModel',
-            'ResLSTMModel',
-            'BaseResRNNBlock',
             'ResGRUBlock',
+            'ResGRUModel',
             'ResLSTMBlock',
+            'ResLSTMModel',
         )
 
         try:

@@ -1,7 +1,7 @@
 r"""Helper function for loading optimizer.
 
 Usage:
-    import lmp
+    import lmp.util
 
     optimizer = lmp.util.load_optimizer(...)
     optimizer = lmp.util.load_optimizer_by_config(...)
@@ -58,6 +58,11 @@ def load_optimizer(
             Model parameters to be optimized.
 
     Raises:
+        TypeError:
+            When `checkpoint` is not an instance of `int`, `experiment` is not
+            an instance of `str`, `learning_rate` is not an instance of `float`
+            , `optimizer_class` is not an instance of `str` or `parameters` is
+            not an instance of `Iterator[torch.nn.Parameter]`.
         ValueError:
             If `optimizer` does not supported.
 
@@ -90,17 +95,13 @@ def load_optimizer(
             '`Iterator[torch.nn.Parameter]`.',
         )
 
-    
+
     if optimizer_class == 'sgd':
-        optimizer = torch.optim.SGD(
-            params=parameters,
-            lr=learning_rate
-        )
+        optimizer = torch.optim.SGD(params=parameters, lr=learning_rate)
+
     elif optimizer_class == 'adam':
-        optimizer = torch.optim.Adam(
-            params=parameters,
-            lr=learning_rate
-        )
+        optimizer = torch.optim.Adam(params=parameters, lr=learning_rate)
+
     else:
         raise ValueError(
             f'`{optimizer_class}` does not support\nSupported options:' +
@@ -145,6 +146,12 @@ def load_optimizer_by_config(
             and `optimizer_class`.
         model:
             Source of model parameters.
+
+    Raises:
+        TypeError:
+            When `config` is not an instance of `lmp.config.BaseConfig` or
+            `model` is not an instance of `lmp.model.BaseRNNModel` and
+            `BaseResRNNModel`.
 
     Returns:
         Same as `load_optimizer`.

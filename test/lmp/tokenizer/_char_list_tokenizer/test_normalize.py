@@ -1,8 +1,7 @@
 r"""Test `lmp.tokenizer.CharListTokenizer.normalize`.
 
 Usage:
-    python -m unittest \
-        test/lmp/tokenizer/_char_list_tokenizer/test_normalize.py
+    python -m unittest test.lmp.tokenizer._char_list_tokenizer.test_normalize
 """
 
 # built-in modules

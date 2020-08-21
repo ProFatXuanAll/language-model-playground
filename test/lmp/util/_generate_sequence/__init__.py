@@ -27,7 +27,10 @@ class TestUtilGenerateSequence(unittest.TestCase):
             import lmp.util._generate_sequence
             # pylint: enable=C0415
 
-            self.assertTrue(inspect.ismodule(lmp.util._generate_sequence), msg=msg)
+            self.assertTrue(
+                inspect.ismodule(
+                    lmp.util._generate_sequence),
+                msg=msg)
         except ImportError:
             self.fail(msg=msg)
 
@@ -53,7 +56,10 @@ class TestUtilGenerateSequence(unittest.TestCase):
                     msg=msg1.format(attr)
                 )
                 self.assertTrue(
-                    inspect.isfunction(getattr(lmp.util._generate_sequence, attr)),
+                    inspect.isfunction(
+                        getattr(
+                            lmp.util._generate_sequence,
+                            attr)),
                     msg=msg2.format(attr)
                 )
         except ImportError:

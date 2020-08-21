@@ -1,10 +1,10 @@
 r"""Helper function for calculating perplexity.
 
 Usage:
-    import lmp
+    import lmp.util
 
-    generated = lmp.util.batch_perplexity_eval(...)
-    generated = lmp.util.perplexity_eval(...)
+    perplexities = lmp.util.batch_perplexity_eval(...)
+    perplexity = lmp.util.perplexity_eval(...)
 """
 
 # built-in modules
@@ -32,10 +32,7 @@ import lmp.tokenizer
 @torch.no_grad()
 def perplexity_eval(
         device: torch.device,
-        model: Union[
-            lmp.model.BaseRNNModel,
-            lmp.model.BaseResRNNModel
-        ],
+        model: Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel],
         sequence: str,
         tokenizer: lmp.tokenizer.BaseTokenizer
 ) -> float:
@@ -129,10 +126,7 @@ def perplexity_eval(
 def batch_perplexity_eval(
         dataset: List[str],
         device: torch.device,
-        model: Union[
-            lmp.model.BaseRNNModel,
-            lmp.model.BaseResRNNModel
-        ],
+        model: Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel],
         tokenizer: lmp.tokenizer.BaseTokenizer
 ) -> List[float]:
     r"""Helper function for calculating dataset perplexity.

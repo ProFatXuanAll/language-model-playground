@@ -1,7 +1,7 @@
 r"""Test `lmp.model.ResGRUBlock.forward`.
 
 Usage:
-    python -m unittest test/lmp/model/_base_res_rnn_block/test_init.py
+    python -m unittest test.lmp.model._res_gru_block.test_forward
 """
 
 # built-in modules
@@ -26,39 +26,42 @@ import torch.nn
 from lmp.model import ResGRUBlock
 
 
-class TestInit(unittest.TestCase):
+class TestForward(unittest.TestCase):
     r"""Test case for `lmp.model.ResGRUBlock.forward`."""
 
+    @classmethod
+    def setUpClass(cls):
+        cls.batch_range = [1, 2]
+        cls.d_hid_range = [1, 10]
+        cls.dropout_range = [0.0, 0.1, 0.5, 1.0]
+        cls.sequence_range = list(range(1, 5))
+
+    @classmethod
+    def tearDownClass(cls):
+        del cls.batch_range
+        del cls.d_hid_range
+        del cls.dropout_range
+        del cls.sequence_range
+        gc.collect()
+
     def setUp(self):
-        r"""Set up hyper parameters and construct ResGRUBlock"""
-        self.d_hid = 10
-        self.dropout = 0.1
-
-        model_parameters = (
-            (
-                ('d_hid', self.d_hid),
-                ('dropout', self.dropout),
-            ),
-        )
-
-        for parameters in model_parameters:
-            pos = []
-            kwargs = {}
-            for attr, attr_val in parameters:
-                pos.append(attr_val)
-                kwargs[attr] = attr_val
-
-            # Construct using positional and keyword arguments.
-            self.models = [
-                ResGRUBlock(*pos),
-                ResGRUBlock(**kwargs),
-            ]
+        r"""Setup hyperparameters and construct `ResGRUBlock`."""
+        self.model_objs = []
+        cls = self.__class__
+        for d_hid in cls.d_hid_range:
+            for dropout in cls.dropout_range:
+                self.model_objs.append({
+                    'd_hid': d_hid,
+                    'dropout': dropout,
+                    'model': ResGRUBlock(
+                        d_hid=d_hid,
+                        dropout=dropout
+                    ),
+                })
 
     def tearDown(self):
-        r"""Delete parameters and models."""
-        del self.d_hid
-        del self.dropout
-        del self.models
+        r"""Delete model instances."""
+        del self.model_objs
         gc.collect()
 
     def test_signature(self):
@@ -87,58 +90,54 @@ class TestInit(unittest.TestCase):
         )
 
     def test_invalid_input_x(self):
-        r"""Raise when `x` is invalid."""
-        msg1 = 'Must raise `TypeError` when `x` is invalid.'
-        msg2 = 'Inconsistent error message.'
-        error_msg = "'{}' object has no attribute 'size'"
+        r"""Raise `AttributeError` when input `x` is invalid."""
+        msg = 'Must raise `AttributeError` when input `x` is invalid.'
         examples = (
-            False, 0, -1, 0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf,
-            0j, 1j, '', b'', [], (), {}, set(), object(), lambda x: x, None,
-            NotImplemented, ...
+            False, True, 0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf,
+            -math.inf, 0j, 1j, '', b'', [], (), {}, set(), object(),
+            lambda x: x, type, None, NotImplemented, ...
         )
 
         for invalid_input in examples:
-            for model in self.models:
-                with self.assertRaises(AttributeError, msg=msg1) as ctx_man:
+            for model_obj in self.model_objs:
+                model = model_obj['model']
+                with self.assertRaises(AttributeError, msg=msg):
                     model.forward(x=invalid_input)
-
-                if isinstance(ctx_man.exception, AttributeError):
-                    self.assertEqual(
-                        ctx_man.exception.args[0],
-                        error_msg.format(type(invalid_input).__name__),
-                        msg=msg2
-                    )
 
     def test_return_type(self):
         r"""Return `Tensor`."""
         msg = 'Must return `Tensor`.'
 
         examples = (
-            torch.rand(5, 3, self.d_hid),
-            torch.rand(3, 5, self.d_hid),
+            (
+                torch.rand(batch_size, sequence_len, model_obj['d_hid']),
+                model_obj['model']
+            )
+            for batch_size in self.__class__.batch_range
+            for sequence_len in self.__class__.sequence_range
+            for model_obj in self.model_objs
         )
 
-        for x in examples:
-            for model in self.models:
-                pred_y = model(x)
-                self.assertIsInstance(pred_y, torch.Tensor, msg=msg)
+        for x, model in examples:
+            self.assertIsInstance(model(x), torch.Tensor, msg=msg)
 
     def test_return_size(self):
         r"""Test return size"""
         msg = 'Return size must be {}.'
         examples = (
-            torch.rand(5, 10, self.d_hid),
-            torch.rand(10, 20, self.d_hid),
+            (
+                torch.rand(batch_size, sequence_len, model_obj['d_hid']),
+                model_obj['model']
+            )
+            for batch_size in self.__class__.batch_range
+            for sequence_len in self.__class__.sequence_range
+            for model_obj in self.model_objs
         )
 
-        for model in self.models:
-            for batch_sequences in examples:
-                yt = model(batch_sequences)
-                self.assertEqual(
-                    yt.size(),
-                    batch_sequences.size(),
-                    msg=msg.format(batch_sequences.size())
-                )
+        for x, model in examples:
+            logits = model(x)
+            for s1, s2 in zip(x.size(), logits.size()):
+                self.assertEqual(s1, s2, msg=msg)
 
 
 if __name__ == '__main__':

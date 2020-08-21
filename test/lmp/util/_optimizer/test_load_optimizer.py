@@ -48,8 +48,8 @@ class TestLoadOptimizer(unittest.TestCase):
         }
         cls.model_param_values = [v for v in cls.model_parameters.values()]
         cls.learning_rate_range = [0.0, 0.1, 0.5, 0.9]
-        cls.optimizer_class_range = ['sgd', 'adam']        
-    
+        cls.optimizer_class_range = ['sgd', 'adam']
+
     @classmethod
     def tearDownClass(cls):
         del cls.learning_rate_range
@@ -61,10 +61,10 @@ class TestLoadOptimizer(unittest.TestCase):
     def setUp(self):
         r"""Set up parameters for `load_optimizer`."""
         self.checkpoint = -1
-        self.experiment= 'util_load_optimizer_unittest'
-        self.learning_rate= 0.25
-        self.optimizer_class= 'sgd'
-        self.parameters= lmp.model.BaseRNNModel(
+        self.experiment = 'util_load_optimizer_unittest'
+        self.learning_rate = 0.25
+        self.optimizer_class = 'sgd'
+        self.parameters = lmp.model.BaseRNNModel(
             d_emb=4,
             d_hid=4,
             dropout=0.2,
@@ -97,7 +97,7 @@ class TestLoadOptimizer(unittest.TestCase):
                 vocab_size=vocab_size
             )
             self.parameters_obj.append(list(model.parameters()))
-        
+
     def tearDown(self):
         r"""Delete parameters for `load_optimizer`."""
         del self.checkpoint
@@ -239,7 +239,7 @@ class TestLoadOptimizer(unittest.TestCase):
                     '`learning_rate` must be an instance of `float`.',
                     msg=msg2
                 )
-    
+
     def test_invalid_input_optimizer_class(self):
         r"""Raise when `optimizer_class` is invalid."""
         msg1 = (
@@ -286,7 +286,7 @@ class TestLoadOptimizer(unittest.TestCase):
                     ))),
                     msg=msg2
                 )
-    
+
     def test_invalid_input_parameters(self):
         r"""Raise when `parameters` is invalid."""
         msg1 = (
@@ -374,7 +374,6 @@ class TestLoadOptimizer(unittest.TestCase):
                 optimizer_class=optimizer_class,
                 parameters=parameters
             )
-            
 
             try:
                 self.assertIsInstance(optimizer, torch.optim.SGD, msg=msg)

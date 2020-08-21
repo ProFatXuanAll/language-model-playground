@@ -1,7 +1,7 @@
 r"""Test `lmp.dataset.BaseDataset.__getitem__`.
 
 Usage:
-    python -m unittest test/lmp/dataset/test_getitem.py
+    python -m unittest test.lmp.dataset.test_getitem
 """
 
 # built-in modules
@@ -20,7 +20,7 @@ import unittest
 from lmp.dataset import BaseDataset
 
 
-class TestInit(unittest.TestCase):
+class TestGetItem(unittest.TestCase):
     r"""Test case for `lmp.dataset.BaseDataset.__getitem__`."""
 
     def test_signature(self):

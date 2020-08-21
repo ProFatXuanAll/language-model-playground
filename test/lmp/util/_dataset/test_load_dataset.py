@@ -20,9 +20,7 @@ import unittest
 # self-made modules
 
 import lmp
-import lmp.config
 import lmp.dataset
-import lmp.path
 
 
 class TestLoadDataset(unittest.TestCase):
@@ -48,10 +46,9 @@ class TestLoadDataset(unittest.TestCase):
             msg=msg
         )
 
-
     def test_invalid_input_dataset(self):
         r"""Raise when `dataset` is invalid."""
-        msg1 = 'Must raise `TypeError` or `ValueError` when `dataset` ' 
+        msg1 = 'Must raise `TypeError` or `ValueError` when `dataset` '
         'is invalid.'
         msg2 = 'Inconsistent error message.'
         examples = (
@@ -87,11 +84,9 @@ class TestLoadDataset(unittest.TestCase):
                     msg=msg2
                 )
 
-            
-
     def test_return_type(self):
-        r"""Return `lmp.config.BaseDataset`."""
-        msg = 'Must return `lmp.config.BaseDataset`.'
+        r"""Return `lmp.dataset.BaseDataset`."""
+        msg = 'Must return `lmp.dataset.BaseDataset`.'
 
         examples = (
             'news_collection_desc',

@@ -26,6 +26,7 @@ import torch
 
 import lmp
 
+
 class TestLoadModelSetSeed(unittest.TestCase):
     r"""Test Case for `lmp.util.set_seed`."""
 
@@ -38,7 +39,6 @@ class TestLoadModelSetSeed(unittest.TestCase):
         del cls.seed_range
         gc.collect()
 
-
     def setUp(self):
         r"""Set up some random seeds."""
         self.rand_obj = []
@@ -46,7 +46,7 @@ class TestLoadModelSetSeed(unittest.TestCase):
             lmp.util.set_seed(seed)
             num = torch.rand(seed)
             self.rand_obj.append(num)
-    
+
     def tearDown(self):
         r"""Delete parameters for `set_seed`."""
         del self.rand_obj
@@ -95,7 +95,7 @@ class TestLoadModelSetSeed(unittest.TestCase):
 
     def test_rand_num(self):
         r"""Test `set_seed` function normally."""
-        msg='Inconsistent error message.'
+        msg = 'Inconsistent error message.'
         examples = (
             (
                 self.__class__.seed_range[i],
@@ -113,6 +113,3 @@ class TestLoadModelSetSeed(unittest.TestCase):
                     ans[i].item(),
                     msg=msg
                 )
-
-
-

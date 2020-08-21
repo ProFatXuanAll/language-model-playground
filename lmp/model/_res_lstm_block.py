@@ -27,7 +27,7 @@ from lmp.model._base_res_rnn_block import BaseResRNNBlock
 class ResLSTMBlock(BaseResRNNBlock):
     r"""LSTM residual block.
 
-    out = dropout(activate(LSTM(x))) + x
+    out = dropout(ReLU(LSTM(x))) + x
 
     Args:
         d_hid:
@@ -45,7 +45,7 @@ class ResLSTMBlock(BaseResRNNBlock):
     def __init__(self, d_hid: int, dropout: float):
         super().__init__(d_hid=d_hid, dropout=dropout)
 
-        # Override RNN layer with LSTM layer.
+        # Override residual RNN block with residual LSTM block.
         self.rnn_layer = torch.nn.LSTM(
             input_size=d_hid,
             hidden_size=d_hid,

@@ -297,7 +297,7 @@ class TestLoadModelByConfig(unittest.TestCase):
         #     )
         #     for config in  self.config_obj
         #     for tokenizer in self.tokenizer_obj
-        # ) 
+        # )
 
         for config, tokenizer in examples:
             model = lmp.util.load_model_by_config(
@@ -305,11 +305,12 @@ class TestLoadModelByConfig(unittest.TestCase):
                 config=config,
                 tokenizer=tokenizer
             )
-            
+
             try:
                 self.assertIsInstance(model, lmp.model.BaseRNNModel, msg=msg)
             except AssertionError:
-                self.assertIsInstance(model, lmp.model.BaseResRNNModel, msg=msg)
+                self.assertIsInstance(
+                    model, lmp.model.BaseResRNNModel, msg=msg)
 
 
 if __name__ == '__main__':

@@ -215,7 +215,7 @@ class TestLoadConfig(unittest.TestCase):
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`args` must be instance of `argparse.Namespace`.',
+                    '`args` must be an instance of `argparse.Namespace`.',
                     msg=msg2
                 )
 

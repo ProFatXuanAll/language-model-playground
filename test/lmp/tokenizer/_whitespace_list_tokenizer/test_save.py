@@ -1,8 +1,7 @@
 r"""Test `lmp.tokenizer.WhitespaceListTokenizer.save`.
 
 Usage:
-    python -m unittest \
-        test/lmp/tokenizer/_whitespace_list_tokenizer/test_save.py
+    python -m unittest test.lmp.tokenizer._whitespace_list_tokenizer.test_save
 """
 
 # built-in modules

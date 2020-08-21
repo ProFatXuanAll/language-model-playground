@@ -47,10 +47,10 @@ class TestResGRUBlock(unittest.TestCase):
 
         try:
             # pylint: disable=C0415
+            # pylint: disable=W0212
             import lmp
             import lmp.model
             import lmp.model._res_gru_block
-            # pylint: enable=C0415
 
             for attr in examples:
                 self.assertTrue(
@@ -64,6 +64,8 @@ class TestResGRUBlock(unittest.TestCase):
                     )),
                     msg=msg2.format(attr)
                 )
+            # pylint: enable=W0212
+            # pylint: enable=C0415
         except ImportError:
             self.fail(msg=msg3)
 
