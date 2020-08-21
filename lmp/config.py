@@ -168,7 +168,7 @@ class BaseConfig:
         if not isinstance(tokenizer_class, str):
             raise TypeError('`tokenizer_class` must be an instance of `str`.')
 
-        # Value Check.
+        # Value check.
         if batch_size < 1:
             raise ValueError(
                 '`batch_size` must be bigger than or equal to `1`.'

@@ -50,6 +50,19 @@ def load_tokenizer(
         `WhitespaceDictTokenizer` if `tokenizer_class == 'whitespace_dict'`.
         `WhitespaceListTokenizer` if `tokenizer_class == 'whitespace_list'`.
     """
+    # Type check.
+    if not isinstance(checkpoint, int):
+        raise TypeError('`checkpoint` must be an instance of `int`.')
+    
+    if not isinstance(experiment, str):
+        raise TypeError('`experiment` must be an instance of `str`.')
+    
+    if not isinstance(is_uncased, bool):
+        raise TypeError('`is_uncased` must be an instance of `bool`.')
+
+    if not isinstance(tokenizer_class, str):
+        raise TypeError('`tokenizer_class` must be an instance of `str`.')
+
     if tokenizer_class == 'char_dict':
         tokenizer = lmp.tokenizer.CharDictTokenizer(is_uncased=is_uncased)
     elif tokenizer_class == 'char_list':
@@ -95,9 +108,19 @@ def load_tokenizer_by_config(
             Configuration object with attributes `is_uncased`,
             `experiment` and `tokenizer_class`.
 
+    Raises:
+        TyoeError:
+            When `config` is not an instance of `lmp.config.BaseConfig`.
+
     Returns:
         Same as `load_tokenizer`.
     """
+    # Type check.
+    if not isinstance(config, lmp.config.BaseConfig):
+        raise TypeError(
+            '`config` must be an instance of `lmp.config.BaseConfig`.'
+        )
+
     return load_tokenizer(
         checkpoint=checkpoint,
         experiment=config.experiment,

@@ -1,7 +1,6 @@
-r"""Test `lmp.model._res_gru_block.py`.
-
+r"""Test `lmp.util._config.py`.
 Usage:
-    python -m unittest test.lmp.model._res_gru_block.__init__
+    python -m unittest test.lmp.util._config.__init__
 """
 
 # built-in modules
@@ -15,8 +14,8 @@ import inspect
 import unittest
 
 
-class TestResGRUBlock(unittest.TestCase):
-    r"""Test case for `lmp.model._res_gru_block.py`."""
+class TestUtilConfig(unittest.TestCase):
+    r"""Test case for `lmp.util._config.py`."""
 
     def test_signature(self):
         r"""Ensure signature consistency."""
@@ -25,43 +24,33 @@ class TestResGRUBlock(unittest.TestCase):
         try:
             # pylint: disable=C0415
             import lmp
-            import lmp.model
-            import lmp.model._res_gru_block
+            import lmp.util._config
             # pylint: enable=C0415
 
-            # pylint: disable=W0212
-            self.assertTrue(
-                inspect.ismodule(lmp.model._res_gru_block),
-                msg=msg
-            )
-            # pylint: enable=W0212
+            self.assertTrue(inspect.ismodule(lmp.util._config), msg=msg)
         except ImportError:
             self.fail(msg=msg)
 
     def test_module_attributes(self):
         r"""Declare required module attributes."""
         msg1 = 'Missing module attribute `{}`.'
-        msg2 = 'Module attribute `{}` must be a class.'
+        msg2 = 'Module attribute `{}` must be a function.'
         msg3 = 'Inconsistent module signature.'
-        examples = ('ResGRUBlock',)
+        examples = ('load_config',)
 
         try:
             # pylint: disable=C0415
             import lmp
-            import lmp.model
-            import lmp.model._res_gru_block
+            import lmp.util._config
             # pylint: enable=C0415
 
             for attr in examples:
                 self.assertTrue(
-                    hasattr(lmp.model._res_gru_block, attr),
+                    hasattr(lmp.util._config, attr),
                     msg=msg1.format(attr)
                 )
                 self.assertTrue(
-                    inspect.isclass(getattr(
-                        lmp.model._res_gru_block,
-                        attr
-                    )),
+                    inspect.isfunction(getattr(lmp.util._config, attr)),
                     msg=msg2.format(attr)
                 )
         except ImportError:
