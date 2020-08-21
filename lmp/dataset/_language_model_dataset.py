@@ -14,12 +14,8 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from typing import Callable
-<<<<<<< HEAD:lmp/dataset/_language_model_dataset.py
-from typing import List
-=======
 from typing import Generator
 from typing import Iterable
->>>>>>> 3f8e4fd9de1cb65bc9cfc5cccc96ef2a8c2d2f9a:lmp/dataset.py
 from typing import Tuple
 
 # 3rd-party modules
@@ -32,19 +28,9 @@ import lmp.tokenizer
 
 
 # Define types for type annotation.
-<<<<<<< HEAD:lmp/dataset/_language_model_dataset.py
-CollateFnReturn = Tuple[
-    torch.Tensor,
-    torch.Tensor
-]
-CollateFn = Callable[
-    [List[str]],
-    CollateFnReturn
-]
-=======
+
 CollateFnReturn = Tuple[torch.Tensor, torch.Tensor]
 CollateFn = Callable[[Iterable[str]], CollateFnReturn]
->>>>>>> 3f8e4fd9de1cb65bc9cfc5cccc96ef2a8c2d2f9a:lmp/dataset.py
 
 
 class LanguageModelDataset(torch.utils.data.Dataset):
