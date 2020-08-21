@@ -16,6 +16,7 @@ from __future__ import unicode_literals
 
 import os
 
+from typing import Iterable
 from typing import Iterator
 from typing import Union
 
@@ -64,6 +65,32 @@ def load_optimizer(
         `torch.optim.SGD` if `optimizer_class == 'sgd'`;
         `torch.optim.Adam` if `optimizer_class == 'adam'`.
     """
+    # Type check.
+    if not isinstance(checkpoint, int):
+        raise TypeError('`checkpoint` must be an instance of `int`.')
+    
+    if not isinstance(experiment, str):
+        raise TypeError('`experiment` must be an instance of `str`.')
+
+    if not isinstance(learning_rate, float):
+        raise TypeError('`learning_rate` must be an instance of `float`.')
+
+    if not isinstance(optimizer_class, str):
+        raise TypeError('`optimizer_class` must be an instance of `str`.')
+
+    if not isinstance(parameters, Iterable):
+        raise TypeError(
+            '`parameters` must be an instance of '
+            '`Iterator[torch.nn.Parameter]`.'
+        )
+    parameters = list(parameters)
+    if not all(map(lambda x: isinstance(x, torch.nn.Parameter), parameters)):
+        raise TypeError(
+            '`parameters` must be an instance of '
+            '`Iterator[torch.nn.Parameter]`.',
+        )
+
+    
     if optimizer_class == 'sgd':
         optimizer = torch.optim.SGD(
             params=parameters,
@@ -98,7 +125,10 @@ def load_optimizer(
 def load_optimizer_by_config(
         checkpoint: int,
         config: lmp.config.BaseConfig,
-        model: lmp.model.BaseRNNModel
+        model: Union[
+            lmp.model.BaseRNNModel,
+            lmp.model.BaseResRNNModel
+        ]
 ) -> Union[
     torch.optim.SGD,
     torch.optim.Adam,
@@ -119,6 +149,24 @@ def load_optimizer_by_config(
     Returns:
         Same as `load_optimizer`.
     """
+    # Type check.
+    if not isinstance(config, lmp.config.BaseConfig):
+        raise TypeError(
+            '`config` must be an instance of `lmp.config.BaseConfig`.'
+        )
+
+    if not isinstance(model, lmp.model.BaseRNNModel) and not isinstance(
+        model,
+        lmp.model.BaseResRNNModel
+    ):
+        raise TypeError(
+            '`model` must be an instance of '
+            '`Union['
+                'lmp.model.BaseRNNModel,'
+                'lmp.model.BaseResRNNModel'
+            ']`.'
+        )
+
     return load_optimizer(
         checkpoint=checkpoint,
         experiment=config.experiment,

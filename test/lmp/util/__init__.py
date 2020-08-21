@@ -1,7 +1,7 @@
-r"""Test `lmp.model._res_gru_block.py`.
+r"""Test `lmp.util`.
 
 Usage:
-    python -m unittest test.lmp.model._res_gru_block.__init__
+    python -m unittest test.lmp.util.__init__
 """
 
 # built-in modules
@@ -15,8 +15,8 @@ import inspect
 import unittest
 
 
-class TestResGRUBlock(unittest.TestCase):
-    r"""Test case for `lmp.model._res_gru_block.py`."""
+class TestUtil(unittest.TestCase):
+    r"""Test case for `lmp.util`."""
 
     def test_signature(self):
         r"""Ensure signature consistency."""
@@ -25,13 +25,12 @@ class TestResGRUBlock(unittest.TestCase):
         try:
             # pylint: disable=C0415
             import lmp
-            import lmp.model
-            import lmp.model._res_gru_block
+            import lmp.util
             # pylint: enable=C0415
 
             # pylint: disable=W0212
             self.assertTrue(
-                inspect.ismodule(lmp.model._res_gru_block),
+                inspect.ismodule(lmp.util),
                 msg=msg
             )
             # pylint: enable=W0212
@@ -41,27 +40,43 @@ class TestResGRUBlock(unittest.TestCase):
     def test_module_attributes(self):
         r"""Declare required module attributes."""
         msg1 = 'Missing module attribute `{}`.'
-        msg2 = 'Module attribute `{}` must be a class.'
+        msg2 = 'Module attribute `{}` must be a function.'
         msg3 = 'Inconsistent module signature.'
-        examples = ('ResGRUBlock',)
+        examples = (
+            'load_config',
+            'load_dataset',
+            'load_dataset_by_config',
+            'perplexity_eval',
+            'batch_perplexity_eval',
+            'generate_sequence',
+            'generate_sequence_by_config',
+            'load_model',
+            'load_model_by_config',
+            'load_optimizer',
+            'load_optimizer_by_config',
+            'set_seed',
+            'set_seed_by_config',
+            'load_tokenizer',
+            'load_tokenizer_by_config',
+            'train_model',
+            'train_model_by_config',
+            'train_tokenizer',
+            'train_tokenizer_by_config',
+        )
 
         try:
             # pylint: disable=C0415
             import lmp
-            import lmp.model
-            import lmp.model._res_gru_block
+            import lmp.util
             # pylint: enable=C0415
 
             for attr in examples:
                 self.assertTrue(
-                    hasattr(lmp.model._res_gru_block, attr),
+                    hasattr(lmp.util, attr),
                     msg=msg1.format(attr)
                 )
                 self.assertTrue(
-                    inspect.isclass(getattr(
-                        lmp.model._res_gru_block,
-                        attr
-                    )),
+                    inspect.isfunction(getattr(lmp.util, attr)),
                     msg=msg2.format(attr)
                 )
         except ImportError:

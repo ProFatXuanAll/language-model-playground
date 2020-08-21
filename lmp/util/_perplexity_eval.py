@@ -13,7 +13,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
+
 from typing import List
+from typing import Union
 
 # 3rd-party modules
 
@@ -30,7 +32,10 @@ import lmp.tokenizer
 @torch.no_grad()
 def perplexity_eval(
         device: torch.device,
-        model: lmp.model.BaseRNNModel,
+        model: Union[
+            lmp.model.BaseRNNModel,
+            lmp.model.BaseResRNNModel
+        ],
         sequence: str,
         tokenizer: lmp.tokenizer.BaseTokenizer
 ) -> float:
@@ -46,9 +51,40 @@ def perplexity_eval(
         tokenizer:
             Tokenizer for encoding sequence.
 
+    Raises:
+        TypeError:
+            When `device` is not an instance of `torch.device`, `model` is not
+            an instance of `lmp.model.BaseRNNModel` and
+            `lmp.model.BaseResRNNModel` or `tokenizer` is not an instance of
+            `lmp.tokenizer.BaseTokenizer`.
+
     Return:
         Perplexity of `sequence`.
     """
+    if not isinstance(device, torch.device):
+        raise TypeError('`device` must be an instance of `torch.device`.')
+    
+    if not isinstance(model, lmp.model.BaseRNNModel) and not isinstance(
+        model,
+        lmp.model.BaseResRNNModel
+    ):
+        raise TypeError(
+            '`model` must be an instance of '
+            '`Union['
+                'lmp.model.BaseRNNModel,'
+                'lmp.model.BaseResRNNModel'
+            ']`.'
+        )
+
+    if not isinstance(sequence, str):
+        raise TypeError('`sequence` must be an instance of `str`.')
+    
+    if not isinstance(tokenizer, lmp.tokenizer.BaseTokenizer):
+        raise TypeError(
+            '`tokenizer` must be an instance of `lmp.tokenizer.BaseTokenizer`.'
+        )
+    
+
     # Evalation mode.
     model.eval()
 
@@ -93,7 +129,10 @@ def perplexity_eval(
 def batch_perplexity_eval(
         dataset: List[str],
         device: torch.device,
-        model: lmp.model.BaseRNNModel,
+        model: Union[
+            lmp.model.BaseRNNModel,
+            lmp.model.BaseResRNNModel
+        ],
         tokenizer: lmp.tokenizer.BaseTokenizer
 ) -> List[float]:
     r"""Helper function for calculating dataset perplexity.
@@ -107,9 +146,23 @@ def batch_perplexity_eval(
             Language model.
         tokenizer:
             Tokenizer for encoding sequence.
+
+    Raises:
+        TypeError:
+            When `dataset` is not an instance of `List[str]`.
+
     Return:
         Perplexity of `dataset`.
     """
+    # Type check.
+    if not isinstance(dataset, List):
+        raise TypeError('`dataset` must be an instance of `List[str]`.')
+
+    if not all(map(lambda sequence: isinstance(sequence, str), dataset)):
+        raise TypeError(
+            '`dataset` must be an instance of `List[str]`.'
+        )
+
     dataset_iterator = tqdm(
         dataset,
         desc='Calculating perplexities'

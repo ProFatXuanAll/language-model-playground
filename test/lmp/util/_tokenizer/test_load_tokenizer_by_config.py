@@ -1,7 +1,7 @@
-r"""Test `lmp.util.load_model_by_config.`.
+r"""Test `lmp.util.load_tokenizer_by_config.`.
 
 Usage:
-    python -m unittest test.lmp.util._model.test_load_model_by_config
+    python -m unittest test.lmp.util._tokenizer.test_load_tokenizer_by_config
 """
 
 # built-in modules
@@ -17,6 +17,7 @@ import math
 import unittest
 
 from itertools import product
+from typing import Iterator
 from typing import Union
 
 # 3rd-party modules
@@ -31,8 +32,8 @@ import lmp.model
 import lmp.path
 
 
-class TestLoadModelByConfig(unittest.TestCase):
-    r"""Test Case for `lmp.util.load_model_by_config`."""
+class TestLoadTokenizer(unittest.TestCase):
+    r"""Test Case for `lmp.util.load_tokenizer_by_config`."""
 
     @classmethod
     def setUpClass(cls):
@@ -68,6 +69,7 @@ class TestLoadModelByConfig(unittest.TestCase):
             ]
         }
         cls.param_values = [v for v in cls.parameters.values()]
+        
 
     @classmethod
     def tearDownClass(cls):
@@ -76,13 +78,12 @@ class TestLoadModelByConfig(unittest.TestCase):
         gc.collect()
 
     def setUp(self):
-        r"""Set up parameters for `load_model_by_config`."""
+        r"""Set up parameters for `load_tokenizer_by_config`."""
         self.checkpoint = -1
         self.config = lmp.config.BaseConfig(
             dataset='news_collection',
-            experiment='util_load_model_by_config_unittest'
+            experiment='util_tokenizer_load_tokenizer_unittest'
         )
-        self.tokenizer = lmp.tokenizer.CharDictTokenizer()
 
         cls = self.__class__
         self.config_obj = []
@@ -128,22 +129,12 @@ class TestLoadModelByConfig(unittest.TestCase):
             )
             self.config_obj.append(config)
 
-        self.tokenizer_obj = [
-            lmp.tokenizer.CharDictTokenizer(True),
-            lmp.tokenizer.CharDictTokenizer(),
-            lmp.tokenizer.CharListTokenizer(True),
-            lmp.tokenizer.CharListTokenizer(),
-            lmp.tokenizer.WhitespaceDictTokenizer(True),
-            lmp.tokenizer.WhitespaceDictTokenizer(),
-            lmp.tokenizer.WhitespaceListTokenizer(True),
-            lmp.tokenizer.WhitespaceListTokenizer(),
-        ]
 
     def tearDown(self):
-        r"""Delete parameters for `load_model_by_config`."""
+        r"""Delete parameters for `load_tokenizer_by_config`."""
         del self.checkpoint
         del self.config
-        del self.tokenizer
+        del self.config_obj
         gc.collect()
 
     def test_signature(self):
@@ -151,7 +142,7 @@ class TestLoadModelByConfig(unittest.TestCase):
         msg = 'Inconsistent method signature.'
 
         self.assertEqual(
-            inspect.signature(lmp.util.load_model_by_config),
+            inspect.signature(lmp.util.load_tokenizer_by_config),
             inspect.Signature(
                 parameters=[
                     inspect.Parameter(
@@ -165,18 +156,9 @@ class TestLoadModelByConfig(unittest.TestCase):
                         kind=inspect.Parameter.POSITIONAL_OR_KEYWORD,
                         annotation=lmp.config.BaseConfig,
                         default=inspect.Parameter.empty
-                    ),
-                    inspect.Parameter(
-                        name='tokenizer',
-                        kind=inspect.Parameter.POSITIONAL_OR_KEYWORD,
-                        annotation=lmp.tokenizer.BaseTokenizer,
-                        default=inspect.Parameter.empty
-                    ),
+                    )
                 ],
-                return_annotation=Union[
-                    lmp.model.BaseRNNModel,
-                    lmp.model.BaseResRNNModel
-                ]
+                return_annotation=lmp.tokenizer.BaseTokenizer
             ),
             msg=msg
         )
@@ -193,10 +175,9 @@ class TestLoadModelByConfig(unittest.TestCase):
 
         for invalid_input in examples:
             with self.assertRaises(TypeError, msg=msg1) as ctx_man:
-                lmp.util.load_model_by_config(
+                lmp.util.load_tokenizer_by_config(
                     checkpoint=invalid_input,
-                    config=self.config,
-                    tokenizer=self.tokenizer
+                    config=self.config
                 )
 
             if isinstance(ctx_man.exception, TypeError):
@@ -209,21 +190,21 @@ class TestLoadModelByConfig(unittest.TestCase):
     def test_invalid_input_config(self):
         r"""Raise when `config` is invalid."""
         msg1 = (
-            'Must raise `TypeError` when `config` is invalid.'
+            'Must raise `TypeError` when `config` '
+            'is invalid.'
         )
         msg2 = 'Inconsistent error message.'
         examples = (
             0, 1, -1, True, False, 0.0, 1.0, math.nan, -math.nan, math.inf,
-            -math.inf, 0j, 1j, '', b'', [], (), {}, set(), object(),
-            lambda x: x, type, None, NotImplemented, ...
+            -math.inf, 0j, 1j, [], (), {}, set(), object(), lambda x: x, type,
+            None, NotImplemented, ...
         )
 
         for invalid_input in examples:
             with self.assertRaises(TypeError, msg=msg1) as ctx_man:
-                lmp.util.load_model_by_config(
+                lmp.util.load_tokenizer_by_config(
                     checkpoint=self.checkpoint,
-                    config=invalid_input,
-                    tokenizer=self.tokenizer
+                    config=invalid_input
                 )
 
             if isinstance(ctx_man.exception, TypeError):
@@ -233,84 +214,27 @@ class TestLoadModelByConfig(unittest.TestCase):
                     msg=msg2
                 )
 
-    def test_invalid_input_tokenizer(self):
-        r"""Raise when `tokenizer` is invalid."""
-        msg1 = (
-            'Must raise `TypeError` when `tokenizer` '
-            'is invalid.'
-        )
-        msg2 = 'Inconsistent error message.'
-        examples = (
-            0, 1, -1, True, False, 0.0, 1.0, math.nan, -math.nan, math.inf,
-            -math.inf, 0j, 1j, '', b'', [], (), {}, set(), object(),
-            lambda x: x, type, None, NotImplemented, ...
-        )
-
-        for invalid_input in examples:
-            with self.assertRaises(TypeError, msg=msg1) as ctx_man:
-                lmp.util.load_model_by_config(
-                    checkpoint=self.checkpoint,
-                    config=self.config,
-                    tokenizer=invalid_input
-                )
-
-            if isinstance(ctx_man.exception, TypeError):
-                self.assertEqual(
-                    ctx_man.exception.args[0],
-                    '`tokenizer` must be an instance of '
-                    '`lmp.tokenizer.BaseTokenizer`.',
-                    msg=msg2
-                )
-
     def test_return_type(self):
-        r"""Return `lmp.model.BaseRNNModel` or `lmp.model.BaseResRNNModel`."""
+        r"""Return `lmp.tokenizer.BaseTokenizer`."""
         msg = (
-            'Must return `lmp.model.BaseRNNModel` or '
-            '`lmp.model.BaseResRNNModel`.'
+            'Must return `lmp.tokenizer.BaseTokenizer`.'
         )
-
         examples = (
-            (
-                lmp.config.BaseConfig(
-                    dataset='news_collection',
-                    experiment='util_load_model_by_config_unittest',
-                    model_class='gru',
-                    tokenizer_class='char_dict'
-                ),
-                lmp.tokenizer.CharDictTokenizer(),
-            ),
-            (
-                lmp.config.BaseConfig(
-                    dataset='news_collection',
-                    experiment='util_load_model_by_config_unittest',
-                    model_class='res_lstm',
-                    tokenizer_class='char_list'
-                ),
-                lmp.tokenizer.CharListTokenizer(is_uncased=True),
-            ),
+            config
+            for config in self.config_obj
         )
 
-        # examples = (
-        #     (
-        #         config,
-        #         tokenizer,
-        #     )
-        #     for config in  self.config_obj
-        #     for tokenizer in self.tokenizer_obj
-        # ) 
-
-        for config, tokenizer in examples:
-            model = lmp.util.load_model_by_config(
+        for config in examples:
+            tokenizer = lmp.util.load_tokenizer_by_config(
                 checkpoint=-1,
-                config=config,
-                tokenizer=tokenizer
+                config=config
+            )
+
+            self.assertIsInstance(
+                tokenizer,
+                lmp.tokenizer.BaseTokenizer,
+                msg=msg
             )
             
-            try:
-                self.assertIsInstance(model, lmp.model.BaseRNNModel, msg=msg)
-            except AssertionError:
-                self.assertIsInstance(model, lmp.model.BaseResRNNModel, msg=msg)
-
-
 if __name__ == '__main__':
     unittest.main()

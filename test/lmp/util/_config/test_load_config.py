@@ -12,6 +12,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import argparse
+import gc
 import inspect
 import json
 import math
@@ -175,6 +176,7 @@ class TestLoadConfig(unittest.TestCase):
     def tearDown(self):
         r"""Delete `self.args`."""
         del self.parser
+        gc.collect()
 
     def test_signature(self):
         r"""Ensure signature consistency."""

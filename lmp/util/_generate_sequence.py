@@ -15,6 +15,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from typing import List
+from typing import Union
 
 # 3rd-party modules
 
@@ -33,7 +34,10 @@ def generate_sequence(
         begin_of_sequence: str,
         device: torch.device,
         max_seq_len: int,
-        model: lmp.model.BaseRNNModel,
+        model: Union[
+            lmp.model.BaseRNNModel,
+            lmp.model.BaseResRNNModel,
+        ],
         tokenizer: lmp.tokenizer.BaseTokenizer
 ) -> List[str]:
     r"""Sequences generation using beam search.
@@ -51,10 +55,51 @@ def generate_sequence(
             Language model.
         tokenizer:
             Tokenizer for encoding and decoding sequences.
+    
+    Raises:
+        TypeError:
+            When `beam_width` is not an instance of `int' , `begin_of_sequence`
+            is not an instance of `str' , `device` is not an instance of
+            `torch.device' , `max_seq_len` is not an instance of `int' ,
+            `model` is not an instance of `lmp.model.BaseRNNModel' and is not
+            an instance of `lmp.model.BaseResRNNModel' or `tokenizer` is not
+            an instance of `lmp.tokenizer.BaseTokenizer'. 
+
 
     Returns:
         Generated sequences.
     """
+    # Type check.
+    if not isinstance(beam_width, int):
+        raise TypeError('`beam_width` must be an instance of `int`.')
+    
+    if not isinstance(begin_of_sequence, str):
+        raise TypeError('`begin_of_sequence` must be an instance of `str`.')
+    
+    if not isinstance(device, torch.device):
+        raise TypeError('`device` must be an instance of `torch.device`.')
+    
+    if not isinstance(max_seq_len, int):
+        raise TypeError('`max_seq_len` must be an instance of `int`.')
+    
+    if not isinstance(model, lmp.model.BaseRNNModel) and not isinstance(
+        model,
+        lmp.model.BaseResRNNModel
+    ):
+        raise TypeError(
+            '`model` must be an instance of '
+            '`Union['
+                'lmp.model.BaseRNNModel,'
+                'lmp.model.BaseResRNNModel'
+            ']`.'
+        )
+
+    if not isinstance(tokenizer, lmp.tokenizer.BaseTokenizer):
+            raise TypeError(
+                '`tokenizer` must be an instance of '
+                '`lmp.tokenizer.BaseTokenizer`.'
+            )
+    
     # Evaluation mode.
     model.eval()
 
@@ -144,7 +189,10 @@ def generate_sequence_by_config(
         begin_of_sequence: str,
         config: lmp.config.BaseConfig,
         max_seq_len: int,
-        model: lmp.model.BaseRNNModel,
+        model: Union[
+            lmp.model.BaseRNNModel,
+            lmp.model.BaseResRNNModel
+        ],
         tokenizer: lmp.tokenizer.BaseTokenizer
 ) -> List[str]:
     r"""Helper function for sequences generation.
@@ -163,9 +211,19 @@ def generate_sequence_by_config(
         tokenizer:
             Tokenizer for encoding and decoding sequences.
 
+    Raises:
+        TypeError:
+            When `config` is not an instance of `lmp.config.BaseConfig'.
+
     Returns:
         Generated sequences.
     """
+
+    # Type check.
+    if not isinstance(config, lmp.config.BaseConfig):
+        raise TypeError(
+        '`config` must be an instance of `lmp.config.BaseConfig`.'
+    )
 
     return generate_sequence(
         beam_width=beam_width,

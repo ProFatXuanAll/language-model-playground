@@ -32,7 +32,15 @@ def set_seed(seed: int):
     Args:
         seed:
             Control random seed and let experiment reproducible.
+    
+    Raises:
+        TypeError:
+            When `seed` is not an instance of `int`.
     """
+    # Type check.
+    if not isinstance(seed, int):
+        raise TypeError('`seed` must be an instance of `int`.')
+
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
@@ -49,5 +57,15 @@ def set_seed_by_config(config: lmp.config.BaseConfig):
     Args:
         config:
             Configuration object with attribute `seed`.
+
+    Raises:
+        TypeError:
+            When `config` is not an instance of `lmp.config.BaseConfig`.
     """
+    # Type check.
+    if not isinstance(config, lmp.config.BaseConfig):
+        raise TypeError(
+            '`config` must be an instance of `lmp.config.BaseConfig`.'
+        )
+
     set_seed(config.seed)
