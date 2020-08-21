@@ -115,12 +115,12 @@ class TestCreateCollateFn(unittest.TestCase):
                         ),
                     ],
                     return_annotation=Tuple[
-                                        torch.Tensor,
-                                        torch.Tensor,
-                                        torch.Tensor,
-                                        str,
-                                        str,
-                                    ]
+                        torch.Tensor,
+                        torch.Tensor,
+                        torch.Tensor,
+                        str,
+                        str,
+                    ]
                 ),
                 msg=msg
             )
