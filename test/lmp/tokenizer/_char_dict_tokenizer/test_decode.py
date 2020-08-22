@@ -1,7 +1,7 @@
 r"""Test `lmp.tokenizer.CharDictTokenizer.decode`.
 
 Usage:
-    python -m unittest test/lmp/tokenizer/_char_dict_tokenizer/test_decode.py
+    python -m unittest test.lmp.tokenizer._char_dict_tokenizer.test_decode
 """
 
 # built-in modules

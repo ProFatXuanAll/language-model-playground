@@ -76,8 +76,8 @@ class CharDictTokenizer(BaseDictTokenizer):
         r"""Perform tokenization on input sequence.
 
         Input sequence will first be normalized by
-        `lmp.tokenizer.BaseTokenizer.normalize(sequence)`. Then we split
-        input sequence by `list(sequence)`. See
+        `lmp.tokenizer.BaseTokenizer.normalize(sequence)`, then be splitted
+        into tokens by `list(sequence)`. See
         `lmp.tokenizer.BaseTokenizer.normalize` for details on normalization
         process.
 

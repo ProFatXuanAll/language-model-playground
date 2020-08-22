@@ -2,7 +2,7 @@ r"""Test `lmp.tokenizer.WhitespaceDictTokenizer.reset_vocab`.
 
 Usage:
     python -m unittest \
-        test/lmp/tokenizer/_whitespace_dict_tokenizer/test_reset_vocab.py
+        test.lmp.tokenizer._whitespace_dict_tokenizer.test_reset_vocab
 """
 
 # built-in modules

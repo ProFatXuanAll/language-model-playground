@@ -1,7 +1,7 @@
 r"""Path variables.
 
 Usages:
-    import lmp
+    import lmp.path
 
     data_path = lmp.path.DATA_PATH
 """

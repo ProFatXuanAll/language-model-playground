@@ -2,7 +2,7 @@ r"""Test `lmp.tokenizer.BaseDictTokenizer.convert_id_to_token`.
 
 Usage:
     python -m unittest \
-        test/lmp/tokenizer/_base_dict_tokenizer/test_convert_id_to_token.py
+        test.lmp.tokenizer._base_dict_tokenizer.test_convert_id_to_token
 """
 
 # built-in modules

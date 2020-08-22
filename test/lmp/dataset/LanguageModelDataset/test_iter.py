@@ -1,7 +1,7 @@
 r"""Test `lmp.dataset.LanguageModelDataset.__iter__`.
 
 Usage:
-    python -m unittest test/lmp/dataset/LanguageModelDataset/test_iter.py
+    python -m unittest test.lmp.dataset.LanguageModelDataset.test_iter
 """
 
 # built-in modules

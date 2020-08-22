@@ -1,7 +1,7 @@
 r"""Test `lmp.dataset.AnalogyDataset.collate_fn`.
 
 Usage:
-    python -m unittest test/lmp/dataset/AnalogyDataset/test_collate_fn.py
+    python -m unittest test.lmp.dataset.AnalogyDataset.test_collate_fn
 """
 
 # built-in modules
@@ -150,11 +150,11 @@ class TestCollateFn(unittest.TestCase):
                     )
 
     def test_return_type(self):
-        r"""Return 
-        `Tuple[torch.Tensor,torch.Tensor,torch.Tensor,str,str,]`."""
+        r"""Return
+        `Tuple[torch.Tensor, torch.Tensor, torch.Tensor, str, str,]`."""
         msg = (
             'Must return '
-            '`Tuple[torch.Tensor,torch.Tensor,torch.Tensor,str,str,]` '
+            '`Tuple[torch.Tensor, torch.Tensor, torch.Tensor, str, str,]` '
             'with Tensor have numeric type `torch.int64`.')
         examples = (
             [

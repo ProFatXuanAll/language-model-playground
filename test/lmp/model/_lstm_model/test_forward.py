@@ -1,7 +1,7 @@
 r"""Test `lmp.model.LSTMModel.forward`.
 
 Usage:
-    python -m unittest test/lmp/model/_lstm_model/test_forward.py
+    python -m unittest test.lmp.model._lstm_model.test_forward
 """
 
 # built-in modules
@@ -26,54 +26,72 @@ import torch.nn
 from lmp.model import LSTMModel
 
 
-class TestInit(unittest.TestCase):
+class TestForward(unittest.TestCase):
     r"""Test case for `lmp.model.LSTMModel.forward`."""
 
+    @classmethod
+    def setUpClass(cls):
+        cls.batch_range = [1, 2]
+        cls.d_emb_range = [1, 10]
+        cls.d_hid_range = [1, 10]
+        cls.dropout_range = [0.0, 0.1, 0.5, 1.0]
+        cls.num_linear_layers_range = [1, 2]
+        cls.num_rnn_layers_range = [1, 2]
+        cls.pad_token_id_range = [0, 1, 2, 3]
+        cls.sequence_range = list(range(1, 5))
+        cls.vocab_size_range = [1, 5]
+
+    @classmethod
+    def tearDownClass(cls):
+        del cls.batch_range
+        del cls.d_emb_range
+        del cls.d_hid_range
+        del cls.dropout_range
+        del cls.num_linear_layers_range
+        del cls.num_rnn_layers_range
+        del cls.pad_token_id_range
+        del cls.sequence_range
+        del cls.vocab_size_range
+        gc.collect()
+
     def setUp(self):
-        r"""Set up hyper parameters and construct LSTMModel"""
-        self.d_emb = 1
-        self.d_hid = 1
-        self.dropout = 0.1
-        self.num_rnn_layers = 1
-        self.num_linear_layers = 1
-        self.pad_token_id = 0
-        self.vocab_size = 10
+        r"""Setup hyperparameters and construct `LSTMModel`."""
+        self.model_objs = []
+        cls = self.__class__
+        for d_emb in cls.d_emb_range:
+            for d_hid in cls.d_hid_range:
+                for dropout in cls.dropout_range:
+                    for num_linear_layers in cls.num_linear_layers_range:
+                        for num_rnn_layers in cls.num_rnn_layers_range:
+                            for pad_token_id in cls.pad_token_id_range:
+                                for vocab_size in cls.vocab_size_range:
+                                    # skip invalid construct.
+                                    if vocab_size <= pad_token_id:
+                                        continue
 
-        Parameters = (
-            (
-                ('d_emb', self.d_emb),
-                ('d_hid', self.d_hid),
-                ('dropout', self.dropout),
-                ('num_rnn_layers', self.num_rnn_layers),
-                ('num_linear_layers', self.num_linear_layers),
-                ('pad_token_id', self.pad_token_id),
-                ('vocab_size', self.vocab_size),
-            ),
-        )
-
-        for parameters in Parameters:
-            pos = []
-            kwargs = {}
-            for attr, attr_val in parameters:
-                pos.append(attr_val)
-                kwargs[attr] = attr_val
-
-            # Construct using positional and keyword arguments.
-            self.models = [
-                LSTMModel(*pos),
-                LSTMModel(**kwargs),
-            ]
+                                    model = LSTMModel(
+                                        d_emb=d_emb,
+                                        d_hid=d_hid,
+                                        dropout=dropout,
+                                        num_linear_layers=num_linear_layers,
+                                        num_rnn_layers=num_rnn_layers,
+                                        pad_token_id=pad_token_id,
+                                        vocab_size=vocab_size
+                                    )
+                                    self.model_objs.append({
+                                        'd_emb': d_emb,
+                                        'd_hid': d_hid,
+                                        'dropout': dropout,
+                                        'model': model,
+                                        'num_linear_layers': num_linear_layers,
+                                        'num_rnn_layers': num_rnn_layers,
+                                        'pad_token_id': pad_token_id,
+                                        'vocab_size': vocab_size,
+                                    })
 
     def tearDown(self):
-        r"""Delete parameters and models."""
-        del self.d_emb
-        del self.d_hid
-        del self.dropout
-        del self.num_rnn_layers
-        del self.num_linear_layers
-        del self.pad_token_id
-        del self.vocab_size
-        del self.models
+        r"""Delete model instances."""
+        del self.model_objs
         gc.collect()
 
     def test_signature(self):
@@ -102,47 +120,65 @@ class TestInit(unittest.TestCase):
         )
 
     def test_invalid_input_batch_sequences(self):
-        r"""Raise when `batch_sequences` is invalid."""
-        msg1 = (
-            'Must raise `TypeError` when `batch_sequences` is invalid.'
-        )
-        msg2 = 'Inconsistent error message.'
-        error_msg = "embedding(): argument 'indices' (position 2) must be Tensor, not {}"
+        r"""Raise `TypeError` when input `batch_sequences` is invalid."""
+        msg = 'Must raise `TypeError` when input `batch_sequences` is invalid.'
         examples = (
-            False, 0, -1, 0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf,
-            0j, 1j, '', b'', [], (), {}, set(), object(), lambda x: x, type,
-            None, NotImplemented, ...
+            False, True, 0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf,
+            -math.inf, 0j, 1j, '', b'', [], (), {}, set(), object(),
+            lambda x: x, type, None, NotImplemented, ...
         )
 
         for invalid_input in examples:
-            for model in self.models:
-                with self.assertRaises(TypeError, msg=msg1) as ctx_man:
+            for model_obj in self.model_objs:
+                model = model_obj['model']
+                with self.assertRaises(TypeError, msg=msg):
                     model.forward(batch_sequences=invalid_input)
-
-                if isinstance(ctx_man.exception, TypeError):
-                    self.assertEqual(
-                        ctx_man.exception.args[0],
-                        error_msg.format(type(invalid_input).__name__),
-                        msg=msg2
-                    )
 
     def test_return_type(self):
         r"""Return `Tensor`."""
         msg = 'Must return `Tensor`.'
+
         examples = (
-            torch.tensor(
-                [
-                    [1, 2],
-                    [2, 3],
-                    [3, 4]
-                ]
-            ),
+            (
+                torch.randint(
+                    0,
+                    model_obj['vocab_size'],
+                    (batch_size, sequence_len)
+                ),
+                model_obj['model'],
+            )
+            for batch_size in self.__class__.batch_range
+            for sequence_len in self.__class__.sequence_range
+            for model_obj in self.model_objs
         )
 
-        for batch_sequences in examples:
-            for model in self.models:
-                pred_y = model(batch_sequences)
-                self.assertIsInstance(pred_y, torch.Tensor, msg=msg)
+        for x, model in examples:
+            self.assertIsInstance(model(x), torch.Tensor, msg=msg)
+
+    def test_return_size(self):
+        r"""Test return size"""
+        msg = 'Return size must be {}.'
+
+        examples = (
+            (
+                torch.randint(
+                    0,
+                    model_obj['vocab_size'],
+                    (batch_size, sequence_len)
+                ),
+                model_obj['model'],
+                model_obj['vocab_size']
+            )
+            for batch_size in self.__class__.batch_range
+            for sequence_len in self.__class__.sequence_range
+            for model_obj in self.model_objs
+        )
+
+        for x, model, vocab_size in examples:
+            logits = model(x)
+            for s1, s2 in zip(x.size(), logits.size()):
+                self.assertEqual(s1, s2, msg=msg)
+            self.assertEqual(logits.size(-1), vocab_size)
 
 
 if __name__ == '__main__':

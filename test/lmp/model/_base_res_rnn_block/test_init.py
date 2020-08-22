@@ -1,7 +1,7 @@
 r"""Test `lmp.model.BaseResRNNBlock.__init__`.
 
 Usage:
-    python -m unittest test/lmp/model/_base_res_rnn_block/test_init.py
+    python -m unittest test.lmp.model._base_res_rnn_block.test_init
 """
 
 # built-in modules
@@ -29,35 +29,35 @@ from lmp.model import BaseResRNNBlock
 class TestInit(unittest.TestCase):
     r"""Test case for `lmp.model.BaseResRNNBlock.__init__`."""
 
+    @classmethod
+    def setUpClass(cls):
+        cls.d_hid_range = [1, 10]
+        cls.dropout_range = [0.0, 0.1, 0.5, 1.0]
+
+    @classmethod
+    def tearDownClass(cls):
+        del cls.d_hid_range
+        del cls.dropout_range
+        gc.collect()
+
     def setUp(self):
-        r"""Set up hyper parameters and construct BaseResRNNBlock"""
-        self.d_hid = 1
-        self.dropout = 0.1
-
-        Parameters = (
-            (
-                ('d_hid', self.d_hid),
-                ('dropout', self.dropout),
-            ),
-        )
-
-        for parameters in Parameters:
-            pos = []
-            kwargs = {}
-            for attr, attr_val in parameters:
-                pos.append(attr_val)
-                kwargs[attr] = attr_val
-
-            # Construct using positional and keyword arguments.
-            self.models = [
-                BaseResRNNBlock(*pos),
-                BaseResRNNBlock(**kwargs),
-            ]
+        r"""Setup hyperparameters and construct `BaseResRNNBlock`."""
+        self.model_objs = []
+        cls = self.__class__
+        for d_hid in cls.d_hid_range:
+            for dropout in cls.dropout_range:
+                self.model_objs.append({
+                    'd_hid': d_hid,
+                    'dropout': dropout,
+                    'model': BaseResRNNBlock(
+                        d_hid=d_hid,
+                        dropout=dropout
+                    ),
+                })
 
     def tearDown(self):
-        r"""Delete parameters and models."""
-        del self.d_hid
-        del self.dropout
+        r"""Delete model instances."""
+        del self.model_objs
         gc.collect()
 
     def test_signature(self):
@@ -92,9 +92,10 @@ class TestInit(unittest.TestCase):
         )
 
     def test_invalid_input_d_hid(self):
-        r"""Raise when `d_hid` is invalid."""
+        r"""Raise exception when input `d_hid` is invalid."""
         msg1 = (
-            'Must raise `TypeError` when `d_hid` is invalid.'
+            'Must raise `TypeError` or `ValueError` when input `d_hid` is '
+            'invalid.'
         )
         msg2 = 'Inconsistent error message.'
         examples = (
@@ -108,10 +109,7 @@ class TestInit(unittest.TestCase):
                     (TypeError, ValueError),
                     msg=msg1
             ) as ctx_man:
-                BaseResRNNBlock(
-                    d_hid=invalid_input,
-                    dropout=0.1,
-                )
+                BaseResRNNBlock(d_hid=invalid_input, dropout=0.0)
 
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
@@ -119,26 +117,24 @@ class TestInit(unittest.TestCase):
                     '`d_hid` must be an instance of `int`.',
                     msg=msg2
                 )
-            elif isinstance(ctx_man.exception, ValueError):
+            else:
                 self.assertEqual(
                     ctx_man.exception.args[0],
                     '`d_hid` must be bigger than or equal to `1`.',
                     msg=msg2
                 )
-            else:
-                self.fail(msg=msg1)
 
     def test_invalid_input_dropout(self):
-        r"""Raise when `dropout` is invalid."""
+        r"""Raise exception when input `dropout` is invalid."""
         msg1 = (
-            'Must raise `TypeError` when `dropout` is '
+            'Must raise `TypeError` or `ValueError` when input `dropout` is '
             'invalid.'
         )
         msg2 = 'Inconsistent error message.'
         examples = (
-            -1, -1.0, 1.1, math.nan, -math.nan, math.inf, -math.inf, 0j, 1j,
-            '', b'', [], (), {}, set(), object(), lambda x: x, type, None,
-            NotImplemented, ...
+            False, True, 0, 1, -1, -1.0, 1.1, math.nan, -math.nan, math.inf,
+            -math.inf, 0j, 1j, '', b'', [], (), {}, set(), object(),
+            lambda x: x, type, None, NotImplemented, ...
         )
 
         for invalid_input in examples:
@@ -146,115 +142,69 @@ class TestInit(unittest.TestCase):
                     (TypeError, ValueError),
                     msg=msg1
             ) as ctx_man:
-                BaseResRNNBlock(
-                    d_hid=1,
-                    dropout=invalid_input
-                )
+                BaseResRNNBlock(d_hid=1, dropout=invalid_input)
+
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
                     '`dropout` must be an instance of `float`.',
                     msg=msg2
                 )
-            elif isinstance(ctx_man.exception, ValueError):
+            else:
                 self.assertEqual(
                     ctx_man.exception.args[0],
                     '`dropout` must range from `0.0` to `1.0`.',
                     msg=msg2
                 )
-            else:
-                self.fail(msg=msg1)
 
-    def test_instance_attribute_rnn_layer(self):
+    def test_inherit(self):
+        r""""Is subclass of `torch.nn.Module`."""
+        msg = 'Must be subclass of `torch.nn.Module`.'
+
+        for model_obj in self.model_objs:
+            self.assertIsInstance(model_obj['model'], torch.nn.Module, msg=msg)
+
+    def test_instance_attributes(self):
         r"""Declare required instance attributes."""
         msg1 = 'Missing instance attribute `{}`.'
         msg2 = 'Instance attribute `{}` must be an instance of `{}`.'
-        msg3 = 'Instance {} attribute `{}` must include `{}`.'
-
-        rnn_examples = (
-            ('input_size', self.d_hid),
-            ('hidden_size', self.d_hid),
-            ('batch_first', True),
+        examples = (
+            ('rnn_layer', torch.nn.RNN),
+            ('dropout', torch.nn.Dropout),
+            ('act_fn', torch.nn.ReLU),
         )
 
-        rnn_layer = torch.nn.RNN(
-            input_size=self.d_hid,
-            hidden_size=self.d_hid,
-            batch_first=True
-        )
-
-        for model in self.models:
-            self.assertTrue(
-                hasattr(model, 'rnn_layer'),
-                msg=msg1.format('rnn_layer')
-            )
-            self.assertIsInstance(
-                getattr(model, 'rnn_layer'),
-                type(rnn_layer),
-                msg=msg2.format('rnn_layer', type(rnn_layer).__name__)
-            )
-            model_layer = getattr(model, 'rnn_layer')
-            for rnn_attr, rnn_attr_val in rnn_examples:
-                self.assertEqual(
-                    getattr(model_layer, rnn_attr),
-                    getattr(rnn_layer, rnn_attr),
-                    msg=msg3.format('rnn', rnn_attr, rnn_attr_val)
+        for attr, attr_type in examples:
+            for model_obj in self.model_objs:
+                model = model_obj['model']
+                self.assertTrue(hasattr(model, attr), msg=msg1.format(attr))
+                self.assertIsInstance(
+                    getattr(model, attr),
+                    attr_type,
+                    msg=msg2.format(attr, attr_type.__name__)
                 )
 
-    def test_instance_attribute_dropout(self):
-        r"""Declare required instance attributes."""
-        msg1 = 'Missing instance attribute `{}`.'
-        msg2 = 'Instance attribute `{}` must be an instance of `{}`.'
-        msg3 = 'Instance {} attribute `{}` must need `{}`.'
-
-        dropout_examples = (
-            ('p', self.dropout),
+    def test_residual_rnn_layer(self):
+        r"""Declare correct residual RNN block with dropout."""
+        msg = 'Must declare correct residual RNN block with dropout.'
+        examples = (
+            (
+                model_obj['model'],
+                model_obj['d_hid'],
+                model_obj['dropout'],
+            )
+            for model_obj in self.model_objs
         )
 
-        dropout = torch.nn.Dropout(self.dropout)
-
-        for model in self.models:
-            self.assertTrue(
-                hasattr(model, 'dropout'),
-                msg=msg1.format('dropout')
-            )
-            self.assertIsInstance(
-                getattr(model, 'dropout'),
-                type(dropout),
-                msg=msg2.format('dropout', type(dropout).__name__)
-            )
-            dropout_layer = getattr(model, 'dropout')
-            for dropout_attr, dropout_attr_val in dropout_examples:
-                self.assertEqual(
-                    getattr(dropout_layer, dropout_attr),
-                    getattr(dropout, dropout_attr),
-                    msg=msg3.format('dropout', dropout_attr, dropout_attr_val)
-                )
-
-    def test_instance_attribute_act_fn(self):
-        r"""Declare required instance attributes."""
-        msg1 = 'Missing instance attribute `{}`.'
-        msg2 = 'Instance attribute `{}` must be an instance of `{}`.'
-        msg4 = 'Inconsitent activation function.'
-
-        act_fn = torch.nn.ReLU()
-
-        for model in self.models:
-            self.assertTrue(
-                hasattr(model, 'act_fn'),
-                msg=msg1.format('act_fn')
-            )
-            self.assertIsInstance(
-                getattr(model, 'act_fn'),
-                type(act_fn),
-                msg=msg2.format('act_fn', type(act_fn).__name__)
-            )
-            model_act_fn = getattr(model, 'act_fn')
-            self.assertEqual(
-                model_act_fn(torch.tensor([10])),
-                act_fn(torch.tensor([10])),
-                msg=msg4
-            )
+        for model, d_hid, dropout in examples:
+            self.assertIsInstance(model.rnn_layer, torch.nn.RNN, msg=msg)
+            self.assertEqual(model.rnn_layer.input_size, d_hid, msg=msg)
+            self.assertEqual(model.rnn_layer.hidden_size, d_hid, msg=msg)
+            self.assertEqual(model.rnn_layer.num_layers, 1, msg=msg)
+            self.assertTrue(model.rnn_layer.batch_first, msg=msg)
+            self.assertIsInstance(model.dropout, torch.nn.Dropout, msg=msg)
+            self.assertEqual(model.dropout.p, dropout, msg=msg)
+            self.assertIsInstance(model.act_fn, torch.nn.ReLU, msg=msg)
 
 
 if __name__ == '__main__':

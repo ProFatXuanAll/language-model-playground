@@ -1,7 +1,7 @@
 r"""Test `lmp.dataset.LanguageModelDataset.__getitem__`.
 
 Usage:
-    python -m unittest test/lmp/dataset/LanguageModelDataset/test_getitem.py
+    python -m unittest test.lmp.dataset.LanguageModelDataset.test_getitem
 """
 
 # built-in modules
@@ -20,7 +20,7 @@ import unittest
 from lmp.dataset._language_model_dataset import LanguageModelDataset
 
 
-class TestInit(unittest.TestCase):
+class TestGetItem(unittest.TestCase):
     r"""Test case for `lmp.dataset.LanguageModelDataset.__getitem__`."""
 
     def test_signature(self):

@@ -1,7 +1,7 @@
 r"""Helper function for setting random seed.
 
 Usage:
-    import lmp
+    import lmp.util
 
     lmp.set_seed(...)
     lmp.set_seed_by_config(...)

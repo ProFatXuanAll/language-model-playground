@@ -1,7 +1,7 @@
 r"""Test `lmp.tokenizer.CharDictTokenizer.save`.
 
 Usage:
-    python -m unittest test/lmp/tokenizer/_char_dict_tokenizer/test_save.py
+    python -m unittest test.lmp.tokenizer._char_dict_tokenizer.test_save
 """
 
 # built-in modules

@@ -1,7 +1,7 @@
 r"""Test `lmp.dataset.LanguageModelDataset.create_collate_fn`.
 
 Usage:
-    python -m unittest test/lmp/dataset/LanguageModelDataset/test_create_collate_fn.py
+    python -m unittest test.lmp.dataset.LanguageModelDataset.test_create_collate_fn
 """
 
 # built-in modules
@@ -83,7 +83,8 @@ class TestCreateCollateFn(unittest.TestCase):
 
             self.assertEqual(
                 ctx_man.exception.args[0],
-                '`tokenizer` must be an instance of `lmp.tokenizer.BaseTokenizer`.',
+                '`tokenizer` must be an instance of'
+                ' `lmp.tokenizer.BaseTokenizer`.',
                 msg=msg2)
 
     def test_invalid_input_max_seq_len(self):

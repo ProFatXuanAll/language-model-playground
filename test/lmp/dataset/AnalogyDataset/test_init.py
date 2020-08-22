@@ -1,7 +1,7 @@
 r"""Test `lmp.dataset.AnalogyDataset.__init__`.
 
 Usage:
-    python -m unittest test/lmp/dataset/AnalogyDataset/test_init.py
+    python -m unittest test.lmp.dataset.AnalogyDataset.test_init
 """
 
 # built-in modules
@@ -81,7 +81,7 @@ class TestInit(unittest.TestCase):
             if isinstance(ctx_man.exception, IndexError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    'Every sample must have word_a,word_b,word_c,word_d'
+                    'Every sample must have word_a, word_b, word_c, word_d'
                     ' and categoty.',
                     msg=msg2
                 )
