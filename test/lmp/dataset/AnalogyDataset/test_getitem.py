@@ -1,7 +1,7 @@
 r"""Test `lmp.dataset.AnalogyDataset.__getitem__`.
 
 Usage:
-    python -m unittest test/lmp/dataset/AnalogyDataset/test_getitem.py
+    python -m unittest test.lmp.dataset.AnalogyDataset.test_getitem
 """
 
 # built-in modules

@@ -1,13 +1,16 @@
 r"""Language model module.
 
-All model must be import from this file.
+All model must import from this file.
 
 Usage:
     import lmp.model
 
+    model = lmp.model.BaseResRNNModel(...)
     model = lmp.model.BaseRNNModel(...)
     model = lmp.model.GRUModel(...)
     model = lmp.model.LSTMModel(...)
+    model = lmp.model.ResGRUModel(...)
+    model = lmp.model.ResLSTMModel(...)
 """
 
 # built-in modules

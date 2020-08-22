@@ -1,7 +1,7 @@
 r"""Test `lmp.dataset.AnalogyDataset.__iter__`.
 
 Usage:
-    python -m unittest test/lmp/dataset/AnalogyDataset/test_iter.py
+    python -m unittest test.lmp.dataset.AnalogyDataset.test_iter
 """
 
 # built-in modules

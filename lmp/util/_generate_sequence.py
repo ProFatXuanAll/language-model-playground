@@ -1,7 +1,7 @@
 r"""Helper function for sequences generation.
 
 Usage:
-    import lmp
+    import lmp.util
 
     generated = lmp.util.generate_sequence(...)
     generated = lmp.util.generate_sequence_by_config(...)
@@ -13,8 +13,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
-
 from typing import List
+from typing import Union
 
 # 3rd-party modules
 
@@ -33,7 +33,7 @@ def generate_sequence(
         begin_of_sequence: str,
         device: torch.device,
         max_seq_len: int,
-        model: lmp.model.BaseRNNModel,
+        model: Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel],
         tokenizer: lmp.tokenizer.BaseTokenizer
 ) -> List[str]:
     r"""Sequences generation using beam search.
@@ -144,7 +144,7 @@ def generate_sequence_by_config(
         begin_of_sequence: str,
         config: lmp.config.BaseConfig,
         max_seq_len: int,
-        model: lmp.model.BaseRNNModel,
+        model: Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel],
         tokenizer: lmp.tokenizer.BaseTokenizer
 ) -> List[str]:
     r"""Helper function for sequences generation.

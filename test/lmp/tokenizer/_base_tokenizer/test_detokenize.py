@@ -1,7 +1,7 @@
 r"""Test `lmp.tokenizer.BaseTokenizer.detokenize`.
 
 Usage:
-    python -m unittest test/lmp/tokenizer/_base_tokenizer/test_detokenize.py
+    python -m unittest test.lmp.tokenizer._base_tokenizer.test_detokenize
 """
 
 # built-in modules

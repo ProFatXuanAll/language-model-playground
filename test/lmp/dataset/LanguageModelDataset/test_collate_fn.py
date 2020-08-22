@@ -1,7 +1,7 @@
 r"""Test `lmp.dataset.LanguageModelDataset.collate_fn`.
 
 Usage:
-    python -m unittest test/lmp/dataset/LanguageModelDataset/test_collate_fn.py
+    python -m unittest test.lmp.dataset.LanguageModelDataset.test_collate_fn
 """
 
 # built-in modules

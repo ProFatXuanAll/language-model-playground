@@ -1,9 +1,9 @@
 r"""Helper function for configuration construction.
 
 Usage:
-    import lmp
+    import lmp.util
 
-    config = lmp.util.load_optimizer(args)
+    config = lmp.util.load_config(args)
 """
 
 # built-in modules
@@ -24,6 +24,9 @@ import lmp.model
 def load_config(args: argparse.Namespace) -> lmp.config.BaseConfig:
     r"""Load configuration from standard input.
 
+    Load pre-existed configuration object when `args.checkpoint != -1`, create
+    new configuration object otherwise.
+
     Args:
         args:
             Standard input argument parser object with attributes `batch_size`,
@@ -32,11 +35,26 @@ def load_config(args: argparse.Namespace) -> lmp.config.BaseConfig:
             `max_seq_len`, `min_count`, `model_class`, `num_linear_layers`,
             `num_rnn_layers`, `optimizer_class`, `seed` and `tokenizer_class`.
 
+    Raises:
+        TypeError:
+            When `args` is not an instance of `argparse.Namespace`.
+
     Returns:
         Configuration object which can be used with most of utilities.
     """
+    # Type check.
+    if not isinstance(args, argparse.Namespace):
+        raise TypeError('`args` must be an instance of `argparse.Namespace`.')
+
+    # Load pre-existed configuration object.
     if args.checkpoint != -1:
         config = lmp.config.BaseConfig.load(experiment=args.experiment)
+
+        # Continue training from previous checkpoint.
+        if args.epoch != config.epoch:
+            config.epoch = args.epoch
+
+    # Create new configuration object.
     else:
         config = lmp.config.BaseConfig(
             batch_size=args.batch_size,
@@ -59,7 +77,5 @@ def load_config(args: argparse.Namespace) -> lmp.config.BaseConfig:
             seed=args.seed,
             tokenizer_class=args.tokenizer_class
         )
-    if args.epoch != config.epoch:
-        config.epoch = args.epoch
 
     return config

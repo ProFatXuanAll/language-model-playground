@@ -79,8 +79,8 @@ class WhitespaceDictTokenizer(BaseDictTokenizer):
         r"""Perform tokenization on input sequence.
 
         Input sequence will first be normalized by
-        `lmp.tokenizer.BaseTokenizer.normalize(sequence)`. Then we split
-        sequence by `re.split(r'\s+', sequence)`. See
+        `lmp.tokenizer.BaseTokenizer.normalize(sequence)`, then be splitted
+        into tokens by `re.split(r'\s+', sequence)`. See
         `lmp.tokenizer.BaseTokenizer.normalize` for details on normalization
         process.
 

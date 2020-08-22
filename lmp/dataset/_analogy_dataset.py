@@ -65,7 +65,7 @@ class AnalogyDataset(torch.utils.data.Dataset):
         for sample in samples:
             if len(sample) != 5:
                 raise IndexError(
-                    'Every sample must have word_a,word_b,word_c,word_d'
+                    'Every sample must have word_a, word_b, word_c, word_d'
                     ' and categoty.'
                 )
             if not all(map(
@@ -97,9 +97,11 @@ class AnalogyDataset(torch.utils.data.Dataset):
             word_a:
             word_b:
             word_c:
+                Query word for analogy.
             word_d:
+                Target word for analogy.
             category:
-
+                The category of this sample.
         Raises:
             IndexError:
                 When `index >= len(self)`.
@@ -150,6 +152,8 @@ class AnalogyDataset(torch.utils.data.Dataset):
                     Query word for analogy.
                 word_d:
                     Target word for analogy.
+                category:
+                    The category of this sample.
             """
             if not batch_analogy:
                 raise ValueError('`batch_analogy` must not be empty.')

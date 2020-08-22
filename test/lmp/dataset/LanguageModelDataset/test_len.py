@@ -1,7 +1,7 @@
 r"""Test `lmp.dataset.LanguageModelDataset.__len__`.
 
 Usage:
-    python -m unittest test/lmp/dataset/LanguageModelDataset/test_len.py
+    python -m unittest test.lmp.dataset.LanguageModelDataset.test_len
 """
 
 # built-in modules

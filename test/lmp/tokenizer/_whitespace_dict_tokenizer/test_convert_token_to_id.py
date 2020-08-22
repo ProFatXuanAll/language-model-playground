@@ -2,7 +2,7 @@ r"""Test `lmp.tokenizer.WhitespaceDictTokenizer.convert_token_to_id`.
 
 Usage:
     python -m unittest \
-        test/lmp/tokenizer/_whitespace_dict_tokenizer/test_convert_token_to_id.py
+        test.lmp.tokenizer._whitespace_dict_tokenizer.test_convert_token_to_id
 """
 
 # built-in modules

@@ -1,7 +1,7 @@
 r"""Helper function for loading dataset.
 
 Usage:
-    import lmp
+    import lmp.util
 
     dataset = lmp.util.load_dataset(...)
     dataset = lmp.util.load_dataset_by_config(...)
@@ -17,6 +17,8 @@ from __future__ import unicode_literals
 import os
 import re
 
+from typing import Union
+
 # 3rd-party modules
 
 import pandas as pd
@@ -30,57 +32,59 @@ import lmp.path
 
 
 def _preprocess_news_collection(
-        column: str) -> lmp.dataset.LanguageModelDataset:
-    r"""Preprocessing of news collection dataset and convert to 
-    LanguageModelDataset.
+        column: str
+) -> lmp.dataset.LanguageModelDataset:
+    r"""Preprocessing of news collection dataset and convert to
+    `lmp.dataset.LanguageModelDataset`.
 
     Args:
         column:
             Select the part of the data which want to use.
 
     Returns:
-        lmp.dataset.LanguageModelDataset
+        `lmp.dataset.LanguageModelDataset`
     """
-    file_path = f'{lmp.path.DATA_PATH}/news_collection.csv'
+    file_path = os.path.join(f'{lmp.path.DATA_PATH}', 'news_collection.csv')
+
     if not os.path.exists(file_path):
-        raise FileNotFoundError(
-            f'file {file_path} does not exist.'
-        )
+        raise FileNotFoundError(f'file {file_path} does not exist.')
+
     df = pd.read_csv(file_path).dropna()
     batch_sequences = df[column].to_list()
     return lmp.dataset.LanguageModelDataset(batch_sequences)
 
 
 def _preprocess_wiki_tokens(dataset: str) -> lmp.dataset.LanguageModelDataset:
-    r"""Preprocess of wiki dataset and convert to LanguageModelDataset.
+    r"""Preprocess of wiki dataset and convert to
+    lmp.dataset.LanguageModelDataset`.
 
     Args:
         column:
             Select the data which want to use.
 
     Returns:
-        lmp.dataset.LanguageModelDataset
+        `lmp.dataset.LanguageModelDataset`
     """
-    file_path = f'{lmp.path.DATA_PATH}/wiki.train.tokens'
+    file_path = os.path.join(f'{lmp.path.DATA_PATH}', 'wiki.train.tokens')
+
     if not os.path.exists(file_path):
-        raise FileNotFoundError(
-            f'file {file_path} does not exist.'
-        )
-    with open(file_path, 'r', encoding='utf8') as f:
-        df = f.read()
+        raise FileNotFoundError(f'file {file_path} does not exist.')
+
+    with open(file_path, 'r', encoding='utf8') as input_file:
+        df = input_file.read()
 
     batch_sequences = list(filter(None, re.split(' =', df.replace('\n', ' '))))
     return lmp.dataset.LanguageModelDataset(batch_sequences)
 
 
-def _preprocess_word_test_v1_tokens(
-) -> lmp.dataset.AnalogyDataset:
-    r"""Preprocess word_test_v1 dataset and convert to LanguageModelDataset.
+def _preprocess_word_test_v1_tokens() -> lmp.dataset.AnalogyDataset:
+    r"""Preprocess word_test_v1 dataset and convert to
+    `lmp.dataset.LanguageModelDataset`.
 
     Returns:
-        lmp.dataset.AnalogyDataset
+        `lmp.dataset.AnalogyDataset`
     """
-    file_path = f'{lmp.path.DATA_PATH}/word-test.v1.txt'
+    file_path = os.path.join(f'{lmp.path.DATA_PATH}', 'word-test.v1.txt')
     if not os.path.exists(file_path):
         raise FileNotFoundError(
             f'file {file_path} does not exist.'
@@ -102,7 +106,7 @@ def _preprocess_word_test_v1_tokens(
 
 def load_dataset(
         dataset: str
-) -> torch.utils.data.Dataset:
+) -> Union[lmp.dataset.LanguageModelDataset, lmp.dataset.AnalogyDataset]:
     r"""Load dataset from downloaded files.
 
     Args:
@@ -117,31 +121,22 @@ def load_dataset(
 
     Returns:
         `lmp.dataset.LanguageModelDataset` instance where samples are sequences.
+        `lmp.dataset.AnalogyDataset` instance where sample is used for analogy test.
     """
     if dataset == 'news_collection_desc':
-        return _preprocess_news_collection(
-            column='desc'
-        )
+        return _preprocess_news_collection(column='desc')
 
     if dataset == 'news_collection_title':
-        return _preprocess_news_collection(
-            column='title'
-        )
+        return _preprocess_news_collection(column='title')
 
     if dataset == 'wiki_train_tokens':
-        return _preprocess_wiki_tokens(
-            dataset='train'
-        )
+        return _preprocess_wiki_tokens(dataset='train')
 
     if dataset == 'wiki_valid_tokens':
-        return _preprocess_wiki_tokens(
-            dataset='valid'
-        )
+        return _preprocess_wiki_tokens(dataset='valid')
 
     if dataset == 'wiki_test_tokens':
-        return _preprocess_wiki_tokens(
-            dataset='test'
-        )
+        return _preprocess_wiki_tokens(dataset='test')
 
     if dataset == 'word_test_v1':
         return _preprocess_word_test_v1_tokens()

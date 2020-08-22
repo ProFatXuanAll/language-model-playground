@@ -1,6 +1,8 @@
 r"""Tokenizer base class using `list` structure.
 
 Usage:
+    from lmp.tokenizer import BaseListTokenizer
+
     class CustomTokenizer(BaseListTokenizer):
         ...
 """

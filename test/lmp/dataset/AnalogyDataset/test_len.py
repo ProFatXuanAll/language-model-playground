@@ -1,7 +1,7 @@
 r"""Test `lmp.dataset.AnalogyDataset.__len__`.
 
 Usage:
-    python -m unittest test/lmp/dataset/AnalogyDataset/test_len.py
+    python -m unittest test.lmp.dataset.AnalogyDataset.test_len
 """
 
 # built-in modules

@@ -1,7 +1,7 @@
 r"""Test `lmp.config.BaseConfig.save`.
 
 Usage:
-    python -m unittest test/lmp/config/test_save.py
+    python -m unittest test.lmp.config.test_save
 """
 
 # built-in modules

@@ -1,7 +1,7 @@
 r"""Test `lmp.dataset.AnalogyDataset.create_collate_fn`.
 
 Usage:
-    python -m unittest test/lmp/dataset/AnalogyDataset/test_create_collate_fn.py
+    python -m unittest test.lmp.dataset.AnalogyDataset.test_create_collate_fn
 """
 
 # built-in modules
