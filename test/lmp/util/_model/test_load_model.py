@@ -13,7 +13,6 @@ from __future__ import unicode_literals
 
 import gc
 import inspect
-import json
 import math
 import os
 import unittest
@@ -27,70 +26,64 @@ import torch
 
 # self-made modules
 
-import lmp
 import lmp.model
 import lmp.path
+import lmp.util
 
 
 class TestLoadModel(unittest.TestCase):
-    r"""Test Case for `lmp.util.load_model`."""
+    r"""Test case for `lmp.util.load_model`."""
 
     @classmethod
     def setUpClass(cls):
-        r"""Create test directory."""
+        r"""Create test directory and setup dynamic parameters."""
+        cls.checkpoint = 10
         cls.experiment = 'I-AM-A-TEST-FOLDER'
-        cls.test_dir = os.path.join(
-            lmp.path.DATA_PATH,
-            cls.experiment
-        )
-        os.makedirs(cls.test_dir)
-
-        cls.checkpoint = 1226
-        cls.parameters = {
-            'd_emb': [5, 6],
-            'd_hid': [7, 9],
-            'dropout': [0.1, 0.5],
-            'model_class': [
-                'rnn',
-                'gru',
-                'lstm',
-                'res_rnn',
-                'res_gru',
-                'res_lstm'
+        cls.model_parameters = {
+            'd_emb': [1, 2],
+            'd_hid': [1, 2],
+            'dropout': [0.0, 0.1],
+            'model': [
+                ('rnn', lmp.model.BaseRNNModel),
+                ('gru', lmp.model.GRUModel),
+                ('lstm', lmp.model.LSTMModel),
+                ('res_rnn', lmp.model.BaseResRNNModel),
+                ('res_gru', lmp.model.ResGRUModel),
+                ('res_lstm', lmp.model.ResLSTMModel),
             ],
-            'num_linear_layers': [3, 6],
-            'num_rnn_layers': [2, 5],
-            'pad_token_id': [0, 1, 2, 3],
-            'vocab_size': [10, 15]
+            'num_linear_layers': [1, 2],
+            'num_rnn_layers': [1, 2],
+            'pad_token_id': [0, 1],
+            'vocab_size': [5, 10],
         }
-        cls.param_values = [v for v in cls.parameters.values()]
+        cls.test_dir = os.path.join(lmp.path.DATA_PATH, cls.experiment)
+        os.makedirs(cls.test_dir)
 
     @classmethod
     def tearDownClass(cls):
-        r"""Remove test directory."""
+        r"""Remove test directory and delete dynamic parameters."""
         os.removedirs(cls.test_dir)
         del cls.checkpoint
         del cls.experiment
-        del cls.parameters
-        del cls.param_values
+        del cls.model_parameters
         del cls.test_dir
 
     def setUp(self):
-        r"""Set up parameters for `load_model`."""
+        r"""Setup fixed parameters."""
         self.checkpoint = -1
         self.d_emb = 1
         self.d_hid = 1
-        self.device = torch.tensor([10]).device
+        self.device = torch.device('cpu')
         self.dropout = 0.1
         self.experiment = 'test_util_load_model'
         self.model_class = 'res_rnn'
         self.num_linear_layers = 1
         self.num_rnn_layers = 1
         self.pad_token_id = 0
-        self.vocab_size = 10
+        self.vocab_size = 5
 
     def tearDown(self):
-        r"""Delete parameters for `load_model`."""
+        r"""Delete fixed parameters."""
         del self.checkpoint
         del self.d_emb
         del self.d_hid
@@ -188,17 +181,23 @@ class TestLoadModel(unittest.TestCase):
         )
 
     def test_invalid_input_checkpoint(self):
-        r"""Raise when `checkpoint` is invalid."""
-        msg1 = 'Must raise `TypeError` when `checkpoint` is invalid.'
+        r"""Raise exception when input `checkpoint` is invalid."""
+        msg1 = (
+            'Must raise `TypeError` or `ValueError` when input `checkpoint` '
+            'is invalid.'
+        )
         msg2 = 'Inconsistent error message.'
         examples = (
-            0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf, 0j, 1j, '',
-            b'', [], (), {}, set(), object(), lambda x: x, type, None,
+            -2, 0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf, 0j, 1j, '',
+            b'', (), [], {}, set(), object(), lambda x: x, type, None,
             NotImplemented, ...
         )
 
         for invalid_input in examples:
-            with self.assertRaises(TypeError, msg=msg1) as ctx_man:
+            with self.assertRaises(
+                    (TypeError, ValueError),
+                    msg=msg1
+            ) as ctx_man:
                 lmp.util.load_model(
                     checkpoint=invalid_input,
                     d_emb=self.d_emb,
@@ -219,17 +218,24 @@ class TestLoadModel(unittest.TestCase):
                     '`checkpoint` must be an instance of `int`.',
                     msg=msg2
                 )
+            else:
+                self.assertEqual(
+                    ctx_man.exception.args[0],
+                    '`checkpoint` must be bigger than or equal to `-1`.',
+                    msg=msg2
+                )
 
     def test_invalid_input_d_emb(self):
-        r"""Raise when `d_emb` is invalid."""
+        r"""Raise exception when input `d_emb` is invalid."""
         msg1 = (
-            'Must raise `TypeError` when `d_emb` is invalid.'
+            'Must raise `TypeError` or `ValueError` when input `d_emb` is '
+            'invalid.'
         )
         msg2 = 'Inconsistent error message.'
         examples = (
-            0, -1, 0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf, 0j, 1j,
-            '', b'', [], (), {}, set(), object(), lambda x: x, type, None,
-            NotImplemented, ...
+            False, 0, -1, 0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf,
+            0j, 1j, '', b'', (), [], {}, set(), object(), lambda x: x, type,
+            None, NotImplemented, ...
         )
 
         for invalid_input in examples:
@@ -265,15 +271,16 @@ class TestLoadModel(unittest.TestCase):
                 )
 
     def test_invalid_input_d_hid(self):
-        r"""Raise when `d_hid` is invalid."""
+        r"""Raise exception when input `d_hid` is invalid."""
         msg1 = (
-            'Must raise `TypeError` when `d_hid` is invalid.'
+            'Must raise `TypeError` or `ValueError` when input `d_hid` is '
+            'invalid.'
         )
         msg2 = 'Inconsistent error message.'
         examples = (
-            0, -1, 0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf, 0j, 1j,
-            '', b'', [], (), {}, set(), object(), lambda x: x, type, None,
-            NotImplemented, ...
+            False, 0, -1, 0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf,
+            0j, 1j, '', b'', (), [], {}, set(), object(), lambda x: x, type,
+            None, NotImplemented, ...
         )
 
         for invalid_input in examples:
@@ -309,15 +316,15 @@ class TestLoadModel(unittest.TestCase):
                 )
 
     def test_invalid_input_device(self):
-        r"""Raise when `device` is invalid."""
+        r"""Raise `TypeError` when input `device` is invalid."""
         msg1 = (
-            'Must raise `TypeError` when `device` is invalid.'
+            'Must raise `TypeError` when input `device` is invalid.'
         )
         msg2 = 'Inconsistent error message.'
         examples = (
-            False, 0, -1, 0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf,
-            0j, 1j, '', b'', [], (), {}, set(), object(), lambda x: x, type,
-            None, NotImplemented, ...
+            False, True, 0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf,
+            -math.inf, 0j, 1j, '', b'', (), [], {}, set(), object(),
+            lambda x: x, type, None, NotImplemented, ...
         )
 
         for invalid_input in examples:
@@ -336,24 +343,23 @@ class TestLoadModel(unittest.TestCase):
                     vocab_size=self.vocab_size
                 )
 
-            if isinstance(ctx_man.exception, TypeError):
-                self.assertEqual(
-                    ctx_man.exception.args[0],
-                    '`device` must be an instance of `torch.device`.',
-                    msg=msg2
-                )
+            self.assertEqual(
+                ctx_man.exception.args[0],
+                '`device` must be an instance of `torch.device`.',
+                msg=msg2
+            )
 
     def test_invalid_input_dropout(self):
-        r"""Raise when `dropout` is invalid."""
+        r"""Raise exception when input `dropout` is invalid."""
         msg1 = (
-            'Must raise `TypeError` when `dropout` is '
+            'Must raise `TypeError` or `ValueError` when input `dropout` is '
             'invalid.'
         )
         msg2 = 'Inconsistent error message.'
         examples = (
-            0, -1, -1.0, 1.1, math.nan, -math.nan, math.inf, -math.inf, 0j, 1j,
-            '', b'', [], (), {}, set(), object(), lambda x: x, type, None,
-            NotImplemented, ...
+            False, True, 0, 1, -1, -1.0, 1.1, math.nan, -math.nan, math.inf,
+            -math.inf, 0j, 1j, '', b'', (), [], {}, set(), object(),
+            lambda x: x, type, None, NotImplemented, ...
         )
 
         for invalid_input in examples:
@@ -389,25 +395,25 @@ class TestLoadModel(unittest.TestCase):
                 )
 
     def test_invalid_input_experiment(self):
-        r"""Raise when `experiment` is invalid."""
+        r"""Raise exception when input `experiment` is invalid."""
         msg1 = (
-            'Must raise `TypeError` or `ValueError` when `experiment` is '
-            'invalid.'
+            'Must raise `FileNotFoundError`, `TypeError` or `ValueError` when '
+            'input `experiment` is invalid.'
         )
         msg2 = 'Inconsistent error message.'
         examples = (
             False, True, 0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf,
-            -math.inf, 0j, 1j, [], (), {}, set(), object(), lambda x: x, type,
-            None, NotImplemented, ...
+            -math.inf, 0j, 1j, '', 'I-DO-NOT-EXIST', b'', (), [], {}, set(),
+            object(), lambda x: x, type, None, NotImplemented, ...
         )
 
         for invalid_input in examples:
             with self.assertRaises(
-                    (TypeError, ValueError),
+                    (FileNotFoundError, TypeError, ValueError),
                     msg=msg1
             ) as ctx_man:
                 lmp.util.load_model(
-                    checkpoint=self.checkpoint,
+                    checkpoint=self.__class__.checkpoint,
                     d_emb=self.d_emb,
                     d_hid=self.d_hid,
                     device=self.device,
@@ -420,7 +426,18 @@ class TestLoadModel(unittest.TestCase):
                     vocab_size=self.vocab_size
                 )
 
-            if isinstance(ctx_man.exception, TypeError):
+            if isinstance(ctx_man.exception, FileNotFoundError):
+                test_path = os.path.join(
+                    lmp.path.DATA_PATH,
+                    invalid_input,
+                    f'model-{self.__class__.checkpoint}.pt'
+                )
+                self.assertEqual(
+                    ctx_man.exception.args[0],
+                    f'File {test_path} does not exist.',
+                    msg=msg2
+                )
+            elif isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
                     '`experiment` must be an instance of `str`.',
@@ -434,15 +451,15 @@ class TestLoadModel(unittest.TestCase):
                 )
 
     def test_invalid_input_model_class(self):
-        r"""Raise when `model_class` is invalid."""
+        r"""Raise exception when input `model_class` is invalid."""
         msg1 = (
-            'Must raise `TypeError` or `ValueError` when `model_class` is '
-            'invalid.'
+            'Must raise `TypeError` or `ValueError` when input `model_class` '
+            'is invalid.'
         )
         msg2 = 'Inconsistent error message.'
         examples = (
             False, True, 0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf,
-            -math.inf, 0j, 1j, '', b'', [], (), {}, set(), object(),
+            -math.inf, 0j, 1j, '', b'', (), [], {}, set(), object(),
             lambda x: x, type, None, NotImplemented, ...
         )
 
@@ -474,21 +491,33 @@ class TestLoadModel(unittest.TestCase):
             else:
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`model_class` must not be empty.',
+                    f'model `{invalid_input}` does not support.\nSupported '
+                    'options:' +
+                    ''.join(list(map(
+                        lambda option: f'\n\t--model_class {option}',
+                        [
+                            'rnn',
+                            'gru',
+                            'lstm',
+                            'res_rnn',
+                            'res_gru',
+                            'res_lstm',
+                        ]
+                    ))),
                     msg=msg2
                 )
 
     def test_invalid_input_num_linear_layers(self):
-        r"""Raise when `num_linear_layers` is invalid."""
+        r"""Raise exception when input `num_linear_layers` is invalid."""
         msg1 = (
-            'Must raise `TypeError` when `num_linear_layers` '
-            'is invalid.'
+            'Must raise `TypeError` or `ValueError` when input '
+            '`num_linear_layers` is invalid.'
         )
         msg2 = 'Inconsistent error message.'
         examples = (
-            0, -1, 0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf, 0j, 1j,
-            '', b'', [], (), {}, set(), object(), lambda x: x, type, None,
-            NotImplemented, ...
+            False, 0, -1, 0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf,
+            0j, 1j, '', b'', (), [], {}, set(), object(), lambda x: x, type,
+            None, NotImplemented, ...
         )
 
         for invalid_input in examples:
@@ -524,16 +553,16 @@ class TestLoadModel(unittest.TestCase):
                 )
 
     def test_invalid_input_num_rnn_layers(self):
-        r"""Raise when `num_rnn_layers` is invalid."""
+        r"""Raise exception when input `num_rnn_layers` is invalid."""
         msg1 = (
-            'Must raise `TypeError` when `num_rnn_layers` '
-            'is invalid.'
+            'Must raise `TypeError` or `ValueError` when input '
+            '`num_rnn_layers` is invalid.'
         )
         msg2 = 'Inconsistent error message.'
         examples = (
-            0, -1, 0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf, 0j, 1j,
-            '', b'', [], (), {}, set(), object(), lambda x: x, type, None,
-            NotImplemented, ...
+            False, 0, -1, 0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf,
+            0j, 1j, '', b'', (), [], {}, set(), object(), lambda x: x, type,
+            None, NotImplemented, ...
         )
 
         for invalid_input in examples:
@@ -569,22 +598,22 @@ class TestLoadModel(unittest.TestCase):
                 )
 
     def test_invalid_input_pad_token_id(self):
-        r"""Raise when `pad_token_id` is invalid."""
+        r"""Raise exception when input `pad_token_id` is invalid."""
         msg1 = (
-            'Must raise `TypeError` or `ValueError` when `pad_token_id` '
+            'Must raise `TypeError` or `ValueError` when input `pad_token_id` '
             'is invalid.'
         )
         msg2 = 'Inconsistent error message.'
         examples = (
             -1, 0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf, 0j, 1j, '',
-            b'', [], (), {}, set(), object(), lambda x: x, type, None,
+            b'', (), [], {}, set(), object(), lambda x: x, type, None,
             NotImplemented, ...
         )
 
         for invalid_input in examples:
             with self.assertRaises(
-                (TypeError, ValueError),
-                msg=msg1
+                    (TypeError, ValueError),
+                    msg=msg1
             ) as ctx_man:
                 lmp.util.load_model(
                     checkpoint=self.checkpoint,
@@ -614,20 +643,23 @@ class TestLoadModel(unittest.TestCase):
                 )
 
     def test_invalid_input_vocab_size(self):
-        r"""Raise when `vocab_size` is invalid."""
+        r"""Raise exception when input `vocab_size` is invalid."""
         msg1 = (
-            'Must raise `TypeError` when `vocab_size` '
+            'Must raise `TypeError` or `ValueError` when input `vocab_size` '
             'is invalid.'
         )
         msg2 = 'Inconsistent error message.'
         examples = (
-            0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf, 0j, 1j, '',
-            b'', [], (), {}, set(), object(), lambda x: x, type, None,
+            False, 0, 0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf, 0j,
+            1j, '', b'', (), [], {}, set(), object(), lambda x: x, type, None,
             NotImplemented, ...
         )
 
         for invalid_input in examples:
-            with self.assertRaises(TypeError, msg=msg1) as ctx_man:
+            with self.assertRaises(
+                    (TypeError, ValueError),
+                    msg=msg1
+            ) as ctx_man:
                 lmp.util.load_model(
                     checkpoint=self.checkpoint,
                     d_emb=self.d_emb,
@@ -648,6 +680,42 @@ class TestLoadModel(unittest.TestCase):
                     '`vocab_size` must be an instance of `int`.',
                     msg=msg2
                 )
+            else:
+                self.assertEqual(
+                    ctx_man.exception.args[0],
+                    '`vocab_size` must be bigger than or equal to `1`.',
+                    msg=msg2
+                )
+
+    def test_invalid_input_pad_token_id_and_vocab_size(self):
+        r"""Raise `ValueError` when input `vocab_size <= pad_token_id`."""
+        msg1 = (
+            'Must raise `ValueError` when input `vocab_size <= pad_token_id`.'
+        )
+        msg2 = 'Inconsistent error message.'
+        examples = ((2, 1), (3, 2), (4, 3), (10, 1))
+
+        for pad_token_id, vocab_size in examples:
+            with self.assertRaises(ValueError, msg=msg1) as ctx_man:
+                lmp.util.load_model(
+                    checkpoint=self.checkpoint,
+                    d_emb=self.d_emb,
+                    d_hid=self.d_hid,
+                    device=self.device,
+                    dropout=self.dropout,
+                    experiment=self.experiment,
+                    model_class=self.model_class,
+                    num_linear_layers=self.num_linear_layers,
+                    num_rnn_layers=self.num_rnn_layers,
+                    pad_token_id=pad_token_id,
+                    vocab_size=vocab_size
+                )
+
+            self.assertEqual(
+                ctx_man.exception.args[0],
+                '`pad_token_id` must be smaller than `vocab_size`.',
+                msg=msg2
+            )
 
     def test_return_type(self):
         r"""Return `lmp.model.BaseRNNModel` or `lmp.model.BaseResRNNModel`."""
@@ -655,154 +723,143 @@ class TestLoadModel(unittest.TestCase):
             'Must return `lmp.model.BaseRNNModel` or '
             '`lmp.model.BaseResRNNModel`.'
         )
-        device = torch.tensor([10]).device
-        for(
-            d_emb,
-            d_hid,
-            dropout,
-            model_class,
-            num_linear_layers,
-            num_rnn_layers,
-            pad_token_id,
-            vocab_size
-        ) in product(*self.__class__.param_values):
+
+        test_path = os.path.join(
+            self.__class__.test_dir,
+            f'model-{self.__class__.checkpoint}.pt'
+        )
+
+        for (
+                d_emb,
+                d_hid,
+                dropout,
+                (model_class, model_cstr),
+                num_linear_layers,
+                num_rnn_layers,
+                pad_token_id,
+                vocab_size
+        ) in product(*self.__class__.model_parameters.values()):
             if vocab_size <= pad_token_id:
                 continue
-            model = lmp.util.load_model(
+
+            model_1 = lmp.util.load_model(
                 checkpoint=-1,
                 d_emb=d_emb,
                 d_hid=d_hid,
-                device=device,
+                device=torch.device('cpu'),
                 dropout=dropout,
-                experiment='util_load_model_unittest',
+                experiment=self.__class__.experiment,
                 model_class=model_class,
                 num_linear_layers=num_linear_layers,
                 num_rnn_layers=num_rnn_layers,
                 pad_token_id=pad_token_id,
                 vocab_size=vocab_size
             )
-            try:
-                self.assertIsInstance(model, lmp.model.BaseRNNModel, msg=msg)
-            except AssertionError:
-                self.assertIsInstance(
-                    model, lmp.model.BaseResRNNModel, msg=msg)
 
-    def test_load_model_by_checkpoint(self):
-        r"""Save result must be consistent."""
-        msg1 = 'Must save as `model.json`.'
-        msg2 = 'Inconsistent save result.'
+            self.assertIsInstance(model_1, model_cstr, msg=msg)
 
-        examples = (
-            {
-                'd_emb': 10,
-                'd_hid': 10,
-                'dropout': 0.1,
-                'num_rnn_layers': 1,
-                'num_linear_layers': 2,
-                'pad_token_id': 0,
-                'vocab_size': 10
-            },
-            {
-                'd_emb': 5,
-                'd_hid': 6,
-                'dropout': 0.25,
-                'num_rnn_layers': 3,
-                'num_linear_layers': 1,
-                'pad_token_id': 0,
-                'vocab_size': 40
-            },
-        )
-
-        attr_examples = (
-            (
-                'emb_layer',
-                {
-                    'num_embeddings': 'vocab_size',
-                    'embedding_dim': 'd_emb'
-                },
-            ),
-            (
-                'emb_dropout',
-                {
-                    'p': 'dropout'
-                }
-            ),
-        )
-
-        proj_emb_to_hid_examples = (
-            (
-                'in_features',
-                'd_emb',
-            ),
-            (
-                'out_features',
-                'd_hid',
-            ),
-        )
-
-        for ans_attributes in examples:
-            test_path = os.path.join(
-                self.__class__.test_dir,
-                f'model-{self.__class__.checkpoint}.pt'
-            )
             try:
                 # Create test file.
-                model_test = lmp.model.BaseResRNNModel(**ans_attributes)
-                torch.save(
-                    model_test.state_dict(),
-                    test_path
-                )
-                self.assertTrue(os.path.exists(test_path), msg=msg1)
+                torch.save(model_1.state_dict(), test_path)
+                self.assertTrue(os.path.exists(test_path), msg=msg)
 
-                model = lmp.util.load_model(
+                model_2 = lmp.util.load_model(
                     checkpoint=self.__class__.checkpoint,
-                    d_emb=ans_attributes['d_emb'],
-                    d_hid=ans_attributes['d_hid'],
-                    device=torch.tensor([10]).device,
-                    dropout=ans_attributes['dropout'],
+                    d_emb=d_emb,
+                    d_hid=d_hid,
+                    device=torch.device('cpu'),
+                    dropout=dropout,
                     experiment=self.__class__.experiment,
-                    model_class='res_rnn',
-                    num_linear_layers=ans_attributes['num_linear_layers'],
-                    num_rnn_layers=ans_attributes['num_rnn_layers'],
-                    pad_token_id=ans_attributes['pad_token_id'],
-                    vocab_size=ans_attributes['vocab_size']
+                    model_class=model_class,
+                    num_linear_layers=num_linear_layers,
+                    num_rnn_layers=num_rnn_layers,
+                    pad_token_id=pad_token_id,
+                    vocab_size=vocab_size
                 )
-                for attr_key, attr_dict in attr_examples:
-                    self.assertTrue(hasattr(model, attr_key), msg=msg2)
-                    model_attr = getattr(model, attr_key)
 
-                    for model_key, ans_key in attr_dict.items():
-                        self.assertEqual(
-                            getattr(model_attr, model_key),
-                            ans_attributes[ans_key],
-                            msg=msg2
-                        )
-                self.assertEqual(
-                    len(model.rnn_layer),
-                    ans_attributes['num_rnn_layers'],
-                    msg=msg2
+                self.assertIsInstance(model_2, model_cstr, msg=msg)
+            finally:
+                # Clean up test file.
+                os.remove(test_path)
+
+    def test_load_result(self):
+        r"""Load result must be consistent."""
+        msg = 'Inconsistent load result.'
+
+        test_path = os.path.join(
+            self.__class__.test_dir,
+            f'model-{self.__class__.checkpoint}.pt'
+        )
+
+        for (
+                d_emb,
+                d_hid,
+                dropout,
+                (model_class, model_cstr),
+                num_linear_layers,
+                num_rnn_layers,
+                pad_token_id,
+                vocab_size
+        ) in product(*self.__class__.model_parameters.values()):
+            if vocab_size <= pad_token_id:
+                continue
+            try:
+                # Create test file.
+                ans_model = model_cstr(
+                    d_emb=d_emb,
+                    d_hid=d_hid,
+                    dropout=dropout,
+                    num_linear_layers=num_linear_layers,
+                    num_rnn_layers=num_rnn_layers,
+                    pad_token_id=pad_token_id,
+                    vocab_size=vocab_size
                 )
-                for layer in model.proj_emb_to_hid:
-                    if isinstance(layer, torch.nn.Dropout) or isinstance(
-                        layer,
-                        torch.nn.ReLU
-                    ):
-                        continue
-                    for layer_key, ans_key in proj_emb_to_hid_examples:
-                        self.assertEqual(
-                            getattr(layer, layer_key),
-                            ans_attributes[ans_key],
-                            msg=msg2
-                        )
-                nums = 0
-                for layer in model.proj_hid_to_emb:
-                    if isinstance(layer, torch.nn.Linear):
-                        nums += 1
-                self.assertEqual(
-                    nums,
-                    ans_attributes['num_linear_layers'],
-                    msg=msg2
+                torch.save(ans_model.state_dict(), test_path)
+                self.assertTrue(os.path.exists(test_path), msg=msg)
+
+                model_1 = lmp.util.load_model(
+                    checkpoint=-1,
+                    d_emb=d_emb,
+                    d_hid=d_hid,
+                    device=torch.device('cpu'),
+                    dropout=dropout,
+                    experiment=self.__class__.experiment,
+                    model_class=model_class,
+                    num_linear_layers=num_linear_layers,
+                    num_rnn_layers=num_rnn_layers,
+                    pad_token_id=pad_token_id,
+                    vocab_size=vocab_size
                 )
+
+                model_2 = lmp.util.load_model(
+                    checkpoint=self.__class__.checkpoint,
+                    d_emb=d_emb,
+                    d_hid=d_hid,
+                    device=torch.device('cpu'),
+                    dropout=dropout,
+                    experiment=self.__class__.experiment,
+                    model_class=model_class,
+                    num_linear_layers=num_linear_layers,
+                    num_rnn_layers=num_rnn_layers,
+                    pad_token_id=pad_token_id,
+                    vocab_size=vocab_size
+                )
+
+                self.assertEqual(
+                    len(list(ans_model.parameters())),
+                    len(list(model_1.parameters())),
+                    msg=msg
+                )
+                self.assertEqual(
+                    len(list(ans_model.parameters())),
+                    len(list(model_2.parameters())),
+                    msg=msg
+                )
+
+                for p1, p2 in zip(ans_model.parameters(),
+                                  model_2.parameters()):
+                    self.assertTrue((p1 == p2).all().item(), msg=msg)
+
             finally:
                 # Clean up test file.
                 os.remove(test_path)

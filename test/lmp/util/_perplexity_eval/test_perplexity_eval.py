@@ -25,89 +25,72 @@ import torch
 
 # self-made modules
 
-import lmp
+import lmp.model
+import lmp.tokenizer
+import lmp.util
 
 
 class TestLoadOptimizerByConfig(unittest.TestCase):
-    r"""Test Case for `lmp.util.perplexity_eval`."""
+    r"""Test case for `lmp.util.perplexity_eval`."""
 
     @classmethod
     def setUpClass(cls):
-        cls.parameters = {
-            'd_emb': [5, 6],
-            'd_hid': [7, 9],
-            'dropout': [0.1, 0.5],
-            'num_linear_layers': [3, 6],
-            'num_rnn_layers': [2, 5],
-            'pad_token_id': [0, 1, 2, 3],
-            'vocab_size': [10, 15]
+        r"""Setup dynamic parameters."""
+        cls.model_parameters = {
+            'd_emb': [1, 2],
+            'd_hid': [1, 2],
+            'dropout': [0.0, 0.1],
+            'is_uncased': [False, True],
+            'model_cstr': [
+                lmp.model.BaseRNNModel,
+                lmp.model.GRUModel,
+                lmp.model.LSTMModel,
+                lmp.model.BaseResRNNModel,
+                lmp.model.ResGRUModel,
+                lmp.model.ResLSTMModel,
+            ],
+            'num_linear_layers': [1, 2],
+            'num_rnn_layers': [1, 2],
+            'sequence': [
+                'hello',
+                'world',
+                'hello world',
+            ],
+            'tokenizer_cstr': [
+                lmp.tokenizer.CharDictTokenizer,
+                lmp.tokenizer.CharListTokenizer,
+                lmp.tokenizer.WhitespaceDictTokenizer,
+                lmp.tokenizer.WhitespaceListTokenizer,
+            ],
         }
-        cls.param_values = [v for v in cls.parameters.values()]
 
     @classmethod
     def tearDownClass(cls):
-        del cls.parameters
-        del cls.param_values
+        r"""Delete dynamic parameters."""
+        del cls.model_parameters
         gc.collect()
 
     def setUp(self):
-        r"""Set up parameters for `perplexity_eval`."""
-        self.device = torch.tensor([10]).device
+        r"""Setup fixed parameters."""
+        self.device = torch.device('cpu')
         self.model = lmp.model.BaseRNNModel(
-            d_emb=4,
-            d_hid=4,
-            dropout=0.2,
-            num_rnn_layers=1,
+            d_emb=1,
+            d_hid=1,
+            dropout=0.0,
             num_linear_layers=1,
+            num_rnn_layers=1,
             pad_token_id=0,
-            vocab_size=10
+            vocab_size=5
         )
-        self.sequence = 'Today is Monday.'
+        self.sequence = ''
         self.tokenizer = lmp.tokenizer.CharDictTokenizer()
 
-        cls = self.__class__
-        self.model_obj = []
-        for (
-            d_emb,
-            d_hid,
-            dropout,
-            num_linear_layers,
-            num_rnn_layers,
-            pad_token_id,
-            vocab_size
-        ) in product(*cls.param_values):
-            if vocab_size <= pad_token_id:
-                continue
-            model = lmp.model.BaseRNNModel(
-                d_emb=d_emb,
-                d_hid=d_hid,
-                dropout=dropout,
-                num_linear_layers=num_linear_layers,
-                num_rnn_layers=num_rnn_layers,
-                pad_token_id=pad_token_id,
-                vocab_size=vocab_size
-            )
-            self.model_obj.append(model)
-
-        self.tokenizer_obj = [
-            lmp.tokenizer.CharDictTokenizer(True),
-            lmp.tokenizer.CharDictTokenizer(),
-            lmp.tokenizer.CharListTokenizer(True),
-            lmp.tokenizer.CharListTokenizer(),
-            lmp.tokenizer.WhitespaceDictTokenizer(True),
-            lmp.tokenizer.WhitespaceDictTokenizer(),
-            lmp.tokenizer.WhitespaceListTokenizer(True),
-            lmp.tokenizer.WhitespaceListTokenizer(),
-        ]
-
     def tearDown(self):
-        r"""Delete parameters for `perplexity_eval`."""
+        r"""Delete fixed parameters."""
         del self.device
         del self.model
-        del self.model_obj
         del self.sequence
         del self.tokenizer
-        del self.tokenizer_obj
         gc.collect()
 
     def test_signature(self):
@@ -152,13 +135,13 @@ class TestLoadOptimizerByConfig(unittest.TestCase):
         )
 
     def test_invalid_input_device(self):
-        r"""Raise when `device` is invalid."""
-        msg1 = 'Must raise `TypeError` when `device` is invalid.'
+        r"""Raise `TypeError` when input `device` is invalid."""
+        msg1 = 'Must raise `TypeError` when input `device` is invalid.'
         msg2 = 'Inconsistent error message.'
         examples = (
-            0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf, 0j, 1j, '',
-            b'', [], (), {}, set(), object(), lambda x: x, type, None,
-            NotImplemented, ...
+            False, True, 0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf,
+            -math.inf, 0j, 1j, '', b'', (), [], {}, set(), object(),
+            lambda x: x, type, None, NotImplemented, ...
         )
 
         for invalid_input in examples:
@@ -170,24 +153,20 @@ class TestLoadOptimizerByConfig(unittest.TestCase):
                     tokenizer=self.tokenizer
                 )
 
-            if isinstance(ctx_man.exception, TypeError):
-                self.assertEqual(
-                    ctx_man.exception.args[0],
-                    '`device` must be an instance of `torch.device`.',
-                    msg=msg2
-                )
+            self.assertEqual(
+                ctx_man.exception.args[0],
+                '`device` must be an instance of `torch.device`.',
+                msg=msg2
+            )
 
     def test_invalid_input_model(self):
-        r"""Raise when `model` is invalid."""
-        msg1 = (
-            'Must raise `TypeError` when `model` '
-            'is invalid.'
-        )
+        r"""Raise `TypeError` when input `model` is invalid."""
+        msg1 = 'Must raise `TypeError` when input `model` is invalid.'
         msg2 = 'Inconsistent error message.'
         examples = (
-            0, 1, -1, True, False, 0.0, 1.0, math.nan, -math.nan, math.inf,
-            -math.inf, 0j, 1j, object(), lambda x: x, type, None,
-            NotImplemented, ...
+            False, True, 0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf,
+            -math.inf, 0j, 1j, '', b'', (), [], {}, set(), object(),
+            lambda x: x, type, None, NotImplemented, ...
         )
 
         for invalid_input in examples:
@@ -199,32 +178,31 @@ class TestLoadOptimizerByConfig(unittest.TestCase):
                     tokenizer=self.tokenizer
                 )
 
-            if isinstance(ctx_man.exception, TypeError):
-                self.assertEqual(
-                    ctx_man.exception.args[0],
-                    '`model` must be an instance of '
-                    '`Union['
-                    'lmp.model.BaseRNNModel,'
-                    'lmp.model.BaseResRNNModel'
-                    ']`.',
-                    msg=msg2
-                )
+            self.assertEqual(
+                ctx_man.exception.args[0],
+                '`model` must be an instance of '
+                '`Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel]`.',
+                msg=msg2
+            )
 
     def test_invalid_input_sequence(self):
-        r"""Raise when `sequence` is invalid."""
+        r"""Raise exception when input `sequence` is invalid."""
         msg1 = (
-            'Must raise `TypeError` when `sequence` '
-            'is invalid.'
+            'Must raise `TypeError` or `ValueError` when input `sequence` is '
+            'invalid.'
         )
         msg2 = 'Inconsistent error message.'
         examples = (
-            0, 1, -1, True, False, 0.0, 1.0, math.nan, -math.nan, math.inf,
-            -math.inf, 0j, 1j, [], (), {}, set(), object(), lambda x: x, type,
-            None, NotImplemented, ...
+            False, True, 0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf,
+            -math.inf, 0j, 1j, '', b'', (), [], {}, set(), object(), lambda x: x,
+            type, None, NotImplemented, ...
         )
 
         for invalid_input in examples:
-            with self.assertRaises(TypeError, msg=msg1) as ctx_man:
+            with self.assertRaises(
+                    (TypeError, ValueError),
+                    msg=msg1
+            ) as ctx_man:
                 lmp.util.perplexity_eval(
                     device=self.device,
                     model=self.model,
@@ -238,17 +216,20 @@ class TestLoadOptimizerByConfig(unittest.TestCase):
                     '`sequence` must be an instance of `str`.',
                     msg=msg2
                 )
+            else:
+                self.assertEqual(
+                    ctx_man.exception.args[0],
+                    '`sequence` must not be empty.',
+                    msg=msg2
+                )
 
     def test_invalid_input_tokenizer(self):
-        r"""Raise when `tokenizer` is invalid."""
-        msg1 = (
-            'Must raise `TypeError` when `tokenizer` '
-            'is invalid.'
-        )
+        r"""Raise `TypeError` when input `tokenizer` is invalid."""
+        msg1 = 'Must raise `TypeError` when input `tokenizer` is invalid.'
         msg2 = 'Inconsistent error message.'
         examples = (
-            0, 1, -1, True, False, 0.0, 1.0, math.nan, -math.nan, math.inf,
-            -math.inf, 0j, 1j, '', b'', [], (), {}, set(), object(),
+            False, True, 0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf,
+            -math.inf, 0j, 1j, '', b'', (), [], {}, set(), object(),
             lambda x: x, type, None, NotImplemented, ...
         )
 
@@ -261,37 +242,134 @@ class TestLoadOptimizerByConfig(unittest.TestCase):
                     tokenizer=invalid_input
                 )
 
-            if isinstance(ctx_man.exception, TypeError):
-                self.assertEqual(
-                    ctx_man.exception.args[0],
-                    '`tokenizer` must be an instance of '
-                    '`lmp.tokenizer.BaseTokenizer`.',
-                    msg=msg2
-                )
+            self.assertEqual(
+                ctx_man.exception.args[0],
+                '`tokenizer` must be an instance of '
+                '`lmp.tokenizer.BaseTokenizer`.',
+                msg=msg2
+            )
 
     def test_return_type(self):
         r"""Return `float`."""
-        msg = (
-            'Must return `flaot`.'
-        )
-        examples = (
-            (
-                tokenizer,
-                model,
-            )
-            for tokenizer in self.tokenizer_obj
-            for model in self.model_obj
-        )
+        msg = 'Must return `float`.'
 
-        for tokenizer, model in examples:
-            ppl = lmp.util.perplexity_eval(
-                device=self.device,
-                model=model,
-                sequence=self.sequence,
-                tokenizer=tokenizer
+        for (
+                d_emb,
+                d_hid,
+                dropout,
+                is_uncased,
+                model_cstr,
+                num_linear_layers,
+                num_rnn_layers,
+                sequence,
+                tokenizer_cstr,
+        ) in product(*self.__class__.model_parameters.values()):
+            tokenizer = tokenizer_cstr(is_uncased=is_uncased)
+            pad_token_id = tokenizer.convert_token_to_id(tokenizer.pad_token)
+            vocab_size = tokenizer.vocab_size
+            model = model_cstr(
+                d_emb=d_emb,
+                d_hid=d_hid,
+                dropout=dropout,
+                num_linear_layers=num_linear_layers,
+                num_rnn_layers=num_rnn_layers,
+                pad_token_id=pad_token_id,
+                vocab_size=vocab_size
             )
 
-            self.assertIsInstance(ppl, float, msg=msg)
+            self.assertIsInstance(
+                lmp.util.perplexity_eval(
+                    device=torch.device('cpu'),
+                    model=model,
+                    sequence=sequence,
+                    tokenizer=tokenizer
+                ),
+                float,
+                msg=msg
+            )
+
+    def test_return_value(self):
+        r"""Perplexity is greater than or equal to zero."""
+        msg = 'Perplexity must be greater than or equal to zero.'
+
+        for (
+                d_emb,
+                d_hid,
+                dropout,
+                is_uncased,
+                model_cstr,
+                num_linear_layers,
+                num_rnn_layers,
+                sequence,
+                tokenizer_cstr,
+        ) in product(*self.__class__.model_parameters.values()):
+            tokenizer = tokenizer_cstr(is_uncased=is_uncased)
+            pad_token_id = tokenizer.convert_token_to_id(tokenizer.pad_token)
+            vocab_size = tokenizer.vocab_size
+            model = model_cstr(
+                d_emb=d_emb,
+                d_hid=d_hid,
+                dropout=dropout,
+                num_linear_layers=num_linear_layers,
+                num_rnn_layers=num_rnn_layers,
+                pad_token_id=pad_token_id,
+                vocab_size=vocab_size
+            )
+
+            self.assertGreaterEqual(
+                lmp.util.perplexity_eval(
+                    device=torch.device('cpu'),
+                    model=model,
+                    sequence=sequence,
+                    tokenizer=tokenizer
+                ),
+                0,
+                msg=msg
+            )
+
+    def test_pure_function(self):
+        r"""Perplexity must be the same when given the same input."""
+        msg = 'Perplexity must be the same when given the same input'
+
+        for (
+                d_emb,
+                d_hid,
+                dropout,
+                is_uncased,
+                model_cstr,
+                num_linear_layers,
+                num_rnn_layers,
+                sequence,
+                tokenizer_cstr,
+        ) in product(*self.__class__.model_parameters.values()):
+            tokenizer = tokenizer_cstr(is_uncased=is_uncased)
+            pad_token_id = tokenizer.convert_token_to_id(tokenizer.pad_token)
+            vocab_size = tokenizer.vocab_size
+            model = model_cstr(
+                d_emb=d_emb,
+                d_hid=d_hid,
+                dropout=dropout,
+                num_linear_layers=num_linear_layers,
+                num_rnn_layers=num_rnn_layers,
+                pad_token_id=pad_token_id,
+                vocab_size=vocab_size
+            )
+
+            self.assertEqual(
+                lmp.util.perplexity_eval(
+                    device=torch.device('cpu'),
+                    model=model,
+                    sequence=sequence,
+                    tokenizer=tokenizer
+                ),
+                lmp.util.perplexity_eval(
+                    device=torch.device('cpu'),
+                    model=model,
+                    sequence=sequence,
+                    tokenizer=tokenizer
+                ),
+                msg=msg
+            )
 
 
 if __name__ == '__main__':

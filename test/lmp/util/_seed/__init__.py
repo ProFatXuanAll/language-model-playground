@@ -1,4 +1,5 @@
 r"""Test `lmp.util._seed.py`.
+
 Usage:
     python -m unittest test.lmp.util._seed.__init__
 """
@@ -27,7 +28,9 @@ class TestUtilSeed(unittest.TestCase):
             import lmp.util._seed
             # pylint: enable=C0415
 
+            # pylint: disable=W0212
             self.assertTrue(inspect.ismodule(lmp.util._seed), msg=msg)
+            # pylint: enable=W0212
         except ImportError:
             self.fail(msg=msg)
 
@@ -47,6 +50,7 @@ class TestUtilSeed(unittest.TestCase):
             import lmp.util._seed
             # pylint: enable=C0415
 
+            # pylint: disable=W0212
             for attr in examples:
                 self.assertTrue(
                     hasattr(lmp.util._seed, attr),
@@ -56,6 +60,7 @@ class TestUtilSeed(unittest.TestCase):
                     inspect.isfunction(getattr(lmp.util._seed, attr)),
                     msg=msg2.format(attr)
                 )
+            # pylint: enable=W0212
         except ImportError:
             self.fail(msg=msg3)
 

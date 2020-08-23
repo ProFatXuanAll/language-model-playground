@@ -1,4 +1,5 @@
 r"""Test `lmp.util._perplexity_eval.py`.
+
 Usage:
     python -m unittest test.lmp.util._perplexity_eval.__init__
 """
@@ -27,10 +28,12 @@ class TestUtilPerplexityEval(unittest.TestCase):
             import lmp.util._perplexity_eval
             # pylint: enable=C0415
 
+            # pylint: disable=W0212
             self.assertTrue(
-                inspect.ismodule(
-                    lmp.util._perplexity_eval),
-                msg=msg)
+                inspect.ismodule(lmp.util._perplexity_eval),
+                msg=msg
+            )
+            # pylint: enable=W0212
         except ImportError:
             self.fail(msg=msg)
 
@@ -50,6 +53,7 @@ class TestUtilPerplexityEval(unittest.TestCase):
             import lmp.util._perplexity_eval
             # pylint: enable=C0415
 
+            # pylint: disable=W0212
             for attr in examples:
                 self.assertTrue(
                     hasattr(lmp.util._perplexity_eval, attr),
@@ -61,6 +65,7 @@ class TestUtilPerplexityEval(unittest.TestCase):
                     ),
                     msg=msg2.format(attr)
                 )
+            # pylint: enable=W0212
         except ImportError:
             self.fail(msg=msg3)
 

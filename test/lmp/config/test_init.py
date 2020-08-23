@@ -157,7 +157,7 @@ class TestInit(unittest.TestCase):
         )
 
     def test_invalid_input_batch_size(self):
-        r"""Raise when input `batch_size` is invalid."""
+        r"""Raise exception when input `batch_size` is invalid."""
         msg1 = (
             'Must raise `TypeError` or `ValueError` when input `batch_size` '
             'is invalid.'
@@ -165,7 +165,7 @@ class TestInit(unittest.TestCase):
         msg2 = 'Inconsistent error message.'
         examples = (
             False, 0, -1, 0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf,
-            0j, 1j, '', b'', [], (), {}, set(), object(), lambda x: x, type,
+            0j, 1j, '', b'', (), [], {}, set(), object(), lambda x: x, type,
             None, NotImplemented, ...
         )
 
@@ -190,7 +190,7 @@ class TestInit(unittest.TestCase):
                 )
 
     def test_invalid_input_checkpoint_step(self):
-        r"""Raise when input `checkpoint_step` is invalid."""
+        r"""Raise exception when input `checkpoint_step` is invalid."""
         msg1 = (
             'Must raise `TypeError` or `ValueError` when input '
             '`checkpoint_step` is invalid.'
@@ -198,7 +198,7 @@ class TestInit(unittest.TestCase):
         msg2 = 'Inconsistent error message.'
         examples = (
             False, 0, -1, 0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf,
-            0j, 1j, '', b'', [], (), {}, set(), object(), lambda x: x, type,
+            0j, 1j, '', b'', (), [], {}, set(), object(), lambda x: x, type,
             None, NotImplemented, ...
         )
 
@@ -223,7 +223,7 @@ class TestInit(unittest.TestCase):
                 )
 
     def test_invalid_input_d_emb(self):
-        r"""Raise when input `d_emb` is invalid."""
+        r"""Raise exception when input `d_emb` is invalid."""
         msg1 = (
             'Must raise `TypeError` or `ValueError` when input `d_emb` is '
             'invalid.'
@@ -231,7 +231,7 @@ class TestInit(unittest.TestCase):
         msg2 = 'Inconsistent error message.'
         examples = (
             False, 0, -1, 0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf,
-            0j, 1j, '', b'', [], (), {}, set(), object(), lambda x: x, type,
+            0j, 1j, '', b'', (), [], {}, set(), object(), lambda x: x, type,
             None, NotImplemented, ...
         )
 
@@ -256,7 +256,7 @@ class TestInit(unittest.TestCase):
                 )
 
     def test_invalid_input_d_hid(self):
-        r"""Raise when input `d_hid` is invalid."""
+        r"""Raise exception when input `d_hid` is invalid."""
         msg1 = (
             'Must raise `TypeError` or `ValueError` when input `d_hid` is '
             'invalid.'
@@ -264,7 +264,7 @@ class TestInit(unittest.TestCase):
         msg2 = 'Inconsistent error message.'
         examples = (
             False, 0, -1, 0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf,
-            0j, 1j, '', b'', [], (), {}, set(), object(), lambda x: x, type,
+            0j, 1j, '', b'', (), [], {}, set(), object(), lambda x: x, type,
             None, NotImplemented, ...
         )
 
@@ -289,7 +289,7 @@ class TestInit(unittest.TestCase):
                 )
 
     def test_invalid_input_dataset(self):
-        r"""Raise when input `dataset` is invalid."""
+        r"""Raise exception when input `dataset` is invalid."""
         msg1 = (
             'Must raise `TypeError` or `ValueError` when input `dataset` is '
             'invalid.'
@@ -297,7 +297,7 @@ class TestInit(unittest.TestCase):
         msg2 = 'Inconsistent error message.'
         examples = (
             False, True, 0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf,
-            -math.inf, 0j, 1j, '', b'', [], (), {}, set(), object(),
+            -math.inf, 0j, 1j, '', b'', (), [], {}, set(), object(),
             lambda x: x, type, None, NotImplemented, ...
         )
 
@@ -322,7 +322,7 @@ class TestInit(unittest.TestCase):
                 )
 
     def test_invalid_input_dropout(self):
-        r"""Raise when input `dropout` is invalid."""
+        r"""Raise exception when input `dropout` is invalid."""
         msg1 = (
             'Must raise `TypeError` or `ValueError` when input `dropout` is '
             'invalid.'
@@ -330,7 +330,7 @@ class TestInit(unittest.TestCase):
         msg2 = 'Inconsistent error message.'
         examples = (
             -1, -1.0, 1.1, math.nan, -math.nan, math.inf, -math.inf, 0j, 1j,
-            '', b'', [], (), {}, set(), object(), lambda x: x, type, None,
+            '', b'', (), [], {}, set(), object(), lambda x: x, type, None,
             NotImplemented, ...
         )
 
@@ -355,7 +355,7 @@ class TestInit(unittest.TestCase):
                 )
 
     def test_invalid_input_epoch(self):
-        r"""Raise when input `epoch` is invalid."""
+        r"""Raise exception when input `epoch` is invalid."""
         msg1 = (
             'Must raise `TypeError` or `ValueError` when input `epoch` is '
             'invalid.'
@@ -363,7 +363,7 @@ class TestInit(unittest.TestCase):
         msg2 = 'Inconsistent error message.'
         examples = (
             False, 0, -1, 0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf,
-            0j, 1j, '', b'', [], (), {}, set(), object(), lambda x: x, type,
+            0j, 1j, '', b'', (), [], {}, set(), object(), lambda x: x, type,
             None, NotImplemented, ...
         )
 
@@ -388,7 +388,7 @@ class TestInit(unittest.TestCase):
                 )
 
     def test_invalid_input_experiment(self):
-        r"""Raise when input `experiment` is invalid."""
+        r"""Raise exception when input `experiment` is invalid."""
         msg1 = (
             'Must raise `TypeError` or `ValueError` when input `experiment` '
             'is invalid.'
@@ -396,7 +396,7 @@ class TestInit(unittest.TestCase):
         msg2 = 'Inconsistent error message.'
         examples = (
             False, True, 0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf,
-            -math.inf, 0j, 1j, '', b'', [], (), {}, set(), object(),
+            -math.inf, 0j, 1j, '', b'', (), [], {}, set(), object(),
             lambda x: x, type, None, NotImplemented, ...
         )
 
@@ -421,12 +421,12 @@ class TestInit(unittest.TestCase):
                 )
 
     def test_invalid_input_is_uncased(self):
-        r"""Raise when input `is_uncased` is invalid."""
+        r"""Raise `TypeError` when input `is_uncased` is invalid."""
         msg1 = 'Must raise `TypeError` when input `is_uncased` is invalid.'
         msg2 = 'Inconsistent error message.'
         examples = (
             0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf, 0j,
-            1j, '', b'', [], (), {}, set(), object(), lambda x: x, type, None,
+            1j, '', b'', (), [], {}, set(), object(), lambda x: x, type, None,
             NotImplemented, ...
         )
 
@@ -445,14 +445,14 @@ class TestInit(unittest.TestCase):
             )
 
     def test_invalid_input_learning_rate(self):
-        r"""Raise when input `learning_rate` is invalid."""
+        r"""Raise exception when input `learning_rate` is invalid."""
         msg1 = (
             'Must raise `TypeError` or `ValueError` when input '
             '`learning_rate` is invalid.'
         )
         msg2 = 'Inconsistent error message.'
         examples = (
-            -1, -1.0, math.nan, -math.nan, -math.inf, 0j, 1j, '', b'', [], (),
+            -1, -1.0, math.nan, -math.nan, -math.inf, 0j, 1j, '', b'', (), [],
             {}, set(), object(), lambda x: x, type, None, NotImplemented, ...
         )
 
@@ -481,14 +481,14 @@ class TestInit(unittest.TestCase):
                 )
 
     def test_invalid_input_max_norm(self):
-        r"""Raise when input `max_norm` is invalid."""
+        r"""Raise exception when input `max_norm` is invalid."""
         msg1 = (
             'Must raise `TypeError` or `ValueError` when input `max_norm` is '
             'invalid.'
         )
         msg2 = 'Inconsistent error message.'
         examples = (
-            -1, -1.0, math.nan, -math.nan, -math.inf, 0j, 1j, '', b'', [], (),
+            -1, -1.0, math.nan, -math.nan, -math.inf, 0j, 1j, '', b'', (), [],
             {}, set(), object(), lambda x: x, type, None, NotImplemented, ...
         )
 
@@ -517,7 +517,7 @@ class TestInit(unittest.TestCase):
                 )
 
     def test_invalid_input_max_seq_len(self):
-        r"""Raise when input `max_seq_len` is invalid."""
+        r"""Raise exception when input `max_seq_len` is invalid."""
         msg1 = (
             'Must raise `TypeError` or `ValueError` when input `max_seq_len` '
             'is invalid.'
@@ -525,7 +525,7 @@ class TestInit(unittest.TestCase):
         msg2 = 'Inconsistent error message.'
         examples = (
             False, True, 0, 1, 0.0, 1.0, math.nan, -math.nan, math.inf,
-            -math.inf, 0j, 1j, '', b'', [], (), {}, set(), object(),
+            -math.inf, 0j, 1j, '', b'', (), [], {}, set(), object(),
             lambda x: x, type, None, NotImplemented, ...
         )
 
@@ -554,7 +554,7 @@ class TestInit(unittest.TestCase):
                 )
 
     def test_invalid_input_min_count(self):
-        r"""Raise when input `min_count` is invalid."""
+        r"""Raise exception when input `min_count` is invalid."""
         msg1 = (
             'Must raise `TypeError` or `ValueError` when input `min_count` is '
             'invalid.'
@@ -562,7 +562,7 @@ class TestInit(unittest.TestCase):
         msg2 = 'Inconsistent error message.'
         examples = (
             False, 0, -1, 0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf,
-            0j, 1j, '', b'', [], (), {}, set(), object(), lambda x: x, type,
+            0j, 1j, '', b'', (), [], {}, set(), object(), lambda x: x, type,
             None, NotImplemented, ...
         )
 
@@ -591,7 +591,7 @@ class TestInit(unittest.TestCase):
                 )
 
     def test_invalid_input_model_class(self):
-        r"""Raise when input `model_class` is invalid."""
+        r"""Raise exception when input `model_class` is invalid."""
         msg1 = (
             'Must raise `TypeError` or `ValueError` when input `model_class` '
             'is invalid.'
@@ -599,7 +599,7 @@ class TestInit(unittest.TestCase):
         msg2 = 'Inconsistent error message.'
         examples = (
             False, True, 0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf,
-            -math.inf, 0j, 1j, '', b'', [], (), {}, set(), object(),
+            -math.inf, 0j, 1j, '', b'', (), [], {}, set(), object(),
             lambda x: x, type, None, NotImplemented, ...
         )
 
@@ -628,7 +628,7 @@ class TestInit(unittest.TestCase):
                 )
 
     def test_invalid_input_num_linear_layers(self):
-        r"""Raise when input `num_linear_layers` is invalid."""
+        r"""Raise exception when input `num_linear_layers` is invalid."""
         msg1 = (
             'Must raise `TypeError` or `ValueError` when input '
             '`num_linear_layers` is invalid.'
@@ -636,7 +636,7 @@ class TestInit(unittest.TestCase):
         msg2 = 'Inconsistent error message.'
         examples = (
             False, 0, -1, 0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf,
-            0j, 1j, '', b'', [], (), {}, set(), object(), lambda x: x, type,
+            0j, 1j, '', b'', (), [], {}, set(), object(), lambda x: x, type,
             None, NotImplemented, ...
         )
 
@@ -665,7 +665,7 @@ class TestInit(unittest.TestCase):
                 )
 
     def test_invalid_input_num_rnn_layers(self):
-        r"""Raise when input `num_rnn_layers` is invalid."""
+        r"""Raise exception when input `num_rnn_layers` is invalid."""
         msg1 = (
             'Must raise `TypeError` or `ValueError` when input '
             '`num_rnn_layers` is invalid.'
@@ -673,7 +673,7 @@ class TestInit(unittest.TestCase):
         msg2 = 'Inconsistent error message.'
         examples = (
             False, 0, -1, 0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf,
-            0j, 1j, '', b'', [], (), {}, set(), object(), lambda x: x, type,
+            0j, 1j, '', b'', (), [], {}, set(), object(), lambda x: x, type,
             None, NotImplemented, ...
         )
 
@@ -702,7 +702,7 @@ class TestInit(unittest.TestCase):
                 )
 
     def test_invalid_input_optimizer_class(self):
-        r"""Raise when input `optimizer_class` is invalid."""
+        r"""Raise exception when input `optimizer_class` is invalid."""
         msg1 = (
             'Must raise `TypeError` or `ValueError` when input '
             '`optimizer_class` is invalid.'
@@ -710,7 +710,7 @@ class TestInit(unittest.TestCase):
         msg2 = 'Inconsistent error message.'
         examples = (
             False, True, 0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf,
-            -math.inf, 0j, 1j, '', b'', [], (), {}, set(), object(),
+            -math.inf, 0j, 1j, '', b'', (), [], {}, set(), object(),
             lambda x: x, type, None, NotImplemented, ...
         )
 
@@ -739,7 +739,7 @@ class TestInit(unittest.TestCase):
                 )
 
     def test_invalid_input_seed(self):
-        r"""Raise when input `seed` is invalid."""
+        r"""Raise exception when input `seed` is invalid."""
         msg1 = (
             'Must raise `TypeError` or `ValueError` when input `seed` is '
             'invalid.'
@@ -747,7 +747,7 @@ class TestInit(unittest.TestCase):
         msg2 = 'Inconsistent error message.'
         examples = (
             False, 0, -1, 0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf,
-            0j, 1j, '', b'', [], (), {}, set(), object(), lambda x: x, type,
+            0j, 1j, '', b'', (), [], {}, set(), object(), lambda x: x, type,
             None, NotImplemented, ...
         )
 
@@ -776,7 +776,7 @@ class TestInit(unittest.TestCase):
                 )
 
     def test_invalid_input_tokenizer_class(self):
-        r"""Raise when input `tokenizer_class` is invalid."""
+        r"""Raise exception when input `tokenizer_class` is invalid."""
         msg1 = (
             'Must raise `TypeError` or `ValueError` when input '
             '`tokenizer_class` is invalid.'
@@ -784,7 +784,7 @@ class TestInit(unittest.TestCase):
         msg2 = 'Inconsistent error message.'
         examples = (
             False, True, 0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf,
-            -math.inf, 0j, 1j, '', b'', [], (), {}, set(), object(),
+            -math.inf, 0j, 1j, '', b'', (), [], {}, set(), object(),
             lambda x: x, type, None, NotImplemented, ...
         )
 

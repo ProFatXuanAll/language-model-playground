@@ -48,44 +48,43 @@ def load_model(
 
     Args:
         checkpoint:
-            Pre-trained model's checkpoint.
+            Pre-trained model's checkpoint. Must be bigger than or equal to
+            `-1`.
         d_emb:
-            Embedding matrix vector dimension.
+            Embedding matrix vector dimension. Must be bigger than or equal to
+            `1`.
         d_hid:
-            Model layers hidden dimension.
+            Model layers hidden dimension. Must be bigger than or equal to
+            `1`.
         device:
             Model running device.
         dropout:
             Dropout probability on all layers output (except output layer).
+            Must range from `0.0` to `1.0`.
         experiment:
-            Name of the pre-trained experiment.
-        num_rnn_layers:
-            Number of GRU layers to use.
+            Name of the pre-trained experiment. Must not be empty when
+            `checkpoint != -1`.
         num_linear_layers:
-            Number of Linear layers to use.
+            Number of Linear layers to use. Must be bigger than or equal to
+            `1`.
+        num_rnn_layers:
+            Number of RNN layers to use. Must be bigger than or equal to
+            `1`.
         pad_token_id:
-            Padding token's id. Embedding layers will initialize padding
-            token's vector with zeros.
+            Padding token's id. Embedding layer will initialize padding
+            token's vector with zeros. Must be bigger than or equal to `0`, and
+            must be smaller than `vocab_size`.
         vocab_size:
-            Embedding matrix vocabulary dimension.
+            Embedding matrix vocabulary dimension. Must be bigger than or equal
+            to `1`.
 
     Raises:
         TypeError:
-            When `checkpoint` is not an instance of `int`, `d_emb` is not an
-            instance of `int`, `d_hid` is not an instance of `int`, `device`
-            is not an instance of `torch.device`, `dropout` is not an instance
-            of `float`, `experiment` is not an instance of `str`, `model_class`
-            is not an instance of `str`, `num_linear_layers` is not an instance
-            of `int`, `num_rnn_layers` is not an instance of `int`,
-            `pad_token_id` is not an instance of `int` or `vocab_size` is not
-            an instance of `int`.
+            When one of the arguments are not an instance of their type
+            annotation respectively.
         ValueError:
-            If `model` does not supported, `d_emb` is samller than `1`, `d_hid`
-            is samller than `1`, `dropout` is not in range[0,1], `experiment`
-            is empty, `model_class` is empty, `num_linear_layers` is smaller
-            than `1`, `num_rnn_layers` is smaller than `1` or `pad_token_id`
-            is smaller than `0`.  
-
+            When one of the arguments do not follow their constraints. See
+            docstring for arguments constraints.
 
     Returns:
         `lmp.model.BaseRNNModel` if `model_class == 'rnn'`;
@@ -98,68 +97,19 @@ def load_model(
     # Type check.
     if not isinstance(checkpoint, int):
         raise TypeError('`checkpoint` must be an instance of `int`.')
-    
-    if not isinstance(d_emb, int):
-        raise TypeError('`d_emb` must be an instance of `int`.')
-    
-    if not isinstance(d_hid, int):
-        raise TypeError('`d_hid` must be an instance of `int`.')
-    
-    if not isinstance(device, torch.device):
-        raise TypeError('`device` must be an instance of `torch.device`.')
-
-    if not isinstance(dropout, float):
-        raise TypeError('`dropout` must be an instance of `float`.')
 
     if not isinstance(experiment, str):
         raise TypeError('`experiment` must be an instance of `str`.')
 
+    if not isinstance(device, torch.device):
+        raise TypeError('`device` must be an instance of `torch.device`.')
+
     if not isinstance(model_class, str):
         raise TypeError('`model_class` must be an instance of `str`.')
 
-    if not isinstance(num_linear_layers, int):
-        raise TypeError('`num_linear_layers` must be an instance of `int`.')
-
-    if not isinstance(num_rnn_layers, int):
-        raise TypeError('`num_rnn_layers` must be an instance of `int`.')
-
-    if not isinstance(pad_token_id, int):
-        raise TypeError('`pad_token_id` must be an instance of `int`.')
-
-    if not isinstance(vocab_size, int):
-        raise TypeError('`vocab_size` must be an instance of `int`.')
-
     # Value Check.
-    if d_emb < 1:
-        raise ValueError('`d_emb` must be bigger than or equal to `1`.')
-
-    if d_hid < 1:
-        raise ValueError('`d_hid` must be bigger than or equal to `1`.')
-
-    if not 0 <= dropout <= 1:
-        raise ValueError('`dropout` must range from `0.0` to `1.0`.')
-
-    if not experiment:
-        raise ValueError('`experiment` must not be empty.')
-
-    if not model_class:
-        raise ValueError('`model_class` must not be empty.')
-
-    if num_linear_layers < 1:
-        raise ValueError(
-            '`num_linear_layers` must be bigger than or equal to `1`.'
-        )
-
-    if num_rnn_layers < 1:
-        raise ValueError(
-            '`num_rnn_layers` must be bigger than or equal to `1`.'
-        )
-    
-    if pad_token_id < 0:
-        raise ValueError(
-            '`pad_token_id` must be bigger than or equal to `0`.'
-        )
-
+    if checkpoint < -1:
+        raise ValueError('`checkpoint` must be bigger than or equal to `-1`.')
 
     if model_class == 'rnn':
         model = lmp.model.BaseRNNModel(
@@ -231,7 +181,7 @@ def load_model(
         raise ValueError(
             f'model `{model_class}` does not support.\nSupported options:' +
             ''.join(list(map(
-                lambda option: f'\n\t--model {option}',
+                lambda option: f'\n\t--model_class {option}',
                 [
                     'rnn',
                     'gru',
@@ -244,9 +194,18 @@ def load_model(
         )
 
     if checkpoint != -1:
-        file_path = f'{lmp.path.DATA_PATH}/{experiment}/model-{checkpoint}.pt'
+        if not experiment:
+            raise ValueError('`experiment` must not be empty.')
+
+        file_path = os.path.join(
+            lmp.path.DATA_PATH,
+            experiment,
+            f'model-{checkpoint}.pt'
+        )
+
         if not os.path.exists(file_path):
-            raise FileNotFoundError(f'file {file_path} does not exist.')
+            raise FileNotFoundError(f'File {file_path} does not exist.')
+
         model.load_state_dict(torch.load(file_path))
 
     return model.to(device)
@@ -263,7 +222,8 @@ def load_model_by_config(
 
     Args:
         checkpoint:
-            Pre-trained model's checkpoint.
+            Pre-trained model's checkpoint. Must be bigger than or equal to
+            `-1`.
         config:
             Configuration object with attributes `d_emb`, `d_hid`, `dropout`,
             `device`, `experiment`, `model_class`, `num_linear_layer` and
@@ -275,21 +235,23 @@ def load_model_by_config(
         TypeError:
             When `config` is not an instance of `lmp.config.BaseConfig` or
             `tokenizer` is not an instance of `lmp.tokenizer.BaseTokenizer`.
+        ValueError:
+            When `checkpoint < -1` or `config.model_class` does not support.
 
     Returns:
         Same as `load_model`.
     """
-    #Type check.
+    # Type check.
     if not isinstance(config, lmp.config.BaseConfig):
         raise TypeError(
             '`config` must be an instance of `lmp.config.BaseConfig`.'
         )
-    
+
     if not isinstance(tokenizer, lmp.tokenizer.BaseTokenizer):
         raise TypeError(
             '`tokenizer` must be an instance of `lmp.tokenizer.BaseTokenizer`.'
         )
-    
+
     return load_model(
         checkpoint=checkpoint,
         d_emb=config.d_emb,

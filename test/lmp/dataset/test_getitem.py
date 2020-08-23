@@ -49,14 +49,14 @@ class TestGetItem(unittest.TestCase):
         )
 
     def test_invalid_input_index(self):
-        r"""Raise `IndexError` or `TypeError` when `index` is invalid."""
+        r"""Raise `IndexError` or `TypeError` when input `index` is invalid."""
         msg1 = (
-            'Must raise `IndexError` or `TypeError` when `index` is invalid.'
+            'Must raise `IndexError` or `TypeError` when input `index` is invalid.'
         )
         msg2 = 'Inconsistent error message.'
         examples = (
             -1, 0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf, 0j, 1j, '',
-            b'', [], (), {}, set(), object(), lambda x: x, type, None,
+            b'', (), [], {}, set(), object(), lambda x: x, type, None,
             NotImplemented, ...
         )
 

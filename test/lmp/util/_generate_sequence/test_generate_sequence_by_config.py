@@ -1,7 +1,8 @@
 r"""Test `lmp.util.generate_sequence_by_config.`.
 
 Usage:
-    python -m unittest test.lmp.util._generate_sequence.test_generate_sequence_by_config
+    python -m unittest \
+        test.lmp.util._generate_sequence.test_generate_sequence_by_config
 """
 
 # built-in modules
@@ -13,49 +14,46 @@ from __future__ import unicode_literals
 
 import gc
 import inspect
-import json
 import math
-import os
 import unittest
 
 from typing import List
 from typing import Union
 
-# 3rd-party modules
-
-import torch
-
 # self-made modules
 
 import lmp
 import lmp.config
+import lmp.util
 
 
 class TestGenerateSequenceByConfig(unittest.TestCase):
-    r"""Test Case for `lmp.util.generate_sequence_by_config`."""
+    r"""Test case for `lmp.util.generate_sequence_by_config`."""
 
     def setUp(self):
-        r"""Set up parameters for `generate_sequence_by_config`."""
-        self.beam_width = 4
-        self.begin_of_sequence = '明日黃花'
+        r"""Setup fixed parameters."""
+        self.beam_width = 1
+        self.begin_of_sequence = ''
         self.config = lmp.config.BaseConfig(
-            experiment='unittest_util_genrate_sequence_by_config',
-            dataset='news_collection.csv'
+            experiment='I-AM-TEST-EXPERIMENT',
+            dataset='I-AM-TEST-DATASET',
+            model_class='rnn',
+            tokenizer_class='char_dict'
         )
-        self.max_seq_len = 20
-        self.model = lmp.model.BaseResRNNModel(
-            d_emb=15,
-            d_hid=5,
-            dropout=0.2,
+        self.max_seq_len = 2
+        self.model = lmp.model.BaseRNNModel(
+            d_emb=1,
+            d_hid=1,
+            dropout=0.0,
             num_linear_layers=1,
             num_rnn_layers=1,
             pad_token_id=0,
-            vocab_size=30
+            vocab_size=5
         )
-        self.tokenizer = lmp.tokenizer.CharListTokenizer(is_uncased=True)
+        self.tokenizer = lmp.tokenizer.CharDictTokenizer()
 
     def tearDown(self):
-        r"""Delete all parameters."""
+        r"""Delete fixed parameters."""
         del self.beam_width
         del self.begin_of_sequence
         del self.config
@@ -118,17 +116,23 @@ class TestGenerateSequenceByConfig(unittest.TestCase):
         )
 
     def test_invalid_input_beam_width(self):
-        r"""Raise when `beam_width` is invalid."""
-        msg1 = 'Must raise `TypeError`  when `beam_width` is invalid.'
+        r"""Raise exception when input `beam_width` is invalid."""
+        msg1 = (
+            'Must raise `TypeError` or `ValueError` when input `beam_width` '
+            'is invalid.'
+        )
         msg2 = 'Inconsistent error message.'
         examples = (
-            0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf, 0j, 1j, '',
-            b'', [], (), {}, set(), object(), lambda x: x, type, None,
+            False, 0, 0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf, 0j,
+            1j, '', b'', (), [], {}, set(), object(), lambda x: x, type, None,
             NotImplemented, ...
         )
 
         for invalid_input in examples:
-            with self.assertRaises(TypeError, msg=msg1) as ctx_man:
+            with self.assertRaises(
+                    (TypeError, ValueError),
+                    msg=msg1
+            ) as ctx_man:
                 lmp.util.generate_sequence_by_config(
                     beam_width=invalid_input,
                     begin_of_sequence=self.begin_of_sequence,
@@ -144,15 +148,23 @@ class TestGenerateSequenceByConfig(unittest.TestCase):
                     '`beam_width` must be an instance of `int`.',
                     msg=msg2
                 )
+            else:
+                self.assertEqual(
+                    ctx_man.exception.args[0],
+                    '`beam_width` must be bigger than or equal to `1`.',
+                    msg=msg2
+                )
 
     def test_invalid_input_begin_of_sequence(self):
-        r"""Raise when `begin_of_sequence` is invalid."""
-        msg1 = 'Must raise `TypeError`  when `begin_of_sequence` is invalid.'
+        r"""Raise `TypeError` when input `begin_of_sequence` is invalid."""
+        msg1 = (
+            'Must raise `TypeError` when input `begin_of_sequence` is invalid.'
+        )
         msg2 = 'Inconsistent error message.'
         examples = (
-            False, 0, -1, 0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf,
-            0j, 1j, [], (), {}, set(), object(), lambda x: x, type, None,
-            NotImplemented, ...
+            False, True, 0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf,
+            -math.inf, 0j, 1j, b'', (), [], {}, set(), object(), lambda x: x,
+            type, None, NotImplemented, ...
         )
 
         for invalid_input in examples:
@@ -166,21 +178,20 @@ class TestGenerateSequenceByConfig(unittest.TestCase):
                     tokenizer=self.tokenizer
                 )
 
-            if isinstance(ctx_man.exception, TypeError):
-                self.assertEqual(
-                    ctx_man.exception.args[0],
-                    '`begin_of_sequence` must be an instance of `str`.',
-                    msg=msg2
-                )
+            self.assertEqual(
+                ctx_man.exception.args[0],
+                '`begin_of_sequence` must be an instance of `str`.',
+                msg=msg2
+            )
 
     def test_invalid_input_config(self):
-        r"""Raise when `config` is invalid."""
-        msg1 = 'Must raise `TypeError`  when `config` is invalid.'
+        r"""Raise `TypeError` when input `config` is invalid."""
+        msg1 = 'Must raise `TypeError` when input `config` is invalid.'
         msg2 = 'Inconsistent error message.'
         examples = (
-            False, 0, -1, 0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf,
-            0j, 1j, '', b'', [], (), {}, set(), object(), lambda x: x, type,
-            None, NotImplemented, ...
+            False, True, 0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf,
+            -math.inf, 0j, 1j, '', b'', (), [], {}, set(), object(),
+            lambda x: x, type, None, NotImplemented, ...
         )
 
         for invalid_input in examples:
@@ -194,25 +205,30 @@ class TestGenerateSequenceByConfig(unittest.TestCase):
                     tokenizer=self.tokenizer
                 )
 
-            if isinstance(ctx_man.exception, TypeError):
-                self.assertEqual(
-                    ctx_man.exception.args[0],
-                    '`config` must be an instance of `lmp.config.BaseConfig`.',
-                    msg=msg2
-                )
+            self.assertEqual(
+                ctx_man.exception.args[0],
+                '`config` must be an instance of `lmp.config.BaseConfig`.',
+                msg=msg2
+            )
 
     def test_invalid_input_max_seq_len(self):
-        r"""Raise when `max_seq_len` is invalid."""
-        msg1 = 'Must raise `TypeError`  when `max_seq_len` is invalid.'
+        r"""Raise exception when input `max_seq_len` is invalid."""
+        msg1 = (
+            'Must raise `TypeError` or `ValueError` when input `max_seq_len` '
+            'is invalid.'
+        )
         msg2 = 'Inconsistent error message.'
         examples = (
-            0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf, 0j, 1j, '',
-            b'', [], (), {}, set(), object(), lambda x: x, type, None,
-            NotImplemented, ...
+            False, True, 0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf,
+            -math.inf, 0j, 1j, '', b'', (), [], {}, set(), object(),
+            lambda x: x, type, None, NotImplemented, ...
         )
 
         for invalid_input in examples:
-            with self.assertRaises(TypeError, msg=msg1) as ctx_man:
+            with self.assertRaises(
+                    (TypeError, ValueError),
+                    msg=msg1
+            ) as ctx_man:
                 lmp.util.generate_sequence_by_config(
                     beam_width=self.beam_width,
                     begin_of_sequence=self.begin_of_sequence,
@@ -228,15 +244,21 @@ class TestGenerateSequenceByConfig(unittest.TestCase):
                     '`max_seq_len` must be an instance of `int`.',
                     msg=msg2
                 )
+            else:
+                self.assertEqual(
+                    ctx_man.exception.args[0],
+                    '`max_seq_len` must be bigger than or equal to `2`.',
+                    msg=msg2
+                )
 
     def test_invalid_input_model(self):
-        r"""Raise when `model` is invalid."""
-        msg1 = 'Must raise `TypeError`  when `model` is invalid.'
+        r"""Raise `TypeError` when input `model` is invalid."""
+        msg1 = 'Must raise `TypeError` when input `model` is invalid.'
         msg2 = 'Inconsistent error message.'
         examples = (
-            False, 0, -1, 0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf,
-            0j, 1j, '', b'', [], (), {}, set(), object(), lambda x: x, type,
-            None, NotImplemented, ...
+            False, True, 0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf,
+            -math.inf, 0j, 1j, '', b'', (), [], {}, set(), object(),
+            lambda x: x, type, None, NotImplemented, ...
         )
 
         for invalid_input in examples:
@@ -250,25 +272,21 @@ class TestGenerateSequenceByConfig(unittest.TestCase):
                     tokenizer=self.tokenizer
                 )
 
-            if isinstance(ctx_man.exception, TypeError):
-                self.assertEqual(
-                    ctx_man.exception.args[0],
-                    '`model` must be an instance of '
-                    '`Union['
-                    'lmp.model.BaseRNNModel,'
-                    'lmp.model.BaseResRNNModel'
-                    ']`.',
-                    msg=msg2
-                )
+            self.assertEqual(
+                ctx_man.exception.args[0],
+                '`model` must be an instance of '
+                '`Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel]`.',
+                msg=msg2
+            )
 
     def test_invalid_input_tokenizer(self):
-        r"""Raise when `tokenizer` is invalid."""
-        msg1 = 'Must raise `TypeError`  when `tokenizer` is invalid.'
+        r"""Raise `TypeError` when input `tokenizer` is invalid."""
+        msg1 = 'Must raise `TypeError` when input `tokenizer` is invalid.'
         msg2 = 'Inconsistent error message.'
         examples = (
-            False, 0, -1, 0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf,
-            0j, 1j, '', b'', [], (), {}, set(), object(), lambda x: x, type,
-            None, NotImplemented, ...
+            False, True, 0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf,
+            -math.inf, 0j, 1j, '', b'', (), [], {}, set(), object(),
+            lambda x: x, type, None, NotImplemented, ...
         )
 
         for invalid_input in examples:
@@ -282,56 +300,244 @@ class TestGenerateSequenceByConfig(unittest.TestCase):
                     tokenizer=invalid_input
                 )
 
-            if isinstance(ctx_man.exception, TypeError):
-                self.assertEqual(
-                    ctx_man.exception.args[0],
-                    '`tokenizer` must be an instance of '
-                    '`lmp.tokenizer.BaseTokenizer`.',
-                    msg=msg2
-                )
+            self.assertEqual(
+                ctx_man.exception.args[0],
+                '`tokenizer` must be an instance of '
+                '`lmp.tokenizer.BaseTokenizer`.',
+                msg=msg2
+            )
 
     def test_return_type(self):
         r"""Return `List[str]`."""
-        msg = (
-            'Must return `List[str]`.'
-        )
+        msg = 'Must return `List[str]`.'
         examples = (
             (
-                4,
-                'Today',
+                self.beam_width,
+                self.begin_of_sequence,
                 self.config,
-                25,
+                self.max_seq_len,
                 self.model,
                 self.tokenizer,
+            ),
+            (
+                2,
+                '',
+                self.config,
+                3,
+                lmp.model.GRUModel(
+                    d_emb=1,
+                    d_hid=1,
+                    dropout=0.0,
+                    num_linear_layers=1,
+                    num_rnn_layers=1,
+                    pad_token_id=0,
+                    vocab_size=10
+                ),
+                lmp.tokenizer.CharListTokenizer(),
+            ),
+            (
+                3,
+                '',
+                self.config,
+                4,
+                lmp.model.LSTMModel(
+                    d_emb=1,
+                    d_hid=1,
+                    dropout=0.0,
+                    num_linear_layers=1,
+                    num_rnn_layers=1,
+                    pad_token_id=0,
+                    vocab_size=10
+                ),
+                lmp.tokenizer.WhitespaceDictTokenizer(),
+            ),
+            (
+                4,
+                '',
+                self.config,
+                5,
+                lmp.model.BaseResRNNModel(
+                    d_emb=1,
+                    d_hid=1,
+                    dropout=0.0,
+                    num_linear_layers=1,
+                    num_rnn_layers=1,
+                    pad_token_id=0,
+                    vocab_size=10
+                ),
+                lmp.tokenizer.WhitespaceListTokenizer(),
+            ),
+            (
+                5,
+                '',
+                self.config,
+                6,
+                lmp.model.ResGRUModel(
+                    d_emb=1,
+                    d_hid=1,
+                    dropout=0.0,
+                    num_linear_layers=1,
+                    num_rnn_layers=1,
+                    pad_token_id=0,
+                    vocab_size=10
+                ),
+                lmp.tokenizer.CharDictTokenizer(),
             ),
             (
                 6,
-                'Tomorrow',
+                '',
                 self.config,
-                30,
-                self.model,
-                self.tokenizer,
+                7,
+                lmp.model.ResLSTMModel(
+                    d_emb=1,
+                    d_hid=1,
+                    dropout=0.0,
+                    num_linear_layers=1,
+                    num_rnn_layers=1,
+                    pad_token_id=0,
+                    vocab_size=10
+                ),
+                lmp.tokenizer.CharDictTokenizer(is_uncased=True),
             ),
         )
+
         for (
-            beam_width,
-            begin_of_sequence,
-            config,
-            max_seq_len,
-            model,
-            tokenizer
+                beam_width,
+                begin_of_sequence,
+                config,
+                max_seq_len,
+                model,
+                tokenizer
         ) in examples:
-            batch_sequences = lmp.util.generate_sequence_by_config(
+            generated_sequences = lmp.util.generate_sequence_by_config(
                 beam_width=beam_width,
                 begin_of_sequence=begin_of_sequence,
                 config=config,
                 max_seq_len=max_seq_len,
-                model=model,
+                model=model.to(config.device),
                 tokenizer=tokenizer
             )
-            self.assertIsInstance(batch_sequences, List, msg=msg)
-            for sequence in batch_sequences:
+            self.assertIsInstance(generated_sequences, list, msg=msg)
+            for sequence in generated_sequences:
                 self.assertIsInstance(sequence, str, msg=msg)
+
+    def test_return_result(self):
+        r"""Return `beam_width` sequences with length `max_seq_len`."""
+        msg = 'Must return `beam_width` sequences with length `max_seq_len`.'
+        examples = (
+            (
+                self.beam_width,
+                self.begin_of_sequence,
+                self.config,
+                self.max_seq_len,
+                self.model,
+                self.tokenizer,
+            ),
+            (
+                2,
+                '',
+                self.config,
+                3,
+                lmp.model.GRUModel(
+                    d_emb=1,
+                    d_hid=1,
+                    dropout=0.0,
+                    num_linear_layers=1,
+                    num_rnn_layers=1,
+                    pad_token_id=0,
+                    vocab_size=10
+                ),
+                lmp.tokenizer.CharListTokenizer(),
+            ),
+            (
+                3,
+                '',
+                self.config,
+                4,
+                lmp.model.LSTMModel(
+                    d_emb=1,
+                    d_hid=1,
+                    dropout=0.0,
+                    num_linear_layers=1,
+                    num_rnn_layers=1,
+                    pad_token_id=0,
+                    vocab_size=10
+                ),
+                lmp.tokenizer.WhitespaceDictTokenizer(),
+            ),
+            (
+                4,
+                '',
+                self.config,
+                5,
+                lmp.model.BaseResRNNModel(
+                    d_emb=1,
+                    d_hid=1,
+                    dropout=0.0,
+                    num_linear_layers=1,
+                    num_rnn_layers=1,
+                    pad_token_id=0,
+                    vocab_size=10
+                ),
+                lmp.tokenizer.WhitespaceListTokenizer(),
+            ),
+            (
+                5,
+                '',
+                self.config,
+                6,
+                lmp.model.ResGRUModel(
+                    d_emb=1,
+                    d_hid=1,
+                    dropout=0.0,
+                    num_linear_layers=1,
+                    num_rnn_layers=1,
+                    pad_token_id=0,
+                    vocab_size=10
+                ),
+                lmp.tokenizer.CharDictTokenizer(),
+            ),
+            (
+                6,
+                '',
+                self.config,
+                7,
+                lmp.model.ResLSTMModel(
+                    d_emb=1,
+                    d_hid=1,
+                    dropout=0.0,
+                    num_linear_layers=1,
+                    num_rnn_layers=1,
+                    pad_token_id=0,
+                    vocab_size=10
+                ),
+                lmp.tokenizer.CharDictTokenizer(is_uncased=True),
+            ),
+        )
+
+        for (
+                beam_width,
+                begin_of_sequence,
+                config,
+                max_seq_len,
+                model,
+                tokenizer
+        ) in examples:
+            generated_sequences = lmp.util.generate_sequence_by_config(
+                beam_width=beam_width,
+                begin_of_sequence=begin_of_sequence,
+                config=config,
+                max_seq_len=max_seq_len,
+                model=model.to(config.device),
+                tokenizer=tokenizer
+            )
+            self.assertEqual(len(generated_sequences), beam_width, msg=msg)
+            for sequence in generated_sequences:
+                self.assertEqual(
+                    len(sequence),
+                    len(tokenizer.detokenize(['[unk]'] * max_seq_len)),
+                    msg=msg
+                )
 
 
 if __name__ == '__main__':

@@ -14,10 +14,10 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import math
 import os
 
 from typing import Iterable
-from typing import Iterator
 from typing import Union
 
 # 3rd-party modules
@@ -36,35 +36,33 @@ def load_optimizer(
         experiment: str,
         learning_rate: float,
         optimizer_class: str,
-        parameters: Iterator[torch.nn.Parameter]
-) -> Union[
-    torch.optim.SGD,
-    torch.optim.Adam,
-]:
+        parameters: Iterable[torch.nn.Parameter]
+) -> Union[torch.optim.SGD, torch.optim.Adam]:
     r"""Helper function for constructing optimizer.
 
     Load optimizer from pre-trained checkpoint when `checkpoint != -1`.
 
     Args:
         checkpoint:
-            Pre-trained optimizer's checkpoint.
+            Pre-trained model's checkpoint. Must be bigger than or equal to
+            `-1`.
         experiment:
-            Name of the pre-trained experiment.
+            Name of the pre-trained experiment. Must not be empty when
+            `checkpoint != -1`.
         learning_rate:
-            Gradient descend learning rate.
+            Gradient descend learning rate. Must be bigger than `0.0`.
         optimizer_class:
             Optimizer's class.
         parameters:
-            Model parameters to be optimized.
+            Model parameters to be optimized. Must not be empty.
 
     Raises:
         TypeError:
-            When `checkpoint` is not an instance of `int`, `experiment` is not
-            an instance of `str`, `learning_rate` is not an instance of `float`
-            , `optimizer_class` is not an instance of `str` or `parameters` is
-            not an instance of `Iterator[torch.nn.Parameter]`.
+            When one of the arguments are not an instance of their type
+            annotation respectively.
         ValueError:
-            If `optimizer` does not supported.
+            When one of the arguments do not follow their constraints. See
+            docstring for arguments constraints.
 
     Returns:
         `torch.optim.SGD` if `optimizer_class == 'sgd'`;
@@ -73,7 +71,7 @@ def load_optimizer(
     # Type check.
     if not isinstance(checkpoint, int):
         raise TypeError('`checkpoint` must be an instance of `int`.')
-    
+
     if not isinstance(experiment, str):
         raise TypeError('`experiment` must be an instance of `str`.')
 
@@ -86,15 +84,26 @@ def load_optimizer(
     if not isinstance(parameters, Iterable):
         raise TypeError(
             '`parameters` must be an instance of '
-            '`Iterator[torch.nn.Parameter]`.'
+            '`Iterable[torch.nn.Parameter]`.'
         )
+
     parameters = list(parameters)
+
     if not all(map(lambda x: isinstance(x, torch.nn.Parameter), parameters)):
         raise TypeError(
             '`parameters` must be an instance of '
-            '`Iterator[torch.nn.Parameter]`.',
+            '`Iterable[torch.nn.Parameter]`.',
         )
 
+    # Value Check.
+    if checkpoint < -1:
+        raise ValueError('`checkpoint` must be bigger than or equal to `-1`.')
+
+    if learning_rate < 0.0 or math.isnan(learning_rate):
+        raise ValueError('`learning_rate` must be bigger than `0.0`.')
+
+    if not parameters:
+        raise ValueError('`parameters` must not be empty.')
 
     if optimizer_class == 'sgd':
         optimizer = torch.optim.SGD(params=parameters, lr=learning_rate)
@@ -104,9 +113,10 @@ def load_optimizer(
 
     else:
         raise ValueError(
-            f'`{optimizer_class}` does not support\nSupported options:' +
+            f'optimizer `{optimizer_class}` does not support\n' +
+            'Supported options:' +
             ''.join(list(map(
-                lambda option: f'\n\t--optimizer {option}',
+                lambda option: f'\n\t--optimizer_class {option}',
                 [
                     'sgd',
                     'adam',
@@ -115,9 +125,18 @@ def load_optimizer(
         )
 
     if checkpoint != -1:
-        file_path = f'{lmp.path.DATA_PATH}/{experiment}/optimizer-{checkpoint}.pt'
+        if not experiment:
+            raise ValueError('`experiment` must not be empty.')
+
+        file_path = os.path.join(
+            lmp.path.DATA_PATH,
+            experiment,
+            f'optimizer-{checkpoint}.pt'
+        )
+
         if not os.path.exists(file_path):
-            raise FileNotFoundError(f'file {file_path} does not exist.')
+            raise FileNotFoundError(f'File {file_path} does not exist.')
+
         optimizer.load_state_dict(torch.load(file_path))
 
     return optimizer
@@ -126,21 +145,16 @@ def load_optimizer(
 def load_optimizer_by_config(
         checkpoint: int,
         config: lmp.config.BaseConfig,
-        model: Union[
-            lmp.model.BaseRNNModel,
-            lmp.model.BaseResRNNModel
-        ]
-) -> Union[
-    torch.optim.SGD,
-    torch.optim.Adam,
-]:
+        model: Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel]
+) -> Union[torch.optim.SGD, torch.optim.Adam]:
     r"""Helper function for constructing optimizer.
 
     Load optimizer from pre-trained checkpoint when `checkpoint != -1`.
 
     Args:
         checkpoint:
-            Pre-trained optimizer's checkpoint.
+            Pre-trained model's checkpoint. Must be bigger than or equal to
+            `-1`.
         config:
             Configuration object with attributes `experiment`, `learning_rate`
             and `optimizer_class`.
@@ -149,9 +163,10 @@ def load_optimizer_by_config(
 
     Raises:
         TypeError:
-            When `config` is not an instance of `lmp.config.BaseConfig` or
-            `model` is not an instance of `lmp.model.BaseRNNModel` and
-            `BaseResRNNModel`.
+            When one of the arguments are not an instance of their type
+            annotation respectively.
+        ValueError:
+            When `checkpoint < -1`.
 
     Returns:
         Same as `load_optimizer`.
@@ -162,16 +177,13 @@ def load_optimizer_by_config(
             '`config` must be an instance of `lmp.config.BaseConfig`.'
         )
 
-    if not isinstance(model, lmp.model.BaseRNNModel) and not isinstance(
-        model,
-        lmp.model.BaseResRNNModel
-    ):
+    if not isinstance(model, (
+            lmp.model.BaseRNNModel,
+            lmp.model.BaseResRNNModel
+    )):
         raise TypeError(
             '`model` must be an instance of '
-            '`Union['
-                'lmp.model.BaseRNNModel,'
-                'lmp.model.BaseResRNNModel'
-            ']`.'
+            '`Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel]`.'
         )
 
     return load_optimizer(

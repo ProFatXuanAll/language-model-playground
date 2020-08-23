@@ -71,7 +71,7 @@ class TestLoad(unittest.TestCase):
         msg2 = 'Inconsistent error message.'
         examples = (
             False, True, 0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf,
-            -math.inf, 0j, 1j, '', b'', [], (), {}, set(), object(),
+            -math.inf, 0j, 1j, '', b'', (), [], {}, set(), object(),
             lambda x: x, type, None, NotImplemented, ...,
         )
 

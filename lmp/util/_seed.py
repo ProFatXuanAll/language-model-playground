@@ -26,20 +26,27 @@ import torch
 import lmp.config
 
 
-def set_seed(seed: int):
+def set_seed(seed: int) -> None:
     r"""Helper function for setting random seed.
 
     Args:
         seed:
-            Control random seed and let experiment reproducible.
-    
+            Control random seed and let experiment reproducible. Must be bigger
+            than or equal to `1`.
+
     Raises:
         TypeError:
             When `seed` is not an instance of `int`.
+        ValueError:
+            When `seed < 1`.
     """
     # Type check.
     if not isinstance(seed, int):
         raise TypeError('`seed` must be an instance of `int`.')
+
+    # Value check.
+    if seed < 1:
+        raise ValueError('`seed` must be bigger than or equal to `1`.')
 
     random.seed(seed)
     np.random.seed(seed)
@@ -51,7 +58,7 @@ def set_seed(seed: int):
         torch.backends.cudnn.benchmark = False
 
 
-def set_seed_by_config(config: lmp.config.BaseConfig):
+def set_seed_by_config(config: lmp.config.BaseConfig) -> None:
     r"""Helper function for setting random seed.
 
     Args:

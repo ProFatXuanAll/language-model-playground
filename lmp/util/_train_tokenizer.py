@@ -24,12 +24,12 @@ def train_tokenizer(
         dataset: lmp.dataset.BaseDataset,
         min_count: int,
         tokenizer: lmp.tokenizer.BaseTokenizer
-):
+) -> None:
     r"""Helper function for training tokenizer.
 
     Args:
         dataset:
-            List of sequences.
+            Source of text samples to train on.
         min_count:
             Minimum frequency required for each token.
         tokenizer:
@@ -37,9 +37,8 @@ def train_tokenizer(
 
     Raises:
         TypeError:
-            When `dataset` is not an instance of `lmp.dataset.BaseDataset`, 
-            `min_count` is not an instance of `int` or `tokenizer` is not an
-            instance of `lmp.tokenizer.BaseTokenizer`.
+            When one of the arguments are not an instance of their type
+            annotation respectively.
         ValueError:
             When `min_count` is smaller than `1`.
     """
@@ -61,31 +60,28 @@ def train_tokenizer(
     if min_count < 1:
         raise ValueError('`min_count` must be bigger than or equal to `1`.')
 
-
-    tokenizer.build_vocab(
-        batch_sequences=dataset,
-        min_count=min_count
-    )
+    tokenizer.build_vocab(batch_sequences=dataset, min_count=min_count)
 
 
 def train_tokenizer_by_config(
         config: lmp.config.BaseConfig,
         dataset: lmp.dataset.BaseDataset,
         tokenizer: lmp.tokenizer.BaseTokenizer
-):
+) -> None:
     r"""Helper function for training tokenizer.
 
     Args:
         config:
             Configuration object with attribute `min_count`.
         dataset:
-            List of sequences.
+            Source of text samples to train on.
         tokenizer:
             Training tokenizer instance.
-    
+
     Raises:
         TypeError:
-            When `config` is not an instance of `lmp.config.BaseConfig`.
+            When one of the arguments are not an instance of their type
+            annotation respectively.
     """
     # Type check.
     if not isinstance(config, lmp.config.BaseConfig):

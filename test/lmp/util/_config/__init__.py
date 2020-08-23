@@ -1,4 +1,5 @@
 r"""Test `lmp.util._config.py`.
+
 Usage:
     python -m unittest test.lmp.util._config.__init__
 """
@@ -27,7 +28,9 @@ class TestUtilConfig(unittest.TestCase):
             import lmp.util._config
             # pylint: enable=C0415
 
+            # pylint: disable=W0212
             self.assertTrue(inspect.ismodule(lmp.util._config), msg=msg)
+            # pylint: enable=W0212
         except ImportError:
             self.fail(msg=msg)
 
@@ -44,6 +47,7 @@ class TestUtilConfig(unittest.TestCase):
             import lmp.util._config
             # pylint: enable=C0415
 
+            # pylint: disable=W0212
             for attr in examples:
                 self.assertTrue(
                     hasattr(lmp.util._config, attr),
@@ -53,6 +57,7 @@ class TestUtilConfig(unittest.TestCase):
                     inspect.isfunction(getattr(lmp.util._config, attr)),
                     msg=msg2.format(attr)
                 )
+            # pylint: enable=W0212
         except ImportError:
             self.fail(msg=msg3)
 

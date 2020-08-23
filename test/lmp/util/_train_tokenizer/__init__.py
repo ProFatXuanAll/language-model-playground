@@ -1,4 +1,5 @@
 r"""Test `lmp.util._train_tokenizer.py`.
+
 Usage:
     python -m unittest test.lmp.util._train_tokenizer.__init__
 """
@@ -27,10 +28,12 @@ class TestUtilTrainTokenizer(unittest.TestCase):
             import lmp.util._train_tokenizer
             # pylint: enable=C0415
 
+            # pylint: disable=W0212
             self.assertTrue(
-                inspect.ismodule(
-                    lmp.util._train_tokenizer),
-                msg=msg)
+                inspect.ismodule(lmp.util._train_tokenizer),
+                msg=msg
+            )
+            # pylint: enable=W0212
         except ImportError:
             self.fail(msg=msg)
 
@@ -50,6 +53,7 @@ class TestUtilTrainTokenizer(unittest.TestCase):
             import lmp.util._train_tokenizer
             # pylint: enable=C0415
 
+            # pylint: disable=W0212
             for attr in examples:
                 self.assertTrue(
                     hasattr(lmp.util._train_tokenizer, attr),
@@ -57,11 +61,11 @@ class TestUtilTrainTokenizer(unittest.TestCase):
                 )
                 self.assertTrue(
                     inspect.isfunction(
-                        getattr(
-                            lmp.util._train_tokenizer,
-                            attr)),
+                        getattr(lmp.util._train_tokenizer, attr)
+                    ),
                     msg=msg2.format(attr)
                 )
+            # pylint: enable=W0212
         except ImportError:
             self.fail(msg=msg3)
 

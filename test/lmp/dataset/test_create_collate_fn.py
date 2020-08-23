@@ -66,12 +66,12 @@ class TestCreateCollateFn(unittest.TestCase):
         )
 
     def test_invalid_input_tokenizer(self):
-        r"""Raise when input `tokenizer` is invalid."""
+        r"""Raise `TypeError` when input `tokenizer` is invalid."""
         msg1 = 'Must raise `TypeError` when input `tokenizer` is invalid.'
         msg2 = 'Inconsistent error message.'
         examples = (
             False, True, 0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf,
-            -math.inf, 0j, 1j, '', b'', [], (), {}, set(), object(),
+            -math.inf, 0j, 1j, '', b'', (), [], {}, set(), object(),
             lambda x: x, type, None, NotImplemented, ...
         )
 
@@ -93,7 +93,7 @@ class TestCreateCollateFn(unittest.TestCase):
         msg2 = 'Inconsistent error message.'
         examples = (
             False, True, 0, 1, -2, 0.0, 1.0, math.nan, -math.nan, math.inf,
-            -math.inf, 0j, 1j, '', b'', [], (), {}, set(), object(),
+            -math.inf, 0j, 1j, '', b'', (), [], {}, set(), object(),
             lambda x: x, type, None, NotImplemented, ...,
         )
 

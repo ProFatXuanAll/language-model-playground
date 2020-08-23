@@ -45,26 +45,26 @@ def load_dataset(dataset: str) -> lmp.dataset.BaseDataset:
     Returns:
         `lmp.dataset.BaseDataset` instance where samples are sequences.
     """
+    # Type check.
     if not isinstance(dataset, str):
-        raise TypeError('`dataset` must be instance of `str`.')
+        raise TypeError('`dataset` must be an instance of `str`.')
 
     if dataset == 'news_collection_desc':
-        file_path = f'{lmp.path.DATA_PATH}/news_collection.csv'
+        file_path = os.path.join(lmp.path.DATA_PATH, 'news_collection.csv')
+
         if not os.path.exists(file_path):
-            raise FileNotFoundError(
-                f'file {file_path} does not exist.'
-            )
+            raise FileNotFoundError(f'File {file_path} does not exist.')
+
         df = pd.read_csv(file_path)
-        df = df.dropna()
-        batch_sequences = df['desc'].to_list()
+        batch_sequences = df['desc'].dropna().to_list()
         return lmp.dataset.BaseDataset(batch_sequences)
 
     if dataset == 'news_collection_title':
-        file_path = f'{lmp.path.DATA_PATH}/news_collection.csv'
+        file_path = os.path.join(lmp.path.DATA_PATH, 'news_collection.csv')
+
         if not os.path.exists(file_path):
-            raise FileNotFoundError(
-                f'file {file_path} does not exist.'
-            )
+            raise FileNotFoundError(f'File {file_path} does not exist.')
+
         df = pd.read_csv(file_path)
         batch_sequences = df['title'].to_list()
         return lmp.dataset.BaseDataset(batch_sequences)
@@ -97,6 +97,7 @@ def load_dataset_by_config(
     Returns:
         Same as `load_dataset`.
     """
+    # Type check.
     if not isinstance(config, lmp.config.BaseConfig):
         raise TypeError(
             '`config` must be an instance of `lmp.config.BaseConfig`.'

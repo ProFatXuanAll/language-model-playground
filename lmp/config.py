@@ -286,7 +286,7 @@ class BaseConfig:
         file_path = os.path.join(lmp.path.DATA_PATH, experiment, 'config.json')
 
         if not os.path.exists(file_path):
-            raise FileNotFoundError(f'file {file_path} does not exist.')
+            raise FileNotFoundError(f'File {file_path} does not exist.')
 
         with open(file_path, 'r', encoding='utf-8') as input_file:
             return cls(**json.load(input_file))
