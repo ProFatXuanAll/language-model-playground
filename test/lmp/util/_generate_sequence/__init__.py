@@ -1,4 +1,5 @@
 r"""Test `lmp.util._generate_sequence.py`.
+
 Usage:
     python -m unittest test.lmp.util._generate_sequence.__init__
 """
@@ -27,10 +28,12 @@ class TestUtilGenerateSequence(unittest.TestCase):
             import lmp.util._generate_sequence
             # pylint: enable=C0415
 
+            # pylint: disable=W0212
             self.assertTrue(
-                inspect.ismodule(
-                    lmp.util._generate_sequence),
-                msg=msg)
+                inspect.ismodule(lmp.util._generate_sequence),
+                msg=msg
+            )
+            # pylint: enable=W0212
         except ImportError:
             self.fail(msg=msg)
 
@@ -50,6 +53,7 @@ class TestUtilGenerateSequence(unittest.TestCase):
             import lmp.util._generate_sequence
             # pylint: enable=C0415
 
+            # pylint: disable=W0212
             for attr in examples:
                 self.assertTrue(
                     hasattr(lmp.util._generate_sequence, attr),
@@ -57,11 +61,11 @@ class TestUtilGenerateSequence(unittest.TestCase):
                 )
                 self.assertTrue(
                     inspect.isfunction(
-                        getattr(
-                            lmp.util._generate_sequence,
-                            attr)),
+                        getattr(lmp.util._generate_sequence, attr)
+                    ),
                     msg=msg2.format(attr)
                 )
+            # pylint: enable=W0212
         except ImportError:
             self.fail(msg=msg3)
 

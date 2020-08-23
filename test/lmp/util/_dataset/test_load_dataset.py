@@ -1,7 +1,7 @@
 r"""Test `lmp.util.load_dataset.`.
 
 Usage:
-    python -m unittest test/lmp/util/_dataset/test_load_dataset.py
+    python -m unittest test.lmp.util._dataset.test_load_dataset
 """
 
 # built-in modules
@@ -12,19 +12,17 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import inspect
-import json
 import math
-import os
 import unittest
 
 # self-made modules
 
-import lmp
 import lmp.dataset
+import lmp.util
 
 
 class TestLoadDataset(unittest.TestCase):
-    r"""Test Case for `lmp.util.load_dataset`."""
+    r"""Test case for `lmp.util.load_dataset`."""
 
     def test_signature(self):
         r"""Ensure signature consistency."""
@@ -47,27 +45,29 @@ class TestLoadDataset(unittest.TestCase):
         )
 
     def test_invalid_input_dataset(self):
-        r"""Raise when `dataset` is invalid."""
-        msg1 = 'Must raise `TypeError` or `ValueError` when `dataset` '
-        'is invalid.'
+        r"""Raise exception when input `dataset` is invalid."""
+        msg1 = (
+            'Must raise `TypeError` or `ValueError` when input `dataset` is '
+            'invalid.'
+        )
         msg2 = 'Inconsistent error message.'
         examples = (
-            False, 0, -1, 0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf,
-            0j, 1j, '', b'', [], (), {}, set(), object(), lambda x: x, type,
-            None, NotImplemented, ...
+            False, True, 0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf,
+            -math.inf, 0j, 1j, '', b'', (), [], {}, set(), object(),
+            lambda x: x, type, None, NotImplemented, ...
         )
 
         for invalid_input in examples:
             with self.assertRaises(
-                (TypeError, ValueError),
-                msg=msg1
+                    (TypeError, ValueError),
+                    msg=msg1
             ) as ctx_man:
                 lmp.util.load_dataset(invalid_input)
 
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    '`dataset` must be instance of `str`.',
+                    '`dataset` must be an instance of `str`.',
                     msg=msg2
                 )
             else:
@@ -93,9 +93,12 @@ class TestLoadDataset(unittest.TestCase):
             'news_collection_title',
         )
 
-        for dataset_name in examples:
-            dataset = lmp.util.load_dataset(dataset=dataset_name)
-            self.assertIsInstance(dataset, lmp.dataset.BaseDataset, msg=msg)
+        for dataset in examples:
+            self.assertIsInstance(
+                lmp.util.load_dataset(dataset=dataset),
+                lmp.dataset.BaseDataset,
+                msg=msg
+            )
 
 
 if __name__ == '__main__':

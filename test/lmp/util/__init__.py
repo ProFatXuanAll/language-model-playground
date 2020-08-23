@@ -29,10 +29,7 @@ class TestUtil(unittest.TestCase):
             # pylint: enable=C0415
 
             # pylint: disable=W0212
-            self.assertTrue(
-                inspect.ismodule(lmp.util),
-                msg=msg
-            )
+            self.assertTrue(inspect.ismodule(lmp.util), msg=msg)
             # pylint: enable=W0212
         except ImportError:
             self.fail(msg=msg)
@@ -43,21 +40,21 @@ class TestUtil(unittest.TestCase):
         msg2 = 'Module attribute `{}` must be a function.'
         msg3 = 'Inconsistent module signature.'
         examples = (
-            'load_config',
-            'load_dataset',
-            'load_dataset_by_config',
-            'perplexity_eval',
             'batch_perplexity_eval',
             'generate_sequence',
             'generate_sequence_by_config',
+            'load_config',
+            'load_dataset',
+            'load_dataset_by_config',
             'load_model',
             'load_model_by_config',
             'load_optimizer',
             'load_optimizer_by_config',
-            'set_seed',
-            'set_seed_by_config',
             'load_tokenizer',
             'load_tokenizer_by_config',
+            'perplexity_eval',
+            'set_seed',
+            'set_seed_by_config',
             'train_model',
             'train_model_by_config',
             'train_tokenizer',
@@ -71,10 +68,7 @@ class TestUtil(unittest.TestCase):
             # pylint: enable=C0415
 
             for attr in examples:
-                self.assertTrue(
-                    hasattr(lmp.util, attr),
-                    msg=msg1.format(attr)
-                )
+                self.assertTrue(hasattr(lmp.util, attr), msg=msg1.format(attr))
                 self.assertTrue(
                     inspect.isfunction(getattr(lmp.util, attr)),
                     msg=msg2.format(attr)

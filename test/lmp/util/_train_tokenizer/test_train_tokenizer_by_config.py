@@ -16,35 +16,61 @@ import inspect
 import math
 import unittest
 
-from typing import Union
-
-# 3rd-party modules
-
-import torch
+from itertools import product
 
 # self-made modules
 
 import lmp.config
+import lmp.dataset
+import lmp.tokenizer
 import lmp.util
 
 
-
 class TestTrainTokenizerByConfig(unittest.TestCase):
-    r"""Test Case for `lmp.util.train_tokenizer_by_config`."""
+    r"""Test case for `lmp.util.train_tokenizer_by_config`."""
+
+    @classmethod
+    def setUpClass(cls):
+        r"""Setup dynamic parameters."""
+        cls.dataset = 'I-AM-A-TEST-DATASET'
+        cls.experiment = 'I-AM-A-TEST-EXPERIMENT'
+        cls.tokenizer_parameters = {
+            'is_uncased': [False, True],
+            'batch_sequences': [
+                ['hello', 'hello world'],
+                ['world', 'hello world'],
+            ],
+            'min_count': [1, 2],
+            'tokenizer_cstr': [
+                lmp.tokenizer.CharDictTokenizer,
+                lmp.tokenizer.CharListTokenizer,
+                lmp.tokenizer.WhitespaceDictTokenizer,
+                lmp.tokenizer.WhitespaceListTokenizer,
+                lmp.tokenizer.CharDictTokenizer,
+                lmp.tokenizer.CharListTokenizer,
+            ],
+        }
+
+    @classmethod
+    def tearDownClass(cls):
+        r"""Delete dynamic parameters."""
+        del cls.dataset
+        del cls.experiment
+        del cls.tokenizer_parameters
+        gc.collect()
 
     def setUp(self):
-        r"""Set up parameters for `train_tokenizer_by_config`."""
-        my_data = ['apple', 'banana', 'papaya']
+        r"""Setup fixed parameters."""
         self.config = lmp.config.BaseConfig(
-            dataset='my_data',
-            experiment='util_train_tokenizer_by_config_unittet',
+            dataset=self.__class__.dataset,
+            experiment=self.__class__.experiment,
             tokenizer_class='char_dict'
         )
-        self.dataset = lmp.dataset.BaseDataset(my_data)
+        self.dataset = lmp.dataset.BaseDataset([''])
         self.tokenizer = lmp.tokenizer.CharDictTokenizer()
 
     def tearDown(self):
-        r"""Delete parameters for `train_tokenizer_by_config`."""
+        r"""Delete fixed parameters."""
         del self.config
         del self.dataset
         del self.tokenizer
@@ -77,19 +103,19 @@ class TestTrainTokenizerByConfig(unittest.TestCase):
                         default=inspect.Parameter.empty
                     )
                 ],
-                return_annotation=inspect.Parameter.empty
+                return_annotation=None
             ),
             msg=msg
         )
 
     def test_invalid_input_config(self):
-        r"""Raise when `config` is invalid."""
-        msg1 = 'Must raise `TypeError` when `config` is invalid.'
+        r"""Raise `TypeError` when input `config` is invalid."""
+        msg1 = 'Must raise `TypeError` when input `config` is invalid.'
         msg2 = 'Inconsistent error message.'
         examples = (
-            0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf, 0j, 1j, '',
-            b'', [], (), {}, set(), object(), lambda x: x, type, None,
-            NotImplemented, ...
+            False, True, 0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf,
+            -math.inf, 0j, 1j, '', b'', (), [], {}, set(), object(),
+            lambda x: x, type, None, NotImplemented, ...
         )
 
         for invalid_input in examples:
@@ -100,23 +126,20 @@ class TestTrainTokenizerByConfig(unittest.TestCase):
                     tokenizer=self.tokenizer
                 )
 
-            if isinstance(ctx_man.exception, TypeError):
-                self.assertEqual(
-                    ctx_man.exception.args[0],
-                    '`config` must be an instance of `lmp.config.BaseConfig`.',
-                    msg=msg2
-                )
+            self.assertEqual(
+                ctx_man.exception.args[0],
+                '`config` must be an instance of `lmp.config.BaseConfig`.',
+                msg=msg2
+            )
 
     def test_invalid_input_dataset(self):
-        r"""Raise when `dataset` is invalid."""
-        msg1 = (
-            'Must raise `TypeError` when `dataset` is invalid.'
-        )
+        r"""Raise `TypeError` when input `dataset` is invalid."""
+        msg1 = 'Must raise `TypeError` when input `dataset` is invalid.'
         msg2 = 'Inconsistent error message.'
         examples = (
-            0, -1, 0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf, 0j, 1j,
-            '', b'', [], (), {}, set(), object(), lambda x: x, type, None,
-            NotImplemented, ...
+            False, True, 0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf,
+            -math.inf, 0j, 1j, '', b'', (), [], {}, set(), object(),
+            lambda x: x, type, None, NotImplemented, ...
         )
 
         for invalid_input in examples:
@@ -127,25 +150,20 @@ class TestTrainTokenizerByConfig(unittest.TestCase):
                     tokenizer=self.tokenizer
                 )
 
-            if isinstance(ctx_man.exception, TypeError):
-                self.assertEqual(
-                    ctx_man.exception.args[0],
-                    '`dataset` must be an instance of '
-                    '`lmp.dataset.BaseDataset`.',
-                    msg=msg2
-                )
+            self.assertEqual(
+                ctx_man.exception.args[0],
+                '`dataset` must be an instance of `lmp.dataset.BaseDataset`.',
+                msg=msg2
+            )
 
     def test_invalid_input_tokenizer(self):
-        r"""Raise when `tokenizer` is invalid."""
-        msg1 = (
-            'Must raise `TypeError` when `tokenizer` '
-            'is invalid.'
-        )
+        r"""Raise `TypeError` when input `tokenizer` is invalid."""
+        msg1 = 'Must raise `TypeError` when input `tokenizer` is invalid.'
         msg2 = 'Inconsistent error message.'
         examples = (
-            -1, 0, 0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf, 0j, 1j,
-            '', b'', [], (), {}, set(), object(), lambda x: x, type, None,
-            NotImplemented, ...
+            False, True, 0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf,
+            -math.inf, 0j, 1j, '', b'', (), [], {}, set(), object(),
+            lambda x: x, type, None, NotImplemented, ...
         )
 
         for invalid_input in examples:
@@ -156,13 +174,39 @@ class TestTrainTokenizerByConfig(unittest.TestCase):
                     tokenizer=invalid_input
                 )
 
-            if isinstance(ctx_man.exception, TypeError):
-                self.assertEqual(
-                    ctx_man.exception.args[0],
-                    '`tokenizer` must be an instance of '
-                    '`lmp.tokenizer.BaseTokenizer`.',
-                    msg=msg2
-                )
+            self.assertEqual(
+                ctx_man.exception.args[0],
+                '`tokenizer` must be an instance of '
+                '`lmp.tokenizer.BaseTokenizer`.',
+                msg=msg2
+            )
+
+    def test_increase_vocab(self):
+        r"""Increase vocabulary."""
+        msg = 'Must increase vocabulary.'
+
+        for (
+                is_uncased,
+                batch_sequences,
+                min_count,
+                tokenizer_cstr
+        ) in product(*self.__class__.tokenizer_parameters.values()):
+            config = lmp.config.BaseConfig(
+                dataset=self.__class__.dataset,
+                experiment=self.__class__.experiment,
+                min_count=min_count
+            )
+            dataset = lmp.dataset.BaseDataset(batch_sequences=batch_sequences)
+            tokenizer = tokenizer_cstr(is_uncased=is_uncased)
+            v1 = tokenizer.vocab_size
+
+            lmp.util.train_tokenizer_by_config(
+                config=config,
+                dataset=dataset,
+                tokenizer=tokenizer
+            )
+
+            self.assertGreater(tokenizer.vocab_size, v1, msg=msg)
 
 
 if __name__ == '__main__':

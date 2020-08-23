@@ -52,6 +52,7 @@ class TestBaseDictTokenizer(unittest.TestCase):
             import lmp.tokenizer._base_dict_tokenizer
             # pylint: enable=C0415
 
+            # pylint: disable=W0212
             for attr in examples:
                 self.assertTrue(
                     hasattr(lmp.tokenizer._base_dict_tokenizer, attr),
@@ -64,6 +65,7 @@ class TestBaseDictTokenizer(unittest.TestCase):
                     )),
                     msg=msg2.format(attr)
                 )
+            # pylint: enable=W0212
         except ImportError:
             self.fail(msg=msg3)
 
