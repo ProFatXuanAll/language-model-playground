@@ -44,7 +44,15 @@ def load_model(
 ) -> Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel]:
     r"""Helper function for constructing language model.
 
-    Load optimizer from pre-trained checkpoint when `checkpoint != -1`.
+    Supported options:
+        --model_class rnn
+        --model_class gru
+        --model_class lstm
+        --model_class res_rnn
+        --model_class res_gru
+        --model_class res_lstm
+
+    Load model from pre-trained checkpoint when `checkpoint != -1`.
 
     Args:
         checkpoint:
