@@ -28,6 +28,12 @@ def load_tokenizer(
 ) -> lmp.tokenizer.BaseTokenizer:
     r"""Helper function for constructing tokenizer.
 
+    Supported options:
+        --tokenizer_class char_dict
+        --tokenizer_class char_list
+        --tokenizer_class whitespace_dict
+        --tokenizer_class whitespace_list
+
     Load pre-trained tokenizer when `checkpoint != -1`.
 
     Args:

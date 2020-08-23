@@ -30,6 +30,10 @@ import lmp.path
 def load_dataset(dataset: str) -> lmp.dataset.BaseDataset:
     r"""Load dataset from downloaded files.
 
+    Supported options:
+        --dataset news_collection_desc
+        --dataset news_collection_title
+
     Args:
         dataset:
             Name of the dataset to perform experiment.

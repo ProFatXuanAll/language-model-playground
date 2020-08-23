@@ -40,6 +40,10 @@ def load_optimizer(
 ) -> Union[torch.optim.SGD, torch.optim.Adam]:
     r"""Helper function for constructing optimizer.
 
+    Supported options:
+        --optimizer_class sgd
+        --optimizer_class adam
+
     Load optimizer from pre-trained checkpoint when `checkpoint != -1`.
 
     Args:
