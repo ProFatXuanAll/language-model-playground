@@ -109,11 +109,17 @@ def load_dataset(
 ) -> Union[lmp.dataset.LanguageModelDataset, lmp.dataset.AnalogyDataset]:
     r"""Load dataset from downloaded files.
 
+    Supported options:
+        --dataset news_collection_desc
+        --dataset news_collection_title
+
     Args:
         dataset:
             Name of the dataset to perform experiment.
 
     Raises:
+        TypeError:
+            When `dataset` is not an instance of `str`.
         ValueError:
             If `dataset` does not support.
         FileNotFoundError
@@ -123,6 +129,10 @@ def load_dataset(
         `lmp.dataset.LanguageModelDataset` instance where samples are sequences.
         `lmp.dataset.AnalogyDataset` instance where sample is used for analogy test.
     """
+    # Type check.
+    if not isinstance(dataset, str):
+        raise TypeError('`dataset` must be an instance of `str`.')
+
     if dataset == 'news_collection_desc':
         return _preprocess_news_collection(column='desc')
 
@@ -166,7 +176,17 @@ def load_dataset_by_config(
         config:
             Configuration object with attribute `dataset`.
 
+    Raise:
+        TypeError:
+            When `config` is not an instance of `lmp.config.BaseConfig`.
+
     Returns:
         Same as `load_dataset`.
     """
+    # Type check.
+    if not isinstance(config, lmp.config.BaseConfig):
+        raise TypeError(
+            '`config` must be an instance of `lmp.config.BaseConfig`.'
+        )
+
     return load_dataset(dataset=config.dataset)

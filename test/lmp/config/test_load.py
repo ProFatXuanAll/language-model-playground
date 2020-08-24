@@ -67,7 +67,7 @@ class TestLoad(unittest.TestCase):
         )
 
     def test_invalid_input_experiment(self):
-        r"""Raise when input `experiment` is invalid."""
+        r"""Raise exception when input `experiment` is invalid."""
         msg1 = (
             'Must raise `FileNotFoundError`, `TypeError` or `ValueError` when '
             'input `experiment` is invalid.'
@@ -75,7 +75,7 @@ class TestLoad(unittest.TestCase):
         msg2 = 'Inconsistent error message.'
         examples = (
             False, True, 0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf,
-            -math.inf, 0j, 1j, '', 'I-DO-NOT-EXIST', b'', [], (), {}, set(),
+            -math.inf, 0j, 1j, '', 'I-DO-NOT-EXIST', b'', (), [], {}, set(),
             object(), lambda x: x, type, None, NotImplemented, ...
         )
 
@@ -94,7 +94,7 @@ class TestLoad(unittest.TestCase):
                 )
                 self.assertEqual(
                     ctx_man.exception.args[0],
-                    f'file {file_path} does not exist.',
+                    f'File {file_path} does not exist.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, TypeError):
@@ -111,7 +111,7 @@ class TestLoad(unittest.TestCase):
                 )
 
     def test_invalid_json(self):
-        r"""Raise when configuration is invalid."""
+        r"""Raise `JSONDecodeError` when configuration is invalid."""
         msg = (
             'Must raise `JSONDecodeError` when configuration is not in JSON '
             'format.'

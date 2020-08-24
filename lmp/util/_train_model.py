@@ -14,6 +14,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import math
 import os
 
 from typing import Union
@@ -48,43 +49,118 @@ def train_model(
         model: Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel],
         optimizer: Union[torch.optim.SGD, torch.optim.Adam],
         vocab_size: int
-):
+) -> None:
     r"""Helper function for training language model.
 
     Continue training from pre-trained checkpoint when `checkpoint != -1`.
 
     Args:
         checkpoint:
-            Pre-trained model's checkpoint.
+            Pre-trained model's checkpoint. Must be bigger than or equal to
+            `-1`.
         checkpoint_step:
-            Checkpoint save interval.
+            Checkpoint save interval. Must be bigger than or equal to `1`.
         data_loader:
             `torch.utils.data.DataLoader` for sampling.
         device:
             Model running device.
         epoch:
-            Number of training epoch.
+            Number of training epoch. Must be bigger than or equal to `1`.
         experiment:
-            Name of the current experiment.
+            Name of the current experiment. Must not be empty.
         max_norm:
-            Maximum gradient norm.
+            Maximum gradient norm. Must be bigger than `0.0`.
         model:
             Language model.
         optimizer:
             Language model's optimizer.
         vocab_size:
-            Number of classes to predict.
+            Number of classes to predict. Must be bigger than or equal to `1`.
+
+    Raises:
+        TypeError:
+            When one of the arguments are not an instance of their type
+            annotation respectively.
+        ValueError:
+            When one of the arguments do not follow their constraints. See
+            docstring for arguments constraints.
     """
+    # Type check.
+    if not isinstance(checkpoint, int):
+        raise TypeError('`checkpoint` must be an instance of `int`.')
+
+    if not isinstance(checkpoint_step, int):
+        raise TypeError('`checkpoint_step` must be an instance of `int`.')
+
+    if not isinstance(data_loader, torch.utils.data.DataLoader):
+        raise TypeError(
+            '`data_loader` must be an instance of '
+            '`torch.utils.data.DataLoader`.'
+        )
+
+    if not isinstance(device, torch.device):
+        raise TypeError('`device` must be an instance of `torch.device`.')
+
+    if not isinstance(epoch, int):
+        raise TypeError('`epoch` must be an instance of `int`.')
+
+    if not isinstance(experiment, str):
+        raise TypeError('`experiment` must be an instance of `str`.')
+
+    if not isinstance(max_norm, float):
+        raise TypeError('`max_norm` must be an instance of `float`.')
+
+    if not isinstance(model, (
+            lmp.model.BaseRNNModel,
+            lmp.model.BaseResRNNModel
+    )):
+        raise TypeError(
+            '`model` must be an instance of '
+            '`Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel]`.'
+        )
+
+    if not isinstance(optimizer, (torch.optim.SGD, torch.optim.Adam)):
+        raise TypeError(
+            '`optimizer` must be an instance of '
+            '`Union[torch.optim.SGD, torch.optim.Adam]`.'
+        )
+
+    if not isinstance(vocab_size, int):
+        raise TypeError('`vocab_size` must be an instance of `int`.')
+
+    # Value check.
+    if checkpoint < -1:
+        raise ValueError('`checkpoint` must be bigger than or equal to `-1`.')
+
+    if checkpoint_step < 1:
+        raise ValueError(
+            '`checkpoint_step` must be bigger than or equal to `1`.'
+        )
+
+    if epoch < 1:
+        raise ValueError('`epoch` must be bigger than or equal to `1`.')
+
+    if not experiment:
+        raise ValueError('`experiment` must not be empty.')
+
+    if max_norm < 0.0 or math.isnan(max_norm):
+        raise ValueError('`max_norm` must be bigger than `0.0`.')
+
+    if vocab_size < 1:
+        raise ValueError('`vocab_size` must be bigger than or equal to `1`.')
+
     # Set experiment output folder.
-    file_dir = f'{lmp.path.DATA_PATH}/{experiment}'
+    file_dir = os.path.join(lmp.path.DATA_PATH, experiment)
+    log_dir = os.path.join(lmp.path.DATA_PATH, 'log', experiment)
 
     if not os.path.exists(file_dir):
         os.makedirs(file_dir)
 
+    if not os.path.exists(log_dir):
+        os.makedirs(log_dir)
+
     # Set experiment log folder.
-    writer = torch.utils.tensorboard.SummaryWriter(
-        f'{lmp.path.DATA_PATH}/log/{experiment}'
-    )
+    writer = torch.utils.tensorboard.SummaryWriter(log_dir)
 
     # Define objective function.
     criterion = torch.nn.CrossEntropyLoss()
@@ -146,10 +222,7 @@ def train_model(
             loss.backward()
 
             # Perform gradient clipping to avoid gradient explosion.
-            torch.nn.utils.clip_grad_norm_(
-                model.parameters(),
-                max_norm
-            )
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm)
 
             # Gradient descent.
             optimizer.step()
@@ -161,40 +234,24 @@ def train_model(
             if step % checkpoint_step == 0:
                 torch.save(
                     model.state_dict(),
-                    os.path.join(
-                        file_dir,
-                        f'model-{step}.pt'
-                    )
+                    os.path.join(file_dir, f'model-{step}.pt')
                 )
                 torch.save(
                     optimizer.state_dict(),
-                    os.path.join(
-                        file_dir,
-                        f'optimizer-{step}.pt'
-                    )
+                    os.path.join(file_dir, f'optimizer-{step}.pt')
                 )
                 # Log average loss.
-                writer.add_scalar(
-                    f'{experiment}/loss',
-                    total_loss / checkpoint_step,
-                    step
-                )
+                writer.add_scalar('loss', total_loss / checkpoint_step, step)
                 total_loss = 0.0
 
     # Save last checkpoint.
     torch.save(
         model.state_dict(),
-        os.path.join(
-            file_dir,
-            f'model-{step}.pt'
-        )
+        os.path.join(file_dir, f'model-{step}.pt')
     )
     torch.save(
         optimizer.state_dict(),
-        os.path.join(
-            file_dir,
-            f'optimizer-{step}.pt'
-        )
+        os.path.join(file_dir, f'optimizer-{step}.pt')
     )
 
 
@@ -205,14 +262,15 @@ def train_model_by_config(
         model: Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel],
         optimizer: Union[torch.optim.SGD, torch.optim.Adam],
         tokenizer: lmp.tokenizer.BaseTokenizer,
-):
+) -> None:
     r"""Helper function for training language model.
 
     Continue training from pre-trained checkpoint when `checkpoint != -1`.
 
     Args:
         checkpoint:
-            Pre-trained model's checkpoint.
+            Pre-trained model's checkpoint. Must be bigger than or equal to
+            `-1`.
         config:
             Configuration object with attributes `batch_size`,
             `checkpoint_step`, `device`, `epoch`, `experiment`, `max_norm` and
@@ -225,7 +283,30 @@ def train_model_by_config(
             Language model's optimizer.
         tokenizer:
             Tokenizer object with attribute `vocab_size`.
+
+    Raises:
+        TypeError:
+            When one of the arguments are not an instance of their type
+            annotation respectively.
+        ValueError:
+            When `checkpoint < -1`.
     """
+    # Type check.
+    if not isinstance(config, lmp.config.BaseConfig):
+        raise TypeError(
+            '`config` must be an instance of `lmp.config.BaseConfig`.'
+        )
+
+    if not isinstance(dataset, lmp.dataset.BaseDataset):
+        raise TypeError(
+            '`dataset` must be an instance of `lmp.dataset.BaseDataset`.'
+        )
+
+    if not isinstance(tokenizer, lmp.tokenizer.BaseTokenizer):
+        raise TypeError(
+            '`tokenizer` must be an instance of `lmp.tokenizer.BaseTokenizer`.'
+        )
+
     # Create collate_fn for sampling.
     collate_fn = lmp.dataset.LanguageModelDataset.create_collate_fn(
         tokenizer=tokenizer,

@@ -13,6 +13,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
+from typing import Iterable
 from typing import List
 from typing import Union
 
@@ -43,13 +44,43 @@ def perplexity_eval(
         model:
             Language model.
         sequence:
-            Sequence for evaluation.
+            Sequence for evaluation. Must not be empty.
         tokenizer:
             Tokenizer for encoding sequence.
+
+    Raises:
+        TypeError:
+            When one of the arguments are not an instance of their type
+            annotation respectively.
 
     Return:
         Perplexity of `sequence`.
     """
+    # Type check.
+    if not isinstance(device, torch.device):
+        raise TypeError('`device` must be an instance of `torch.device`.')
+
+    if not isinstance(model, (
+            lmp.model.BaseRNNModel,
+            lmp.model.BaseResRNNModel
+    )):
+        raise TypeError(
+            '`model` must be an instance of '
+            '`Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel]`.'
+        )
+
+    if not isinstance(sequence, str):
+        raise TypeError('`sequence` must be an instance of `str`.')
+
+    if not isinstance(tokenizer, lmp.tokenizer.BaseTokenizer):
+        raise TypeError(
+            '`tokenizer` must be an instance of `lmp.tokenizer.BaseTokenizer`.'
+        )
+
+    # Value check.
+    if not sequence:
+        raise ValueError('`sequence` must not be empty.')
+
     # Evalation mode.
     model.eval()
 
@@ -92,7 +123,7 @@ def perplexity_eval(
 
 
 def batch_perplexity_eval(
-        dataset: List[str],
+        dataset: Iterable[str],
         device: torch.device,
         model: Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel],
         tokenizer: lmp.tokenizer.BaseTokenizer
@@ -101,29 +132,48 @@ def batch_perplexity_eval(
 
     Args:
         dataset:
-            Evaluating each sequence in the dataset.
+            Evaluating each sequence in the dataset. No sequences in dataset
+            should be empty.
         device:
             Model running device.
         model:
             Language model.
         tokenizer:
             Tokenizer for encoding sequence.
+
+    Raises:
+        TypeError:
+            When one of the arguments are not an instance of their type
+            annotation respectively.
+
     Return:
         Perplexity of `dataset`.
     """
-    dataset_iterator = tqdm(
-        dataset,
-        desc='Calculating perplexities'
-    )
+    # Type check.
+    if not isinstance(dataset, Iterable):
+        raise TypeError('`dataset` must be an instance of `Iterable[str]`.')
+
     perplexties = []
 
-    for sequence in dataset_iterator:
-        perplexity = perplexity_eval(
-            device=device,
-            model=model,
-            sequence=sequence,
-            tokenizer=tokenizer
-        )
-        perplexties.append(perplexity)
+    try:
+        for sequence in tqdm(dataset, desc='Calculating perplexities'):
+            perplexity = perplexity_eval(
+                device=device,
+                model=model,
+                sequence=sequence,
+                tokenizer=tokenizer
+            )
+            perplexties.append(perplexity)
 
-    return perplexties
+        return perplexties
+    except TypeError as err:
+        if 'sequence' in err.args[0]:
+            raise TypeError(
+                '`dataset` must be an instance of `Iterable[str]`.'
+            )
+
+        raise err
+    except ValueError as err:
+        raise ValueError(
+            '`dataset` must not contain empty sequences.'
+        )
