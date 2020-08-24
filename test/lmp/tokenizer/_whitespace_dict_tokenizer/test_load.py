@@ -32,6 +32,10 @@ class TestLoad(unittest.TestCase):
         r"""Create test directory."""
         cls.experiment = 'I-AM-A-TEST'
         cls.test_dir = os.path.join(DATA_PATH, cls.experiment)
+        if os.path.exists(cls.test_dir):
+            for tokenizer_file in os.listdir(cls.test_dir):
+                os.remove(os.path.join(cls.test_dir, tokenizer_file))
+            os.removedirs(cls.test_dir)
         os.makedirs(cls.test_dir)
 
     @classmethod

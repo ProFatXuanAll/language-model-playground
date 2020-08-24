@@ -41,7 +41,6 @@ class TestUtilTrainModel(unittest.TestCase):
         msg3 = 'Inconsistent module signature.'
         examples = (
             'train_model',
-            'train_model_by_config',
         )
 
         try:

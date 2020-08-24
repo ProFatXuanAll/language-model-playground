@@ -40,6 +40,5 @@ from lmp.util._seed import set_seed_by_config
 from lmp.util._tokenizer import load_tokenizer
 from lmp.util._tokenizer import load_tokenizer_by_config
 from lmp.util._train_model import train_model
-from lmp.util._train_model import train_model_by_config
 from lmp.util._train_tokenizer import train_tokenizer
 from lmp.util._train_tokenizer import train_tokenizer_by_config

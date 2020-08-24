@@ -56,7 +56,6 @@ class TestUtil(unittest.TestCase):
             'set_seed',
             'set_seed_by_config',
             'train_model',
-            'train_model_by_config',
             'train_tokenizer',
             'train_tokenizer_by_config',
         )

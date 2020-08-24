@@ -4,7 +4,6 @@ Usage:
     import lmp.util
 
     lmp.util.train_model(...)
-    lmp.util.train_model_by_config(...)
 """
 
 # built-in modules
@@ -252,84 +251,4 @@ def train_model(
     torch.save(
         optimizer.state_dict(),
         os.path.join(file_dir, f'optimizer-{step}.pt')
-    )
-
-
-def train_model_by_config(
-        checkpoint: int,
-        config: lmp.config.BaseConfig,
-        dataset: lmp.dataset.BaseDataset,
-        model: Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel],
-        optimizer: Union[torch.optim.SGD, torch.optim.Adam],
-        tokenizer: lmp.tokenizer.BaseTokenizer,
-) -> None:
-    r"""Helper function for training language model.
-
-    Continue training from pre-trained checkpoint when `checkpoint != -1`.
-
-    Args:
-        checkpoint:
-            Pre-trained model's checkpoint. Must be bigger than or equal to
-            `-1`.
-        config:
-            Configuration object with attributes `batch_size`,
-            `checkpoint_step`, `device`, `epoch`, `experiment`, `max_norm` and
-            `max_seq_len`.
-        dataset:
-            Source of text samples to train on.
-        model:
-            Language model.
-        optimizer:
-            Language model's optimizer.
-        tokenizer:
-            Tokenizer object with attribute `vocab_size`.
-
-    Raises:
-        TypeError:
-            When one of the arguments are not an instance of their type
-            annotation respectively.
-        ValueError:
-            When `checkpoint < -1`.
-    """
-    # Type check.
-    if not isinstance(config, lmp.config.BaseConfig):
-        raise TypeError(
-            '`config` must be an instance of `lmp.config.BaseConfig`.'
-        )
-
-    if not isinstance(dataset, lmp.dataset.BaseDataset):
-        raise TypeError(
-            '`dataset` must be an instance of `lmp.dataset.BaseDataset`.'
-        )
-
-    if not isinstance(tokenizer, lmp.tokenizer.BaseTokenizer):
-        raise TypeError(
-            '`tokenizer` must be an instance of `lmp.tokenizer.BaseTokenizer`.'
-        )
-
-    # Create collate_fn for sampling.
-    collate_fn = lmp.dataset.BaseDataset.create_collate_fn(
-        tokenizer=tokenizer,
-        max_seq_len=config.max_seq_len
-    )
-
-    # `torch` utility for sampling.
-    data_loader = torch.utils.data.DataLoader(
-        dataset,
-        batch_size=config.batch_size,
-        shuffle=True,
-        collate_fn=collate_fn
-    )
-
-    train_model(
-        checkpoint=checkpoint,
-        checkpoint_step=config.checkpoint_step,
-        data_loader=data_loader,
-        device=config.device,
-        epoch=config.epoch,
-        experiment=config.experiment,
-        max_norm=config.max_norm,
-        model=model,
-        optimizer=optimizer,
-        vocab_size=tokenizer.vocab_size
     )

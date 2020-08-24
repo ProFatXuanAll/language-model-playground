@@ -65,6 +65,10 @@ class TestLoadModelByConfig(unittest.TestCase):
             ],
         }
         cls.test_dir = os.path.join(lmp.path.DATA_PATH, cls.experiment)
+        if os.path.exists(cls.test_dir):
+            for model_file in os.listdir(cls.test_dir):
+                os.remove(os.path.join(cls.test_dir, model_file))
+            os.removedirs(cls.test_dir)
         os.makedirs(cls.test_dir)
 
     @classmethod
