@@ -198,14 +198,32 @@ if __name__ == '__main__':
         model=model
     )
 
+    # Create collate_fn for sampling.
+    collate_fn = lmp.dataset.BaseDataset.create_collate_fn(
+        tokenizer=tokenizer,
+        max_seq_len=config.max_seq_len
+    )
+
+    # `torch` utility for sampling.
+    data_loader = torch.utils.data.DataLoader(
+        dataset,
+        batch_size=config.batch_size,
+        shuffle=True,
+        collate_fn=collate_fn
+    )
+
     # Train model.
-    lmp.util.train_model_by_config(
+    lmp.util.train_model(
         checkpoint=args.checkpoint,
-        config=config,
-        dataset=dataset,
+        checkpoint_step=config.checkpoint_step,
+        data_loader=,
+        device=config.device,
+        epoch=config.epoch,
+        experiment=config.experiment,
+        max_norm=config.max_norm,
         model=model,
         optimizer=optimizer,
-        tokenizer=tokenizer
+        vocab_size=tokenizer.vocab_size
     )
 
     total_exec_time = time.time() - start_time

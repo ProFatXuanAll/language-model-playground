@@ -34,8 +34,6 @@ class TestLoadConfig(unittest.TestCase):
         r"""Create test directory and `config.json`."""
         cls.dataset = 'I-AM-A-TEST-DATASET'
         cls.experiment = 'I-AM-A-TEST-FOLDER'
-        cls.test_dir = os.path.join(lmp.path.DATA_PATH, cls.experiment)
-        os.makedirs(cls.test_dir)
         cls.config = lmp.config.BaseConfig(
             batch_size=1,
             checkpoint_step=1,
@@ -60,12 +58,9 @@ class TestLoadConfig(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         r"""Remove test directory and `config.json`."""
-        os.remove(os.path.join(cls.test_dir, 'config.json'))
-        os.removedirs(cls.test_dir)
         del cls.config
         del cls.dataset
         del cls.experiment
-        del cls.test_dir
         gc.collect()
 
     def setUp(self):

@@ -14,10 +14,10 @@ from __future__ import unicode_literals
 import gc
 import inspect
 import math
-import os
 import unittest
 
 from itertools import product
+from typing import Iterator
 from typing import Union
 
 # 3rd-party modules
@@ -26,82 +26,101 @@ import torch
 
 # self-made modules
 
+import lmp
 import lmp.config
 import lmp.model
-import lmp.path
-import lmp.util
 
 
 class TestLoadOptimizerByConfig(unittest.TestCase):
-    r"""Test case for `lmp.util.load_optimizer_by_config`."""
+    r"""Test Case for `lmp.util.load_optimizer_by_config`."""
 
     @classmethod
     def setUpClass(cls):
-        r"""Create test directory and setup dynamic parameters."""
-        cls.checkpoint = 10
-        cls.dataset = 'I-AM-TEST-DATASET'
-        cls.experiment = 'I-AM-A-TEST-FOLDER'
         cls.model_parameters = {
-            'd_emb': [1, 2],
-            'd_hid': [1, 2],
-            'dropout': [0.0, 0.1],
-            'model_cstr': [
-                lmp.model.BaseRNNModel,
-                lmp.model.GRUModel,
-                lmp.model.LSTMModel,
-                lmp.model.BaseResRNNModel,
-                lmp.model.ResGRUModel,
-                lmp.model.ResLSTMModel,
-            ],
-            'num_linear_layers': [1, 2],
-            'num_rnn_layers': [1, 2],
-            'pad_token_id': [0, 1],
-            'vocab_size': [5, 10]
+            'd_emb': [5, 6],
+            'd_hid': [7, 9],
+            'dropout': [0.0, 0.1, 0.5, 1.0],
+            'num_linear_layers': [3, 6],
+            'num_rnn_layers': [2, 5],
+            'pad_token_id': [0, 1, 2, 3],
+            'vocab_size': [10, 15]
         }
-        cls.optimizer_parameters = {
-            'learning_rate': [0.0, 0.1, 0.5, 0.9],
-            'optimizer': [
-                ('sgd', torch.optim.SGD),
-                ('adam', torch.optim.Adam),
-            ],
+        cls.config_parameters = {
+            'learning_rate': [.5, .6],
+            'optimizer_class': ['sgd', 'adam']
         }
-        cls.test_dir = os.path.join(lmp.path.DATA_PATH, cls.experiment)
-        os.makedirs(cls.test_dir)
+        cls.model_param_values = [v for v in cls.model_parameters.values()]
+        cls.config_param_values = [v for v in cls.config_parameters.values()]
 
     @classmethod
     def tearDownClass(cls):
-        r"""Remove test directory and delete dynamic parameters."""
-        os.removedirs(cls.test_dir)
-        del cls.checkpoint
-        del cls.dataset
-        del cls.experiment
         del cls.model_parameters
-        del cls.optimizer_parameters
-        del cls.test_dir
+        del cls.config_parameters
+        del cls.model_param_values
+        del cls.config_param_values
         gc.collect()
 
     def setUp(self):
-        r"""Setup fixed parameters."""
+        r"""Set up parameters for `load_optimizer_by_config`."""
         self.checkpoint = -1
         self.config = lmp.config.BaseConfig(
-            dataset=self.__class__.dataset,
-            experiment=self.__class__.experiment
+            dataset='news_collection',
+            experiment='util_load_by_config_optimizer_unittest'
         )
         self.model = lmp.model.BaseRNNModel(
-            d_emb=1,
-            d_hid=1,
-            dropout=0.0,
-            num_linear_layers=1,
+            d_emb=4,
+            d_hid=4,
+            dropout=0.2,
             num_rnn_layers=1,
+            num_linear_layers=1,
             pad_token_id=0,
-            vocab_size=5
+            vocab_size=10
         )
 
+        cls = self.__class__
+        self.model_obj = []
+        for (
+            d_emb,
+            d_hid,
+            dropout,
+            num_linear_layers,
+            num_rnn_layers,
+            pad_token_id,
+            vocab_size
+        ) in product(*cls.model_param_values):
+            if vocab_size <= pad_token_id:
+                continue
+            model = lmp.model.BaseRNNModel(
+                d_emb=d_emb,
+                d_hid=d_hid,
+                dropout=dropout,
+                num_linear_layers=num_linear_layers,
+                num_rnn_layers=num_rnn_layers,
+                pad_token_id=pad_token_id,
+                vocab_size=vocab_size
+            )
+            self.model_obj.append(model)
+
+        self.config_obj = []
+        for (
+            learning_rate,
+            optimizer_class
+        ) in product(*cls.config_param_values):
+            config = lmp.config.BaseConfig(
+                dataset='news_collection',
+                experiment='util_load_optimizer_by_config_unittest',
+                learning_rate=learning_rate,
+                optimizer_class=optimizer_class
+            )
+            self.config_obj.append(config)
+
     def tearDown(self):
-        r"""Delete fixed parameters."""
+        r"""Delete parameters for `load_optimizer_by_config`."""
         del self.checkpoint
         del self.config
+        del self.config_obj
         del self.model
+        del self.model_obj
         gc.collect()
 
     def test_signature(self):
@@ -134,29 +153,26 @@ class TestLoadOptimizerByConfig(unittest.TestCase):
                         default=inspect.Parameter.empty
                     )
                 ],
-                return_annotation=Union[torch.optim.SGD, torch.optim.Adam]
+                return_annotation=Union[
+                    torch.optim.SGD,
+                    torch.optim.Adam,
+                ]
             ),
             msg=msg
         )
 
     def test_invalid_input_checkpoint(self):
-        r"""Raise exception when input `checkpoint` is invalid."""
-        msg1 = (
-            'Must raise `TypeError` or `ValueError` when input `checkpoint` '
-            'is invalid.'
-        )
+        r"""Raise when `checkpoint` is invalid."""
+        msg1 = 'Must raise `TypeError` when `checkpoint` is invalid.'
         msg2 = 'Inconsistent error message.'
         examples = (
-            -2, 0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf, 0j, 1j, '',
-            b'', (), [], {}, set(), object(), lambda x: x, type, None,
+            0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf, 0j, 1j, '',
+            b'', [], (), {}, set(), object(), lambda x: x, type, None,
             NotImplemented, ...
         )
 
         for invalid_input in examples:
-            with self.assertRaises(
-                    (TypeError, ValueError),
-                    msg=msg1
-            ) as ctx_man:
+            with self.assertRaises(TypeError, msg=msg1) as ctx_man:
                 lmp.util.load_optimizer_by_config(
                     checkpoint=invalid_input,
                     config=self.config,
@@ -169,20 +185,17 @@ class TestLoadOptimizerByConfig(unittest.TestCase):
                     '`checkpoint` must be an instance of `int`.',
                     msg=msg2
                 )
-            else:
-                self.assertEqual(
-                    ctx_man.exception.args[0],
-                    '`checkpoint` must be bigger than or equal to `-1`.',
-                    msg=msg2
-                )
 
     def test_invalid_input_config(self):
-        r"""Raise `TypeError` when input `config` is invalid."""
-        msg1 = 'Must raise `TypeError` when input `config` is invalid.'
+        r"""Raise when `config` is invalid."""
+        msg1 = (
+            'Must raise `TypeError` when `config` '
+            'is invalid.'
+        )
         msg2 = 'Inconsistent error message.'
         examples = (
-            False, True, 0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf,
-            -math.inf, 0j, 1j, '', b'', (), [], {}, set(), object(),
+            0, 1, -1, True, False, 0.0, 1.0, math.nan, -math.nan, math.inf,
+            -math.inf, 0j, 1j, '', b'', [], (), {}, set(), object(),
             lambda x: x, type, None, NotImplemented, ...
         )
 
@@ -194,20 +207,24 @@ class TestLoadOptimizerByConfig(unittest.TestCase):
                     model=self.model
                 )
 
-            self.assertEqual(
-                ctx_man.exception.args[0],
-                '`config` must be an instance of `lmp.config.BaseConfig`.',
-                msg=msg2
-            )
+            if isinstance(ctx_man.exception, TypeError):
+                self.assertEqual(
+                    ctx_man.exception.args[0],
+                    '`config` must be an instance of `lmp.config.BaseConfig`.',
+                    msg=msg2
+                )
 
     def test_invalid_input_model(self):
-        r"""Raise `TypeError` when input `model` is invalid."""
-        msg1 = 'Must raise `TypeError` when input `model` is invalid.'
+        r"""Raise when `model` is invalid."""
+        msg1 = (
+            'Must raise `TypeError` when `model` '
+            'is invalid.'
+        )
         msg2 = 'Inconsistent error message.'
         examples = (
-            False, True, 0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf,
-            -math.inf, 0j, 1j, '', b'', (), [], {}, set(), object(),
-            lambda x: x, type, None, NotImplemented, ...
+            0, 1, -1, True, False, 0.0, 1.0, math.nan, -math.nan, math.inf,
+            -math.inf, 0j, 1j, object(), lambda x: x, type, None,
+            NotImplemented, ...
         )
 
         for invalid_input in examples:
@@ -218,175 +235,42 @@ class TestLoadOptimizerByConfig(unittest.TestCase):
                     model=invalid_input
                 )
 
-            self.assertEqual(
-                ctx_man.exception.args[0],
-                '`model` must be an instance of '
-                '`Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel]`.',
-                msg=msg2
-            )
+            if isinstance(ctx_man.exception, TypeError):
+                self.assertEqual(
+                    ctx_man.exception.args[0],
+                    '`model` must be an instance of '
+                    '`Union['
+                    'lmp.model.BaseRNNModel, '
+                    'lmp.model.BaseResRNNModel'
+                    ']`.',
+                    msg=msg2
+                )
 
     def test_return_type(self):
         r"""Return `torch.optim.SGD` or `torch.optim.Adam`."""
-        msg = 'Must return `torch.optim.SGD` or `torch.optim.Adam`.'
-
-        test_path = os.path.join(
-            self.__class__.test_dir,
-            f'optimizer-{self.__class__.checkpoint}.pt'
+        msg = (
+            'Must return `torch.optim.SGD` or `torch.optim.Adam`.'
+        )
+        examples = (
+            (
+                config,
+                model,
+            )
+            for config in self.config_obj
+            for model in self.model_obj
         )
 
-        for (
-                d_emb,
-                d_hid,
-                dropout,
-                model_cstr,
-                num_linear_layers,
-                num_rnn_layers,
-                pad_token_id,
-                vocab_size,
-                learning_rate,
-                (optimizer_class, optimizer_cstr)
-        ) in product(
-            *self.__class__.model_parameters.values(),
-            *self.__class__.optimizer_parameters.values()
-        ):
-            if vocab_size <= pad_token_id:
-                continue
-
-            config = lmp.config.BaseConfig(
-                d_emb=d_emb,
-                d_hid=d_hid,
-                dataset=self.__class__.dataset,
-                dropout=dropout,
-                experiment=self.__class__.experiment,
-                learning_rate=learning_rate,
-                num_linear_layers=num_linear_layers,
-                num_rnn_layers=num_rnn_layers,
-                optimizer_class=optimizer_class
-            )
-
-            model = model_cstr(
-                d_emb=d_emb,
-                d_hid=d_hid,
-                dropout=dropout,
-                num_linear_layers=num_linear_layers,
-                num_rnn_layers=num_rnn_layers,
-                pad_token_id=pad_token_id,
-                vocab_size=vocab_size
-            )
-
-            optimizer_1 = lmp.util.load_optimizer_by_config(
+        for config, model in examples:
+            optimizer = lmp.util.load_optimizer_by_config(
                 checkpoint=-1,
                 config=config,
                 model=model
             )
 
-            self.assertIsInstance(optimizer_1, optimizer_cstr, msg=msg)
-
             try:
-                # Create test file.
-                torch.save(optimizer_1.state_dict(), test_path)
-                self.assertTrue(os.path.exists(test_path), msg=msg)
-
-                optimizer_2 = lmp.util.load_optimizer_by_config(
-                    checkpoint=self.__class__.checkpoint,
-                    config=config,
-                    model=model
-                )
-
-                self.assertIsInstance(optimizer_2, optimizer_cstr, msg=msg)
-            finally:
-                # Clean up test file.
-                os.remove(test_path)
-
-    def test_load_result(self):
-        r"""Load result must be consistent."""
-        msg = 'Inconsistent load result.'
-
-        test_path = os.path.join(
-            self.__class__.test_dir,
-            f'optimizer-{self.__class__.checkpoint}.pt'
-        )
-
-        for (
-                d_emb,
-                d_hid,
-                dropout,
-                model_cstr,
-                num_linear_layers,
-                num_rnn_layers,
-                pad_token_id,
-                vocab_size,
-                learning_rate,
-                (optimizer_class, optimizer_cstr)
-        ) in product(
-            *self.__class__.model_parameters.values(),
-            *self.__class__.optimizer_parameters.values()
-        ):
-            if vocab_size <= pad_token_id:
-                continue
-
-            config = lmp.config.BaseConfig(
-                d_emb=d_emb,
-                d_hid=d_hid,
-                dataset=self.__class__.dataset,
-                dropout=dropout,
-                experiment=self.__class__.experiment,
-                learning_rate=learning_rate,
-                num_linear_layers=num_linear_layers,
-                num_rnn_layers=num_rnn_layers,
-                optimizer_class=optimizer_class
-            )
-
-            model = model_cstr(
-                d_emb=d_emb,
-                d_hid=d_hid,
-                dropout=dropout,
-                num_linear_layers=num_linear_layers,
-                num_rnn_layers=num_rnn_layers,
-                pad_token_id=pad_token_id,
-                vocab_size=vocab_size
-            )
-
-            try:
-                # Create test file.
-                ans_optimizer = optimizer_cstr(
-                    params=model.parameters(),
-                    lr=learning_rate
-                )
-                torch.save(ans_optimizer.state_dict(), test_path)
-                self.assertTrue(os.path.exists(test_path), msg=msg)
-
-                optimizer_1 = lmp.util.load_optimizer_by_config(
-                    checkpoint=-1,
-                    config=config,
-                    model=model
-                )
-                optimizer_2 = lmp.util.load_optimizer_by_config(
-                    checkpoint=self.__class__.checkpoint,
-                    config=config,
-                    model=model
-                )
-
-                self.assertEqual(
-                    len(list(ans_optimizer.state_dict())),
-                    len(list(optimizer_1.state_dict())),
-                    msg=msg
-                )
-                self.assertEqual(
-                    len(list(ans_optimizer.state_dict())),
-                    len(list(optimizer_2.state_dict())),
-                    msg=msg
-                )
-
-                for p1, p2 in zip(
-                        ans_optimizer.state_dict(),
-                        optimizer_2.state_dict()
-                ):
-                    self.assertTrue((p1 == p2), msg=msg)
-
-            finally:
-                # Clean up test file.
-                os.remove(test_path)
+                self.assertIsInstance(optimizer, torch.optim.SGD, msg=msg)
+            except AssertionError:
+                self.assertIsInstance(optimizer, torch.optim.Adam, msg=msg)
 
 
 if __name__ == '__main__':
