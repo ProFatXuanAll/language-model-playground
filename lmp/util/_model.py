@@ -44,34 +44,55 @@ def load_model(
 ) -> Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel]:
     r"""Helper function for constructing language model.
 
-    Load optimizer from pre-trained checkpoint when `checkpoint != -1`.
+    Supported options:
+        --model_class rnn
+        --model_class gru
+        --model_class lstm
+        --model_class res_rnn
+        --model_class res_gru
+        --model_class res_lstm
+
+    Load model from pre-trained checkpoint when `checkpoint != -1`.
 
     Args:
         checkpoint:
-            Pre-trained model's checkpoint.
+            Pre-trained model's checkpoint. Must be bigger than or equal to
+            `-1`.
         d_emb:
-            Embedding matrix vector dimension.
+            Embedding matrix vector dimension. Must be bigger than or equal to
+            `1`.
         d_hid:
-            Model layers hidden dimension.
+            Model layers hidden dimension. Must be bigger than or equal to
+            `1`.
         device:
             Model running device.
         dropout:
             Dropout probability on all layers output (except output layer).
+            Must range from `0.0` to `1.0`.
         experiment:
-            Name of the pre-trained experiment.
-        num_rnn_layers:
-            Number of GRU layers to use.
+            Name of the pre-trained experiment. Must not be empty when
+            `checkpoint != -1`.
         num_linear_layers:
-            Number of Linear layers to use.
+            Number of Linear layers to use. Must be bigger than or equal to
+            `1`.
+        num_rnn_layers:
+            Number of RNN layers to use. Must be bigger than or equal to
+            `1`.
         pad_token_id:
-            Padding token's id. Embedding layers will initialize padding
-            token's vector with zeros.
+            Padding token's id. Embedding layer will initialize padding
+            token's vector with zeros. Must be bigger than or equal to `0`, and
+            must be smaller than `vocab_size`.
         vocab_size:
-            Embedding matrix vocabulary dimension.
+            Embedding matrix vocabulary dimension. Must be bigger than or equal
+            to `1`.
 
     Raises:
+        TypeError:
+            When one of the arguments are not an instance of their type
+            annotation respectively.
         ValueError:
-            If `model` does not supported.
+            When one of the arguments do not follow their constraints. See
+            docstring for arguments constraints.
 
     Returns:
         `lmp.model.BaseRNNModel` if `model_class == 'rnn'`;
@@ -81,6 +102,22 @@ def load_model(
         `lmp.model.ResGRUModel` if `model_class == 'res_gru'`;
         `lmp.model.ResLSTMModel` if `model_class == 'res_lstm'`.
     """
+    # Type check.
+    if not isinstance(checkpoint, int):
+        raise TypeError('`checkpoint` must be an instance of `int`.')
+
+    if not isinstance(experiment, str):
+        raise TypeError('`experiment` must be an instance of `str`.')
+
+    if not isinstance(device, torch.device):
+        raise TypeError('`device` must be an instance of `torch.device`.')
+
+    if not isinstance(model_class, str):
+        raise TypeError('`model_class` must be an instance of `str`.')
+
+    # Value Check.
+    if checkpoint < -1:
+        raise ValueError('`checkpoint` must be bigger than or equal to `-1`.')
 
     if model_class == 'rnn':
         model = lmp.model.BaseRNNModel(
@@ -152,7 +189,7 @@ def load_model(
         raise ValueError(
             f'model `{model_class}` does not support.\nSupported options:' +
             ''.join(list(map(
-                lambda option: f'\n\t--model {option}',
+                lambda option: f'\n\t--model_class {option}',
                 [
                     'rnn',
                     'gru',
@@ -165,9 +202,18 @@ def load_model(
         )
 
     if checkpoint != -1:
-        file_path = f'{lmp.path.DATA_PATH}/{experiment}/model-{checkpoint}.pt'
+        if not experiment:
+            raise ValueError('`experiment` must not be empty.')
+
+        file_path = os.path.join(
+            lmp.path.DATA_PATH,
+            experiment,
+            f'model-{checkpoint}.pt'
+        )
+
         if not os.path.exists(file_path):
-            raise FileNotFoundError(f'file {file_path} does not exist.')
+            raise FileNotFoundError(f'File {file_path} does not exist.')
+
         model.load_state_dict(torch.load(file_path))
 
     return model.to(device)
@@ -184,7 +230,8 @@ def load_model_by_config(
 
     Args:
         checkpoint:
-            Pre-trained model's checkpoint.
+            Pre-trained model's checkpoint. Must be bigger than or equal to
+            `-1`.
         config:
             Configuration object with attributes `d_emb`, `d_hid`, `dropout`,
             `device`, `experiment`, `model_class`, `num_linear_layer` and
@@ -192,9 +239,27 @@ def load_model_by_config(
         tokenizer:
             Tokenizer object with attributes `pad_token_id` and `vocab_size`.
 
+    Raises:
+        TypeError:
+            When `config` is not an instance of `lmp.config.BaseConfig` or
+            `tokenizer` is not an instance of `lmp.tokenizer.BaseTokenizer`.
+        ValueError:
+            When `checkpoint < -1` or `config.model_class` does not support.
+
     Returns:
         Same as `load_model`.
     """
+    # Type check.
+    if not isinstance(config, lmp.config.BaseConfig):
+        raise TypeError(
+            '`config` must be an instance of `lmp.config.BaseConfig`.'
+        )
+
+    if not isinstance(tokenizer, lmp.tokenizer.BaseTokenizer):
+        raise TypeError(
+            '`tokenizer` must be an instance of `lmp.tokenizer.BaseTokenizer`.'
+        )
+
     return load_model(
         checkpoint=checkpoint,
         d_emb=config.d_emb,

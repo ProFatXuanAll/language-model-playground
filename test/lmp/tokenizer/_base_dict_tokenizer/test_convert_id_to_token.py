@@ -69,7 +69,7 @@ class TestConvertIdToToken(unittest.TestCase):
         msg2 = 'Inconsistent error message.'
         examples = (
             0.0, 1.0, math.nan, -math.nan, math.inf, -math.inf, 0j, 1j, '',
-            b'', [], (), {}, set(), object(), lambda x: x, type, None,
+            b'', (), [], {}, set(), object(), lambda x: x, type, None,
             NotImplemented, ...
         )
 
