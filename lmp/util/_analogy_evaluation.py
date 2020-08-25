@@ -32,8 +32,8 @@ def calc_correct_percent(
     in the test data.
 
     Args:
-        embed_table:
-            The table map word id into embedding form.
+        model:
+            Language model.
         data_loader:
             To get test data.
         device:

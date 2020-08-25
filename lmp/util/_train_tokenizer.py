@@ -43,9 +43,9 @@ def train_tokenizer(
             When `min_count` is smaller than `1`.
     """
     # Type check.
-    if not isinstance(dataset, lmp.dataset.BaseDataset):
+    if not isinstance(dataset, lmp.dataset.LanguageModelDataset):
         raise TypeError(
-            '`dataset` must be an instance of `lmp.dataset.BaseDataset`.'
+            '`dataset` must be an instance of `lmp.dataset.LanguageModelDataset`.'
         )
 
     if not isinstance(min_count, int):

@@ -79,7 +79,7 @@ def _preprocess_wiki_tokens(dataset: str) -> lmp.dataset.LanguageModelDataset:
 
 def _preprocess_word_test_v1_tokens() -> lmp.dataset.AnalogyDataset:
     r"""Preprocess word_test_v1 dataset and convert to
-    `lmp.dataset.LanguageModelDataset`.
+    `lmp.dataset.AnalogyDataset`.
 
     Returns:
         `lmp.dataset.AnalogyDataset`
@@ -112,6 +112,10 @@ def load_dataset(
     Supported options:
         --dataset news_collection_desc
         --dataset news_collection_title
+        --dataset wiki_train_tokens
+        --dataset wiki_valid_tokens
+        --dataset wiki_test_tokens
+        --dataset word_test_v1
 
     Args:
         dataset:
@@ -169,7 +173,7 @@ def load_dataset(
 
 def load_dataset_by_config(
         config: lmp.config.BaseConfig
-) -> torch.utils.data.Dataset:
+) -> Union[lmp.dataset.LanguageModelDataset, lmp.dataset.AnalogyDataset]:
     r"""Load dataset from downloaded files.
 
     Args:

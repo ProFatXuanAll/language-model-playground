@@ -112,7 +112,7 @@ class TestTrainModelByConfig(unittest.TestCase):
             optimizer_class='sgd',
             tokenizer_class='char_dict'
         )
-        self.dataset = lmp.dataset.BaseDataset([''])
+        self.dataset = lmp.dataset.LanguageModelDataset([''])
         self.tokenizer = lmp.tokenizer.CharDictTokenizer()
         self.model = lmp.model.BaseRNNModel(
             d_emb=1,
@@ -161,7 +161,7 @@ class TestTrainModelByConfig(unittest.TestCase):
                     inspect.Parameter(
                         name='dataset',
                         kind=inspect.Parameter.POSITIONAL_OR_KEYWORD,
-                        annotation=lmp.dataset.BaseDataset,
+                        annotation=lmp.dataset.LanguageModelDataset,
                         default=inspect.Parameter.empty
                     ),
                     inspect.Parameter(
@@ -284,7 +284,7 @@ class TestTrainModelByConfig(unittest.TestCase):
 
             self.assertEqual(
                 ctx_man.exception.args[0],
-                '`dataset` must be an instance of `lmp.dataset.BaseDataset`.',
+                '`dataset` must be an instance of `lmp.dataset.LanguageModelDataset`.',
                 msg=msg2
             )
 
@@ -393,7 +393,7 @@ class TestTrainModelByConfig(unittest.TestCase):
                 max_norm=max_norm,
                 max_seq_len=max_seq_len
             )
-            dataset = lmp.dataset.BaseDataset([''] * batch_size)
+            dataset = lmp.dataset.LanguageModelDataset([''] * batch_size)
             model = model_cstr(
                 d_emb=1,
                 d_hid=1,
@@ -464,7 +464,7 @@ class TestTrainModelByConfig(unittest.TestCase):
                 max_norm=max_norm,
                 max_seq_len=max_seq_len
             )
-            dataset = lmp.dataset.BaseDataset([''] * batch_size)
+            dataset = lmp.dataset.LanguageModelDataset([''] * batch_size)
             model = model_cstr(
                 d_emb=1,
                 d_hid=1,
@@ -523,7 +523,7 @@ class TestTrainModelByConfig(unittest.TestCase):
                 max_norm=max_norm,
                 max_seq_len=max_seq_len
             )
-            dataset = lmp.dataset.BaseDataset([''] * batch_size)
+            dataset = lmp.dataset.LanguageModelDataset([''] * batch_size)
             model = model_cstr(
                 d_emb=1,
                 d_hid=1,

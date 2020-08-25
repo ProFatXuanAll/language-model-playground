@@ -47,10 +47,21 @@ CollateFn = Callable[
 
 
 class AnalogyDataset(torch.utils.data.Dataset):
-    r"""Dataset class for analogy evaluation."""
+    r"""Dataset class for analogy evaluation.
+
+    Attributes:
+        samples:
+            Sample for analogy test.
+
+    Raises:
+        TypeError:
+            `samples` must be an instance of `Iterable[Iterable[str]]`.
+        IndexError:
+            Every sample must have word_a, word_b, word_c, word_d and categoty.
+    """
 
     def __init__(self, samples: Iterable[Iterable[str]]):
-        if not isinstance(samples, list):
+        if not isinstance(samples, Iterable):
             raise TypeError(
                 '`samples` must be an instance of `Iterable[Iterable[str]]`.'
             )
@@ -73,7 +84,8 @@ class AnalogyDataset(torch.utils.data.Dataset):
                     sample
             )):
                 raise TypeError(
-                    '`samples` must be an instance of `Iterable[Iterable[str]]`.'
+                    '`samples` must be an instance of '
+                    '`Iterable[Iterable[str]]`.'
                 )
         self.samples = samples
 
@@ -145,6 +157,16 @@ class AnalogyDataset(torch.utils.data.Dataset):
             into 4 groups following analogy format:
                 word_a : word_b = word_c : word_d
 
+
+            Raise:
+                IndexError:
+                    `batch_analogy` must be size (batch_size,5).
+                TypeError:
+                    `batch_analogy` must be an instance of
+                    `Iterable[Iterable[str]]`.
+                ValueError:
+                    `batch_analogy` must not be empty.
+
             Returns:
                 word_a:
                 word_b:
@@ -184,6 +206,6 @@ class AnalogyDataset(torch.utils.data.Dataset):
                 )
             except IndexError:
                 raise IndexError(
-                    '`batch_analogy` must be size (batch_size,5)'
+                    '`batch_analogy` must be size (batch_size,5).'
                 )
         return collate_fn
