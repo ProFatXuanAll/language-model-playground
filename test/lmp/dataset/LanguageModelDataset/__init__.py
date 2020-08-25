@@ -1,7 +1,7 @@
 r"""Test `lmp.dataset._language_model_dataset.py`.
 
 Usage:
-    python -m unittest test/lmp/dataset/LanguageModelDataset/__init__.py
+    python -m unittest test.lmp.dataset.LanguageModelDataset.__init__
 """
 
 # built-in modules

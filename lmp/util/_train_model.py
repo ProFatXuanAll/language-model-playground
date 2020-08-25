@@ -297,9 +297,9 @@ def train_model_by_config(
             '`config` must be an instance of `lmp.config.BaseConfig`.'
         )
 
-    if not isinstance(dataset, lmp.dataset.BaseDataset):
+    if not isinstance(dataset, lmp.dataset.LanguageModelDataset):
         raise TypeError(
-            '`dataset` must be an instance of `lmp.dataset.BaseDataset`.'
+            '`dataset` must be an instance of `lmp.dataset.LanguageModelDataset`.'
         )
 
     if not isinstance(tokenizer, lmp.tokenizer.BaseTokenizer):

@@ -23,7 +23,8 @@ def predict_word(
         model: lmp.model.BaseRNNModel,
         tokenizer: lmp.tokenizer.BaseTokenizer
 ) -> str:
-    """ To predict word that input[1]-input[0]+input[3] represent.
+    """ To predict word that `test_data[1]-test_data[0]+test_data[3]`
+    represent.
 
     Args:
         model:

@@ -15,6 +15,8 @@ import inspect
 import math
 import unittest
 
+from typing import Union
+
 # self-made modules
 
 import lmp.config
@@ -40,7 +42,7 @@ class TestLoadDatasetByConfig(unittest.TestCase):
                         default=inspect.Parameter.empty
                     )
                 ],
-                return_annotation=lmp.dataset.BaseDataset
+                return_annotation=Union[lmp.dataset.LanguageModelDataset, lmp.dataset.AnalogyDataset]
             ),
             msg=msg
         )
@@ -66,8 +68,8 @@ class TestLoadDatasetByConfig(unittest.TestCase):
             )
 
     def test_return_type(self):
-        r"""Return `lmp.config.BaseDataset`."""
-        msg = 'Must return `lmp.config.BaseDataset`.'
+        r"""Return `lmp.config.LanguageModelDataset`."""
+        msg = 'Must return `lmp.config.LanguageModelDataset`.'
 
         examples = (
             lmp.config.BaseConfig(
@@ -82,7 +84,7 @@ class TestLoadDatasetByConfig(unittest.TestCase):
 
         for config in examples:
             dataset = lmp.util.load_dataset_by_config(config)
-            self.assertIsInstance(dataset, lmp.dataset.BaseDataset, msg=msg)
+            self.assertIsInstance(dataset, lmp.dataset.LanguageModelDataset, msg=msg)
 
 
 if __name__ == '__main__':

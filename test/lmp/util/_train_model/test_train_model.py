@@ -622,8 +622,8 @@ class TestTrainModel(unittest.TestCase):
         ) in product(*self.__class__.train_parameters.values()):
             data_loader = torch.utils.data.DataLoader(
                 batch_size=batch_size,
-                dataset=lmp.dataset.BaseDataset([''] * batch_size),
-                collate_fn=lmp.dataset.BaseDataset.create_collate_fn(
+                dataset=lmp.dataset.LanguageModelDataset([''] * batch_size),
+                collate_fn=lmp.dataset.LanguageModelDataset.create_collate_fn(
                     tokenizer=tokenizer,
                     max_seq_len=-1
                 )
@@ -695,8 +695,8 @@ class TestTrainModel(unittest.TestCase):
         ) in product(*self.__class__.train_parameters.values()):
             data_loader = torch.utils.data.DataLoader(
                 batch_size=batch_size,
-                dataset=lmp.dataset.BaseDataset([''] * batch_size),
-                collate_fn=lmp.dataset.BaseDataset.create_collate_fn(
+                dataset=lmp.dataset.LanguageModelDataset([''] * batch_size),
+                collate_fn=lmp.dataset.LanguageModelDataset.create_collate_fn(
                     tokenizer=tokenizer,
                     max_seq_len=-1
                 )
@@ -756,8 +756,8 @@ class TestTrainModel(unittest.TestCase):
         ) in product(*self.__class__.train_parameters.values()):
             data_loader = torch.utils.data.DataLoader(
                 batch_size=batch_size,
-                dataset=lmp.dataset.BaseDataset([''] * batch_size),
-                collate_fn=lmp.dataset.BaseDataset.create_collate_fn(
+                dataset=lmp.dataset.LanguageModelDataset([''] * batch_size),
+                collate_fn=lmp.dataset.LanguageModelDataset.create_collate_fn(
                     tokenizer=tokenizer,
                     max_seq_len=-1
                 )

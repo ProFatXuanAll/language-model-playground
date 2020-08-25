@@ -60,7 +60,7 @@ class TestTrainTokenizer(unittest.TestCase):
 
     def setUp(self):
         r"""Setup fixed parameters."""
-        self.dataset = lmp.dataset.BaseDataset([''])
+        self.dataset = lmp.dataset.LanguageModelDataset([''])
         self.min_count = 1
         self.tokenizer = lmp.tokenizer.CharDictTokenizer()
 
@@ -82,7 +82,7 @@ class TestTrainTokenizer(unittest.TestCase):
                     inspect.Parameter(
                         name='dataset',
                         kind=inspect.Parameter.POSITIONAL_OR_KEYWORD,
-                        annotation=lmp.dataset.BaseDataset,
+                        annotation=lmp.dataset.LanguageModelDataset,
                         default=inspect.Parameter.empty
                     ),
                     inspect.Parameter(
@@ -123,7 +123,7 @@ class TestTrainTokenizer(unittest.TestCase):
 
             self.assertEqual(
                 ctx_man.exception.args[0],
-                '`dataset` must be an instance of `lmp.dataset.BaseDataset`.',
+                '`dataset` must be an instance of `lmp.dataset.LanguageModelDataset`.',
                 msg=msg2
             )
 
@@ -199,7 +199,7 @@ class TestTrainTokenizer(unittest.TestCase):
                 min_count,
                 tokenizer_cstr
         ) in product(*self.__class__.tokenizer_parameters.values()):
-            dataset = lmp.dataset.BaseDataset(batch_sequences=batch_sequences)
+            dataset = lmp.dataset.LanguageModelDataset(batch_sequences=batch_sequences)
             tokenizer = tokenizer_cstr(is_uncased=is_uncased)
             v1 = tokenizer.vocab_size
 

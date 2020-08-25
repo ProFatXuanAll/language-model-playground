@@ -15,6 +15,8 @@ import inspect
 import math
 import unittest
 
+from typing import Union
+
 # self-made modules
 
 import lmp.dataset
@@ -39,7 +41,7 @@ class TestLoadDataset(unittest.TestCase):
                         default=inspect.Parameter.empty
                     )
                 ],
-                return_annotation=lmp.dataset.BaseDataset
+                return_annotation=Union[lmp.dataset.LanguageModelDataset, lmp.dataset.AnalogyDataset]
             ),
             msg=msg
         )
@@ -79,14 +81,18 @@ class TestLoadDataset(unittest.TestCase):
                         [
                             'news_collection_desc',
                             'news_collection_title',
+                            'wiki_test_tokens',
+                            'wiki_train_tokens',
+                            'wiki_valid_tokens',
+                            'word_test_v1'
                         ]
                     ))),
                     msg=msg2
                 )
 
     def test_return_type(self):
-        r"""Return `lmp.dataset.BaseDataset`."""
-        msg = 'Must return `lmp.dataset.BaseDataset`.'
+        r"""Return `lmp.dataset.LanguageModelDataset`."""
+        msg = 'Must return `lmp.dataset.LanguageModelDataset`.'
 
         examples = (
             'news_collection_desc',
@@ -96,7 +102,7 @@ class TestLoadDataset(unittest.TestCase):
         for dataset in examples:
             self.assertIsInstance(
                 lmp.util.load_dataset(dataset=dataset),
-                lmp.dataset.BaseDataset,
+                lmp.dataset.LanguageModelDataset,
                 msg=msg
             )
 
