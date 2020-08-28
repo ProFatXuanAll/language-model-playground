@@ -36,7 +36,21 @@ if __name__ == '__main__':
     )
 
     parser.add_argument(
-        '--test_words',
+        '--word_a',
+        help='Input 3 word in sequence word_a,word_b,word_c to calculate (word_b-word_a+word_c).Example: Taiwan,Taipei,Japan',
+        required=True,
+        type=str,
+    )
+
+    parser.add_argument(
+        '--word_b',
+        help='Input 3 word in sequence word_a,word_b,word_c to calculate (word_b-word_a+word_c).Example: Taiwan,Taipei,Japan',
+        required=True,
+        type=str,
+    )
+
+    parser.add_argument(
+        '--word_c',
         help='Input 3 word in sequence word_a,word_b,word_c to calculate (word_b-word_a+word_c).Example: Taiwan,Taipei,Japan',
         required=True,
         type=str,
@@ -60,13 +74,14 @@ if __name__ == '__main__':
         tokenizer=tokenizer
     )
 
-    # Get test data.
-    test_data = [word for word in args.test_words.split(',')]
-
-    # Test syntatic and semantic score.
-    lmp.util.analogy_inference(
-        test_data=test_data,
+    # Generate analogy text
+    generate_word = lmp.util.analogy_inference(
         device=config.device,
         model=model,
-        tokenizer=tokenizer
+        tokenizer=tokenizer,
+        word_a=args.word_a,
+        word_b=args.word_b,
+        word_c=args.word_c
     )
+    print(args.word_a, ":", args.word_b, " = ",
+          args.word_c, ":", generate_word)

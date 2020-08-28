@@ -24,6 +24,8 @@ from __future__ import unicode_literals
 
 # self-made modules
 
+from lmp.util._analogy_eval import analogy_eval
+from lmp.util._analogy_eval import analogy_inference
 from lmp.util._config import load_config
 from lmp.util._dataset import load_dataset
 from lmp.util._dataset import load_dataset_by_config
@@ -43,5 +45,3 @@ from lmp.util._train_model import train_model
 from lmp.util._train_model import train_model_by_config
 from lmp.util._train_tokenizer import train_tokenizer
 from lmp.util._train_tokenizer import train_tokenizer_by_config
-from lmp.util._analogy_evaluation import analogy_evaluation
-from lmp.util._analogy_inference import analogy_inference
