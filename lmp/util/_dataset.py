@@ -101,7 +101,7 @@ def _preprocess_word_test_v1_tokens() -> lmp.dataset.AnalogyDataset:
             continue
 
         parsing_samples.append(re.split(r'\s+', sample)[:4] + [category])
-    return lmp.dataset.AnalogyDataset(parsing_samples)
+    return lmp.dataset.AnalogyDataset(parsing_samples[1:])
 
 
 def load_dataset(

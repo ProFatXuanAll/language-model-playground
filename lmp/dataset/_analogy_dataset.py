@@ -56,8 +56,9 @@ class AnalogyDataset(torch.utils.data.Dataset):
     Raises:
         TypeError:
             `samples` must be an instance of `Iterable[Iterable[str]]`.
-        IndexError:
-            Every sample must have word_a, word_b, word_c, word_d and categoty.
+        ValueError:
+            Every sample must have `word_a`, `word_b`, `word_c`, `word_d` and
+            `category`.
     """
 
     def __init__(self, samples: Iterable[Iterable[str]]):
@@ -65,6 +66,9 @@ class AnalogyDataset(torch.utils.data.Dataset):
             raise TypeError(
                 '`samples` must be an instance of `Iterable[Iterable[str]]`.'
             )
+
+        samples = list(samples)
+
         if not all(map(
                 lambda sample: isinstance(sample, Iterable),
                 samples
@@ -72,13 +76,9 @@ class AnalogyDataset(torch.utils.data.Dataset):
             raise TypeError(
                 '`samples` must be an instance of `Iterable[Iterable[str]]`.'
             )
+        samples = [list(sample) for sample in samples]
 
         for sample in samples:
-            if len(sample) != 5:
-                raise IndexError(
-                    'Every sample must have word_a, word_b, word_c, word_d'
-                    ' and categoty.'
-                )
             if not all(map(
                     lambda word: isinstance(word, str),
                     sample
@@ -87,6 +87,12 @@ class AnalogyDataset(torch.utils.data.Dataset):
                     '`samples` must be an instance of '
                     '`Iterable[Iterable[str]]`.'
                 )
+            if len(sample) != 5:
+                raise ValueError(
+                    'Every sample must have `word_a`, `word_b`, `word_c`, '
+                    '`word_d` and category.'
+                )
+
         self.samples = samples
 
     def __iter__(self) -> Generator[List[str], None, None]:
@@ -103,17 +109,23 @@ class AnalogyDataset(torch.utils.data.Dataset):
         return len(self.samples)
 
     def __getitem__(self, index: int) -> List[str]:
-        r"""Sample single analogy pairs using index.
+        r"""Sample analogy pairs by index.
+
+        Return sample will be following format:
+            (word_a, word_b, word_c, word_d, category)
+        Where `word_a : word_b = word_c : word_d`, and the sample is
+        categorized under `category`.
 
         Returns:
             word_a:
             word_b:
             word_c:
-                Query word for analogy.
+                Query words for analogy.
             word_d:
                 Target word for analogy.
             category:
-                The category of this sample.
+                Category of the sample.
+
         Raises:
             IndexError:
                 When `index >= len(self)`.
@@ -124,88 +136,3 @@ class AnalogyDataset(torch.utils.data.Dataset):
             raise TypeError('`index` must be an instance of `int`.')
 
         return self.samples[index]
-
-    @staticmethod
-    def create_collate_fn(
-            tokenizer: lmp.tokenizer.BaseTokenizer
-    ) -> CollateFn:
-        r"""Create `collate_fn` for `torch.utils.data.DataLoader`.
-
-        Use `tokenizer` to encode tokens into tokens' ids.
-
-        Attributes:
-            tokenizer:
-                Perform encoding.
-
-        Returns:
-            A function used by `torch.utils.data.DataLoader`.
-        """
-        # Type check
-        if not isinstance(tokenizer, lmp.tokenizer.BaseTokenizer):
-            raise TypeError(
-                '`tokenizer` must be an instance of '
-                '`lmp.tokenizer.BaseTokenizer`.'
-            )
-
-        def collate_fn(
-                batch_analogy: Iterable[Iterable[str]]
-            ) -> CollateFnReturn:
-            r"""Function used by `torch.utils.data.DataLoader`.
-
-            Each analogy sample in `batch_analogy` will be first encoded by
-            `tokenizer`, and the returned batch of tokens' ids will split
-            into 4 groups following analogy format:
-                word_a : word_b = word_c : word_d
-
-
-            Raise:
-                IndexError:
-                    `batch_analogy` must be size (batch_size,5).
-                TypeError:
-                    `batch_analogy` must be an instance of
-                    `Iterable[Iterable[str]]`.
-                ValueError:
-                    `batch_analogy` must not be empty.
-
-            Returns:
-                word_a:
-                word_b:
-                word_c:
-                    Query word for analogy.
-                word_d:
-                    Target word for analogy.
-                category:
-                    The category of this sample.
-            """
-            if not batch_analogy:
-                raise ValueError('`batch_analogy` must not be empty.')
-            try:
-                batch_token_ids = []
-                for analogy in batch_analogy:
-                    token_ids = []
-                    for token in analogy[:-2]:
-                        token_ids.append(
-                            tokenizer.convert_token_to_id(token)
-                        )
-                    batch_token_ids.append(token_ids)
-
-                batch_token_ids = torch.LongTensor(batch_token_ids)
-
-                # Construct sample following analogy format:
-                word_a_id = batch_token_ids[:, 0]
-                word_b_id = batch_token_ids[:, 1]
-                word_c_id = batch_token_ids[:, 2]
-                word_d = [analogy[-2] for analogy in batch_analogy]
-                category = [analogy[-1] for analogy in batch_analogy]
-
-                return word_a_id, word_b_id, word_c_id, word_d, category
-            except TypeError:
-                raise TypeError(
-                    '`batch_analogy` must be an instance of'
-                    ' `Iterable[Iterable[str]]`.'
-                )
-            except IndexError:
-                raise IndexError(
-                    '`batch_analogy` must be size (batch_size,5).'
-                )
-        return collate_fn

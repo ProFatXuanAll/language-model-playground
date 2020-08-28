@@ -63,14 +63,13 @@ if __name__ == '__main__':
 
     dataloader = torch.utils.data.DataLoader(
         dataset,
-        batch_size=32,
-        collate_fn=lmp.dataset.AnalogyDataset.create_collate_fn(
-            tokenizer=tokenizer))
+        batch_size=32
+    )
 
     # test syntatic and semantic score
-    lmp.util.analogy_evaluation(
+    lmp.util.analogy_eval(
+        dataloader=dataloader,
         device=config.device,
         model=model,
-        data_loader=dataloader,
         tokenizer=tokenizer
     )

@@ -82,7 +82,7 @@ class TestInit(unittest.TestCase):
                 self.assertEqual(
                     ctx_man.exception.args[0],
                     'Every sample must have word_a, word_b, word_c, word_d'
-                    ' and categoty.',
+                    ' and category.',
                     msg=msg2
                 )
             elif isinstance(ctx_man.exception, TypeError):
