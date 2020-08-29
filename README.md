@@ -135,14 +135,14 @@ python run_generate.py --experiment 2 --checkpoint 500 --begin_of_sequence "toda
 
 ```sh
 # 使用第 500 步的存檔點進行類比文字生成
-python run_analogy_inference.py --experiment 1 --checkpoint 500 --test_word "臺灣,臺北,日本"
+python run_analogy_inference.py --experiment 1 --checkpoint 500 --word_a "臺灣" --word_b "台北" --word_c "日本"
 ```
 
 4. 指定英文語言模型存檔點並生成類比文字。
 
 ```sh
 # 使用第 500 步的存檔點進行類比文字生成
-python run_analogy_inference.py --experiment 2 --checkpoint 500 --test_word "Taiwan,Taipei,Japan"
+python run_analogy_inference.py --experiment 2 --checkpoint 500 --word_a "Taiwan" --word_b "Taipei" --word_c "Japan"
 ```
 
 5. 試著使用不同的超參數或更換模型並使用 `run_train.py` 重新訓練。接著使用 `run_generate.py` 給予相同 `begin_of_sequence` 進行生成並比較生成結果之不同。
@@ -297,14 +297,14 @@ python run_generate.py --experiment 2 --checkpoint 500 --begin_of_sequence "toda
 
 ```sh
 # Using checkpoint 500 to generate analog word.
-python run_analogy_inference.py --experiment 1 --checkpoint 500 --test_word "臺灣,臺北,日本"
+python run_analogy_inference.py --experiment 1 --checkpoint 500 --word_a "臺灣" --word_b "台北" --word_c "日本"
 ```
 
 4. Generate analog word using English language model checkpoints.
 
 ```sh
 # Using checkpoint 500 to generate analog word.
-python run_analogy_inference.py --experiment 2 --checkpoint 500 --test_word "Taiwan,Taipei,Japan"
+python run_analogy_inference.py --experiment 2 --checkpoint 500 --word_a "Taiwan" --word_b "Taipei" --word_c "Japan"
 ```
 
 5. Try different hyperparameters or change model, then use `run_train.py` to perform training as above example. Run `run_generate.py` to compare generated results given exactly same `begin_of_sequence`.
