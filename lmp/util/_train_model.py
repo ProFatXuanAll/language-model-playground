@@ -112,7 +112,8 @@ def train_model(
 
     if not isinstance(model, (
             lmp.model.BaseRNNModel,
-            lmp.model.BaseResRNNModel
+            lmp.model.BaseResRNNModel,
+            lmp.model.TransformerLanguageModel,
     )):
         raise TypeError(
             '`model` must be an instance of '
@@ -161,6 +162,7 @@ def train_model(
 
     # Set experiment log folder.
     writer = torch.utils.tensorboard.SummaryWriter(log_dir)
+    writer.add_graph(model, next(iter(data_loader))[0].to(device))
 
     # Define objective function.
     criterion = torch.nn.CrossEntropyLoss()

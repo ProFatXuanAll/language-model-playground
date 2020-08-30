@@ -185,6 +185,16 @@ def load_model(
             vocab_size=vocab_size
         )
 
+    elif model_class == 'transformer':
+        model = lmp.model.TransformerLanguageModel(
+            d_emb=d_emb,
+            dropout=dropout,
+            num_rnn_layers=num_rnn_layers,
+            num_linear_layers=num_linear_layers,
+            pad_token_id=pad_token_id,
+            vocab_size=vocab_size
+        )
+
     else:
         raise ValueError(
             f'model `{model_class}` does not support.\nSupported options:' +
@@ -197,6 +207,7 @@ def load_model(
                     'res_rnn',
                     'res_gru',
                     'res_lstm',
+                    'transformer',
                 ]
             )))
         )
