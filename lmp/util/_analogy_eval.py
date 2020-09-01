@@ -34,6 +34,21 @@ def analogy_inference(
     word_b: str,
     word_c: str
 ) -> str:
+    r"""Input `word_a`, `word_b`, `word_c` to generate analogy text.
+    `word_a` : `word_b` = `word_c` : `pred_word`
+
+    Args:
+        device:
+            Model running device.
+        model:
+            Language model.
+        tokenizer:
+            For convert word to id or id to word.
+        word_a:
+            Input_data.
+    Returns:
+        Predict word.
+    """
     #(E, V)
     emb = model.emb_layer.weight.transpose(0, 1)
 
@@ -59,17 +74,37 @@ def analogy_inference(
     pred = pred.argmax(dim=-1).to('cpu').tolist()
 
     # Convert back to sequence.
-    pred = tokenizer.convert_id_to_token(pred)
-    return pred
+    pred_word = tokenizer.convert_id_to_token(pred)
+    return pred_word
 
 
 @torch.no_grad()
 def analogy_eval(
-    dataloader: lmp.dataset.AnalogyDataset,
+    dataset: lmp.dataset.AnalogyDataset,
     device: torch.device,
     model: Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel],
     tokenizer: lmp.tokenizer.BaseTokenizer
 ) -> Dict[str, float]:
+    r"""Use specified data set to calculate analogy test score.
+
+    Args:
+        device:
+            Model running device.
+        model:
+            Language model.
+        tokenizer:
+            For convert word to id or id to word.
+        dataset:
+            Test data.
+    Returns:
+        acc_per_cat:
+            A dictionary whose key is the name of each category.
+    """
+    dataloader = torch.utils.data.DataLoader(
+        dataset,
+        batch_size=32
+    )
+
     pred_per_cat = {}
     for word_a, word_b, word_c, word_d, categorys in tqdm(dataloader):
         for category in categorys:
@@ -99,6 +134,5 @@ def analogy_eval(
             pred_per_cat[category]['ans'],
             pred_per_cat[category]['pred'],
         )
-    for category in acc_per_cat:
-        print(category, acc_per_cat[category])
+
     return acc_per_cat
