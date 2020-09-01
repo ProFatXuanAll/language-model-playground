@@ -46,9 +46,41 @@ def analogy_inference(
             For convert word to id or id to word.
         word_a:
             Input_data.
+        word_b:
+            Input_data.
+        word_c:
+            Input_data.
+
+    Raises:
+        TypeError:
+            When one of the arguments are not an instance of their type
+            annotation respectively.
+
     Returns:
         Predict word.
     """
+    if not isinstance(device, torch.device):
+        raise TypeError('`device` must be an instance of `torch.device`.')
+    if not isinstance(model, (
+        lmp.model.BaseRNNModel,
+        lmp.model.BaseResRNNModel
+    )):
+        raise TypeError(
+            '`model` must be an instance of '
+            '`Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel]`.'
+        )
+    if not isinstance(tokenizer, lmp.tokenizer.BaseTokenizer):
+        raise TypeError(
+            '`tokenizer` must be an instance of '
+            '`lmp.tokenizer.BaseTokenizer`.'
+        )
+    if not isinstance(word_a, str):
+        raise TypeError('`word_a` must be an instance of `str`.')
+    if not isinstance(word_b, str):
+        raise TypeError('`word_b` must be an instance of `str`.')
+    if not isinstance(word_c, str):
+        raise TypeError('`word_c` must be an instance of `str`.')
+
     #(E, V)
     emb = model.emb_layer.weight.transpose(0, 1)
 
