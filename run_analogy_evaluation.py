@@ -61,15 +61,12 @@ if __name__ == '__main__':
     # Get dataset.
     dataset = lmp.util.load_dataset(args.dataset)
 
-    dataloader = torch.utils.data.DataLoader(
-        dataset,
-        batch_size=32
-    )
-
     # test syntatic and semantic score
-    lmp.util.analogy_eval(
-        dataloader=dataloader,
+    acc_per_cat = lmp.util.analogy_eval(
+        dataset=dataset,
         device=config.device,
         model=model,
         tokenizer=tokenizer
     )
+    for category in acc_per_cat:
+        print(category, acc_per_cat[category])
