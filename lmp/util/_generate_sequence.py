@@ -33,7 +33,12 @@ def generate_sequence(
         begin_of_sequence: str,
         device: torch.device,
         max_seq_len: int,
-        model: Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel],
+        model: Union[
+            lmp.model.BaseRNNModel,
+            lmp.model.BaseResRNNModel,
+            lmp.model.BaseSelfAttentionRNNModel,
+            lmp.model.BaseSelfAttentionResRNNModel
+        ],
         tokenizer: lmp.tokenizer.BaseTokenizer
 ) -> List[str]:
     r"""Sequences generation using beam search.
@@ -80,11 +85,18 @@ def generate_sequence(
 
     if not isinstance(model, (
             lmp.model.BaseRNNModel,
-            lmp.model.BaseResRNNModel
+            lmp.model.BaseResRNNModel,
+            lmp.model.BaseSelfAttentionRNNModel,
+            lmp.model.BaseSelfAttentionResRNNModel
     )):
         raise TypeError(
             '`model` must be an instance of '
-            '`Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel]`.'
+            '`Union['
+                'lmp.model.BaseRNNModel, '
+                'lmp.model.BaseResRNNModel, '
+                'lmp.model.BaseSelfAttentionRNNModel, '
+                'lmp.model.BaseSelfAttentionResRNNModel'
+            ']`.'
         )
 
     if not isinstance(tokenizer, lmp.tokenizer.BaseTokenizer):
@@ -189,7 +201,12 @@ def generate_sequence_by_config(
         begin_of_sequence: str,
         config: lmp.config.BaseConfig,
         max_seq_len: int,
-        model: Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel],
+        model: Union[
+            lmp.model.BaseRNNModel,
+            lmp.model.BaseResRNNModel,
+            lmp.model.BaseSelfAttentionRNNModel,
+            lmp.model.BaseSelfAttentionResRNNModel
+        ],
         tokenizer: lmp.tokenizer.BaseTokenizer
 ) -> List[str]:
     r"""Helper function for sequences generation.

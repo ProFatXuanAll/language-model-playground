@@ -506,6 +506,12 @@ class TestLoadModel(unittest.TestCase):
                             'res_rnn',
                             'res_gru',
                             'res_lstm',
+                            'att_rnn',
+                            'att_gru',
+                            'att_lstm',
+                            'att_res_rnn',
+                            'att_res_gru',
+                            'att_res_lstm',
                         ]
                     ))),
                     msg=msg2

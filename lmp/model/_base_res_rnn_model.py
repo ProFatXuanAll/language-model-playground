@@ -22,6 +22,7 @@ import torch.nn
 
 # self-made modules
 
+from lmp.model._attention_mechanism import attention_mechanism
 from lmp.model._base_res_rnn_block import BaseResRNNBlock
 
 
@@ -198,6 +199,19 @@ class BaseResRNNModel(torch.nn.Module):
         proj_hid_to_emb.append(torch.nn.Dropout(dropout))
         self.proj_hid_to_emb = torch.nn.Sequential(*proj_hid_to_emb)
 
+        self.proj_query = torch.nn.Linear(
+            in_features=d_hid,
+            out_features=d_hid
+        )
+        self.proj_key = torch.nn.Linear(
+            in_features=d_hid,
+            out_features=d_hid
+        )
+        self.proj_value = torch.nn.Linear(
+            in_features=d_hid,
+            out_features=d_hid
+        )
+
     def forward(self, batch_sequences: torch.Tensor) -> torch.Tensor:
         r"""Perform forward pass.
 
@@ -222,6 +236,15 @@ class BaseResRNNModel(torch.nn.Module):
         # 將每個 embedding vectors 依序輸入 residual RNN 得到輸出 hidden vectors
         # ht 維度: (B, S, H)
         ht = self.rnn_layer(ht)
+
+        # Q, K, V for attention 機制
+        query = self.proj_query(ht)
+        key = self.proj_key(ht)
+        value = self.proj_value(ht)
+
+        # 經過 attention 機制，進行 self-attention
+        # ht 維度: (B, S, H)
+        ht = attention_mechanism(query, key, value)
 
         # 將每個 hidden vectors 轉換維度至 embedding dimension
         # ht 維度: (B, S, E)

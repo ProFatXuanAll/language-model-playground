@@ -22,9 +22,16 @@ from __future__ import unicode_literals
 
 # self-made modules
 
+from lmp.model._attention_mechanism import attention_mechanism
 from lmp.model._base_res_rnn_block import BaseResRNNBlock
 from lmp.model._base_res_rnn_model import BaseResRNNModel
 from lmp.model._base_rnn_model import BaseRNNModel
+from lmp.model._base_self_attention_res_rnn_model import BaseSelfAttentionResRNNModel
+from lmp.model._base_self_attention_rnn_model import BaseSelfAttentionRNNModel
+from lmp.model._self_attention_gru_model import SelfAttentionGRUModel
+from lmp.model._self_attention_lstm_model import SelfAttentionLSTMModel
+from lmp.model._self_attention_res_gru_model import SelfAttentionResGRUModel
+from lmp.model._self_attention_res_lstm_model import SelfAttentionResLSTMModel
 from lmp.model._gru_model import GRUModel
 from lmp.model._lstm_model import LSTMModel
 from lmp.model._res_gru_block import ResGRUBlock
