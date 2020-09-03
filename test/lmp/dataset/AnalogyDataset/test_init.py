@@ -73,12 +73,12 @@ class TestInit(unittest.TestCase):
 
         for invalid_input in examples:
             with self.assertRaises(
-                    (TypeError, IndexError),
+                    (TypeError, ValueError),
                     msg=msg1
                 ) as ctx_man:
                 AnalogyDataset(samples=invalid_input)
 
-            if isinstance(ctx_man.exception, IndexError):
+            if isinstance(ctx_man.exception, ValueError):
                 self.assertEqual(
                     ctx_man.exception.args[0],
                     'Every sample must have word_a, word_b, word_c, word_d'

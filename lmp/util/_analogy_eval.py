@@ -128,10 +128,35 @@ def analogy_eval(
             For convert word to id or id to word.
         dataset:
             Test data.
+
+    Raises:
+        TypeError:
+            When one of the arguments are not an instance of their type
+            annotation respectively.
+
     Returns:
         acc_per_cat:
             A dictionary whose key is the name of each category.
     """
+    if not isinstance(dataset, lmp.dataset.AnalogyDataset):
+        raise TypeError(
+            '`dataset` must be an instance of `lmp.dataset.AnalogyDataset`'
+        )
+    if not isinstance(device, torch.device):
+        raise TypeError('`device` must be an instance of `torch.device`.')
+    if not isinstance(model, (
+        lmp.model.BaseRNNModel,
+        lmp.model.BaseResRNNModel
+    )):
+        raise TypeError(
+            '`model` must be an instance of '
+            '`Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel]`.'
+        )
+    if not isinstance(tokenizer, lmp.tokenizer.BaseTokenizer):
+        raise TypeError(
+            '`tokenizer` must be an instance of '
+            '`lmp.tokenizer.BaseTokenizer`.'
+        )
     dataloader = torch.utils.data.DataLoader(
         dataset,
         batch_size=32
