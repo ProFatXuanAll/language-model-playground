@@ -346,43 +346,6 @@ class TestAnalogyInference(unittest.TestCase):
             )
             self.assertIsInstance(pred_word, str, msg=msg)
 
-    def test_return_value(self):
-        r""""""
-        msg = 'Must return `str`.'
-
-        for (
-                d_emb,
-                d_hid,
-                dropout,
-                is_uncased,
-                model_cstr,
-                num_linear_layers,
-                num_rnn_layers,
-                tokenizer_cstr,
-        ) in product(*self.__class__.model_parameters.values()):
-            tokenizer = tokenizer_cstr(is_uncased=is_uncased)
-            pad_token_id = tokenizer.convert_token_to_id(tokenizer.pad_token)
-            vocab_size = tokenizer.vocab_size
-            model = model_cstr(
-                d_emb=d_emb,
-                d_hid=d_hid,
-                dropout=dropout,
-                num_linear_layers=num_linear_layers,
-                num_rnn_layers=num_rnn_layers,
-                pad_token_id=pad_token_id,
-                vocab_size=vocab_size
-            )
-
-            pred_word = analogy_inference(
-                device=self.device,
-                model=model,
-                tokenizer=tokenizer,
-                word_a=self.word_a,
-                word_b=self.word_b,
-                word_c=self.word_c
-            )
-            self.assertIsInstance(pred_word, str, msg=msg)
-
 
 if __name__ == '__main__':
     unittest.main()
