@@ -32,7 +32,12 @@ import lmp.tokenizer
 @torch.no_grad()
 def perplexity_eval(
         device: torch.device,
-        model: Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel],
+        model: Union[
+            lmp.model.BaseRNNModel,
+            lmp.model.BaseResRNNModel,
+            lmp.model.BaseSelfAttentionRNNModel,
+            lmp.model.BaseSelfAttentionResRNNModel
+        ],
         sequence: str,
         tokenizer: lmp.tokenizer.BaseTokenizer
 ) -> float:
@@ -62,7 +67,9 @@ def perplexity_eval(
 
     if not isinstance(model, (
             lmp.model.BaseRNNModel,
-            lmp.model.BaseResRNNModel
+            lmp.model.BaseResRNNModel,
+            lmp.model.BaseSelfAttentionRNNModel,
+            lmp.model.BaseSelfAttentionResRNNModel
     )):
         raise TypeError(
             '`model` must be an instance of '
@@ -125,7 +132,12 @@ def perplexity_eval(
 def batch_perplexity_eval(
         dataset: Iterable[str],
         device: torch.device,
-        model: Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel],
+        model: Union[
+            lmp.model.BaseRNNModel,
+            lmp.model.BaseResRNNModel,
+            lmp.model.BaseSelfAttentionRNNModel,
+            lmp.model.BaseSelfAttentionResRNNModel
+        ],
         tokenizer: lmp.tokenizer.BaseTokenizer
 ) -> List[float]:
     r"""Helper function for calculating dataset perplexity.

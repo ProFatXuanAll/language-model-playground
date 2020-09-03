@@ -51,6 +51,12 @@ def load_model(
         --model_class res_rnn
         --model_class res_gru
         --model_class res_lstm
+        --model_class att_rnn
+        --model_class att_gru
+        --model_class att_lstm
+        --model_class att_res_rnn
+        --model_class att_res_gru
+        --model_class att_res_lstm
 
     Load model from pre-trained checkpoint when `checkpoint != -1`.
 
@@ -185,6 +191,72 @@ def load_model(
             vocab_size=vocab_size
         )
 
+    elif model_class == 'att_rnn':
+        model = lmp.model.BaseSelfAttentionRNNModel(
+            d_emb=d_emb,
+            d_hid=d_hid,
+            dropout=dropout,
+            num_rnn_layers=num_rnn_layers,
+            num_linear_layers=num_linear_layers,
+            pad_token_id=pad_token_id,
+            vocab_size=vocab_size
+        )
+
+    elif model_class == 'att_gru':
+        model = lmp.model.SelfAttentionGRUModel(
+            d_emb=d_emb,
+            d_hid=d_hid,
+            dropout=dropout,
+            num_rnn_layers=num_rnn_layers,
+            num_linear_layers=num_linear_layers,
+            pad_token_id=pad_token_id,
+            vocab_size=vocab_size
+        )
+
+    elif model_class == 'att_lstm':
+        model = lmp.model.SelfAttentionLSTMModel(
+            d_emb=d_emb,
+            d_hid=d_hid,
+            dropout=dropout,
+            num_rnn_layers=num_rnn_layers,
+            num_linear_layers=num_linear_layers,
+            pad_token_id=pad_token_id,
+            vocab_size=vocab_size
+        )
+
+    elif model_class == 'att_res_rnn':
+        model = lmp.model.BaseSelfAttentionResRNNModel(
+            d_emb=d_emb,
+            d_hid=d_hid,
+            dropout=dropout,
+            num_rnn_layers=num_rnn_layers,
+            num_linear_layers=num_linear_layers,
+            pad_token_id=pad_token_id,
+            vocab_size=vocab_size
+        )
+
+    elif model_class == 'att_res_gru':
+        model = lmp.model.SelfAttentionResGRUModel(
+            d_emb=d_emb,
+            d_hid=d_hid,
+            dropout=dropout,
+            num_rnn_layers=num_rnn_layers,
+            num_linear_layers=num_linear_layers,
+            pad_token_id=pad_token_id,
+            vocab_size=vocab_size
+        )
+
+    elif model_class == 'att_res_lstm':
+        model = lmp.model.SelfAttentionResLSTMModel(
+            d_emb=d_emb,
+            d_hid=d_hid,
+            dropout=dropout,
+            num_rnn_layers=num_rnn_layers,
+            num_linear_layers=num_linear_layers,
+            pad_token_id=pad_token_id,
+            vocab_size=vocab_size
+        )
+
     else:
         raise ValueError(
             f'model `{model_class}` does not support.\nSupported options:' +
@@ -197,6 +269,12 @@ def load_model(
                     'res_rnn',
                     'res_gru',
                     'res_lstm',
+                    'att_rnn',
+                    'att_gru',
+                    'att_lstm',
+                    'att_res_rnn',
+                    'att_res_gru',
+                    'att_res_lstm',
                 ]
             )))
         )

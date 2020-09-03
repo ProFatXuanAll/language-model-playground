@@ -16,6 +16,8 @@ import inspect
 import math
 import unittest
 
+from itertools import product
+
 # 3rd-party modules
 
 import torch
@@ -32,62 +34,60 @@ class TestPredict(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.batch_range = [1, 2]
-        cls.d_emb_range = [1, 10]
-        cls.d_hid_range = [1, 10]
-        cls.dropout_range = [0.0, 0.1, 0.5, 1.0]
-        cls.num_linear_layers_range = [1, 2]
-        cls.num_rnn_layers_range = [1, 2]
-        cls.pad_token_id_range = [0, 1, 2, 3]
+        cls.model_parameters = {
+            'd_emb': [1, 2],
+            'd_hid': [1, 2],
+            'dropout': [0.0, 0.1],
+            'num_linear_layers': [1, 2],
+            'num_rnn_layers': [1, 2],
+            'pad_token_id': [1, 2],
+            'vocab_size': [1, 2],
+        }
         cls.sequence_range = list(range(1, 5))
-        cls.vocab_size_range = [1, 5]
 
     @classmethod
     def tearDownClass(cls):
         del cls.batch_range
-        del cls.d_emb_range
-        del cls.d_hid_range
-        del cls.dropout_range
-        del cls.num_linear_layers_range
-        del cls.num_rnn_layers_range
-        del cls.pad_token_id_range
+        del cls.model_parameters
         del cls.sequence_range
-        del cls.vocab_size_range
         gc.collect()
 
     def setUp(self):
-        r"""Setup hyperparameters and construct `ResGRUModel`."""
+        r"""Setup hyperparameters and construct `BaseRNNModel`."""
         self.model_objs = []
         cls = self.__class__
-        for d_emb in cls.d_emb_range:
-            for d_hid in cls.d_hid_range:
-                for dropout in cls.dropout_range:
-                    for num_linear_layers in cls.num_linear_layers_range:
-                        for num_rnn_layers in cls.num_rnn_layers_range:
-                            for pad_token_id in cls.pad_token_id_range:
-                                for vocab_size in cls.vocab_size_range:
-                                    # skip invalid construct.
-                                    if vocab_size <= pad_token_id:
-                                        continue
 
-                                    model = ResGRUModel(
-                                        d_emb=d_emb,
-                                        d_hid=d_hid,
-                                        dropout=dropout,
-                                        num_linear_layers=num_linear_layers,
-                                        num_rnn_layers=num_rnn_layers,
-                                        pad_token_id=pad_token_id,
-                                        vocab_size=vocab_size
-                                    )
-                                    self.model_objs.append({
-                                        'd_emb': d_emb,
-                                        'd_hid': d_hid,
-                                        'dropout': dropout,
-                                        'model': model,
-                                        'num_linear_layers': num_linear_layers,
-                                        'num_rnn_layers': num_rnn_layers,
-                                        'pad_token_id': pad_token_id,
-                                        'vocab_size': vocab_size,
-                                    })
+        for (
+            d_emb,
+            d_hid,
+            dropout,
+            num_linear_layers,
+            num_rnn_layers,
+            pad_token_id,
+            vocab_size
+        ) in product(*cls.model_parameters.values()):
+            # skip invalid construct.
+            if vocab_size <= pad_token_id:
+                continue
+            model = ResGRUModel(
+                d_emb=d_emb,
+                d_hid=d_hid,
+                dropout=dropout,
+                num_linear_layers=num_linear_layers,
+                num_rnn_layers=num_rnn_layers,
+                pad_token_id=pad_token_id,
+                vocab_size=vocab_size
+            )
+            self.model_objs.append({
+                'd_emb': d_emb,
+                'd_hid': d_hid,
+                'dropout': dropout,
+                'model': model,
+                'num_linear_layers': num_linear_layers,
+                'num_rnn_layers': num_rnn_layers,
+                'pad_token_id': pad_token_id,
+                'vocab_size': vocab_size,
+            })
 
     def tearDown(self):
         r"""Delete model instances."""

@@ -16,6 +16,7 @@ from __future__ import unicode_literals
 import argparse
 import time
 
+import torch
 # self-made modules
 
 import lmp
@@ -216,7 +217,7 @@ if __name__ == '__main__':
     lmp.util.train_model(
         checkpoint=args.checkpoint,
         checkpoint_step=config.checkpoint_step,
-        data_loader=,
+        data_loader=data_loader,
         device=config.device,
         epoch=config.epoch,
         experiment=config.experiment,
