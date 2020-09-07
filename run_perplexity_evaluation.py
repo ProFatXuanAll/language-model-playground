@@ -73,7 +73,9 @@ if __name__ == '__main__':
         model=model,
         tokenizer=tokenizer
     )
-
+    sum_perplexity = 0
     # Print perplexity of each sequence.
     for i, perplexity in enumerate(perplexities):
+        sum_perplexity += perplexity
         print(f'{perplexity:.6f}, {dataset[i]}')
+    print("Average of perplexity:", sum_perplexity/len(perplexities))
