@@ -31,7 +31,7 @@ if __name__ == '__main__':
     )
     parser.add_argument(
         '--dataset',
-        help='Current experiment name.',
+        help='Name of the dataset to calculate perplexity.',
         required=True,
         type=str,
     )
