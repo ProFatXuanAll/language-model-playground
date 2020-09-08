@@ -67,15 +67,15 @@ class TestIter(unittest.TestCase):
             ],
         )
 
-        for example in examples:
-            dataset = AnalogyDataset(samples=example)
+        for samples in examples:
+            dataset = AnalogyDataset(samples=samples)
             self.assertIsInstance(dataset, Iterable, msg=msg)
 
-            for ans_sequence, sequence in zip(example, dataset):
-                self.assertIsInstance(sequence, Iterable, msg=msg)
-                for element in sequence:
-                    self.assertIsInstance(element, str, msg=msg)
-                self.assertEqual(sequence, ans_sequence, msg=msg)
+            for ans_sample, sample in zip(samples, dataset):
+                self.assertIsInstance(sample, list, msg=msg)
+                for item in sample:
+                    self.assertIsInstance(item, str, msg=msg)
+                self.assertEqual(sample, ans_sample, msg=msg)
 
 
 if __name__ == '__main__':

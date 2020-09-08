@@ -23,7 +23,6 @@ from typing import Union
 # 3rd-party modules
 
 import pandas as pd
-import torch.utils.data
 
 # self-made modules
 
@@ -35,7 +34,7 @@ import lmp.path
 def _preprocess_news_collection(
         column: str
 ) -> lmp.dataset.LanguageModelDataset:
-    r"""Preprocess `news_collection.csv`, fetch `column` and convert into `lmp.dataset.LanguageModelDataset`.
+    r"""Preprocess `news_collection.csv` and convert into `lmp.dataset.LanguageModelDataset`.
 
     Args:
         column:
@@ -65,7 +64,7 @@ def _preprocess_news_collection(
 
 
 def _preprocess_wiki_tokens(split: str) -> lmp.dataset.LanguageModelDataset:
-    r"""Preprocess `wiki.*.tokens` dataset and convert into `lmp.dataset.LanguageModelDataset`.
+    r"""Preprocess `wiki.*.tokens` and convert into `lmp.dataset.LanguageModelDataset`.
 
     Args:
         split:
@@ -86,8 +85,8 @@ def _preprocess_wiki_tokens(split: str) -> lmp.dataset.LanguageModelDataset:
     # Split based on section pattern.
     data = re.split(r' \n( =){1,3} .+ (= ){1,3}\n ', data)
     data = list(filter(
-        lambda sample: sample.strip() \
-        and not re.match(r'( =){1,3}', sample) \
+        lambda sample: sample.strip()
+        and not re.match(r'( =){1,3}', sample)
         and not re.match(r'(= ){1,3}', sample),
         data
     ))
@@ -105,7 +104,7 @@ def _preprocess_wiki_tokens(split: str) -> lmp.dataset.LanguageModelDataset:
 
 
 def _preprocess_word_test_v1() -> lmp.dataset.AnalogyDataset:
-    r"""Preprocess `word-test.v1.txt` dataset and convert into `lmp.dataset.AnalogyDataset`.
+    r"""Preprocess `word-test.v1.txt` and convert into `lmp.dataset.AnalogyDataset`.
 
     Returns:
         `lmp.dataset.AnalogyDataset` from `word-test.v1.txt`.
@@ -136,7 +135,7 @@ def _preprocess_word_test_v1() -> lmp.dataset.AnalogyDataset:
 
 def load_dataset(
         dataset: str
-) -> Union[lmp.dataset.LanguageModelDataset, lmp.dataset.AnalogyDataset]:
+) -> Union[lmp.dataset.AnalogyDataset, lmp.dataset.LanguageModelDataset]:
     r"""Load dataset from downloaded files.
 
     Supported options:
@@ -183,7 +182,7 @@ def load_dataset(
         return _preprocess_wiki_tokens(split='test')
 
     if dataset == 'word_test_v1':
-        return _preprocess_word_test_v1_tokens()
+        return _preprocess_word_test_v1()
 
     raise ValueError(
         f'dataset `{dataset}` does not support.\nSupported options:' +
@@ -203,7 +202,7 @@ def load_dataset(
 
 def load_dataset_by_config(
         config: lmp.config.BaseConfig
-) -> Union[lmp.dataset.LanguageModelDataset, lmp.dataset.AnalogyDataset]:
+) -> Union[lmp.dataset.AnalogyDataset, lmp.dataset.LanguageModelDataset]:
     r"""Load dataset from downloaded files.
 
     Args:

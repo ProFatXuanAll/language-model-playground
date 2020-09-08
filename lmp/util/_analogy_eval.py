@@ -1,14 +1,19 @@
+r"""Helper function for calculating word analogy accuracy.
+
+Usage:
+    import lmp.util
+
+    word_d = lmp.util.analogy_inference(...)
+    acc_per_cat = lmp.util.analogy_eval(...)
+"""
+
 # built-in modules
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
-
-import re
-
 from typing import Dict
-from typing import List
 from typing import Union
 
 # 3rd-party modules
@@ -27,12 +32,12 @@ import lmp.tokenizer
 
 @torch.no_grad()
 def analogy_inference(
-    device: torch.device,
-    model: Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel],
-    tokenizer: lmp.tokenizer.BaseTokenizer,
-    word_a: str,
-    word_b: str,
-    word_c: str
+        device: torch.device,
+        model: Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel],
+        tokenizer: lmp.tokenizer.BaseTokenizer,
+        word_a: str,
+        word_b: str,
+        word_c: str
 ) -> str:
     r"""Generate analog word based on `word_a`, `word_b` and `word_c`.
 
@@ -67,8 +72,8 @@ def analogy_inference(
         raise TypeError('`device` must be an instance of `torch.device`.')
 
     if not isinstance(model, (
-        lmp.model.BaseRNNModel,
-        lmp.model.BaseResRNNModel
+            lmp.model.BaseRNNModel,
+            lmp.model.BaseResRNNModel
     )):
         raise TypeError(
             '`model` must be an instance of '
@@ -94,16 +99,16 @@ def analogy_inference(
     model = model.to(device)
 
     # Convert tokens (query words) into token ids.
-    word_a_id = torch.tensor(tokenizer.convert_token_to_id(word_a)).to(device)
-    word_b_id = torch.tensor(tokenizer.convert_token_to_id(word_b)).to(device)
-    word_c_id = torch.tensor(tokenizer.convert_token_to_id(word_c)).to(device)
+    word_a_id = torch.LongTensor([tokenizer.convert_token_to_id(word_a)])
+    word_b_id = torch.LongTensor([tokenizer.convert_token_to_id(word_b)])
+    word_c_id = torch.LongTensor([tokenizer.convert_token_to_id(word_c)])
 
     # Perform analogy calculation.
     # Shape: `(E)`.
     out = (
-        model.emb_layer(word_b_id) -
-        model.emb_layer(word_a_id) +
-        model.emb_layer(word_c_id)
+        model.emb_layer(word_b_id.to(device)) -
+        model.emb_layer(word_a_id.to(device)) +
+        model.emb_layer(word_c_id.to(device))
     )
 
     # Extend dimension since word embedding dimension is `(V, E)`,
@@ -120,18 +125,17 @@ def analogy_inference(
 
     # Get the token id with maximum consine similarity.
     # Shape: `(1)`.
-    word_d_id = pred.argmax(dim=0).to('cpu').item()
+    word_d_id = pred.argmax(dim=0).to('cpu')[0].item()
 
     # Convert back to token.
     return tokenizer.convert_id_to_token(word_d_id)
 
 
-@torch.no_grad()
 def analogy_eval(
-    dataset: lmp.dataset.AnalogyDataset,
-    device: torch.device,
-    model: Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel],
-    tokenizer: lmp.tokenizer.BaseTokenizer
+        dataset: lmp.dataset.AnalogyDataset,
+        device: torch.device,
+        model: Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel],
+        tokenizer: lmp.tokenizer.BaseTokenizer
 ) -> Dict[str, float]:
     r"""Helper function for calculating word analogy dataset accuracy.
 
@@ -165,23 +169,6 @@ def analogy_eval(
             '`dataset` must be an instance of `lmp.dataset.AnalogyDataset`'
         )
 
-    if not isinstance(device, torch.device):
-        raise TypeError('`device` must be an instance of `torch.device`.')
-
-    if not isinstance(model, (
-        lmp.model.BaseRNNModel,
-        lmp.model.BaseResRNNModel
-    )):
-        raise TypeError(
-            '`model` must be an instance of '
-            '`Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel]`.'
-        )
-
-    if not isinstance(tokenizer, lmp.tokenizer.BaseTokenizer):
-        raise TypeError(
-            '`tokenizer` must be an instance of `lmp.tokenizer.BaseTokenizer`.'
-        )
-
     # Save each `word_d` and `pred_word_d` for their respective category
     # accuracy and total accuracy.
     pred_per_cat = {
@@ -190,7 +177,7 @@ def analogy_eval(
             'pred': [],
         }
     }
-    for word_a, word_b, word_c, word_d, category in dataset:
+    for word_a, word_b, word_c, word_d, category in tqdm(dataset):
         if category not in pred_per_cat:
             pred_per_cat[category] = {
                 'ans': [],

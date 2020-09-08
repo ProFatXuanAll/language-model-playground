@@ -285,8 +285,7 @@ class TestTrainModelByConfig(unittest.TestCase):
             self.assertEqual(
                 ctx_man.exception.args[0],
                 '`dataset` must be an instance of `lmp.dataset.LanguageModelDataset`.',
-                msg=msg2
-            )
+                msg=msg2)
 
     def test_invalid_input_model(self):
         r"""Raise `TypeError` when input `model` is invalid."""

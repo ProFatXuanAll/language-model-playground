@@ -12,10 +12,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
-
-import os
-import re
-
 from typing import Callable
 from typing import Generator
 from typing import Iterable
@@ -26,11 +22,6 @@ from typing import Tuple
 
 import torch.utils.data
 
-# self-made modules
-
-import lmp.tokenizer
-import lmp.dataset
-import lmp.path
 
 # Define types for type annotation.
 CollateFnReturn = Tuple[
