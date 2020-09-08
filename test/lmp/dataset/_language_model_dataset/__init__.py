@@ -15,7 +15,7 @@ import inspect
 import unittest
 
 
-class TestDataset(unittest.TestCase):
+class TestLanguageModelDataset(unittest.TestCase):
     r"""Test case for `lmp.dataset._langeage_model_dataset.py`."""
 
     def test_signature(self):
@@ -47,10 +47,10 @@ class TestDataset(unittest.TestCase):
 
         try:
             # pylint: disable=C0415
+            # pylint: disable=W0212
             import lmp
             import lmp.dataset
             import lmp.dataset._language_model_dataset
-            # pylint: enable=C0415
 
             for attr in examples:
                 self.assertTrue(
@@ -64,6 +64,8 @@ class TestDataset(unittest.TestCase):
                     )),
                     msg=msg2.format(attr)
                 )
+            # pylint: enable=W0212
+            # pylint: enable=C0415
         except ImportError:
             self.fail(msg=msg3)
 

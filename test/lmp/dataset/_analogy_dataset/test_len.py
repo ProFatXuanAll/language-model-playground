@@ -69,12 +69,13 @@ class TestLen(unittest.TestCase):
                     'Tokyo',
                     'capital',
                 ],
-            ]
+            ],
+            [],
         )
 
-        for example in examples:
+        for samples in examples:
             self.assertIsInstance(
-                len(AnalogyDataset(samples=example)),
+                len(AnalogyDataset(samples=samples)),
                 int,
                 msg=msg
             )
@@ -114,12 +115,16 @@ class TestLen(unittest.TestCase):
                 ],
                 1,
             ),
+            (
+                [],
+                0,
+            ),
         )
 
-        for example, dataset_size in examples:
+        for samples, size in examples:
             self.assertEqual(
-                len(AnalogyDataset(samples=example)),
-                dataset_size,
+                len(AnalogyDataset(samples=samples)),
+                size,
                 msg=msg
             )
 
