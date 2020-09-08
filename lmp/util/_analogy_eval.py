@@ -142,8 +142,10 @@ def analogy_eval(
         raise TypeError(
             '`dataset` must be an instance of `lmp.dataset.AnalogyDataset`'
         )
+
     if not isinstance(device, torch.device):
         raise TypeError('`device` must be an instance of `torch.device`.')
+
     if not isinstance(model, (
         lmp.model.BaseRNNModel,
         lmp.model.BaseResRNNModel
@@ -152,11 +154,13 @@ def analogy_eval(
             '`model` must be an instance of '
             '`Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel]`.'
         )
+
     if not isinstance(tokenizer, lmp.tokenizer.BaseTokenizer):
         raise TypeError(
             '`tokenizer` must be an instance of '
             '`lmp.tokenizer.BaseTokenizer`.'
         )
+
     dataloader = torch.utils.data.DataLoader(
         dataset,
         batch_size=32
