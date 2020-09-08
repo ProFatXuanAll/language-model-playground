@@ -42,7 +42,10 @@ class TestLoadDatasetByConfig(unittest.TestCase):
                         default=inspect.Parameter.empty
                     )
                 ],
-                return_annotation=Union[lmp.dataset.LanguageModelDataset, lmp.dataset.AnalogyDataset]
+                return_annotation=Union[
+                    lmp.dataset.AnalogyDataset,
+                    lmp.dataset.LanguageModelDataset
+                ]
             ),
             msg=msg
         )
@@ -72,19 +75,53 @@ class TestLoadDatasetByConfig(unittest.TestCase):
         msg = 'Must return `lmp.config.LanguageModelDataset`.'
 
         examples = (
-            lmp.config.BaseConfig(
-                dataset='news_collection_title',
-                experiment='util_load_dataset_by_config_unittest',
+            (
+                lmp.config.BaseConfig(
+                    dataset='news_collection_title',
+                    experiment='util_load_dataset_by_config_unittest',
+                ),
+                lmp.dataset.LanguageModelDataset,
             ),
-            lmp.config.BaseConfig(
-                dataset='news_collection_desc',
-                experiment='util_load_dataset_by_config_unittest',
+            (
+                lmp.config.BaseConfig(
+                    dataset='news_collection_desc',
+                    experiment='util_load_dataset_by_config_unittest',
+                ),
+                lmp.dataset.LanguageModelDataset,
+            ),
+            (
+                lmp.config.BaseConfig(
+                    dataset='wiki_train_tokens',
+                    experiment='util_load_dataset_by_config_unittest',
+                ),
+                lmp.dataset.LanguageModelDataset,
+            ),
+            (
+                lmp.config.BaseConfig(
+                    dataset='wiki_test_tokens',
+                    experiment='util_load_dataset_by_config_unittest',
+                ),
+                lmp.dataset.LanguageModelDataset,
+            ),
+            (
+                lmp.config.BaseConfig(
+                    dataset='wiki_valid_tokens',
+                    experiment='util_load_dataset_by_config_unittest',
+                ),
+                lmp.dataset.LanguageModelDataset,
+            ),
+            (
+                lmp.config.BaseConfig(
+                    dataset='word_test_v1',
+                    experiment='util_load_dataset_by_config_unittest',
+                ),
+                lmp.dataset.AnalogyDataset,
             ),
         )
 
-        for config in examples:
+        for config, dataset_cstr in examples:
             dataset = lmp.util.load_dataset_by_config(config)
-            self.assertIsInstance(dataset, lmp.dataset.LanguageModelDataset, msg=msg)
+            self.assertIsInstance(dataset, dataset_cstr, msg=msg)
 
 
 if __name__ == '__main__':

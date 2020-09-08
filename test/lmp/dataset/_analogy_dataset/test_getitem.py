@@ -22,7 +22,7 @@ from typing import List
 from lmp.dataset._analogy_dataset import AnalogyDataset
 
 
-class TestInit(unittest.TestCase):
+class TestGetItem(unittest.TestCase):
     r"""Test case for `lmp.dataset.AnalogyDataset.__getitem__`."""
 
     def test_signature(self):
@@ -81,65 +81,64 @@ class TestInit(unittest.TestCase):
     def test_return_type(self):
         r"""Return `List[str]`."""
         msg = 'Must return `List[str]`.'
-        msg2 = 'List must have only five elements.'
+        msg2 = 'Sample must have exactly 5 elements.'
         examples = (
-            [
-                [
-                    'Taiwan',
-                    'Taipei',
-                    'Japan',
-                    'Tokyo',
-                    'capital',
-                ]
-            ],
-            [
-                [
-                    'write',
-                    'writes',
-                    'sad',
-                    'sads',
-                    'grammer',
-                ]
-            ],
+            (
+                (
+                    ['Taiwan', 'Taipei', 'Japan', 'Tokyo', 'capital'],
+                    ['write', 'writes', 'sad', 'sads', 'grammer'],
+                ),
+                2,
+            ),
+            (
+                (
+                    ['write', 'writes', 'sad', 'sads', 'grammer'],
+                ),
+                1,
+            ),
+            (
+                (),
+                0,
+            ),
         )
 
-        for batch_analogy in examples:
-            dataset = AnalogyDataset(samples=batch_analogy)
-            for i in range(len(dataset)):
-                self.assertIsInstance(dataset[i], list, msg=msg)
-                for k in range(len(dataset[i])):
-                    self.assertIsInstance(dataset[i][k], str, msg=msg)
+        for samples, size in examples:
+            dataset = AnalogyDataset(samples=samples)
+            for index in range(size):
+                sample = dataset[index]
+                self.assertIsInstance(dataset[index], list, msg=msg)
                 # Make sure there are only 5 elements in each data.
-                self.assertEqual(len(dataset[i]), 5, msg=msg2)
+                self.assertEqual(len(sample), 5, msg=msg2)
+                for item in sample:
+                    self.assertIsInstance(item, str, msg=msg)
 
     def test_return_value(self):
         r"""Sample single analogy data using index."""
         msg = 'Must single analogy data using index.'
         examples = (
-            [
-                [
-                    'Taiwan',
-                    'Taipei',
-                    'Japan',
-                    'Tokyo',
-                    'capital',
-                ]
-            ],
-            [
-                [
-                    'write',
-                    'writes',
-                    'sad',
-                    'sads',
-                    'grammer',
-                ]
-            ],
+            (
+                (
+                    ['Taiwan', 'Taipei', 'Japan', 'Tokyo', 'capital'],
+                    ['write', 'writes', 'sad', 'sads', 'grammer'],
+                ),
+                2,
+            ),
+            (
+                (
+                    ['write', 'writes', 'sad', 'sads', 'grammer'],
+                ),
+                1,
+            ),
+            (
+                (),
+                0,
+            ),
         )
 
-        for batch_analogy in examples:
-            dataset = AnalogyDataset(samples=batch_analogy)
-            for i in range(len(dataset)):
-                self.assertEqual(dataset[i], batch_analogy[i], msg=msg)
+        for samples, size in examples:
+            dataset = AnalogyDataset(samples=samples)
+            for index in range(size):
+                self.assertEqual(dataset[index], samples[index], msg=msg)
 
 
 if __name__ == '__main__':

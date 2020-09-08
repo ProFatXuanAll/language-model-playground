@@ -27,8 +27,8 @@ import torch
 # self-made modules
 
 import lmp.model
+
 from lmp.util._analogy_eval import analogy_eval
-from lmp.dataset._analogy_dataset import AnalogyDataset
 
 
 class TestAnalogyEval(unittest.TestCase):
@@ -93,6 +93,7 @@ class TestAnalogyEval(unittest.TestCase):
 
     def tearDown(self):
         r"""Delete fixed parameters"""
+        del self.dataset
         del self.device
         del self.model
         del self.tokenizer
@@ -281,18 +282,18 @@ class TestAnalogyEval(unittest.TestCase):
                 self.assertIsInstance(score, float, msg=msg)
 
     def test_return_value(self):
-        r"""Score in every category is greater than or equal to zero."""
-        msg = 'Score in every category must greater than or equal to zero.'
+        r"""Accuracy (include total) in each category is greater than or equal to zero."""
+        msg = 'Accuracy (include total) in each category must be greater than or equal to zero.'
 
         for (
-            d_emb,
-            d_hid,
-            dropout,
-            is_uncased,
-            model_cstr,
-            num_linear_layers,
-            num_rnn_layers,
-            tokenizer_cstr,
+                d_emb,
+                d_hid,
+                dropout,
+                is_uncased,
+                model_cstr,
+                num_linear_layers,
+                num_rnn_layers,
+                tokenizer_cstr,
         ) in product(*self.__class__.model_parameters.values()):
             tokenizer = tokenizer_cstr(is_uncased=is_uncased)
             pad_token_id = tokenizer.convert_token_to_id(tokenizer.pad_token)
@@ -314,7 +315,9 @@ class TestAnalogyEval(unittest.TestCase):
                 tokenizer=tokenizer
             )
 
-            for _, score in acc_per_cat.items():
+            self.assertIn('total', acc_per_cat, msg=msg)
+
+            for score in acc_per_cat.values():
                 self.assertGreaterEqual(score, 0.0, msg=msg)
 
 

@@ -41,7 +41,10 @@ class TestLoadDataset(unittest.TestCase):
                         default=inspect.Parameter.empty
                     )
                 ],
-                return_annotation=Union[lmp.dataset.LanguageModelDataset, lmp.dataset.AnalogyDataset]
+                return_annotation=Union[
+                    lmp.dataset.AnalogyDataset,
+                    lmp.dataset.LanguageModelDataset
+                ]
             ),
             msg=msg
         )
@@ -91,18 +94,22 @@ class TestLoadDataset(unittest.TestCase):
                 )
 
     def test_return_type(self):
-        r"""Return `lmp.dataset.LanguageModelDataset`."""
-        msg = 'Must return `lmp.dataset.LanguageModelDataset`.'
+        r"""Return `Union[lmp.dataset.LanguageModelDataset, lmp.dataset.AnalogyDataset]`."""
+        msg = 'Must return `Union[lmp.dataset.LanguageModelDataset, lmp.dataset.AnalogyDataset]`.'
 
         examples = (
-            'news_collection_desc',
-            'news_collection_title',
+            ('news_collection_desc', lmp.dataset.LanguageModelDataset),
+            ('news_collection_title', lmp.dataset.LanguageModelDataset),
+            ('wiki_train_tokens', lmp.dataset.LanguageModelDataset),
+            ('wiki_test_tokens', lmp.dataset.LanguageModelDataset),
+            ('wiki_valid_tokens', lmp.dataset.LanguageModelDataset),
+            ('word_test_v1', lmp.dataset.AnalogyDataset),
         )
 
-        for dataset in examples:
+        for dataset, dataset_cstr in examples:
             self.assertIsInstance(
                 lmp.util.load_dataset(dataset=dataset),
-                lmp.dataset.LanguageModelDataset,
+                dataset_cstr,
                 msg=msg
             )
 

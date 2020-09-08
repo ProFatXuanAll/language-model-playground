@@ -27,8 +27,8 @@ import torch
 
 import lmp.model
 import lmp.tokenizer
+
 from lmp.util._analogy_eval import analogy_inference
-from lmp.dataset._analogy_dataset import AnalogyDataset
 
 
 class TestAnalogyInference(unittest.TestCase):
@@ -78,7 +78,7 @@ class TestAnalogyInference(unittest.TestCase):
             pad_token_id=0,
             vocab_size=5
         )
-        self.tokenizer = lmp.tokenizer.CharDictTokenizer()
+        self.tokenizer = lmp.tokenizer.WhitespaceDictTokenizer()
         self.word_a = 'Taiwan'
         self.word_b = 'Taipei'
         self.word_c = 'Japan'
@@ -234,7 +234,7 @@ class TestAnalogyInference(unittest.TestCase):
         msg2 = 'Inconsistent error message.'
         examples = (
             False, True, 0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf,
-            -math.inf, 0j, 1j, (), [], {}, set(), object(), lambda x: x,
+            -math.inf, 0j, 1j, b'', (), [], {}, set(), object(), lambda x: x,
             type, None, NotImplemented, ...
         )
 
@@ -261,7 +261,7 @@ class TestAnalogyInference(unittest.TestCase):
         msg2 = 'Inconsistent error message.'
         examples = (
             False, True, 0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf,
-            -math.inf, 0j, 1j, (), [], {}, set(), object(), lambda x: x,
+            -math.inf, 0j, 1j, b'', (), [], {}, set(), object(), lambda x: x,
             type, None, NotImplemented, ...
         )
 
@@ -288,7 +288,7 @@ class TestAnalogyInference(unittest.TestCase):
         msg2 = 'Inconsistent error message.'
         examples = (
             False, True, 0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf,
-            -math.inf, 0j, 1j, (), [], {}, set(), object(), lambda x: x,
+            -math.inf, 0j, 1j, b'', (), [], {}, set(), object(), lambda x: x,
             type, None, NotImplemented, ...
         )
 

@@ -1,4 +1,10 @@
+r"""Calculating accuracy on word analogy dataset.
 
+Usage:
+    python run_analogy_evaluation.py ...
+
+Run 'python run_analogy_evaluation.py --help' for help.
+"""
 # built-in modules
 
 from __future__ import absolute_import
@@ -18,6 +24,7 @@ import lmp
 
 
 if __name__ == '__main__':
+    # Parse argument from standard input.
     parser = argparse.ArgumentParser()
 
     # Required arguments.
@@ -45,6 +52,12 @@ if __name__ == '__main__':
     # Load pre-trained hyperparameters.
     config = lmp.config.BaseConfig.load(experiment=args.experiment)
 
+    # Overwrite evaluation dataset.
+    config.dataset = args.dataset
+
+    # Load dataset.
+    dataset = lmp.util.load_dataset_by_config(config=config)
+
     # Load pre-trained tokenizer.
     tokenizer = lmp.util.load_tokenizer_by_config(
         checkpoint=args.checkpoint,
@@ -58,15 +71,13 @@ if __name__ == '__main__':
         tokenizer=tokenizer
     )
 
-    # Get dataset.
-    dataset = lmp.util.load_dataset(args.dataset)
-
-    # test syntatic and semantic score
+    # Calculating word analogy dataset accuracy per category.
     acc_per_cat = lmp.util.analogy_eval(
         dataset=dataset,
         device=config.device,
         model=model,
         tokenizer=tokenizer
     )
+
     for category in acc_per_cat:
-        print(category, acc_per_cat[category])
+        print(f'category: {category}, accuracy: {acc_per_cat[category]}')

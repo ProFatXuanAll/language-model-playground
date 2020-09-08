@@ -135,7 +135,7 @@ python run_generate.py --experiment 2 --checkpoint 500 --begin_of_sequence "toda
 
 ```sh
 # 使用第 500 步的存檔點進行類比文字生成
-python run_analogy_inference.py --experiment 1 --checkpoint 500 --word_a "臺灣" --word_b "台北" --word_c "日本"
+python run_analogy_inference.py --experiment 1 --checkpoint 500 --word_a "早" --word_b "晚" --word_c "日"
 ```
 
 4. 指定英文語言模型存檔點生成類比文字。
@@ -297,7 +297,7 @@ python run_generate.py --experiment 2 --checkpoint 500 --begin_of_sequence "toda
 
 ```sh
 # Using checkpoint 500 to generate analog word.
-python run_analogy_inference.py --experiment 1 --checkpoint 500 --word_a "臺灣" --word_b "台北" --word_c "日本"
+python run_analogy_inference.py --experiment 1 --checkpoint 500 --word_a "早" --word_b "晚" --word_c "日"
 ```
 
 4. Generate analog word using English language model checkpoints.

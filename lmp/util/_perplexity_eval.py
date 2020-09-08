@@ -83,6 +83,7 @@ def perplexity_eval(
 
     # Evalation mode.
     model.eval()
+    model = model.to(device)
 
     # Encode sequence and convert into tensor. Original sequence length: S.
     # New sequence length: S + 2.
