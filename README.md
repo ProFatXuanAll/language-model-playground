@@ -49,24 +49,24 @@ pip install -r requirements.txt
 
 ### 下載資料集
 
-1. 新增資料夾 `data` 。
+1. 新增資料夾 `data`。
 
 ```sh
 mkdir data
 ```
 
-2. 下載中文資料集：從 kaggle 上下載 [news_colleciton.csv](https://www.kaggle.com/ceshine/yet-another-chinese-news-dataset)，並解壓縮 `zip` 檔後把資料放到 `data/news_collection.csv`。
+2. 下載中文資料集：從 kaggle 上下載 [news_colleciton.csv](https://www.kaggle.com/ceshine/yet-another-chinese-news-dataset)，解壓縮 `zip` 檔後把資料放到 `data/news_collection.csv`。
 
 ```sh
 unzip yet-another-chinese-news-dataset.zip && chmod 666 news_collection.csv && mv news_collection.csv data/news_collection.csv
 ```
 
-3. 下載英文資料集：從 The WikiText Long Term Dependency Language Modeling Dataset 上下載 [WikiText-2](https://blog.einstein.ai/the-wikitext-long-term-dependency-language-modeling-dataset/)，並解壓縮 `zip` 檔後把資料放到 `data/wiki.train.tokens`, `data/wiki.valid.tokens`, `data/wiki.test.tokens`。
+3. 下載英文資料集：從 The WikiText Long Term Dependency Language Modeling Dataset 上下載 [WikiText-2](https://blog.einstein.ai/the-wikitext-long-term-dependency-language-modeling-dataset/)，解壓縮 `zip` 檔後把資料放到 `data/wiki.train.tokens`, `data/wiki.valid.tokens`, `data/wiki.test.tokens`。
 
-4. 下載文字類比測試資料集：從以下網站上下載 `word-test.v1.txt` 後移動至 `data` 資料夾下
+4. 下載文字類比測試資料集：從以下[網站](http://www.fit.vutbr.cz/~imikolov/rnnlm/word-test.v1.txt)上下載 `word-test.v1.txt` 後把資料放到 `data/word-test.v1.txt`
 
 ```sh
-wget -c  http://www.fit.vutbr.cz/~imikolov/rnnlm/word-test.v1.txt && chmod 666 word-test.v1.txt && mv word-test.v1.txt data/word-test.v1.txt
+wget -c http://www.fit.vutbr.cz/~imikolov/rnnlm/word-test.v1.txt && chmod 666 word-test.v1.txt && mv word-test.v1.txt data/word-test.v1.txt
 ```
 
 ### 訓練
@@ -117,28 +117,28 @@ python run_analogy_evaluation.py --experiment 2 --checkpoint 500 --dataset word_
 
 ### 驗證
 
-1. 指定中文語言模型存檔點並生成範例句子。
+1. 指定中文語言模型存檔點生成範例句子。
 
 ```sh
 # 使用第 500 步的存檔點進行句子生成
 python run_generate.py --experiment 1 --checkpoint 500 --begin_of_sequence "今天" --beam_width 4 --max_seq_len 60
 ```
 
-2. 指定英文語言模型存檔點並生成範例句子。
+2. 指定英文語言模型存檔點生成範例句子。
 
 ```sh
 # 使用第 500 步的存檔點進行句子生成
 python run_generate.py --experiment 2 --checkpoint 500 --begin_of_sequence "today is" --beam_width 4 --max_seq_len 60
 ```
 
-3. 指定中文語言模型存檔點並生成類比文字。
+3. 指定中文語言模型存檔點生成類比文字。
 
 ```sh
 # 使用第 500 步的存檔點進行類比文字生成
 python run_analogy_inference.py --experiment 1 --checkpoint 500 --word_a "臺灣" --word_b "台北" --word_c "日本"
 ```
 
-4. 指定英文語言模型存檔點並生成類比文字。
+4. 指定英文語言模型存檔點生成類比文字。
 
 ```sh
 # 使用第 500 步的存檔點進行類比文字生成
@@ -211,24 +211,24 @@ pip install -r requirements.txt
 
 ### Download dataset
 
-1. Add a folder `data`.
+1. Create folder `data`.
 
 ```sh
 mkdir data
 ```
 
-2. Download the Chinese dataset: download [news_colleciton.csv](https://www.kaggle.com/ceshine/yet-another-chinese-news-dataset) from kaggle, unzip the `zip` file and save the data Put it in `data/news_collection.csv`.
+2. Download the Chinese dataset: download [news_colleciton.csv](https://www.kaggle.com/ceshine/yet-another-chinese-news-dataset) from kaggle, unzip the `zip` file and put it in `data/news_collection.csv`.
 
 ```sh
 unzip yet-another-chinese-news-dataset.zip && chmod 666 news_collection.csv && mv news_collection.csv data/news_collection.csv
 ```
 
-3. Download the English dataset: Download from The WikiText Long Term Dependency Language Modeling Dataset [WikiText-2](https://blog.einstein.ai/the-wikitext-long-term-dependency-language-modeling-dataset/ ), and unzip the `zip` file, and put the data in `data/wiki.train.tokens`, `data/wiki.valid.tokens`, `data/wiki.test.tokens`.
+3. Download the English dataset: Download from The WikiText Long Term Dependency Language Modeling Dataset [WikiText-2](https://blog.einstein.ai/the-wikitext-long-term-dependency-language-modeling-dataset/ ), unzip the `zip` file and put the data in `data/wiki.train.tokens`, `data/wiki.valid.tokens`, `data/wiki.test.tokens`.
 
-4. Download the word analogy dataset: download `word-test.v1.txt` from the following website and move it to the `data` folder
+4. Download the word analogy dataset: download `word-test.v1.txt` from the following [website](http://www.fit.vutbr.cz/~imikolov/rnnlm/word-test.v1.txt) and put it in `data/word-test.v1.txt`.
 
 ```sh
-wget -c http://www.fit.vutbr.cz/~imikolov/rnnlm/word-test.v1.txt && chmod 666 word-test.v1.txt && mv word-test.v1.txt data/word- test.v1.txt
+wget -c http://www.fit.vutbr.cz/~imikolov/rnnlm/word-test.v1.txt && chmod 666 word-test.v1.txt && mv word-test.v1.txt data/word-test.v1.txt
 ```
 
 ### Train model
@@ -277,7 +277,7 @@ python run_perplexity_evaluation.py --experiment 2 --checkpoint 500 --dataset wi
 python run_analogy_evaluation.py --experiment 2 --checkpoint 500 --dataset word_test_v1
 ```
 
-### Verification
+### Validation
 
 1. Generate sequences using Chinese language model checkpoints.
 
