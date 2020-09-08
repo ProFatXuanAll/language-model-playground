@@ -34,7 +34,7 @@ CollateFn = Callable[[Iterable[str]], CollateFnReturn]
 
 
 class LanguageModelDataset(torch.utils.data.Dataset):
-    r"""Dataset class for generating language model samples.
+    r"""Dataset class generating language model samples.
 
     Attributes:
         batch_sequences:
