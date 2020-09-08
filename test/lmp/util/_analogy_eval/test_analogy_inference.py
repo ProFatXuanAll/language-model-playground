@@ -27,8 +27,9 @@ import torch
 
 import lmp.model
 import lmp.tokenizer
-from lmp.util._analogy_eval import analogy_inference
 from lmp.dataset._analogy_dataset import AnalogyDataset
+from lmp.util._analogy_eval import analogy_inference
+
 
 
 class TestAnalogyInference(unittest.TestCase):
