@@ -14,6 +14,10 @@ from __future__ import unicode_literals
 
 import argparse
 
+# 3rd-party modules
+
+import numpy as np
+
 # self-made modules
 
 import lmp
@@ -73,9 +77,6 @@ if __name__ == '__main__':
         model=model,
         tokenizer=tokenizer
     )
-    sum_perplexity = 0
-    # Print perplexity of each sequence.
-    for i, perplexity in enumerate(perplexities):
-        sum_perplexity += perplexity
-        print(f'{perplexity:.6f}, {dataset[i]}')
-    print("Average of perplexity:", sum_perplexity/len(perplexities))
+
+    # Print average perplexity.
+    print("Average perplexity:", np.mean(perplexities))
