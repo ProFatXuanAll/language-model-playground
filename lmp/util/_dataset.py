@@ -16,13 +16,13 @@ from __future__ import unicode_literals
 
 import os
 import re
+import unicodedata
 
 from typing import Union
 
 # 3rd-party modules
 
 import pandas as pd
-import torch.utils.data
 
 # self-made modules
 
@@ -34,79 +34,108 @@ import lmp.path
 def _preprocess_news_collection(
         column: str
 ) -> lmp.dataset.LanguageModelDataset:
-    r"""Preprocessing of news collection dataset and convert to
-    `lmp.dataset.LanguageModelDataset`.
+    r"""Preprocess `news_collection.csv` and convert into `lmp.dataset.LanguageModelDataset`.
 
     Args:
         column:
-            Select the part of the data which want to use.
+            Column name of `news_collection.csv`. Must be either `title` or `desc`.
 
     Returns:
-        `lmp.dataset.LanguageModelDataset`
+        `lmp.dataset.LanguageModelDataset` from `news_collection.csv`.
     """
     file_path = os.path.join(f'{lmp.path.DATA_PATH}', 'news_collection.csv')
 
     if not os.path.exists(file_path):
         raise FileNotFoundError(f'file {file_path} does not exist.')
 
-    df = pd.read_csv(file_path).dropna()
-    batch_sequences = df[column].to_list()
-    return lmp.dataset.LanguageModelDataset(batch_sequences)
+    df = pd.read_csv(file_path)
+    data = df[column].dropna().to_list()
+
+    # Normalized by unicode NFKC.
+    data = [unicodedata.normalize('NFKC', sample) for sample in data]
+
+    # Convert all new lines and consecutive whitespace into single whitespace.
+    data = [re.sub(r'\s+', ' ', sample) for sample in data]
+
+    # Strip leading and trailing whitespaces.
+    data = [sample.strip() for sample in data]
+
+    return lmp.dataset.LanguageModelDataset(batch_sequences=data)
 
 
-def _preprocess_wiki_tokens(dataset: str) -> lmp.dataset.LanguageModelDataset:
-    r"""Preprocess of wiki dataset and convert to
-    lmp.dataset.LanguageModelDataset`.
+def _preprocess_wiki_tokens(split: str) -> lmp.dataset.LanguageModelDataset:
+    r"""Preprocess `wiki.*.tokens` and convert into `lmp.dataset.LanguageModelDataset`.
 
     Args:
-        column:
-            Select the data which want to use.
+        split:
+            Split of the Wiki long term dependency language modeling dataset.
+            Must be either `train`, `valid` or `test`.
 
     Returns:
-        `lmp.dataset.LanguageModelDataset`
+        `lmp.dataset.LanguageModelDataset` from `wiki.*.tokens`.
     """
-    file_path = os.path.join(f'{lmp.path.DATA_PATH}', 'wiki.train.tokens')
+    file_path = os.path.join(f'{lmp.path.DATA_PATH}', f'wiki.{split}.tokens')
 
     if not os.path.exists(file_path):
         raise FileNotFoundError(f'file {file_path} does not exist.')
 
     with open(file_path, 'r', encoding='utf8') as input_file:
-        df = input_file.read()
+        data = input_file.read()
 
-    batch_sequences = list(filter(None, re.split(' =', df.replace('\n', ' '))))
-    return lmp.dataset.LanguageModelDataset(batch_sequences)
+    # Split based on section pattern.
+    data = re.split(r' \n( =){1,3} .+ (= ){1,3}\n ', data)
+    data = list(filter(
+        lambda sample: sample.strip()
+        and not re.match(r'( =){1,3}', sample)
+        and not re.match(r'(= ){1,3}', sample),
+        data
+    ))
+
+    # Normalized by unicode NFKC.
+    data = [unicodedata.normalize('NFKC', sample) for sample in data]
+
+    # Convert all new lines and consecutive whitespace into single whitespace.
+    data = [re.sub(r'\s+', ' ', sample) for sample in data]
+
+    # Strip leading and trailing whitespaces.
+    data = [sample.strip() for sample in data]
+
+    return lmp.dataset.LanguageModelDataset(batch_sequences=data)
 
 
-def _preprocess_word_test_v1_tokens() -> lmp.dataset.AnalogyDataset:
-    r"""Preprocess word_test_v1 dataset and convert to
-    `lmp.dataset.AnalogyDataset`.
+def _preprocess_word_test_v1() -> lmp.dataset.AnalogyDataset:
+    r"""Preprocess `word-test.v1.txt` and convert into `lmp.dataset.AnalogyDataset`.
 
     Returns:
-        `lmp.dataset.AnalogyDataset`
+        `lmp.dataset.AnalogyDataset` from `word-test.v1.txt`.
     """
     file_path = os.path.join(f'{lmp.path.DATA_PATH}', 'word-test.v1.txt')
+
     if not os.path.exists(file_path):
-        raise FileNotFoundError(
-            f'file {file_path} does not exist.'
-        )
-    with open(file_path, 'r', encoding='utf8') as txt_file:
-        samples = [line.strip() for line in txt_file.readlines()]
+        raise FileNotFoundError(f'file {file_path} does not exist.')
+
+    with open(file_path, 'r', encoding='utf8') as input_file:
+        # Remove first line since it is just copyright.
+        samples = [line.strip() for line in input_file.readlines()][1:]
 
     # Parsing.
     category = ''
     parsing_samples = []
     for sample in samples:
-        if re.match(r'^:', sample):
+        # Category line.
+        if re.match(r':', sample):
             category = sample[2:]
             continue
 
-        parsing_samples.append(re.split(r'\s+', sample)[:4] + [category])
-    return lmp.dataset.AnalogyDataset(parsing_samples[1:])
+        # Word analogy line.
+        parsing_samples.append(re.split(r'\s+', sample) + [category])
+
+    return lmp.dataset.AnalogyDataset(samples=parsing_samples)
 
 
 def load_dataset(
         dataset: str
-) -> Union[lmp.dataset.LanguageModelDataset, lmp.dataset.AnalogyDataset]:
+) -> Union[lmp.dataset.AnalogyDataset, lmp.dataset.LanguageModelDataset]:
     r"""Load dataset from downloaded files.
 
     Supported options:
@@ -144,16 +173,16 @@ def load_dataset(
         return _preprocess_news_collection(column='title')
 
     if dataset == 'wiki_train_tokens':
-        return _preprocess_wiki_tokens(dataset='train')
+        return _preprocess_wiki_tokens(split='train')
 
     if dataset == 'wiki_valid_tokens':
-        return _preprocess_wiki_tokens(dataset='valid')
+        return _preprocess_wiki_tokens(split='valid')
 
     if dataset == 'wiki_test_tokens':
-        return _preprocess_wiki_tokens(dataset='test')
+        return _preprocess_wiki_tokens(split='test')
 
     if dataset == 'word_test_v1':
-        return _preprocess_word_test_v1_tokens()
+        return _preprocess_word_test_v1()
 
     raise ValueError(
         f'dataset `{dataset}` does not support.\nSupported options:' +
@@ -173,7 +202,7 @@ def load_dataset(
 
 def load_dataset_by_config(
         config: lmp.config.BaseConfig
-) -> Union[lmp.dataset.LanguageModelDataset, lmp.dataset.AnalogyDataset]:
+) -> Union[lmp.dataset.AnalogyDataset, lmp.dataset.LanguageModelDataset]:
     r"""Load dataset from downloaded files.
 
     Args:

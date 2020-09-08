@@ -1,7 +1,7 @@
-r"""Test `lmp.dataset.LanguageModelDataset.__init__`.
+r"""Test `lmp.dataset.AnalogyDataset.__init__`.
 
 Usage:
-    python -m unittest test.lmp.dataset.LanguageModelDataset.test_init
+    python -m unittest test.lmp.dataset.AnalogyDataset.test_init
 """
 
 # built-in modules
@@ -19,17 +19,18 @@ from typing import Iterable
 
 # self-made modules
 
-from lmp.dataset._language_model_dataset import LanguageModelDataset
+from lmp.dataset._analogy_dataset import AnalogyDataset
+
 
 class TestInit(unittest.TestCase):
-    r"""Test case for `lmp.dataset.LanguageModelDataset.__init__`."""
+    r"""Test case for `lmp.dataset.AnalogyDataset.__init__`."""
 
     def test_signature(self):
         r"""Ensure signature consistency."""
         msg = 'Inconsistenct method signature.'
 
         self.assertEqual(
-            inspect.signature(LanguageModelDataset.__init__),
+            inspect.signature(AnalogyDataset.__init__),
             inspect.Signature(
                 parameters=[
                     inspect.Parameter(
@@ -38,9 +39,9 @@ class TestInit(unittest.TestCase):
                         default=inspect.Parameter.empty
                     ),
                     inspect.Parameter(
-                        name='batch_sequences',
+                        name='samples',
                         kind=inspect.Parameter.POSITIONAL_OR_KEYWORD,
-                        annotation=Iterable[str],
+                        annotation=Iterable[Iterable[str]],
                         default=inspect.Parameter.empty
                     ),
                 ],
@@ -49,10 +50,10 @@ class TestInit(unittest.TestCase):
             msg=msg
         )
 
-    def test_invalid_input_batch_sequences(self):
-        r"""Raise `TypeError` when input `batch_sequences` is invalid."""
+    def test_invalid_input_samples(self):
+        r"""Raise `TypeError` when input `samples` is invalid."""
         msg1 = (
-            'Must raise `TypeError` when input `batch_sequences` is invalid.'
+            'Must raise `TypeError` when input `samples` is invalid.'
         )
         msg2 = 'Inconsistent error message.'
         examples = (
@@ -70,23 +71,33 @@ class TestInit(unittest.TestCase):
         )
 
         for invalid_input in examples:
-            with self.assertRaises(TypeError, msg=msg1) as ctx_man:
-                LanguageModelDataset(batch_sequences=invalid_input)
+            with self.assertRaises(
+                    (TypeError, ValueError),
+                    msg=msg1
+            ) as ctx_man:
+                AnalogyDataset(samples=invalid_input)
 
-            self.assertEqual(
-                ctx_man.exception.args[0],
-                '`batch_sequences` must be an instance of `Iterable[str]`.',
-                msg=msg2
-            )
+            if isinstance(ctx_man.exception, ValueError):
+                self.assertEqual(
+                    ctx_man.exception.args[0],
+                    'Every sample must have `word_a`, `word_b`, `word_c`, '
+                    '`word_d` and category.',
+                    msg=msg2
+                )
+            elif isinstance(ctx_man.exception, TypeError):
+                self.assertEqual(
+                    ctx_man.exception.args[0],
+                    '`samples` must be an instance of `Iterable[Iterable[str]]`.',
+                    msg=msg2)
 
     def test_instance_attributes(self):
         r"""Declare required instance attributes."""
         msg1 = 'Missing instance attribute `{}`.'
         msg2 = 'Instance attribute `{}` must be an instance of `{}`.'
-        examples = (('batch_sequences', list),)
+        examples = (('samples', list),)
 
         for attr, attr_type in examples:
-            dataset = LanguageModelDataset(batch_sequences=[])
+            dataset = AnalogyDataset(samples=[])
             self.assertTrue(
                 hasattr(dataset, attr),
                 msg=msg1.format(attr)

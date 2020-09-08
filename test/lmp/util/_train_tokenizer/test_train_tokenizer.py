@@ -124,8 +124,7 @@ class TestTrainTokenizer(unittest.TestCase):
             self.assertEqual(
                 ctx_man.exception.args[0],
                 '`dataset` must be an instance of `lmp.dataset.LanguageModelDataset`.',
-                msg=msg2
-            )
+                msg=msg2)
 
     def test_invalid_input_min_count(self):
         r"""Raise exception when input `min_count` is invalid."""
@@ -199,7 +198,8 @@ class TestTrainTokenizer(unittest.TestCase):
                 min_count,
                 tokenizer_cstr
         ) in product(*self.__class__.tokenizer_parameters.values()):
-            dataset = lmp.dataset.LanguageModelDataset(batch_sequences=batch_sequences)
+            dataset = lmp.dataset.LanguageModelDataset(
+                batch_sequences=batch_sequences)
             tokenizer = tokenizer_cstr(is_uncased=is_uncased)
             v1 = tokenizer.vocab_size
 
