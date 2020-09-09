@@ -81,7 +81,7 @@ class TestPreprocessWikiTokens(unittest.TestCase):
     def test_return_type(self):
         r"""Return `lmp.dataset.LanguageModelDataset`"""
         msg = 'Must return `lmp.dataset.LanguageModelDataset`.'
-        split_parameter = ('train', 'valid','test')
+        split_parameter = ('train', 'valid', 'test')
 
         for split in split_parameter:
             dataset = lmp.util._dataset._preprocess_wiki_tokens(split)
@@ -90,6 +90,7 @@ class TestPreprocessWikiTokens(unittest.TestCase):
                 lmp.dataset.LanguageModelDataset,
                 msg=msg
             )
+
 
 if __name__ == '__main__':
     unittest.main()

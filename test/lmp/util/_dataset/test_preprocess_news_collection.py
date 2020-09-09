@@ -85,5 +85,6 @@ class TestPreprocessNewsCollection(unittest.TestCase):
                 msg=msg
             )
 
+
 if __name__ == '__main__':
     unittest.main()
