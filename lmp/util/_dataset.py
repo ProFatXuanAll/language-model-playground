@@ -39,16 +39,28 @@ def _preprocess_news_collection(
     Args:
         column:
             Column name of `news_collection.csv`. Must be either `title` or `desc`.
-
+    Raises:
+        TypeError:
+            When `column` is not instance of `str`.
+        FileNotFoundError:
+            When file does not exist.
+        KeyError:
+            When `column` is not available.
     Returns:
         `lmp.dataset.LanguageModelDataset` from `news_collection.csv`.
     """
+    if not isinstance(column, str):
+        raise TypeError('`column` must be an instance of `str`.')
+
     file_path = os.path.join(f'{lmp.path.DATA_PATH}', 'news_collection.csv')
 
     if not os.path.exists(file_path):
         raise FileNotFoundError(f'file {file_path} does not exist.')
 
     df = pd.read_csv(file_path)
+    if column not in df.columns:
+        raise KeyError('`column` is not available.')
+
     data = df[column].dropna().to_list()
 
     # Normalized by unicode NFKC.
@@ -71,9 +83,18 @@ def _preprocess_wiki_tokens(split: str) -> lmp.dataset.LanguageModelDataset:
             Split of the Wiki long term dependency language modeling dataset.
             Must be either `train`, `valid` or `test`.
 
+    Raises:
+        TypeError:
+            When `split` is not instance of `str`.
+        FileNotFoundError:
+            When file does not exist.
+
     Returns:
         `lmp.dataset.LanguageModelDataset` from `wiki.*.tokens`.
     """
+    if not isinstance(split, str):
+        raise TypeError('`split` must be an instance of `str`.')
+
     file_path = os.path.join(f'{lmp.path.DATA_PATH}', f'wiki.{split}.tokens')
 
     if not os.path.exists(file_path):
