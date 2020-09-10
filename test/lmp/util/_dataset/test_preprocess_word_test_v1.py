@@ -19,6 +19,7 @@ import unittest
 import lmp.util
 
 
+# pylint: disable=W0212
 class TestPreprocessWordTestV1(unittest.TestCase):
     r"""Test case of `lmp.util._dataset._preprocess_word_test_v1`"""
 
@@ -43,6 +44,7 @@ class TestPreprocessWordTestV1(unittest.TestCase):
             lmp.dataset.AnalogyDataset,
             msg=msg
         )
+# pylint: enable=W0212
 
 
 if __name__ == '__main__':
