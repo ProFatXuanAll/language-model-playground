@@ -39,13 +39,15 @@ def _preprocess_news_collection(
     Args:
         column:
             Column name of `news_collection.csv`. Must be either `title` or `desc`.
+
     Raises:
-        TypeError:
-            When `column` is not instance of `str`.
         FileNotFoundError:
             When file does not exist.
         KeyError:
             When `column` is not available.
+        TypeError:
+            When `column` is not instance of `str`.
+
     Returns:
         `lmp.dataset.LanguageModelDataset` from `news_collection.csv`.
     """
@@ -84,10 +86,10 @@ def _preprocess_wiki_tokens(split: str) -> lmp.dataset.LanguageModelDataset:
             Must be either `train`, `valid` or `test`.
 
     Raises:
-        TypeError:
-            When `split` is not instance of `str`.
         FileNotFoundError:
             When file does not exist.
+        TypeError:
+            When `split` is not instance of `str`.
 
     Returns:
         `lmp.dataset.LanguageModelDataset` from `wiki.*.tokens`.

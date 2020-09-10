@@ -22,6 +22,7 @@ import lmp.path
 import lmp.util
 
 
+# pylint: disable=W0212
 class TestPreprocessWikiTokens(unittest.TestCase):
     r"""Test case of `lmp.util._dataset._preprocess_news_collection`"""
 
@@ -45,7 +46,7 @@ class TestPreprocessWikiTokens(unittest.TestCase):
         )
 
     def test_invaild_input_split(self):
-        r"""Raise `TypeError` or `FileNotFoundError` when input `split` is invalid."""
+        r"""Raise exception when input `split` is invalid."""
         msg1 = (
             'Must raise `TypeError` or `FileNotFoundError` when input `split` '
             'is invaild.'
@@ -58,7 +59,10 @@ class TestPreprocessWikiTokens(unittest.TestCase):
         )
 
         for invaild_input in examples:
-            with self.assertRaises((FileNotFoundError, TypeError), msg=msg1) as ctx_man:
+            with self.assertRaises(
+                    (FileNotFoundError, TypeError),
+                    msg=msg1
+            ) as ctx_man:
                 lmp.util._dataset._preprocess_wiki_tokens(invaild_input)
 
             if isinstance(ctx_man.exception, TypeError):
@@ -67,7 +71,7 @@ class TestPreprocessWikiTokens(unittest.TestCase):
                     '`split` must be an instance of `str`.',
                     msg=msg2
                 )
-            elif isinstance(ctx_man.exception, FileNotFoundError):
+            else:
                 file_path = os.path.join(
                     f'{lmp.path.DATA_PATH}',
                     f'wiki.{invaild_input}.tokens'
@@ -90,6 +94,7 @@ class TestPreprocessWikiTokens(unittest.TestCase):
                 lmp.dataset.LanguageModelDataset,
                 msg=msg
             )
+# pylint: enable=W0212
 
 
 if __name__ == '__main__':

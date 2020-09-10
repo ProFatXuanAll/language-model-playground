@@ -20,6 +20,7 @@ import unittest
 import lmp.util
 
 
+# pylint: disable=W0212
 class TestPreprocessNewsCollection(unittest.TestCase):
     r"""Test case of `lmp.util._dataset._preprocess_news_collection`"""
 
@@ -43,7 +44,7 @@ class TestPreprocessNewsCollection(unittest.TestCase):
         )
 
     def test_invaild_input_column(self):
-        r"""Raise `TypeError` or `KeyError` when input `column` is invalid."""
+        r"""Raise exception when input `column` is invalid."""
         msg1 = (
             'Must raise `TypeError` or `KeyError` when input `column` is '
             'invaild.'
@@ -65,7 +66,7 @@ class TestPreprocessNewsCollection(unittest.TestCase):
                     '`column` must be an instance of `str`.',
                     msg=msg2
                 )
-            elif isinstance(ctx_man.exception, KeyError):
+            else:
                 self.assertEqual(
                     ctx_man.exception.args[0],
                     '`column` is not available.',
@@ -84,7 +85,7 @@ class TestPreprocessNewsCollection(unittest.TestCase):
                 lmp.dataset.LanguageModelDataset,
                 msg=msg
             )
-
+# pylint: enable=W0212
 
 if __name__ == '__main__':
     unittest.main()
