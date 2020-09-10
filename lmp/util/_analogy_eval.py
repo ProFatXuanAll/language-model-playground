@@ -104,28 +104,23 @@ def analogy_inference(
     word_c_id = torch.LongTensor([tokenizer.convert_token_to_id(word_c)])
 
     # Perform analogy calculation.
-    # Shape: `(E)`.
+    # Shape: `(1, E)`.
     out = (
         model.emb_layer(word_b_id.to(device)) -
         model.emb_layer(word_a_id.to(device)) +
         model.emb_layer(word_c_id.to(device))
     )
 
-    # Extend dimension since word embedding dimension is `(V, E)`,
-    # Shape: `(1, E)`.
-    out = out.unsqueeze(0)
-
     # Calculate cosine similarity.
     # Shape: `(V)`.
     pred = torch.nn.functional.cosine_similarity(
         out,
         model.emb_layer.weight,
-        dim=0
     )
 
     # Get the token id with maximum consine similarity.
     # Shape: `(1)`.
-    word_d_id = pred.argmax(dim=0).to('cpu')[0].item()
+    word_d_id = pred.argmax(dim=0).to('cpu').item()
 
     # Convert back to token.
     return tokenizer.convert_id_to_token(word_d_id)
