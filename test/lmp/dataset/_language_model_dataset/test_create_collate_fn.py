@@ -1,7 +1,7 @@
-r"""Test `lmp.dataset.BaseDataset.create_collate_fn`.
+r"""Test `lmp.dataset.LanguageModelDataset.create_collate_fn`.
 
 Usage:
-    python -m unittest test.lmp.dataset.test_create_collate_fn
+    python -m unittest test.lmp.dataset.LanguageModelDataset.test_create_collate_fn
 """
 
 # built-in modules
@@ -25,7 +25,7 @@ import torch
 
 # self-made modules
 
-from lmp.dataset import BaseDataset
+from lmp.dataset._language_model_dataset import LanguageModelDataset
 from lmp.tokenizer import BaseTokenizer
 from lmp.tokenizer import CharDictTokenizer
 from lmp.tokenizer import CharListTokenizer
@@ -34,14 +34,14 @@ from lmp.tokenizer import WhitespaceListTokenizer
 
 
 class TestCreateCollateFn(unittest.TestCase):
-    r"""Test case for `lmp.dataset.BaseDataset.create_collate_fn`."""
+    r"""Test case for `lmp.dataset.LanguageModelDataset.create_collate_fn`."""
 
     def test_signature(self):
         r"""Ensure signature consistency."""
         msg = 'Inconsistenct method signature.'
 
         self.assertEqual(
-            inspect.signature(BaseDataset.create_collate_fn),
+            inspect.signature(LanguageModelDataset.create_collate_fn),
             inspect.Signature(
                 parameters=[
                     inspect.Parameter(
@@ -77,11 +77,14 @@ class TestCreateCollateFn(unittest.TestCase):
 
         for invalid_input in examples:
             with self.assertRaises(TypeError, msg=msg1) as ctx_man:
-                BaseDataset([]).create_collate_fn(tokenizer=invalid_input)
+                LanguageModelDataset([]).create_collate_fn(
+                    tokenizer=invalid_input
+                )
 
             self.assertEqual(
                 ctx_man.exception.args[0],
-                '`tokenizer` must be an instance of `lmp.tokenizer.BaseTokenizer`.',
+                '`tokenizer` must be an instance of'
+                ' `lmp.tokenizer.BaseTokenizer`.',
                 msg=msg2)
 
     def test_invalid_input_max_seq_len(self):
@@ -102,7 +105,7 @@ class TestCreateCollateFn(unittest.TestCase):
                     (TypeError, ValueError),
                     msg=msg1
             ) as cxt_man:
-                BaseDataset([]).create_collate_fn(
+                LanguageModelDataset([]).create_collate_fn(
                     tokenizer=CharDictTokenizer(),
                     max_seq_len=invalid_input
                 )
@@ -132,7 +135,7 @@ class TestCreateCollateFn(unittest.TestCase):
         )
 
         for tokenizer_class in examples:
-            collate_fn = BaseDataset([]).create_collate_fn(
+            collate_fn = LanguageModelDataset([]).create_collate_fn(
                 tokenizer=tokenizer_class()
             )
             self.assertTrue(inspect.isfunction(collate_fn))

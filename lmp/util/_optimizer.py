@@ -194,7 +194,10 @@ def load_optimizer_by_config(
     )):
         raise TypeError(
             '`model` must be an instance of '
-            '`Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel]`.'
+            '`Union[lmp.model.BaseRNNModel, '
+            'lmp.model.BaseResRNNModel, '
+            'lmp.model.BaseSelfAttentionRNNModel, '
+            'lmp.model.BaseSelfAttentionResRNNModel]`.'
         )
 
     return load_optimizer(

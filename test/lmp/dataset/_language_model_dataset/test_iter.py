@@ -1,7 +1,7 @@
-r"""Test `lmp.dataset.BaseDataset.__iter__`.
+r"""Test `lmp.dataset.LanguageModelDataset.__iter__`.
 
 Usage:
-    python -m unittest test.lmp.dataset.test_iter
+    python -m unittest test.lmp.dataset.LanguageModelDataset.test_iter
 """
 
 # built-in modules
@@ -19,18 +19,18 @@ from typing import Generator
 
 # self-made modules
 
-from lmp.dataset import BaseDataset
+from lmp.dataset._language_model_dataset import LanguageModelDataset
 
 
 class TestIter(unittest.TestCase):
-    r"""Test case for `lmp.dataset.BaseDataset.__iter__`."""
+    r"""Test case for `lmp.dataset.LanguageModelDataset.__iter__`."""
 
     def test_signature(self):
         r"""Ensure signature consistency."""
         msg = 'Inconsistenct method signature.'
 
         self.assertEqual(
-            inspect.signature(BaseDataset.__iter__),
+            inspect.signature(LanguageModelDataset.__iter__),
             inspect.Signature(
                 parameters=[
                     inspect.Parameter(
@@ -64,7 +64,7 @@ class TestIter(unittest.TestCase):
         )
 
         for batch_sequences in examples:
-            dataset = BaseDataset(batch_sequences=batch_sequences)
+            dataset = LanguageModelDataset(batch_sequences=batch_sequences)
             self.assertIsInstance(dataset, Iterable, msg=msg)
 
             for ans_sequence, sequence in zip(batch_sequences, dataset):

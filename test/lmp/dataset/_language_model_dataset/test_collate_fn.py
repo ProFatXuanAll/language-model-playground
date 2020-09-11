@@ -1,7 +1,7 @@
-r"""Test `lmp.dataset.BaseDataset.collate_fn`.
+r"""Test `lmp.dataset.LanguageModelDataset.collate_fn`.
 
 Usage:
-    python -m unittest test.lmp.dataset.test_collate_fn
+    python -m unittest test.lmp.dataset.LanguageModelDataset.test_collate_fn
 """
 
 # built-in modules
@@ -25,7 +25,7 @@ import torch
 
 # self-made modules
 
-from lmp.dataset import BaseDataset
+from lmp.dataset._language_model_dataset import LanguageModelDataset
 from lmp.tokenizer import CharDictTokenizer
 from lmp.tokenizer import CharListTokenizer
 from lmp.tokenizer import WhitespaceDictTokenizer
@@ -33,7 +33,7 @@ from lmp.tokenizer import WhitespaceListTokenizer
 
 
 class TestCollateFn(unittest.TestCase):
-    r"""Test case for `lmp.dataset.BaseDataset.collate_fn`."""
+    r"""Test case for `lmp.dataset.LanguageModelDataset.collate_fn`."""
 
     @classmethod
     def setUpClass(cls):
@@ -62,7 +62,7 @@ class TestCollateFn(unittest.TestCase):
             for max_seq_len in cls.max_seq_len_range:
                 for tokenizer_class in cls.tokenizer_class_range:
                     self.collate_fn_objs.append({
-                        'collate_fn': BaseDataset.create_collate_fn(
+                        'collate_fn': LanguageModelDataset.create_collate_fn(
                             tokenizer=tokenizer_class(is_uncased=is_uncased),
                             max_seq_len=max_seq_len
                         ),

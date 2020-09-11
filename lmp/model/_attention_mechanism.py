@@ -38,7 +38,7 @@ def attention_mechanism(
     # mask 維度: (B, S, S)
     mask = torch.ones(seq_len, seq_len, dtype=torch.bool).to(device)
     mask = torch.triu(mask, diagonal=1)
-    mask = mask.unsqueeze(0) # (1, S, S)
+    mask = mask.unsqueeze(0)  # (1, S, S)
     # 將未來部份的資訊遮住
     scores.masked_fill_(mask, -1e9)
 
@@ -46,4 +46,4 @@ def attention_mechanism(
     a_matrix = torch.nn.functional.softmax(scores, dim=2)
 
     # return 維度: (B, S, H)
-    return torch.nn.functional.dropout(a_matrix.matmul(value), p=0.1)
+    return a_matrix.matmul(value)

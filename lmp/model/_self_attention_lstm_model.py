@@ -22,7 +22,6 @@ import torch.nn
 
 # self-made modules
 
-from lmp.model._attention_mechanism import attention_mechanism
 from lmp.model._base_self_attention_rnn_model import BaseSelfAttentionRNNModel
 
 

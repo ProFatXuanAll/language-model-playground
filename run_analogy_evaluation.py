@@ -1,9 +1,9 @@
-r"""Calculating perplexities on dataset.
+r"""Calculating accuracy on word analogy dataset.
 
 Usage:
-    python run_perplexity_evaluation.py ...
+    python run_analogy_evaluation.py ...
 
-Run 'python run_perplexity_evaluation.py --help' for help.
+Run 'python run_analogy_evaluation.py --help' for help.
 """
 # built-in modules
 
@@ -16,11 +16,12 @@ import argparse
 
 # 3rd-party modules
 
-import numpy as np
+import torch
 
 # self-made modules
 
 import lmp
+
 
 if __name__ == '__main__':
     # Parse argument from standard input.
@@ -35,7 +36,7 @@ if __name__ == '__main__':
     )
     parser.add_argument(
         '--dataset',
-        help='Name of the dataset to calculate perplexity.',
+        help='Name of the dataset to perform analogy.',
         required=True,
         type=str,
     )
@@ -70,13 +71,13 @@ if __name__ == '__main__':
         tokenizer=tokenizer
     )
 
-    # Calculating dataset perplexity.
-    perplexities = lmp.util.batch_perplexity_eval(
+    # Calculating word analogy dataset accuracy per category.
+    acc_per_cat = lmp.util.analogy_eval(
         dataset=dataset,
         device=config.device,
         model=model,
         tokenizer=tokenizer
     )
 
-    # Print average perplexity.
-    print("Average perplexity:", np.mean(perplexities))
+    for category in acc_per_cat:
+        print(f'category: {category}, accuracy: {acc_per_cat[category]}')

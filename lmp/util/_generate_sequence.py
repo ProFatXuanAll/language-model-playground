@@ -92,10 +92,10 @@ def generate_sequence(
         raise TypeError(
             '`model` must be an instance of '
             '`Union['
-                'lmp.model.BaseRNNModel, '
-                'lmp.model.BaseResRNNModel, '
-                'lmp.model.BaseSelfAttentionRNNModel, '
-                'lmp.model.BaseSelfAttentionResRNNModel'
+            'lmp.model.BaseRNNModel, '
+            'lmp.model.BaseResRNNModel, '
+            'lmp.model.BaseSelfAttentionRNNModel, '
+            'lmp.model.BaseSelfAttentionResRNNModel'
             ']`.'
         )
 

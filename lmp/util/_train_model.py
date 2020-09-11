@@ -122,7 +122,10 @@ def train_model(
     )):
         raise TypeError(
             '`model` must be an instance of '
-            '`Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel]`.'
+            '`Union[lmp.model.BaseRNNModel, '
+            'lmp.model.BaseResRNNModel, '
+            'lmp.model.BaseSelfAttentionRNNModel, '
+            'lmp.model.BaseSelfAttentionResRNNModel]`.'
         )
 
     if not isinstance(optimizer, (torch.optim.SGD, torch.optim.Adam)):

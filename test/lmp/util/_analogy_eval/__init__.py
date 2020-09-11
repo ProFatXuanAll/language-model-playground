@@ -1,7 +1,7 @@
-r"""Test `lmp.dataset`.
+r"""Test `lmp.util._analogy_eval.py`.
 
 Usage:
-    python -m unittest test.lmp.dataset.__init__
+    python -m unittest test.lmp.util._analogy_eval.__init__
 """
 
 # built-in modules
@@ -15,8 +15,8 @@ import inspect
 import unittest
 
 
-class TestDataset(unittest.TestCase):
-    r"""Test case for `lmp.dataset`."""
+class TestUtilAnalogyEval(unittest.TestCase):
+    r"""Test case for `lmp.util._analogy_eval.py`."""
 
     def test_signature(self):
         r"""Ensure signature consistency."""
@@ -25,12 +25,12 @@ class TestDataset(unittest.TestCase):
         try:
             # pylint: disable=C0415
             import lmp
-            import lmp.dataset
+            import lmp.util._analogy_eval
             # pylint: enable=C0415
 
             # pylint: disable=W0212
             self.assertTrue(
-                inspect.ismodule(lmp.dataset),
+                inspect.ismodule(lmp.util._analogy_eval),
                 msg=msg
             )
             # pylint: enable=W0212
@@ -40,26 +40,28 @@ class TestDataset(unittest.TestCase):
     def test_module_attributes(self):
         r"""Declare required module attributes."""
         msg1 = 'Missing module attribute `{}`.'
-        msg2 = 'Module attribute `{}` must be a class.'
+        msg2 = 'Module attribute `{}` must be a function.'
         msg3 = 'Inconsistent module signature.'
         examples = (
-            'LanguageModelDataset',
-            'AnalogyDataset',
+            'analogy_inference',
+            'analogy_eval',
         )
 
         try:
             # pylint: disable=C0415
             # pylint: disable=W0212
             import lmp
-            import lmp.dataset
+            import lmp.util._analogy_eval
 
             for attr in examples:
                 self.assertTrue(
-                    hasattr(lmp.dataset, attr),
+                    hasattr(lmp.util._analogy_eval, attr),
                     msg=msg1.format(attr)
                 )
                 self.assertTrue(
-                    inspect.isclass(getattr(lmp.dataset, attr)),
+                    inspect.isfunction(
+                        getattr(lmp.util._analogy_eval, attr)
+                    ),
                     msg=msg2.format(attr)
                 )
             # pylint: enable=W0212

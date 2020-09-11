@@ -1,7 +1,7 @@
-r"""Test `lmp.util.perplexity_eval.`.
+r"""Test `lmp.util.analogy_inference`.
 
 Usage:
-    python -m unittest test.lmp.util._perplexity_eval.test_perplexity_eval
+    python -m unittest test.lmp.util._analogy_eval.test_analogy_inference
 """
 
 # built-in modules
@@ -27,11 +27,12 @@ import torch
 
 import lmp.model
 import lmp.tokenizer
-import lmp.util
+
+from lmp.util._analogy_eval import analogy_inference
 
 
-class TestLoadOptimizerByConfig(unittest.TestCase):
-    r"""Test case for `lmp.util.perplexity_eval`."""
+class TestAnalogyInference(unittest.TestCase):
+    r"""Test case of `lmp.util.analogy_inference"""
 
     @classmethod
     def setUpClass(cls):
@@ -57,11 +58,6 @@ class TestLoadOptimizerByConfig(unittest.TestCase):
             ],
             'num_linear_layers': [1, 2],
             'num_rnn_layers': [1, 2],
-            'sequence': [
-                'hello',
-                'world',
-                'hello world',
-            ],
             'tokenizer_cstr': [
                 lmp.tokenizer.CharDictTokenizer,
                 lmp.tokenizer.CharListTokenizer,
@@ -88,23 +84,26 @@ class TestLoadOptimizerByConfig(unittest.TestCase):
             pad_token_id=0,
             vocab_size=5
         )
-        self.sequence = ''
-        self.tokenizer = lmp.tokenizer.CharDictTokenizer()
+        self.tokenizer = lmp.tokenizer.WhitespaceDictTokenizer()
+        self.word_a = 'Taiwan'
+        self.word_b = 'Taipei'
+        self.word_c = 'Japan'
 
     def tearDown(self):
-        r"""Delete fixed parameters."""
+        r"""Delete fixed parameters"""
         del self.device
         del self.model
-        del self.sequence
         del self.tokenizer
+        del self.word_a
+        del self.word_b
+        del self.word_c
         gc.collect()
 
     def test_signature(self):
         r"""Ensure signature consistency."""
         msg = 'Inconsistent method signature.'
-
         self.assertEqual(
-            inspect.signature(lmp.util.perplexity_eval),
+            inspect.signature(lmp.util.analogy_inference),
             inspect.Signature(
                 parameters=[
                     inspect.Parameter(
@@ -125,24 +124,36 @@ class TestLoadOptimizerByConfig(unittest.TestCase):
                         default=inspect.Parameter.empty
                     ),
                     inspect.Parameter(
-                        name='sequence',
+                        name='tokenizer',
+                        kind=inspect.Parameter.POSITIONAL_OR_KEYWORD,
+                        annotation=lmp.tokenizer.BaseTokenizer,
+                        default=inspect.Parameter.empty
+                    ),
+                    inspect.Parameter(
+                        name='word_a',
                         kind=inspect.Parameter.POSITIONAL_OR_KEYWORD,
                         annotation=str,
                         default=inspect.Parameter.empty
                     ),
                     inspect.Parameter(
-                        name='tokenizer',
+                        name='word_b',
                         kind=inspect.Parameter.POSITIONAL_OR_KEYWORD,
-                        annotation=lmp.tokenizer.BaseTokenizer,
+                        annotation=str,
+                        default=inspect.Parameter.empty
+                    ),
+                    inspect.Parameter(
+                        name='word_c',
+                        kind=inspect.Parameter.POSITIONAL_OR_KEYWORD,
+                        annotation=str,
                         default=inspect.Parameter.empty
                     )
                 ],
-                return_annotation=float
+                return_annotation=str
             ),
             msg=msg
         )
 
-    def test_invalid_input_device(self):
+    def test_invaild_input_device(self):
         r"""Raise `TypeError` when input `device` is invalid."""
         msg1 = 'Must raise `TypeError` when input `device` is invalid.'
         msg2 = 'Inconsistent error message.'
@@ -154,11 +165,13 @@ class TestLoadOptimizerByConfig(unittest.TestCase):
 
         for invalid_input in examples:
             with self.assertRaises(TypeError, msg=msg1) as ctx_man:
-                lmp.util.perplexity_eval(
+                lmp.util.analogy_inference(
                     device=invalid_input,
                     model=self.model,
-                    sequence=self.sequence,
-                    tokenizer=self.tokenizer
+                    tokenizer=self.tokenizer,
+                    word_a=self.word_a,
+                    word_b=self.word_b,
+                    word_c=self.word_c
                 )
 
             self.assertEqual(
@@ -179,11 +192,13 @@ class TestLoadOptimizerByConfig(unittest.TestCase):
 
         for invalid_input in examples:
             with self.assertRaises(TypeError, msg=msg1) as ctx_man:
-                lmp.util.perplexity_eval(
+                lmp.util.analogy_inference(
                     device=self.device,
                     model=invalid_input,
-                    sequence=self.sequence,
-                    tokenizer=self.tokenizer
+                    tokenizer=self.tokenizer,
+                    word_a=self.word_a,
+                    word_b=self.word_b,
+                    word_c=self.word_c
                 )
 
             self.assertEqual(
@@ -195,44 +210,6 @@ class TestLoadOptimizerByConfig(unittest.TestCase):
                 'lmp.model.BaseSelfAttentionResRNNModel]`.',
                 msg=msg2
             )
-
-    def test_invalid_input_sequence(self):
-        r"""Raise exception when input `sequence` is invalid."""
-        msg1 = (
-            'Must raise `TypeError` or `ValueError` when input `sequence` is '
-            'invalid.'
-        )
-        msg2 = 'Inconsistent error message.'
-        examples = (
-            False, True, 0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf,
-            -math.inf, 0j, 1j, '', b'', (), [], {}, set(), object(), lambda x: x,
-            type, None, NotImplemented, ...
-        )
-
-        for invalid_input in examples:
-            with self.assertRaises(
-                    (TypeError, ValueError),
-                    msg=msg1
-            ) as ctx_man:
-                lmp.util.perplexity_eval(
-                    device=self.device,
-                    model=self.model,
-                    sequence=invalid_input,
-                    tokenizer=self.tokenizer
-                )
-
-            if isinstance(ctx_man.exception, TypeError):
-                self.assertEqual(
-                    ctx_man.exception.args[0],
-                    '`sequence` must be an instance of `str`.',
-                    msg=msg2
-                )
-            else:
-                self.assertEqual(
-                    ctx_man.exception.args[0],
-                    '`sequence` must not be empty.',
-                    msg=msg2
-                )
 
     def test_invalid_input_tokenizer(self):
         r"""Raise `TypeError` when input `tokenizer` is invalid."""
@@ -246,11 +223,13 @@ class TestLoadOptimizerByConfig(unittest.TestCase):
 
         for invalid_input in examples:
             with self.assertRaises(TypeError, msg=msg1) as ctx_man:
-                lmp.util.perplexity_eval(
+                lmp.util.analogy_inference(
                     device=self.device,
                     model=self.model,
-                    sequence=self.sequence,
-                    tokenizer=invalid_input
+                    tokenizer=invalid_input,
+                    word_a=self.word_a,
+                    word_b=self.word_b,
+                    word_c=self.word_c
                 )
 
             self.assertEqual(
@@ -260,127 +239,123 @@ class TestLoadOptimizerByConfig(unittest.TestCase):
                 msg=msg2
             )
 
-    def test_return_type(self):
-        r"""Return `float`."""
-        msg = 'Must return `float`.'
+    def test_invalid_input_word_a(self):
+        r"""Raise `TypeError` when input `word_a` is invalid."""
+        msg1 = 'Must raise `TypeError` when input `word_a` is invalid.'
+        msg2 = 'Inconsistent error message.'
+        examples = (
+            False, True, 0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf,
+            -math.inf, 0j, 1j, b'', (), [], {}, set(), object(), lambda x: x,
+            type, None, NotImplemented, ...
+        )
 
-        for (
-                d_emb,
-                d_hid,
-                dropout,
-                is_uncased,
-                model_cstr,
-                num_linear_layers,
-                num_rnn_layers,
-                sequence,
-                tokenizer_cstr,
-        ) in product(*self.__class__.model_parameters.values()):
-            tokenizer = tokenizer_cstr(is_uncased=is_uncased)
-            pad_token_id = tokenizer.convert_token_to_id(tokenizer.pad_token)
-            vocab_size = tokenizer.vocab_size
-            model = model_cstr(
-                d_emb=d_emb,
-                d_hid=d_hid,
-                dropout=dropout,
-                num_linear_layers=num_linear_layers,
-                num_rnn_layers=num_rnn_layers,
-                pad_token_id=pad_token_id,
-                vocab_size=vocab_size
-            )
-
-            self.assertIsInstance(
-                lmp.util.perplexity_eval(
-                    device=torch.device('cpu'),
-                    model=model,
-                    sequence=sequence,
-                    tokenizer=tokenizer
-                ),
-                float,
-                msg=msg
-            )
-
-    def test_return_value(self):
-        r"""Perplexity is greater than or equal to zero."""
-        msg = 'Perplexity must be greater than or equal to zero.'
-
-        for (
-                d_emb,
-                d_hid,
-                dropout,
-                is_uncased,
-                model_cstr,
-                num_linear_layers,
-                num_rnn_layers,
-                sequence,
-                tokenizer_cstr,
-        ) in product(*self.__class__.model_parameters.values()):
-            tokenizer = tokenizer_cstr(is_uncased=is_uncased)
-            pad_token_id = tokenizer.convert_token_to_id(tokenizer.pad_token)
-            vocab_size = tokenizer.vocab_size
-            model = model_cstr(
-                d_emb=d_emb,
-                d_hid=d_hid,
-                dropout=dropout,
-                num_linear_layers=num_linear_layers,
-                num_rnn_layers=num_rnn_layers,
-                pad_token_id=pad_token_id,
-                vocab_size=vocab_size
-            )
-
-            self.assertGreaterEqual(
-                lmp.util.perplexity_eval(
-                    device=torch.device('cpu'),
-                    model=model,
-                    sequence=sequence,
-                    tokenizer=tokenizer
-                ),
-                0,
-                msg=msg
-            )
-
-    def test_pure_function(self):
-        r"""Perplexity must be the same when given the same input."""
-        msg = 'Perplexity must be the same when given the same input'
-
-        for (
-                d_emb,
-                d_hid,
-                dropout,
-                is_uncased,
-                model_cstr,
-                num_linear_layers,
-                num_rnn_layers,
-                sequence,
-                tokenizer_cstr,
-        ) in product(*self.__class__.model_parameters.values()):
-            tokenizer = tokenizer_cstr(is_uncased=is_uncased)
-            pad_token_id = tokenizer.convert_token_to_id(tokenizer.pad_token)
-            vocab_size = tokenizer.vocab_size
-            model = model_cstr(
-                d_emb=d_emb,
-                d_hid=d_hid,
-                dropout=dropout,
-                num_linear_layers=num_linear_layers,
-                num_rnn_layers=num_rnn_layers,
-                pad_token_id=pad_token_id,
-                vocab_size=vocab_size
-            )
+        for invalid_input in examples:
+            with self.assertRaises(TypeError, msg=msg1) as ctx_man:
+                lmp.util.analogy_inference(
+                    device=self.device,
+                    model=self.model,
+                    tokenizer=self.tokenizer,
+                    word_a=invalid_input,
+                    word_b=self.word_b,
+                    word_c=self.word_c
+                )
 
             self.assertEqual(
-                lmp.util.perplexity_eval(
-                    device=torch.device('cpu'),
-                    model=model,
-                    sequence=sequence,
-                    tokenizer=tokenizer
-                ),
-                lmp.util.perplexity_eval(
-                    device=torch.device('cpu'),
-                    model=model,
-                    sequence=sequence,
-                    tokenizer=tokenizer
-                ),
-                msg=msg
+                ctx_man.exception.args[0],
+                '`word_a` must be an instance of `str`.',
+                msg=msg2
             )
+
+    def test_invalid_input_word_b(self):
+        r"""Raise `TypeError` when input `word_b` is invalid."""
+        msg1 = 'Must raise `TypeError` when input `word_b` is invalid.'
+        msg2 = 'Inconsistent error message.'
+        examples = (
+            False, True, 0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf,
+            -math.inf, 0j, 1j, b'', (), [], {}, set(), object(), lambda x: x,
+            type, None, NotImplemented, ...
+        )
+
+        for invalid_input in examples:
+            with self.assertRaises(TypeError, msg=msg1) as ctx_man:
+                lmp.util.analogy_inference(
+                    device=self.device,
+                    model=self.model,
+                    tokenizer=self.tokenizer,
+                    word_a=self.word_a,
+                    word_b=invalid_input,
+                    word_c=self.word_c
+                )
+
+            self.assertEqual(
+                ctx_man.exception.args[0],
+                '`word_b` must be an instance of `str`.',
+                msg=msg2
+            )
+
+    def test_invalid_input_word_c(self):
+        r"""Raise `TypeError` when input `word_c` is invalid."""
+        msg1 = 'Must raise `TypeError` when input `word_c` is invalid.'
+        msg2 = 'Inconsistent error message.'
+        examples = (
+            False, True, 0, 1, -1, 0.0, 1.0, math.nan, -math.nan, math.inf,
+            -math.inf, 0j, 1j, b'', (), [], {}, set(), object(), lambda x: x,
+            type, None, NotImplemented, ...
+        )
+
+        for invalid_input in examples:
+            with self.assertRaises(TypeError, msg=msg1) as ctx_man:
+                lmp.util.analogy_inference(
+                    device=self.device,
+                    model=self.model,
+                    tokenizer=self.tokenizer,
+                    word_a=self.word_a,
+                    word_b=self.word_b,
+                    word_c=invalid_input
+                )
+
+            self.assertEqual(
+                ctx_man.exception.args[0],
+                '`word_c` must be an instance of `str`.',
+                msg=msg2
+            )
+
+    def test_return_type(self):
+        r"""Return `str`."""
+        msg = 'Must return `str`.'
+
+        for (
+                d_emb,
+                d_hid,
+                dropout,
+                is_uncased,
+                model_cstr,
+                num_linear_layers,
+                num_rnn_layers,
+                tokenizer_cstr,
+        ) in product(*self.__class__.model_parameters.values()):
+            tokenizer = tokenizer_cstr(is_uncased=is_uncased)
+            pad_token_id = tokenizer.convert_token_to_id(tokenizer.pad_token)
+            vocab_size = tokenizer.vocab_size
+            model = model_cstr(
+                d_emb=d_emb,
+                d_hid=d_hid,
+                dropout=dropout,
+                num_linear_layers=num_linear_layers,
+                num_rnn_layers=num_rnn_layers,
+                pad_token_id=pad_token_id,
+                vocab_size=vocab_size
+            )
+
+            pred_word = analogy_inference(
+                device=self.device,
+                model=model,
+                tokenizer=tokenizer,
+                word_a=self.word_a,
+                word_b=self.word_b,
+                word_c=self.word_c
+            )
+            self.assertIsInstance(pred_word, str, msg=msg)
 
 
 if __name__ == '__main__':

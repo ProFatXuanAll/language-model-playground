@@ -74,6 +74,36 @@ class TestTrainModel(unittest.TestCase):
                     torch.optim.Adam,
                     lmp.tokenizer.CharListTokenizer(is_uncased=False),
                 ),
+                (
+                    lmp.model.BaseSelfAttentionRNNModel,
+                    torch.optim.SGD,
+                    lmp.tokenizer.CharDictTokenizer(is_uncased=False),
+                ),
+                (
+                    lmp.model.SelfAttentionGRUModel,
+                    torch.optim.Adam,
+                    lmp.tokenizer.CharListTokenizer(is_uncased=False),
+                ),
+                (
+                    lmp.model.SelfAttentionLSTMModel,
+                    torch.optim.SGD,
+                    lmp.tokenizer.CharDictTokenizer(is_uncased=False),
+                ),
+                (
+                    lmp.model.BaseSelfAttentionResRNNModel,
+                    torch.optim.Adam,
+                    lmp.tokenizer.CharListTokenizer(is_uncased=False),
+                ),
+                (
+                    lmp.model.SelfAttentionResGRUModel,
+                    torch.optim.SGD,
+                    lmp.tokenizer.CharDictTokenizer(is_uncased=False),
+                ),
+                (
+                    lmp.model.SelfAttentionResLSTMModel,
+                    torch.optim.Adam,
+                    lmp.tokenizer.CharListTokenizer(is_uncased=False),
+                ),
             ],
             'vocab_size': [5, 10],
         }
@@ -200,7 +230,9 @@ class TestTrainModel(unittest.TestCase):
                         kind=inspect.Parameter.POSITIONAL_OR_KEYWORD,
                         annotation=Union[
                             lmp.model.BaseRNNModel,
-                            lmp.model.BaseResRNNModel
+                            lmp.model.BaseResRNNModel,
+                            lmp.model.BaseSelfAttentionRNNModel,
+                            lmp.model.BaseSelfAttentionResRNNModel
                         ],
                         default=inspect.Parameter.empty
                     ),
@@ -536,7 +568,10 @@ class TestTrainModel(unittest.TestCase):
             self.assertEqual(
                 ctx_man.exception.args[0],
                 '`model` must be an instance of '
-                '`Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel]`.',
+                '`Union[lmp.model.BaseRNNModel, '
+                'lmp.model.BaseResRNNModel, '
+                'lmp.model.BaseSelfAttentionRNNModel, '
+                'lmp.model.BaseSelfAttentionResRNNModel]`.',
                 msg=msg2
             )
 
@@ -630,8 +665,8 @@ class TestTrainModel(unittest.TestCase):
         ) in product(*self.__class__.train_parameters.values()):
             data_loader = torch.utils.data.DataLoader(
                 batch_size=batch_size,
-                dataset=lmp.dataset.BaseDataset([''] * batch_size),
-                collate_fn=lmp.dataset.BaseDataset.create_collate_fn(
+                dataset=lmp.dataset.LanguageModelDataset([''] * batch_size),
+                collate_fn=lmp.dataset.LanguageModelDataset.create_collate_fn(
                     tokenizer=tokenizer,
                     max_seq_len=-1
                 )
@@ -703,8 +738,8 @@ class TestTrainModel(unittest.TestCase):
         ) in product(*self.__class__.train_parameters.values()):
             data_loader = torch.utils.data.DataLoader(
                 batch_size=batch_size,
-                dataset=lmp.dataset.BaseDataset([''] * batch_size),
-                collate_fn=lmp.dataset.BaseDataset.create_collate_fn(
+                dataset=lmp.dataset.LanguageModelDataset([''] * batch_size),
+                collate_fn=lmp.dataset.LanguageModelDataset.create_collate_fn(
                     tokenizer=tokenizer,
                     max_seq_len=-1
                 )
@@ -764,8 +799,8 @@ class TestTrainModel(unittest.TestCase):
         ) in product(*self.__class__.train_parameters.values()):
             data_loader = torch.utils.data.DataLoader(
                 batch_size=batch_size,
-                dataset=lmp.dataset.BaseDataset([''] * batch_size),
-                collate_fn=lmp.dataset.BaseDataset.create_collate_fn(
+                dataset=lmp.dataset.LanguageModelDataset([''] * batch_size),
+                collate_fn=lmp.dataset.LanguageModelDataset.create_collate_fn(
                     tokenizer=tokenizer,
                     max_seq_len=-1
                 )

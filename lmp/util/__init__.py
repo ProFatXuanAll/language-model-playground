@@ -24,6 +24,8 @@ from __future__ import unicode_literals
 
 # self-made modules
 
+from lmp.util._analogy_eval import analogy_eval
+from lmp.util._analogy_eval import analogy_inference
 from lmp.util._config import load_config
 from lmp.util._dataset import load_dataset
 from lmp.util._dataset import load_dataset_by_config

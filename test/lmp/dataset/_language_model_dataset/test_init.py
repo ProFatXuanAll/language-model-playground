@@ -1,7 +1,7 @@
-r"""Test `lmp.dataset.BaseDataset.__init__`.
+r"""Test `lmp.dataset.LanguageModelDataset.__init__`.
 
 Usage:
-    python -m unittest test.lmp.dataset.test_init
+    python -m unittest test.lmp.dataset.LanguageModelDataset.test_init
 """
 
 # built-in modules
@@ -19,18 +19,18 @@ from typing import Iterable
 
 # self-made modules
 
-from lmp.dataset import BaseDataset
+from lmp.dataset._language_model_dataset import LanguageModelDataset
 
 
 class TestInit(unittest.TestCase):
-    r"""Test case for `lmp.dataset.BaseDataset.__init__`."""
+    r"""Test case for `lmp.dataset.LanguageModelDataset.__init__`."""
 
     def test_signature(self):
         r"""Ensure signature consistency."""
         msg = 'Inconsistenct method signature.'
 
         self.assertEqual(
-            inspect.signature(BaseDataset.__init__),
+            inspect.signature(LanguageModelDataset.__init__),
             inspect.Signature(
                 parameters=[
                     inspect.Parameter(
@@ -72,7 +72,7 @@ class TestInit(unittest.TestCase):
 
         for invalid_input in examples:
             with self.assertRaises(TypeError, msg=msg1) as ctx_man:
-                BaseDataset(batch_sequences=invalid_input)
+                LanguageModelDataset(batch_sequences=invalid_input)
 
             self.assertEqual(
                 ctx_man.exception.args[0],
@@ -87,7 +87,7 @@ class TestInit(unittest.TestCase):
         examples = (('batch_sequences', list),)
 
         for attr, attr_type in examples:
-            dataset = BaseDataset(batch_sequences=[])
+            dataset = LanguageModelDataset(batch_sequences=[])
             self.assertTrue(
                 hasattr(dataset, attr),
                 msg=msg1.format(attr)

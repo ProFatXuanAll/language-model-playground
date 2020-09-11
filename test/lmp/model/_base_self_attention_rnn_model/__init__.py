@@ -43,7 +43,7 @@ class TestBaseSelfAttentionResRNNModel(unittest.TestCase):
         msg1 = 'Missing module attribute `{}`.'
         msg2 = 'Module attribute `{}` must be a class.'
         msg3 = 'Inconsistent module signature.'
-        examples = ('BaseSelfAttentionResRNNModel',)
+        examples = ('BaseSelfAttentionRNNModel',)
 
         try:
             # pylint: disable=C0415

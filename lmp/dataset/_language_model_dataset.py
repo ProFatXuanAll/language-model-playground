@@ -3,7 +3,7 @@ r"""Language model dataset.
 Usage:
     import lmp.dataset
 
-    dataset = lmp.dataset.BaseDataset(...)
+    dataset = lmp.dataset.LanguageModelDataset(...)
 """
 
 # built-in modules
@@ -28,12 +28,13 @@ import lmp.tokenizer
 
 
 # Define types for type annotation.
+
 CollateFnReturn = Tuple[torch.Tensor, torch.Tensor]
 CollateFn = Callable[[Iterable[str]], CollateFnReturn]
 
 
-class BaseDataset(torch.utils.data.Dataset):
-    r"""Dataset class for generating language model samples.
+class LanguageModelDataset(torch.utils.data.Dataset):
+    r"""Dataset class generating language model samples.
 
     Attributes:
         batch_sequences:

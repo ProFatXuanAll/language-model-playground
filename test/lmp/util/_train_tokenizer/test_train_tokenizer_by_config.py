@@ -66,7 +66,7 @@ class TestTrainTokenizerByConfig(unittest.TestCase):
             experiment=self.__class__.experiment,
             tokenizer_class='char_dict'
         )
-        self.dataset = lmp.dataset.BaseDataset([''])
+        self.dataset = lmp.dataset.LanguageModelDataset([''])
         self.tokenizer = lmp.tokenizer.CharDictTokenizer()
 
     def tearDown(self):
@@ -93,7 +93,7 @@ class TestTrainTokenizerByConfig(unittest.TestCase):
                     inspect.Parameter(
                         name='dataset',
                         kind=inspect.Parameter.POSITIONAL_OR_KEYWORD,
-                        annotation=lmp.dataset.BaseDataset,
+                        annotation=lmp.dataset.LanguageModelDataset,
                         default=inspect.Parameter.empty
                     ),
                     inspect.Parameter(
@@ -152,9 +152,8 @@ class TestTrainTokenizerByConfig(unittest.TestCase):
 
             self.assertEqual(
                 ctx_man.exception.args[0],
-                '`dataset` must be an instance of `lmp.dataset.BaseDataset`.',
-                msg=msg2
-            )
+                '`dataset` must be an instance of `lmp.dataset.LanguageModelDataset`.',
+                msg=msg2)
 
     def test_invalid_input_tokenizer(self):
         r"""Raise `TypeError` when input `tokenizer` is invalid."""
@@ -196,7 +195,8 @@ class TestTrainTokenizerByConfig(unittest.TestCase):
                 experiment=self.__class__.experiment,
                 min_count=min_count
             )
-            dataset = lmp.dataset.BaseDataset(batch_sequences=batch_sequences)
+            dataset = lmp.dataset.LanguageModelDataset(
+                batch_sequences=batch_sequences)
             tokenizer = tokenizer_cstr(is_uncased=is_uncased)
             v1 = tokenizer.vocab_size
 

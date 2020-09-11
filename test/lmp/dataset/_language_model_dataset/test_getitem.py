@@ -1,7 +1,7 @@
-r"""Test `lmp.dataset.BaseDataset.__getitem__`.
+r"""Test `lmp.dataset.LanguageModelDataset.__getitem__`.
 
 Usage:
-    python -m unittest test.lmp.dataset.test_getitem
+    python -m unittest test.lmp.dataset.LanguageModelDataset.test_getitem
 """
 
 # built-in modules
@@ -17,18 +17,18 @@ import unittest
 
 # self-made modules
 
-from lmp.dataset import BaseDataset
+from lmp.dataset._language_model_dataset import LanguageModelDataset
 
 
 class TestGetItem(unittest.TestCase):
-    r"""Test case for `lmp.dataset.BaseDataset.__getitem__`."""
+    r"""Test case for `lmp.dataset.LanguageModelDataset.__getitem__`."""
 
     def test_signature(self):
         r"""Ensure signature consistency."""
         msg = 'Inconsistenct method signature.'
 
         self.assertEqual(
-            inspect.signature(BaseDataset.__getitem__),
+            inspect.signature(LanguageModelDataset.__getitem__),
             inspect.Signature(
                 parameters=[
                     inspect.Parameter(
@@ -65,7 +65,7 @@ class TestGetItem(unittest.TestCase):
                     (IndexError, TypeError),
                     msg=msg1
             ) as ctx_man:
-                BaseDataset([])[invalid_input]
+                LanguageModelDataset([])[invalid_input]
 
             if isinstance(ctx_man.exception, TypeError):
                 self.assertEqual(
@@ -96,7 +96,7 @@ class TestGetItem(unittest.TestCase):
         )
 
         for batch_sequences in examples:
-            dataset = BaseDataset(batch_sequences=batch_sequences)
+            dataset = LanguageModelDataset(batch_sequences=batch_sequences)
             for i in range(len(dataset)):
                 self.assertIsInstance(dataset[i], str, msg=msg)
 
@@ -120,7 +120,7 @@ class TestGetItem(unittest.TestCase):
         )
 
         for batch_sequences in examples:
-            dataset = BaseDataset(batch_sequences=batch_sequences)
+            dataset = LanguageModelDataset(batch_sequences=batch_sequences)
             for i in range(len(dataset)):
                 self.assertEqual(dataset[i], batch_sequences[i], msg=msg)
 
