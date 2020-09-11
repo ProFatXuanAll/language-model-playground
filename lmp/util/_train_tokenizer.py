@@ -21,7 +21,7 @@ import lmp.tokenizer
 
 
 def train_tokenizer(
-        dataset: lmp.dataset.BaseDataset,
+        dataset: lmp.dataset.LanguageModelDataset,
         min_count: int,
         tokenizer: lmp.tokenizer.BaseTokenizer
 ) -> None:
@@ -43,9 +43,9 @@ def train_tokenizer(
             When `min_count` is smaller than `1`.
     """
     # Type check.
-    if not isinstance(dataset, lmp.dataset.BaseDataset):
+    if not isinstance(dataset, lmp.dataset.LanguageModelDataset):
         raise TypeError(
-            '`dataset` must be an instance of `lmp.dataset.BaseDataset`.'
+            '`dataset` must be an instance of `lmp.dataset.LanguageModelDataset`.'
         )
 
     if not isinstance(min_count, int):
@@ -65,7 +65,7 @@ def train_tokenizer(
 
 def train_tokenizer_by_config(
         config: lmp.config.BaseConfig,
-        dataset: lmp.dataset.BaseDataset,
+        dataset: lmp.dataset.LanguageModelDataset,
         tokenizer: lmp.tokenizer.BaseTokenizer
 ) -> None:
     r"""Helper function for training tokenizer.

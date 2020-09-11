@@ -1,7 +1,7 @@
-r"""Test `lmp.model.BaseSelfAttentionResRNNModel.forward`.
+r"""Test `lmp.model.BaseSelfAttentionRNNModel.forward`.
 
 Usage:
-    python -m unittest test.lmp.model._base_self_attention_res_rnn_model.test_forward
+    python -m unittest test.lmp.model._base_self_attention_rnn_model.test_forward
 """
 
 # built-in modules
@@ -25,11 +25,11 @@ import torch.nn
 
 # self-made modules
 
-from lmp.model import BaseSelfAttentionResRNNModel
+from lmp.model import BaseSelfAttentionRNNModel
 
 
 class TestForward(unittest.TestCase):
-    r"""Test case for `lmp.model.BaseSelfAttentionResRNNModel.forward`."""
+    r"""Test case for `lmp.model.BaseSelfAttentionRNNModel.forward`."""
 
     @classmethod
     def setUpClass(cls):
@@ -53,7 +53,7 @@ class TestForward(unittest.TestCase):
         gc.collect()
 
     def setUp(self):
-        r"""Setup hyperparameters and construct `_base_self_attention_res_rnn_model`."""
+        r"""Setup hyperparameters and construct `BaseSelfAttentionRNNModel`."""
         self.model_objs = []
         cls = self.__class__
 
@@ -69,7 +69,7 @@ class TestForward(unittest.TestCase):
             # skip invalid construct.
             if vocab_size <= pad_token_id:
                 continue
-            model = BaseSelfAttentionResRNNModel(
+            model = BaseSelfAttentionRNNModel(
                 d_emb=d_emb,
                 d_hid=d_hid,
                 dropout=dropout,
@@ -99,7 +99,7 @@ class TestForward(unittest.TestCase):
         msg = 'Inconsistenct method signature.'
 
         self.assertEqual(
-            inspect.signature(BaseSelfAttentionResRNNModel.forward),
+            inspect.signature(BaseSelfAttentionRNNModel.forward),
             inspect.Signature(
                 parameters=[
                     inspect.Parameter(

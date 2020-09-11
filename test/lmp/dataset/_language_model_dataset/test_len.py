@@ -1,7 +1,7 @@
-r"""Test `lmp.dataset.BaseDataset.__len__`.
+r"""Test `lmp.dataset.LanguageModelDataset.__len__`.
 
 Usage:
-    python -m unittest test.lmp.dataset.test_len
+    python -m unittest test.lmp.dataset.LanguageModelDataset.test_len
 """
 
 # built-in modules
@@ -16,18 +16,18 @@ import unittest
 
 # self-made modules
 
-from lmp.dataset import BaseDataset
+from lmp.dataset._language_model_dataset import LanguageModelDataset
 
 
 class TestLen(unittest.TestCase):
-    r"""Test case for `lmp.dataset.BaseDataset.__len__`."""
+    r"""Test case for `lmp.dataset.LanguageModelDataset.__len__`."""
 
     def test_signature(self):
         r"""Ensure signature consistency."""
         msg = 'Inconsistenct method signature.'
 
         self.assertEqual(
-            inspect.signature(BaseDataset.__len__),
+            inspect.signature(LanguageModelDataset.__len__),
             inspect.Signature(
                 parameters=[
                     inspect.Parameter(
@@ -62,7 +62,7 @@ class TestLen(unittest.TestCase):
 
         for batch_sequences in examples:
             self.assertIsInstance(
-                len(BaseDataset(batch_sequences=batch_sequences)),
+                len(LanguageModelDataset(batch_sequences=batch_sequences)),
                 int,
                 msg=msg
             )
@@ -100,7 +100,7 @@ class TestLen(unittest.TestCase):
 
         for batch_sequences, dataset_size in examples:
             self.assertEqual(
-                len(BaseDataset(batch_sequences=batch_sequences)),
+                len(LanguageModelDataset(batch_sequences=batch_sequences)),
                 dataset_size,
                 msg=msg
             )

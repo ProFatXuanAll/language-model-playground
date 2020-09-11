@@ -1,7 +1,7 @@
-r"""Test `lmp.dataset`.
+r"""Test `lmp.dataset._language_model_dataset.py`.
 
 Usage:
-    python -m unittest test.lmp.dataset.__init__
+    python -m unittest test.lmp.dataset.LanguageModelDataset.__init__
 """
 
 # built-in modules
@@ -15,8 +15,8 @@ import inspect
 import unittest
 
 
-class TestDataset(unittest.TestCase):
-    r"""Test case for `lmp.dataset`."""
+class TestLanguageModelDataset(unittest.TestCase):
+    r"""Test case for `lmp.dataset._langeage_model_dataset.py`."""
 
     def test_signature(self):
         r"""Ensure signature consistency."""
@@ -26,11 +26,12 @@ class TestDataset(unittest.TestCase):
             # pylint: disable=C0415
             import lmp
             import lmp.dataset
+            import lmp.dataset._language_model_dataset
             # pylint: enable=C0415
 
             # pylint: disable=W0212
             self.assertTrue(
-                inspect.ismodule(lmp.dataset),
+                inspect.ismodule(lmp.dataset._language_model_dataset),
                 msg=msg
             )
             # pylint: enable=W0212
@@ -42,24 +43,25 @@ class TestDataset(unittest.TestCase):
         msg1 = 'Missing module attribute `{}`.'
         msg2 = 'Module attribute `{}` must be a class.'
         msg3 = 'Inconsistent module signature.'
-        examples = (
-            'LanguageModelDataset',
-            'AnalogyDataset',
-        )
+        examples = ('LanguageModelDataset',)
 
         try:
             # pylint: disable=C0415
             # pylint: disable=W0212
             import lmp
             import lmp.dataset
+            import lmp.dataset._language_model_dataset
 
             for attr in examples:
                 self.assertTrue(
-                    hasattr(lmp.dataset, attr),
+                    hasattr(lmp.dataset._language_model_dataset, attr),
                     msg=msg1.format(attr)
                 )
                 self.assertTrue(
-                    inspect.isclass(getattr(lmp.dataset, attr)),
+                    inspect.isclass(getattr(
+                        lmp.dataset._language_model_dataset,
+                        attr
+                    )),
                     msg=msg2.format(attr)
                 )
             # pylint: enable=W0212

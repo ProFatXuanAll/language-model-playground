@@ -15,6 +15,8 @@ import inspect
 import math
 import unittest
 
+from typing import Union
+
 # self-made modules
 
 import lmp.dataset
@@ -39,7 +41,10 @@ class TestLoadDataset(unittest.TestCase):
                         default=inspect.Parameter.empty
                     )
                 ],
-                return_annotation=lmp.dataset.BaseDataset
+                return_annotation=Union[
+                    lmp.dataset.AnalogyDataset,
+                    lmp.dataset.LanguageModelDataset
+                ]
             ),
             msg=msg
         )
@@ -79,24 +84,32 @@ class TestLoadDataset(unittest.TestCase):
                         [
                             'news_collection_desc',
                             'news_collection_title',
+                            'wiki_test_tokens',
+                            'wiki_train_tokens',
+                            'wiki_valid_tokens',
+                            'word_test_v1'
                         ]
                     ))),
                     msg=msg2
                 )
 
     def test_return_type(self):
-        r"""Return `lmp.dataset.BaseDataset`."""
-        msg = 'Must return `lmp.dataset.BaseDataset`.'
+        r"""Return `Union[lmp.dataset.LanguageModelDataset, lmp.dataset.AnalogyDataset]`."""
+        msg = 'Must return `Union[lmp.dataset.LanguageModelDataset, lmp.dataset.AnalogyDataset]`.'
 
         examples = (
-            'news_collection_desc',
-            'news_collection_title',
+            ('news_collection_desc', lmp.dataset.LanguageModelDataset),
+            ('news_collection_title', lmp.dataset.LanguageModelDataset),
+            ('wiki_train_tokens', lmp.dataset.LanguageModelDataset),
+            ('wiki_test_tokens', lmp.dataset.LanguageModelDataset),
+            ('wiki_valid_tokens', lmp.dataset.LanguageModelDataset),
+            ('word_test_v1', lmp.dataset.AnalogyDataset),
         )
 
-        for dataset in examples:
+        for dataset, dataset_cstr in examples:
             self.assertIsInstance(
                 lmp.util.load_dataset(dataset=dataset),
-                lmp.dataset.BaseDataset,
+                dataset_cstr,
                 msg=msg
             )
 

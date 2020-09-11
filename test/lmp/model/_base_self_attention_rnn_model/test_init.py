@@ -1,7 +1,7 @@
-r"""Test `lmp.model.BaseSelfAttentionResRNNModel.__init__`.
+r"""Test `lmp.model.BaseSelfAttentionRNNModel.__init__`.
 
 Usage:
-    python -m unittest test.lmp.model._base_self_attention_res_rnn_model.test_init
+    python -m unittest test.lmp.model._base_self_attention_rnn_model.test_init
 """
 
 # built-in modules
@@ -25,11 +25,11 @@ import torch.nn
 
 # self-made modules
 
-from lmp.model import BaseSelfAttentionResRNNModel
+from lmp.model import BaseSelfAttentionRNNModel
 
 
 class TestInit(unittest.TestCase):
-    r"""Test case for `lmp.model.BaseSelfAttentionResRNNModel.__init__`."""
+    r"""Test case for `lmp.model.BaseSelfAttentionRNNModel.__init__`."""
 
     @classmethod
     def setUpClass(cls):
@@ -53,7 +53,7 @@ class TestInit(unittest.TestCase):
         gc.collect()
 
     def setUp(self):
-        r"""Setup hyperparameters and construct `BaseSelfAttentionResRNNModel`."""
+        r"""Setup hyperparameters and construct `BaseSelfAttentionRNNModel`."""
         self.model_objs = []
         cls = self.__class__
 
@@ -69,7 +69,7 @@ class TestInit(unittest.TestCase):
             # skip invalid construct.
             if vocab_size <= pad_token_id:
                 continue
-            model = BaseSelfAttentionResRNNModel(
+            model = BaseSelfAttentionRNNModel(
                 d_emb=d_emb,
                 d_hid=d_hid,
                 dropout=dropout,
@@ -99,7 +99,7 @@ class TestInit(unittest.TestCase):
         msg = 'Inconsistenct method signature.'
 
         self.assertEqual(
-            inspect.signature(BaseSelfAttentionResRNNModel.__init__),
+            inspect.signature(BaseSelfAttentionRNNModel.__init__),
             inspect.Signature(
                 parameters=[
                     inspect.Parameter(
@@ -173,7 +173,7 @@ class TestInit(unittest.TestCase):
                     (TypeError, ValueError),
                     msg=msg1
             ) as ctx_man:
-                BaseSelfAttentionResRNNModel(
+                BaseSelfAttentionRNNModel(
                     d_emb=invalid_input,
                     d_hid=1,
                     dropout=0.1,
@@ -214,7 +214,7 @@ class TestInit(unittest.TestCase):
                     (TypeError, ValueError),
                     msg=msg1
             ) as ctx_man:
-                BaseSelfAttentionResRNNModel(
+                BaseSelfAttentionRNNModel(
                     d_emb=1,
                     d_hid=invalid_input,
                     dropout=0.1,
@@ -255,7 +255,7 @@ class TestInit(unittest.TestCase):
                     (TypeError, ValueError),
                     msg=msg1
             ) as ctx_man:
-                BaseSelfAttentionResRNNModel(
+                BaseSelfAttentionRNNModel(
                     d_emb=1,
                     d_hid=1,
                     dropout=invalid_input,
@@ -295,7 +295,7 @@ class TestInit(unittest.TestCase):
                     (TypeError, ValueError),
                     msg=msg1
             ) as ctx_man:
-                BaseSelfAttentionResRNNModel(
+                BaseSelfAttentionRNNModel(
                     d_emb=1,
                     d_hid=1,
                     dropout=0.1,
@@ -336,7 +336,7 @@ class TestInit(unittest.TestCase):
                     (TypeError, ValueError),
                     msg=msg1
             ) as ctx_man:
-                BaseSelfAttentionResRNNModel(
+                BaseSelfAttentionRNNModel(
                     d_emb=1,
                     d_hid=1,
                     dropout=0.1,
@@ -377,7 +377,7 @@ class TestInit(unittest.TestCase):
                     (TypeError, ValueError),
                     msg=msg1
             ) as ctx_man:
-                BaseSelfAttentionResRNNModel(
+                BaseSelfAttentionRNNModel(
                     d_emb=1,
                     d_hid=1,
                     dropout=0.1,
@@ -418,7 +418,7 @@ class TestInit(unittest.TestCase):
                     (TypeError, ValueError),
                     msg=msg1
             ) as ctx_man:
-                BaseSelfAttentionResRNNModel(
+                BaseSelfAttentionRNNModel(
                     d_emb=1,
                     d_hid=1,
                     dropout=0.1,
@@ -451,7 +451,7 @@ class TestInit(unittest.TestCase):
 
         for pad_token_id, vocab_size in examples:
             with self.assertRaises(ValueError, msg=msg1) as ctx_man:
-                BaseSelfAttentionResRNNModel(
+                BaseSelfAttentionRNNModel(
                     d_emb=1,
                     d_hid=1,
                     dropout=0.1,

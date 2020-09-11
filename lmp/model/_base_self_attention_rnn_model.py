@@ -220,6 +220,8 @@ class BaseSelfAttentionRNNModel(torch.nn.Module):
             out_features=d_hid
         )
 
+        self.att_dropout = torch.nn.Dropout(dropout)
+
     def forward(self, batch_sequences: torch.Tensor) -> torch.Tensor:
         r"""Perform forward pass.
 
@@ -251,7 +253,7 @@ class BaseSelfAttentionRNNModel(torch.nn.Module):
 
         # 經過 attention 機制，進行 self-attention
         # ht 維度: (B, S, H)
-        ht = attention_mechanism(query, key, value)
+        ht = self.att_dropout(attention_mechanism(query, key, value))
 
         # 將每個 hidden vectors 轉換維度至 embedding dimension
         # ht 維度: (B, S, E)

@@ -16,7 +16,10 @@ from __future__ import unicode_literals
 import argparse
 import time
 
+# 3rd-party modules
+
 import torch
+
 # self-made modules
 
 import lmp
@@ -200,7 +203,7 @@ if __name__ == '__main__':
     )
 
     # Create collate_fn for sampling.
-    collate_fn = lmp.dataset.BaseDataset.create_collate_fn(
+    collate_fn = lmp.dataset.LanguageModelDataset.create_collate_fn(
         tokenizer=tokenizer,
         max_seq_len=config.max_seq_len
     )
