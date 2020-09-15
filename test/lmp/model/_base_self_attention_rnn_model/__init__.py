@@ -1,7 +1,7 @@
-r"""Test `lmp.model._base_self_attention_res_rnn_model.py`.
+r"""Test `lmp.model._base_self_attention_rnn_model.py`.
 
 Usage:
-    python -m unittest test.lmp.model._base_self_attention_res_rnn_model.__init__
+    python -m unittest test.lmp.model._base_self_attention_rnn_model.__init__
 """
 
 # built-in modules
@@ -16,7 +16,7 @@ import unittest
 
 
 class TestBaseSelfAttentionResRNNModel(unittest.TestCase):
-    r"""Test case for `lmp.model._base_self_attention_res_rnn_model.py`."""
+    r"""Test case for `lmp.model._base_self_attention_rnn_model.py`."""
 
     def test_signature(self):
         r"""Ensure signature consistency."""
@@ -26,12 +26,12 @@ class TestBaseSelfAttentionResRNNModel(unittest.TestCase):
             # pylint: disable=C0415
             import lmp
             import lmp.model
-            import lmp.model._base_self_attention_res_rnn_model
+            import lmp.model._base_self_attention_rnn_model
             # pylint: enable=C0415
 
             # pylint: disable=W0212
             self.assertTrue(
-                inspect.ismodule(lmp.model._base_self_attention_res_rnn_model),
+                inspect.ismodule(lmp.model._base_self_attention_rnn_model),
                 msg=msg
             )
             # pylint: enable=W0212
@@ -50,17 +50,17 @@ class TestBaseSelfAttentionResRNNModel(unittest.TestCase):
             # pylint: disable=W0212
             import lmp
             import lmp.model
-            import lmp.model._base_self_attention_res_rnn_model
+            import lmp.model._base_self_attention_rnn_model
 
             for attr in examples:
                 self.assertTrue(
                     hasattr(
-                        lmp.model._base_self_attention_res_rnn_model, attr),
+                        lmp.model._base_self_attention_rnn_model, attr),
                     msg=msg1.format(attr)
                 )
                 self.assertTrue(
                     inspect.isclass(getattr(
-                        lmp.model._base_self_attention_res_rnn_model,
+                        lmp.model._base_self_attention_rnn_model,
                         attr
                     )),
                     msg=msg2.format(attr)
