@@ -1,11 +1,7 @@
 r"""Test `lmp.util._dataset._preprocess_word_test_v1`.
 
 Usage:
-<<<<<<< HEAD
     python -m unittest test.lmp.util._dataset.test_preprocess_word_test_v1
-=======
-    python -m unittest test.lmp.util._dataset._preprocess_word_test_v1
->>>>>>> 6bca79baceacf85c5c3683bbfdf586a00484ed19
 """
 
 # built-in modules
