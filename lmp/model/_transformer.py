@@ -1,54 +1,134 @@
+r"""Transformer Language Model
+
+DESCRIPTION
+    A torch implementation of transformer model [1],
+    Code is based on The Annotated Transformer [2] from Harvard NLP.
+
+    [1] Vaswani, Ashish, et al. "Attention is all you need."
+    Advances in neural information processing systems. 2017.
+    https://arxiv.org/pdf/1706.03762.pdf
+
+    [2] The Annotated Transformer
+    https://nlp.seas.harvard.edu/2018/04/03/attention.html
+"""
+
 import math
 import torch
 import numpy as np
-from torch.utils.tensorboard import SummaryWriter
-from torch.nn import Linear
-from torch.nn.functional import softmax, relu
 
 
 class PositionalEncoding(torch.nn.Module):
-    "Implement the PE function."
+    r"""PositionalEncoding
 
-    def __init__(self, d_model, dropout, max_len=5000):
-        super(PositionalEncoding, self).__init__()
+    Generate a fixed sequence of vector and apply to input
+
+    Copy from https://nlp.seas.harvard.edu/2018/04/03/attention.html
+
+    Fomula:
+        PE_{(pos,2i)}=sin(pos/10000^{2i/d_{model}})
+        PE_{(pos,2i+1)}=cos(pos/10000^{2i/d_{model}})
+
+    Examples:
+        >>> batch_size, seq_len = 32, 128
+        >>> x = torch.rand((batch_size, seq_len, 10))
+        >>> pe = PositionalEncoding(d_model=10, dropout=.1)
+        >>> encoded_x = pe(x)
+    """
+
+    def __init__(self, d_model: int, dropout: float, max_len: int = 5000):
+        r"""
+
+        Args:
+            d_model:
+                Dimension of each vector.
+            dropout:
+                Dropout probability.
+            max_len:
+                Max length of input sequence. Defaults to 5000.
+        """
+
+        super().__init__()
         self.dropout = torch.nn.Dropout(p=dropout)
-
         # Compute the positional encodings once in log space.
-        pe = torch.zeros(max_len, d_model)
+        positional_encoding = torch.zeros(max_len, d_model)
         position = torch.arange(0, max_len).unsqueeze(1)
         div_term = torch.exp(torch.arange(0, d_model, 2) *
                              -(math.log(10000.0) / d_model))
-        pe[:, 0::2] = torch.sin(position * div_term)
-        pe[:, 1::2] = torch.cos(position * div_term)
-        pe = pe.unsqueeze(0)
-        self.register_buffer('pe', pe)
+        positional_encoding[:, 0::2] = torch.sin(position * div_term)
+        positional_encoding[:, 1::2] = torch.cos(position * div_term)
+        positional_encoding = positional_encoding.unsqueeze(0)
+        self.register_buffer('positional_encoding', positional_encoding)
 
-    def forward(self, x):
-        x = x + torch.autograd.Variable(self.pe[:, :x.size(-2)],
-                                        requires_grad=False)
-        return self.dropout(x)
+    def forward(self, input_sequence: torch.Tensor) -> torch.Tensor:
+        r"""Forward pass
+
+        Args:
+            input_sequence:
+                input sequence of shape (batch size, sequence len, d_model)
+
+        Returns:
+            torch.Tensor:
+                positional encoded input
+        """
+        input_sequence += self.positional_encoding[:, :input_sequence.size(-2)]
+        return self.dropout(input_sequence)
 
 
 class Attention(torch.nn.Module):
-    """
-    Attention
-    (B, L, E) (B, L, E) (B, L, E) -> (B, L, D)
+    r"""
+    Attention Layer
+
+    Perform a learnable linear transform on all input tensor (`Query`, `Key` ,`Value`).
+    After that, create a score by `Query` and `Key`
+    which decide how much `Value` should pass through.
+
+    Fomula:
+        Attention(Query, Key, Value, Mask, Weight)
+        =Score\times Value'
+        =Softmax(Query'\times Key'^T)\times Value'
+        =Softmax(W_{Q}(Query)\times W_{K}(Key)^T)\times W_{V}(Value)
+
     """
 
-    def __init__(self, E, D):
+    def __init__(self, d_model: int, d_k: int):
+        r"""
+        Args:
+            d_model:
+                input size
+            d_k:
+                linear transform output size
+        """
         super().__init__()
-        self.Wq = Linear(E, D)
-        self.Wk = Linear(E, D)
-        self.Wv = Linear(E, D)
-        self.D = D
+        self.w_q = torch.nn.Linear(d_model, d_k)
+        self.w_k = torch.nn.Linear(d_model, d_k)
+        self.w_v = torch.nn.Linear(d_model, d_k)
+        self.d_k = d_k
 
-    def forward(self, Q, K, V, mask):
-        Q = self.Wq(Q)
-        K = self.Wk(K)
-        V = self.Wv(V)
-        Z = softmax(
-            (Q @ K.transpose(-2, -1) / math.sqrt(self.D)).masked_fill(mask == 0, -1e9), dim=-1) @ V
-        return Z
+    def forward(self,
+                query: torch.Tensor,
+                key: torch.Tensor,
+                value: torch.Tensor,
+                mask: torch.Tensor):
+        r"""
+        Args:
+            query:
+                input query
+            key:
+                input key
+            value:
+                input value
+            mask:
+                Whenever position of mask is false,
+                set corresponding score to -1e9 then apply softmax.
+                Simplified fomula : Softmax( mask(Q x K) )
+        """
+        query = self.w_q(query)
+        key = self.w_k(key)
+        value = self.w_v(value)
+        scores = query @ key.transpose(-2, -1) / math.sqrt(self.d_k)
+        if mask is not None:
+            scores = scores.masked_fill(mask == 0, -1e9)
+        return torch.nn.functional.softmax(scores, dim=-1) @ value
 
 
 class MultiHeadAttention(torch.nn.Module):
@@ -64,7 +144,7 @@ class MultiHeadAttention(torch.nn.Module):
         super().__init__()
         self.attentions = torch.nn.ModuleList(
             [Attention(E, E // H) for _ in range(H)])
-        self.Wo = Linear(E, E)
+        self.Wo = torch.nn.Linear(E, E)
         self.dropout = torch.nn.Dropout(dropout)
 
     def forward(self, Q, K, V, mask):
@@ -82,12 +162,12 @@ class FF(torch.nn.Module):
 
     def __init__(self, E, D, dropout):
         super().__init__()
-        self.W1 = Linear(E, D)
-        self.W2 = Linear(D, E)
+        self.W1 = torch.nn.Linear(E, D)
+        self.W2 = torch.nn.Linear(D, E)
         self.dropout = torch.nn.Dropout(dropout)
 
     def forward(self, x):
-        return self.dropout(self.W2(self.dropout(relu(self.W1(x)))))
+        return self.dropout(self.W2(self.dropout(torch.nn.functional.relu(self.W1(x)))))
 
 
 class AddNorm(torch.nn.Module):
@@ -196,4 +276,4 @@ class TransformerLanguageModel(torch.nn.Module):
         return self.decoder(src, mask) @ self.embedding.weight.transpose(0, 1)
 
     def predict(self, x):
-        return softmax(self(x), dim=-1)
+        return torch.nn.functional.softmax(self(x), dim=-1)
