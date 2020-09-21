@@ -1,4 +1,4 @@
-r"""Transformer Language Model
+r"""Transformer Model
 
 DESCRIPTION
     A torch implementation of transformer model [1],
@@ -339,9 +339,13 @@ class SubsequentMask(torch.nn.Module):
         return src_mask & subseq_mask
 
 
-class TransformerLanguageModel(torch.nn.Module):
-    """
-    Transformer Language Model
+class TransformerModel(torch.nn.Module):
+    r"""
+    A torch implementation of transformer model,
+    Code is based on The Annotated Transformer from Harvard NLP.
+
+    This implementation only use decoder of transformer,
+    it's intentent to train as a language model.
     """
 
     def __init__(
@@ -353,6 +357,21 @@ class TransformerLanguageModel(torch.nn.Module):
         pad_token_id: int,
         vocab_size: int
     ):
+        r"""
+        Args:
+            d_emb:
+                Number of embedded dimension, same as d_model inside implement.
+            dropout:
+                Dropout probability.
+            num_linear_layers:
+                Feed forward layer dimension.
+            num_rnn_layers:
+                Number of decoder layers.
+            pad_token_id:
+                Id to be mask out.
+            vocab_size:
+                Size of vacabulary, needed by embedded layer.
+        """
         super().__init__()
 
         self.subseqmask = SubsequentMask(pad_id=pad_token_id)
@@ -365,7 +384,7 @@ class TransformerLanguageModel(torch.nn.Module):
             padding_idx=pad_token_id
         )
 
-        self.pe = PositionalEncoding(d_emb, dropout)
+        self.positional_encoding = PositionalEncoding(d_emb, dropout)
 
         self.decoder = Decoder(
             d_model=d_emb,
@@ -375,11 +394,22 @@ class TransformerLanguageModel(torch.nn.Module):
             dropout=dropout
         )
 
-    def forward(self, src):
-        # (B, L) -> (B, L, E) -> (B, L, E) -> (B, L, V)
-        mask = self.subseqmask(src)
-        src = self.pe(self.embedding(src))
-        return self.decoder(src, mask) @ self.embedding.weight.transpose(0, 1)
+    def forward(self, input: torch.Tensor):
+        r"""
+        Args:
+            input:
+                Batch input to predict next word.
+        """
+        mask = self.subseqmask(input)
+        input = self.positional_encoding(self.embedding(input))
+        return self.decoder(input, mask) @ self.embedding.weight.transpose(0, 1)
 
-    def predict(self, x):
-        return torch.nn.functional.softmax(self(x), dim=-1)
+    def predict(self, input: torch.Tensor):
+        r"""
+        Run forward and convert output to probability by apply softmax.
+
+        Args:
+            input:
+                Batch input to predict next word.
+        """
+        return torch.nn.functional.softmax(self(input), dim=-1)
