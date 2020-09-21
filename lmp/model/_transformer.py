@@ -181,82 +181,161 @@ class MultiHeadAttention(torch.nn.Module):
         return self.dropout(self.w_output(output))
 
 
-class FF(torch.nn.Module):
-    """
-    (B, L, E) -> (B, L, E)
-    (B, L, E) -> RELU( (B, L, E) * w1(E, D) ) * w2(D, E) -> (B, L, E)
+class FeedForward(torch.nn.Module):
+    r"""
+    Feed Forward Layer
+
+    Stack two layer of linear transform combine with relu activation function.
     """
 
-    def __init__(self, E, D, dropout):
+    def __init__(self, d_model: int, d_ff: int, dropout: float):
+        r"""
+        Args:
+            d_model:
+                Input size.
+            d_ff:
+                Linear dimension.
+            dropout:
+                Dropout probability.
+        """
         super().__init__()
-        self.W1 = torch.nn.Linear(E, D)
-        self.W2 = torch.nn.Linear(D, E)
+        self.w_in = torch.nn.Linear(d_model, d_ff)
+        self.w_out = torch.nn.Linear(d_ff, d_model)
         self.dropout = torch.nn.Dropout(dropout)
 
-    def forward(self, x):
-        return self.dropout(self.W2(self.dropout(torch.nn.functional.relu(self.W1(x)))))
+    def forward(self, input: torch.Tensor):
+        r"""
+        Args:
+            input:
+                Input tensor.
+        """
+        return self.dropout(self.w_out(self.dropout(torch.nn.functional.relu(self.w_in(input)))))
 
 
 class AddNorm(torch.nn.Module):
-    """
+    r"""
     Add two tensor and perform Layer Normalize
-    (B, L, E) (B, L, E) -> (B, L, E)
     """
 
-    def __init__(self, E):
+    def __init__(self, d_model: int):
+        r"""
+        Args:
+            d_model:
+                Input size.
+        """
         super().__init__()
-        self.norm = torch.nn.LayerNorm(E)
+        self.norm = torch.nn.LayerNorm(d_model)
 
-    def forward(self, x, sub):
-        return self.norm(x + sub)
+    def forward(self, input: torch.Tensor, sub: torch.Tensor):
+        r"""
+        Args:
+            input:
+                Input tensor.
+            sub:
+                Input tensor.
+        """
+
+        return self.norm(input + sub)
 
 
 class DecoderLayer(torch.nn.Module):
-    """
-    (B, L, E) -> (B, L, E)
+    r"""
+    Decode input by attention and feed forward layer
     """
 
-    def __init__(self, E, H, Dff, dropout):
+    def __init__(self, d_model: int, heads: int, d_ff: int, dropout: float):
+        r"""
+        Args:
+            d_model:
+                Input size.
+            heads:
+                Number of different attention.
+            d_ff:
+                Feed forward layer dimension.
+            dropout:
+                Dropout probability.
+        """
         super().__init__()
-        self.att = MultiHeadAttention(d_model=E, heads=H, dropout=dropout)
-        self.addnorm1 = AddNorm(E=E)
-        self.addnorm2 = AddNorm(E=E)
-        self.ff = FF(E=E, D=Dff, dropout=dropout)
+        self.attention = MultiHeadAttention(
+            d_model=d_model, heads=heads, dropout=dropout)
+        self.addnorm1 = AddNorm(d_model=d_model)
+        self.addnorm2 = AddNorm(d_model=d_model)
+        self.feedforward = FeedForward(
+            d_model=d_model, d_ff=d_ff, dropout=dropout)
         self.dropout = torch.nn.Dropout(dropout)
 
-    def forward(self, x, mask):
-        x = self.addnorm1(x, self.att(x, x, x, mask))
-        x = self.addnorm2(x, self.ff(x))
-        return x
+    def forward(self, input: torch.Tensor, mask: torch.Tensor):
+        r"""
+        Args:
+            input:
+                Input tensor.
+            mask:
+                Mask for attention layer.
+        """
+        out = self.addnorm1(input, self.attention(input, input, input, mask))
+        return self.addnorm2(out, self.feedforward(out))
 
 
 class Decoder(torch.nn.Module):
-    """
-    stacked decoder layer
-    (B, L, E) -> (B, L, E)
+    r"""
+    Stack decoder layers
     """
 
-    def __init__(self, E, Dff, H, Dlayer, dropout):
+    def __init__(self, d_model: int, heads: int,  d_ff: int, layers: int, dropout: float):
+        r"""
+        Args:
+            d_model:
+                Input size.
+            heads:
+                Number of different attention.
+            d_ff:
+                Feed forward layer dimension.
+            layers:
+                Number of decoder layers.
+            dropout:
+                Dropout probability.
+        """
         super().__init__()
-        self.layers = torch.nn.ModuleList(
-            [DecoderLayer(E=E, Dff=Dff, H=H, dropout=dropout) for _ in range(Dlayer)])
+        self.layers = torch.nn.ModuleList([DecoderLayer(
+            d_model=d_model, d_ff=d_ff, heads=heads, dropout=dropout) for _ in range(layers)])
 
-    def forward(self, x, mask):
-        for e in self.layers:
-            x = e(x, mask)
-        return x
+    def forward(self, input: torch.Tensor, mask: torch.Tensor):
+        r"""
+        Args:
+            input:
+                Input tensor to be decode.
+            mask:
+                Mask for attention layer.
+        """
+        for decoder in self.layers:
+            input = decoder(input, mask)
+        return input
 
 
 class SubsequentMask(torch.nn.Module):
-    def __init__(self, pad_id):
+    r"""
+    Generate subsequent mask for attention layer.
+    """
+
+    def __init__(self, pad_id: int):
+        r"""
+        Args:
+            pad_id:
+                Id to be mask out.
+        """
         super().__init__()
         self.pad_id = pad_id
 
-    def forward(self, src):
-        L = src.shape[1]
-        src_mask = (src != self.pad_id).unsqueeze(-2)
-        subseq_mask = (torch.from_numpy(
-            np.triu(np.ones((1, L, L), dtype=np.uint8), k=1)) == 0).to(src.device)
+    def forward(self, input: torch.Tensor):
+        r"""
+        Args:
+            input:
+                Input to generate mask.
+        """
+        in_size = input.size(1)
+        src_mask = (input != self.pad_id).unsqueeze(-2)
+        subseq_mask = (torch.triu(torch.ones(
+            (1, in_size, in_size)), 1) == 0).to(input.device)
         return src_mask & subseq_mask
 
 
@@ -289,16 +368,16 @@ class TransformerLanguageModel(torch.nn.Module):
         self.pe = PositionalEncoding(d_emb, dropout)
 
         self.decoder = Decoder(
-            E=d_emb,
-            Dlayer=num_rnn_layers,
-            Dff=num_linear_layers,
-            H=8,
+            d_model=d_emb,
+            layers=num_rnn_layers,
+            d_ff=num_linear_layers,
+            heads=8,
             dropout=dropout
         )
 
     def forward(self, src):
         # (B, L) -> (B, L, E) -> (B, L, E) -> (B, L, V)
-        mask = self.subseqmask(src=src)
+        mask = self.subseqmask(src)
         src = self.pe(self.embedding(src))
         return self.decoder(src, mask) @ self.embedding.weight.transpose(0, 1)
 
