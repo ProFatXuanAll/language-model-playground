@@ -112,11 +112,11 @@ class Attention(torch.nn.Module):
         r"""
         Args:
             query:
-                input query
+                Input query.
             key:
-                input key
+                Input key.
             value:
-                input value
+                Input value.
             mask:
                 Whenever position of mask is false,
                 set corresponding score to -1e9 then apply softmax.
@@ -132,26 +132,53 @@ class Attention(torch.nn.Module):
 
 
 class MultiHeadAttention(torch.nn.Module):
+    r"""
+    Multi Head Attention Layer
+
+    Parallel apply multiple different attention to the same input,
+    combine results by a linear transform.
+
     """
-    Multi Head Attention:
 
-    concatenate multiple attention and reduce results by linear transform
-
-    (B, L, E) (B, L, E) (B, L, E) -> (B, L, E / H) * H -> (B, L, E)
-    """
-
-    def __init__(self, E, H, dropout):
+    def __init__(self, d_model: int, heads: int, dropout: float):
+        r"""
+        Args:
+            d_model:
+                Input size.
+            heads:
+                Number of different attention.
+            dropout:
+                Dropout probability.
+        """
         super().__init__()
         self.attentions = torch.nn.ModuleList(
-            [Attention(E, E // H) for _ in range(H)])
-        self.Wo = torch.nn.Linear(E, E)
+            [Attention(d_model, d_model // heads) for _ in range(heads)])
+        self.w_output = torch.nn.Linear(d_model, d_model)
         self.dropout = torch.nn.Dropout(dropout)
 
-    def forward(self, Q, K, V, mask):
-        # (B, L, E) -> (B, L, D)
-        # (B, L, E) -> (B, L, H * D) * Wo(H * D, D) -> (B, L, D)
-        Z = torch.cat([att(Q, K, V, mask) for att in self.attentions], dim=-1)
-        return self.dropout(self.Wo(Z))
+    def forward(self,
+                query: torch.Tensor,
+                key: torch.Tensor,
+                value: torch.Tensor,
+                mask: torch.Tensor):
+        r"""
+        Concatnate result of all attention output and transform back to original shape.
+
+        Args:
+            query:
+                Input query.
+            key:
+                Input key.
+            value:
+                Input value.
+            mask:
+                Whenever position of mask is false,
+                set corresponding score to -1e9 then apply softmax.
+                Simplified fomula : Softmax( mask(Q x K) )
+        """
+        output = torch.cat([att(query, key, value, mask)
+                            for att in self.attentions], dim=-1)
+        return self.dropout(self.w_output(output))
 
 
 class FF(torch.nn.Module):
@@ -191,7 +218,7 @@ class DecoderLayer(torch.nn.Module):
 
     def __init__(self, E, H, Dff, dropout):
         super().__init__()
-        self.att = MultiHeadAttention(E=E, H=H, dropout=dropout)
+        self.att = MultiHeadAttention(d_model=E, heads=H, dropout=dropout)
         self.addnorm1 = AddNorm(E=E)
         self.addnorm2 = AddNorm(E=E)
         self.ff = FF(E=E, D=Dff, dropout=dropout)
