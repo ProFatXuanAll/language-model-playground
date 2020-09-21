@@ -186,7 +186,7 @@ def load_model(
         )
 
     elif model_class == 'transformer':
-        model = lmp.model.TransformerLanguageModel(
+        model = lmp.model.TransformerModel(
             d_emb=d_emb,
             dropout=dropout,
             num_rnn_layers=num_rnn_layers,
