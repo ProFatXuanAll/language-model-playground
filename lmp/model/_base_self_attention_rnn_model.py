@@ -23,14 +23,17 @@ import torch.nn
 # self-made modules
 
 from lmp.model._attention_mechanism import attention_mechanism
+from lmp.model._base_rnn_model import BaseRNNModel
 
 
-class BaseSelfAttentionRNNModel(torch.nn.Module):
+class BaseSelfAttentionRNNModel(BaseRNNModel):
     r"""Language model with self-attention RNN layers.
 
     Each input token will first be embedded into vectors, then project to
     hidden dimension. We then sequentially feed vectors into RNN layer(s).
-    Output vectors of RNN layer(s) then go through fully-connected layer(s) and
+    And we get query, key, value vector by projecting output vectors of RNN
+    layer(s).Passing query, key, value vector to do self-attention. Output
+    vectors of self-attention then go through fully-connected layer(s) and
     project back to embedding dimension in order to perform vocabulary
     prediction.
 
@@ -83,129 +86,15 @@ class BaseSelfAttentionRNNModel(torch.nn.Module):
             pad_token_id: int,
             vocab_size: int
     ):
-        super().__init__()
-
-        # Type check.
-        if not isinstance(d_emb, int):
-            raise TypeError('`d_emb` must be an instance of `int`.')
-
-        if not isinstance(d_hid, int):
-            raise TypeError('`d_hid` must be an instance of `int`.')
-
-        if not isinstance(dropout, float):
-            raise TypeError('`dropout` must be an instance of `float`.')
-
-        if not isinstance(num_linear_layers, int):
-            raise TypeError(
-                '`num_linear_layers` must be an instance of `int`.'
-            )
-
-        if not isinstance(num_rnn_layers, int):
-            raise TypeError('`num_rnn_layers` must be an instance of `int`.')
-
-        if not isinstance(pad_token_id, int):
-            raise TypeError('`pad_token_id` must be an instance of `int`.')
-
-        if not isinstance(vocab_size, int):
-            raise TypeError('`vocab_size` must be an instance of `int`.')
-
-        # Value Check.
-        if d_emb < 1:
-            raise ValueError('`d_emb` must be bigger than or equal to `1`.')
-
-        if d_hid < 1:
-            raise ValueError('`d_hid` must be bigger than or equal to `1`.')
-
-        if not 0 <= dropout <= 1:
-            raise ValueError('`dropout` must range from `0.0` to `1.0`.')
-
-        if num_linear_layers < 1:
-            raise ValueError(
-                '`num_linear_layers` must be bigger than or equal to `1`.'
-            )
-
-        if num_rnn_layers < 1:
-            raise ValueError(
-                '`num_rnn_layers` must be bigger than or equal to `1`.'
-            )
-
-        if pad_token_id < 0:
-            raise ValueError(
-                '`pad_token_id` must be bigger than or equal to `0`.'
-            )
-
-        if vocab_size < 1:
-            raise ValueError(
-                '`vocab_size` must be bigger than or equal to `1`.'
-            )
-
-        if vocab_size <= pad_token_id:
-            raise ValueError(
-                '`pad_token_id` must be smaller than `vocab_size`.'
-            )
-
-        # Token embedding layer.
-        # Dimension: (V, E).
-        self.emb_layer = torch.nn.Embedding(
-            num_embeddings=vocab_size,
-            embedding_dim=d_emb,
-            padding_idx=pad_token_id
+        super().__init__(
+            d_emb=d_emb,
+            d_hid=d_hid,
+            dropout=dropout,
+            num_linear_layers=num_linear_layers,
+            num_rnn_layers=num_rnn_layers,
+            pad_token_id=pad_token_id,
+            vocab_size=vocab_size
         )
-        self.emb_dropout = torch.nn.Dropout(dropout)
-
-        # Project from `d_emb` into `d_hid`.
-        # Dimension: (E, H).
-        self.proj_emb_to_hid = torch.nn.Sequential(
-            torch.nn.Linear(
-                in_features=d_emb,
-                out_features=d_hid
-            ),
-            torch.nn.ReLU(),
-            torch.nn.Dropout(dropout)
-        )
-
-        # Sequential RNN layer(s).
-        # Dimension: (H, H).
-        if num_rnn_layers == 1:
-            self.rnn_layer = torch.nn.RNN(
-                input_size=d_hid,
-                hidden_size=d_hid,
-                batch_first=True
-            )
-        else:
-            self.rnn_layer = torch.nn.RNN(
-                input_size=d_hid,
-                hidden_size=d_hid,
-                num_layers=num_rnn_layers,
-                dropout=dropout,
-                batch_first=True
-            )
-
-        # Sequential linear layer(s).
-        # Dimension: (H, H).
-        proj_hid_to_emb = []
-        for _ in range(num_linear_layers - 1):
-            proj_hid_to_emb.append(torch.nn.Dropout(dropout))
-            proj_hid_to_emb.append(
-                torch.nn.Linear(
-                    in_features=d_hid,
-                    out_features=d_hid
-                )
-            )
-            proj_hid_to_emb.append(torch.nn.ReLU())
-
-        # Sequential linear layer(s)' last layer.
-        # Dimension: (H, E).
-        proj_hid_to_emb.append(torch.nn.Dropout(dropout))
-        proj_hid_to_emb.append(
-            torch.nn.Linear(
-                in_features=d_hid,
-                out_features=d_emb
-            )
-        )
-        proj_hid_to_emb.append(torch.nn.ReLU())
-        proj_hid_to_emb.append(torch.nn.Dropout(dropout))
-        self.proj_hid_to_emb = torch.nn.Sequential(*proj_hid_to_emb)
 
         self.proj_query = torch.nn.Linear(
             in_features=d_hid,
@@ -263,26 +152,3 @@ class BaseSelfAttentionRNNModel(torch.nn.Module):
         # 重複使用 embedding matrix 的目的為節省參數數量
         # return 維度: (B, S, V)
         return ht.matmul(self.emb_layer.weight.transpose(0, 1))
-
-    def predict(self, batch_sequences: torch.Tensor) -> torch.Tensor:
-        r"""Convert model output logits into prediction.
-
-        Args:
-            batch_sequences:
-                Batch of sequences which have been encoded by
-                `lmp.tokenizer.BaseTokenizer` with numeric type `torch.int64`.
-
-        Raises:
-            TypeError:
-                When `batch_sequences` is not an instance of `Tensor`.
-
-        Returns:
-            Predicition using softmax on model output logits with numeric type `torch.float32`.
-        """
-        # Type check
-        if not isinstance(batch_sequences, torch.Tensor):
-            raise TypeError(
-                '`batch_sequences` must be an instance of `Tensor`.'
-            )
-
-        return torch.nn.functional.softmax(self(batch_sequences), dim=-1)

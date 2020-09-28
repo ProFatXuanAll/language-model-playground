@@ -32,16 +32,13 @@ import lmp.tokenizer
 @torch.no_grad()
 def perplexity_eval(
         device: torch.device,
-        model: Union[
-            lmp.model.BaseRNNModel,
-            lmp.model.BaseResRNNModel,
-            lmp.model.BaseSelfAttentionRNNModel,
-            lmp.model.BaseSelfAttentionResRNNModel
-        ],
+        model: Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel],
         sequence: str,
         tokenizer: lmp.tokenizer.BaseTokenizer
 ) -> float:
     r"""Helper function for calculating perplexity.
+
+    \exp\biggl({\frac{-1}{n}\sum_{i=1}^n\log p(w_i)}\biggr)
 
     Args:
         device:
@@ -67,16 +64,11 @@ def perplexity_eval(
 
     if not isinstance(model, (
             lmp.model.BaseRNNModel,
-            lmp.model.BaseResRNNModel,
-            lmp.model.BaseSelfAttentionRNNModel,
-            lmp.model.BaseSelfAttentionResRNNModel
+            lmp.model.BaseResRNNModel
     )):
         raise TypeError(
             '`model` must be an instance of '
-            '`Union[lmp.model.BaseRNNModel, '
-            'lmp.model.BaseResRNNModel, '
-            'lmp.model.BaseSelfAttentionRNNModel, '
-            'lmp.model.BaseSelfAttentionResRNNModel]`.'
+            '`Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel]`.'
         )
 
     if not isinstance(sequence, str):
@@ -136,12 +128,7 @@ def perplexity_eval(
 def batch_perplexity_eval(
         dataset: Iterable[str],
         device: torch.device,
-        model: Union[
-            lmp.model.BaseRNNModel,
-            lmp.model.BaseResRNNModel,
-            lmp.model.BaseSelfAttentionRNNModel,
-            lmp.model.BaseSelfAttentionResRNNModel
-        ],
+        model: Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel],
         tokenizer: lmp.tokenizer.BaseTokenizer
 ) -> List[float]:
     r"""Helper function for calculating dataset perplexity.

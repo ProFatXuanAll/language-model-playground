@@ -29,8 +29,10 @@ class SelfAttentionGRUModel(BaseSelfAttentionRNNModel):
     r"""Language model with self-attention GRU layers.
 
     Each input token will first be embedded into vectors, then project to
-    hidden dimension. We then sequentially feed vectors into RNN layer(s).
-    Output vectors of RNN layer(s) then go through fully-connected layer(s) and
+    hidden dimension. We then sequentially feed vectors into GRU layer(s).
+    And we get query, key, value vector by projecting output vectors of GRU
+    layer(s).Passing query, key, value vector to do self-attention. Output
+    vectors of self-attention then go through fully-connected layer(s) and
     project back to embedding dimension in order to perform vocabulary
     prediction.
 

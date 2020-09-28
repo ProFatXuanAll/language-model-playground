@@ -7,10 +7,16 @@ Usage:
 
     model = lmp.model.BaseResRNNModel(...)
     model = lmp.model.BaseRNNModel(...)
+    model = lmp.model.BaseSelfAttentionResRNNModel(...)
+    model = lmp.model.BaseSelfAttentionRNNModel(...)
     model = lmp.model.GRUModel(...)
     model = lmp.model.LSTMModel(...)
     model = lmp.model.ResGRUModel(...)
     model = lmp.model.ResLSTMModel(...)
+    model = lmp.model.SelfAttentionGRUModel(...)
+    model = lmp.model.SelfAttentionLSTMModel(...)
+    model = lmp.model.SelfAttentionResGRUModel(...)
+    model = lmp.model.SelfAttentionResLSTMModel(...)
 """
 
 # built-in modules

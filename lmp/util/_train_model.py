@@ -45,12 +45,7 @@ def train_model(
         epoch: int,
         experiment: str,
         max_norm: float,
-        model: Union[
-            lmp.model.BaseRNNModel,
-            lmp.model.BaseResRNNModel,
-            lmp.model.BaseSelfAttentionRNNModel,
-            lmp.model.BaseSelfAttentionResRNNModel
-        ],
+        model: Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel],
         optimizer: Union[torch.optim.SGD, torch.optim.Adam],
         vocab_size: int
 ) -> None:
@@ -116,16 +111,11 @@ def train_model(
 
     if not isinstance(model, (
             lmp.model.BaseRNNModel,
-            lmp.model.BaseResRNNModel,
-            lmp.model.BaseSelfAttentionRNNModel,
-            lmp.model.BaseSelfAttentionResRNNModel
+            lmp.model.BaseResRNNModel
     )):
         raise TypeError(
             '`model` must be an instance of '
-            '`Union[lmp.model.BaseRNNModel, '
-            'lmp.model.BaseResRNNModel, '
-            'lmp.model.BaseSelfAttentionRNNModel, '
-            'lmp.model.BaseSelfAttentionResRNNModel]`.'
+            '`Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel]`.'
         )
 
     if not isinstance(optimizer, (torch.optim.SGD, torch.optim.Adam)):
