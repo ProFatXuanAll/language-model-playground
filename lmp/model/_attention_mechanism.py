@@ -1,4 +1,4 @@
-r"""Attention function.
+r"""Helper function for attention mechanism.
 
 Usage:
     import lmp
@@ -25,6 +25,27 @@ def attention_mechanism(
     key: torch.tensor,
     value: torch.tensor
 ):
+    r"""Helper function for attention mechanism.
+
+    Attention(Q, K, V) = softmax(\frac{QK^T}{\sqrt{n}})V
+
+    First, we compute the similarity between the query and key to obtain scores.
+    Second, mask future information of scores by retaining lower triangle
+    matrix. Third, use a softmax function to normalize the scores. And finally
+    scores multiply the corresponding values to get output vector.
+
+    Args:
+        query:
+            Current vector to compute the similarity with each key vectors.
+        key:
+            The set of key vectors.
+        value:
+            The set of value vectors to compute the weighted sum.
+
+    Return:
+        A weighted sum of the values.
+
+    """
 
     device = query.device
 

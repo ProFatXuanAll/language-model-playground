@@ -149,8 +149,6 @@ class TestLoadOptimizerByConfig(unittest.TestCase):
                         annotation=Union[
                             lmp.model.BaseRNNModel,
                             lmp.model.BaseResRNNModel,
-                            lmp.model.BaseSelfAttentionRNNModel,
-                            lmp.model.BaseSelfAttentionResRNNModel
                         ],
                         default=inspect.Parameter.empty
                     )
@@ -241,10 +239,7 @@ class TestLoadOptimizerByConfig(unittest.TestCase):
                 self.assertEqual(
                     ctx_man.exception.args[0],
                     '`model` must be an instance of '
-                    '`Union[lmp.model.BaseRNNModel, '
-                    'lmp.model.BaseResRNNModel, '
-                    'lmp.model.BaseSelfAttentionRNNModel, '
-                    'lmp.model.BaseSelfAttentionResRNNModel]`.',
+                    '`Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel]`.',
                     msg=msg2
                 )
 

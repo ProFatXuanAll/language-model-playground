@@ -27,13 +27,15 @@ from lmp.model._res_gru_block import ResGRUBlock
 
 
 class SelfAttentionResGRUModel(BaseSelfAttentionResRNNModel):
-    r"""Language model with self-attention GRU layers.
+    r"""Language model with self-attention residual GRU blocks.
 
     Each input token will first be embedded into vectors, then project to
-    hidden dimension. We then sequentially feed vectors into RNN layer(s).
-    Output vectors of RNN layer(s) then go through fully-connected layer(s) and
-    project back to embedding dimension in order to perform vocabulary
-    prediction.
+    hidden dimension. We then sequentially feed vectors into residual GRU
+    layer(s). And we get query, key, value vector by projecting output vectors
+    of residual GRU layer(s).Passing query, key, value vector to do self
+    attention. Output vectors of self-attention then go through fully-connected
+    layer(s) and project back to embedding dimension in order to perform
+    vocabulary prediction.
 
     In the comment below, we use following symbols to denote the size of
     each tensors:

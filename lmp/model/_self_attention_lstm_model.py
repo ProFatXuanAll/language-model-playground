@@ -29,8 +29,10 @@ class SelfAttentionLSTMModel(BaseSelfAttentionRNNModel):
     r"""Language model with self-attention LSTM layers.
 
     Each input token will first be embedded into vectors, then project to
-    hidden dimension. We then sequentially feed vectors into RNN layer(s).
-    Output vectors of RNN layer(s) then go through fully-connected layer(s) and
+    hidden dimension. We then sequentially feed vectors into LSTM layer(s).
+    And we get query, key, value vector by projecting output vectors of LSTM
+    layer(s).Passing query, key, value vector to do self-attention. Output
+    vectors of self-attention then go through fully-connected layer(s) and
     project back to embedding dimension in order to perform vocabulary
     prediction.
 

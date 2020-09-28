@@ -46,12 +46,18 @@ class TestModel(unittest.TestCase):
             'BaseResRNNBlock',
             'BaseResRNNModel',
             'BaseRNNModel',
+            'BaseSelfAttentionResRNNModel',
+            'BaseSelfAttentionRNNModel',
             'GRUModel',
             'LSTMModel',
             'ResGRUBlock',
             'ResGRUModel',
             'ResLSTMBlock',
             'ResLSTMModel',
+            'SelfAttentionGRUModel',
+            'SelfAttentionLSTMModel',
+            'SelfAttentionResGRUModel',
+            'SelfAttentionResLSTMModel',
         )
 
         try:

@@ -588,32 +588,22 @@ class TestInit(unittest.TestCase):
         )
 
         for proj_layer, d_emb, d_hid, dropout, num_linear_layers in examples:
-            self.assertEqual(
-                len(proj_layer),
-                3 * num_linear_layers + 1,
-                msg=msg
-            )
+            self.assertEqual(len(proj_layer), 3 * num_linear_layers, msg=msg)
             for i in range(0, num_linear_layers - 1, 3):
-                self.assertIsInstance(proj_layer[i], torch.nn.Dropout, msg=msg)
-                self.assertEqual(proj_layer[i].p, dropout, msg=msg)
+                self.assertIsInstance(proj_layer[i], torch.nn.Linear, msg=msg)
+                self.assertEqual(proj_layer[i].in_features, d_hid, msg=msg)
+                self.assertEqual(proj_layer[i].out_features, d_hid, msg=msg)
                 self.assertIsInstance(
                     proj_layer[i + 1],
-                    torch.nn.Linear,
-                    msg=msg
-                )
-                self.assertEqual(proj_layer[i + 1].in_features, d_hid, msg=msg)
-                self.assertEqual(
-                    proj_layer[i + 1].out_features,
-                    d_hid,
+                    torch.nn.ReLU,
                     msg=msg
                 )
                 self.assertIsInstance(
                     proj_layer[i + 2],
-                    torch.nn.ReLU,
+                    torch.nn.Dropout,
                     msg=msg
                 )
-            self.assertIsInstance(proj_layer[-4], torch.nn.Dropout, msg=msg)
-            self.assertEqual(proj_layer[-4].p, dropout, msg=msg)
+                self.assertEqual(proj_layer[i + 2].p, dropout, msg=msg)
             self.assertIsInstance(proj_layer[-3], torch.nn.Linear, msg=msg)
             self.assertEqual(proj_layer[-3].in_features, d_hid, msg=msg)
             self.assertEqual(proj_layer[-3].out_features, d_emb, msg=msg)

@@ -107,6 +107,12 @@ def load_model(
         `lmp.model.BaseResRNNModel` if `model_class == 'res_rnn'`;
         `lmp.model.ResGRUModel` if `model_class == 'res_gru'`;
         `lmp.model.ResLSTMModel` if `model_class == 'res_lstm'`.
+        `lmp.model.BaseSelfAttentionRNNModel` if `model_class == 'att_rnn'`;
+        `lmp.model.SelfAttentionGRUModel` if `model_class == 'att_gru'`;
+        `lmp.model.SelfAttentionLSTMModel` if `model_class == 'att_lstm'`;
+        `lmp.model.BaseSelfAttentionResRNNModel` if `model_class == 'att_res_rnn'`;
+        `lmp.model.SelfAttentionResGRUModel` if `model_class == 'att_res_gru'`;
+        `lmp.model.SelfAttentionResLSTMModel` if `model_class == 'att_res_lstm'`.
     """
     # Type check.
     if not isinstance(checkpoint, int):

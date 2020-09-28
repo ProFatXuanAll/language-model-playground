@@ -149,12 +149,7 @@ def load_optimizer(
 def load_optimizer_by_config(
         checkpoint: int,
         config: lmp.config.BaseConfig,
-        model: Union[
-            lmp.model.BaseRNNModel,
-            lmp.model.BaseResRNNModel,
-            lmp.model.BaseSelfAttentionRNNModel,
-            lmp.model.BaseSelfAttentionResRNNModel
-        ]
+        model: Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel]
 ) -> Union[torch.optim.SGD, torch.optim.Adam]:
     r"""Helper function for constructing optimizer.
 
@@ -188,16 +183,11 @@ def load_optimizer_by_config(
 
     if not isinstance(model, (
             lmp.model.BaseRNNModel,
-            lmp.model.BaseResRNNModel,
-            lmp.model.BaseSelfAttentionRNNModel,
-            lmp.model.BaseSelfAttentionResRNNModel
+            lmp.model.BaseResRNNModel
     )):
         raise TypeError(
             '`model` must be an instance of '
-            '`Union[lmp.model.BaseRNNModel, '
-            'lmp.model.BaseResRNNModel, '
-            'lmp.model.BaseSelfAttentionRNNModel, '
-            'lmp.model.BaseSelfAttentionResRNNModel]`.'
+            '`Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel]`.'
         )
 
     return load_optimizer(

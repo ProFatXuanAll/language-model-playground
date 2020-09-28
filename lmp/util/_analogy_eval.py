@@ -33,12 +33,7 @@ import lmp.tokenizer
 @torch.no_grad()
 def analogy_inference(
         device: torch.device,
-        model: Union[
-            lmp.model.BaseRNNModel,
-            lmp.model.BaseResRNNModel,
-            lmp.model.BaseSelfAttentionRNNModel,
-            lmp.model.BaseSelfAttentionResRNNModel
-        ],
+        model: Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel],
         tokenizer: lmp.tokenizer.BaseTokenizer,
         word_a: str,
         word_b: str,
@@ -78,16 +73,11 @@ def analogy_inference(
 
     if not isinstance(model, (
             lmp.model.BaseRNNModel,
-            lmp.model.BaseResRNNModel,
-            lmp.model.BaseSelfAttentionRNNModel,
-            lmp.model.BaseSelfAttentionResRNNModel
+            lmp.model.BaseResRNNModel
     )):
         raise TypeError(
             '`model` must be an instance of '
-            '`Union[lmp.model.BaseRNNModel, '
-            'lmp.model.BaseResRNNModel, '
-            'lmp.model.BaseSelfAttentionRNNModel, '
-            'lmp.model.BaseSelfAttentionResRNNModel]`.'
+            '`Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel]`.'
         )
 
     if not isinstance(tokenizer, lmp.tokenizer.BaseTokenizer):
@@ -139,12 +129,7 @@ def analogy_inference(
 def analogy_eval(
         dataset: lmp.dataset.AnalogyDataset,
         device: torch.device,
-        model: Union[
-            lmp.model.BaseRNNModel,
-            lmp.model.BaseResRNNModel,
-            lmp.model.BaseSelfAttentionRNNModel,
-            lmp.model.BaseSelfAttentionResRNNModel
-        ],
+        model: Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel],
         tokenizer: lmp.tokenizer.BaseTokenizer
 ) -> Dict[str, float]:
     r"""Helper function for calculating word analogy dataset accuracy.

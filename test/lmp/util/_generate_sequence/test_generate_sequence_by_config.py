@@ -99,9 +99,7 @@ class TestGenerateSequenceByConfig(unittest.TestCase):
                         kind=inspect.Parameter.POSITIONAL_OR_KEYWORD,
                         annotation=Union[
                             lmp.model.BaseRNNModel,
-                            lmp.model.BaseResRNNModel,
-                            lmp.model.BaseSelfAttentionRNNModel,
-                            lmp.model.BaseSelfAttentionResRNNModel
+                            lmp.model.BaseResRNNModel
                         ],
                         default=inspect.Parameter.empty
                     ),
@@ -277,12 +275,7 @@ class TestGenerateSequenceByConfig(unittest.TestCase):
             self.assertEqual(
                 ctx_man.exception.args[0],
                 '`model` must be an instance of '
-                '`Union['
-                'lmp.model.BaseRNNModel, '
-                'lmp.model.BaseResRNNModel, '
-                'lmp.model.BaseSelfAttentionRNNModel, '
-                'lmp.model.BaseSelfAttentionResRNNModel'
-                ']`.',
+                '`Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel]`.',
                 msg=msg2
             )
 
