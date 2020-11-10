@@ -80,7 +80,8 @@ def generate_sequence(
 
     if not isinstance(model, (
             lmp.model.BaseRNNModel,
-            lmp.model.BaseResRNNModel
+            lmp.model.BaseResRNNModel,
+            lmp.model.TransformerModel
     )):
         raise TypeError(
             '`model` must be an instance of '

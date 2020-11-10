@@ -262,6 +262,16 @@ def load_model(
             pad_token_id=pad_token_id,
             vocab_size=vocab_size
         )
+    elif model_class == 'transformer':
+        model = lmp.model.TransformerModel(
+            d_emb=d_emb,
+            d_hid=d_hid,
+            dropout=dropout,
+            num_rnn_layers=num_rnn_layers,
+            num_linear_layers=num_linear_layers,
+            pad_token_id=pad_token_id,
+            vocab_size=vocab_size
+        )
 
     else:
         raise ValueError(
@@ -281,6 +291,7 @@ def load_model(
                     'att_res_rnn',
                     'att_res_gru',
                     'att_res_lstm',
+                    'transformer',
                 ]
             )))
         )
