@@ -97,7 +97,6 @@ class BaseSelfAttentionResRNNModel(BaseResRNNModel):
             vocab_size=vocab_size
         )
 
-
         self.proj_query = torch.nn.Linear(
             in_features=d_hid,
             out_features=d_hid
@@ -155,4 +154,3 @@ class BaseSelfAttentionResRNNModel(BaseResRNNModel):
         # 重複使用 embedding matrix 的目的為節省參數數量
         # return 維度: (B, S, V)
         return ht.matmul(self.emb_layer.weight.transpose(0, 1))
-
