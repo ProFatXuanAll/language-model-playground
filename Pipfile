@@ -1,0 +1,22 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+autopep8 = "1.5.4"
+pylint = "2.6.0"
+
+[packages]
+matplotlib = "3.3.2"
+numpy = "1.19.4"
+pandas = "1.1.4"
+scipy = "1.5.4"
+seaborn = "0.11.0"
+sklearn = "0.0"
+tensorboard = "2.3.0"
+torch = "1.7.0"
+tqdm = "4.51.0"
+
+[requires]
+python_version = "3.8"
