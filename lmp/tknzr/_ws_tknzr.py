@@ -23,12 +23,6 @@ Usage:
     batch_sequences = tokenizer.batch_decode(batch_token_ids)
 """
 
-# built-in modules
-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
 
 import re
 
@@ -37,10 +31,10 @@ from typing import List
 
 # self-made modules
 
-from lmp.tokenizer._base_dict_tokenizer import BaseDictTokenizer
+from lmp.tknzr._base_tknzr import BaseTknzr
 
 
-class WhitespaceDictTokenizer(BaseDictTokenizer):
+class WsTknzr(BaseTknzr):
     r"""Whitespace tokenizer using `dict` structure.
 
     Attributes:
@@ -70,7 +64,8 @@ class WhitespaceDictTokenizer(BaseDictTokenizer):
         vocab_size:
             Number of words in tokenizer's vocabulary.
 
-    Raises:
+    Raises
+        ======
         TypeError:
             When `is_uncased` is not an instance of `bool`.
     """
@@ -84,15 +79,18 @@ class WhitespaceDictTokenizer(BaseDictTokenizer):
         `lmp.tokenizer.BaseTokenizer.normalize` for details on normalization
         process.
 
-        Args:
+        Parameters
+        ==========
             sequence:
                 Input sequence to be tokenized.
 
-        Raises:
+        Raises
+        ======
             TypeError:
                 When `sequence` is not an instance of `str`.
 
-        Returns:
+        Returns
+        =======
             Tokens represent input sequence.
         """
         try:
@@ -117,15 +115,18 @@ class WhitespaceDictTokenizer(BaseDictTokenizer):
         `lmp.tokenizer.BaseTokenizer.normalize` for details on normalization
         process.
 
-        Args:
+        Parameters
+        ==========
             tokens:
                 Tokens to be converted.
 
-        Raises:
+        Raises
+        ======
             TypeError:
                 When `tokens` is not an instance of `Iterable[str]`.
 
-        Returns:
+        Returns
+        =======
             Sequence converted from input tokens.
         """
         # Type check.
