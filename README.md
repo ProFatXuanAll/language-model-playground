@@ -27,24 +27,59 @@ git clone https://github.com/ProFatXuanAll/language-model-playground.git
 cd language-model-playground
 ```
 
-3. 安裝並啟動虛擬環境
+3. 安裝相依套件。
 
 ```sh
-# 使用 python3 內建提供的虛擬環境
-# 如果無法執行請先安裝 `python3-dev` `python3-venv`
-# 例如在 Ubuntu 上使用 `apt-get install python3-dev python3-venv`
-
-# 如果使用 `conda` 請參考 `conda create --name venv python=3.6`
-python3 -m venv venv # 安裝虛擬環境
-
-# 如果使用 `conda` 請參考 activate venv
-source venv/bin/active # 啟動虛擬環境
+pipenv install
 ```
 
-4. 安裝相依套件。
+4. 啟動虛擬環境。
 
 ```sh
-pip install -r requirements.txt
+pipenv shell
+```
+
+### 文件
+
+1. 安裝文件編譯相依套件
+
+```sh
+pipenv install --dev
+```
+
+2. 移動到文件資料夾
+
+```sh
+cd doc
+```
+
+3. 編譯文件
+
+```sh
+make html
+```
+
+4. 在瀏覽器中開啟 `doc/build/index.html`
+
+```sh
+xdg-open build/index.html
+```
+
+### 測試
+
+1. 安裝文件編譯相依套件
+
+```sh
+pipenv install --dev
+```
+
+2. 執行測試
+
+```sh
+isort .
+autopep8 -r -i -a -a -a lmp
+autopep8 -r -i -a -a -a test
+coverage -m pytest
 ```
 
 ### 下載資料集
