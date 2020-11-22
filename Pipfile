@@ -5,7 +5,10 @@ verify_ssl = true
 
 [dev-packages]
 autopep8 = "1.5.4"
+numpydoc = "1.1.0"
 pylint = "2.6.0"
+pytest = "6.1.2"
+sphinx = "3.3.1"
 
 [packages]
 matplotlib = "3.3.2"
@@ -16,7 +19,10 @@ seaborn = "0.11.0"
 sklearn = "0.0"
 tensorboard = "2.3.0"
 torch = "1.7.0"
-tqdm = "4.51.0"
+tqdm = "4.52.0"
 
 [requires]
 python_version = "3.8"
+
+[scripts]
+test = "pytest"
