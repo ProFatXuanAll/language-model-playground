@@ -7,7 +7,7 @@ Usage:
     dataset = lmp.util.load_dataset_by_config(...)
 """
 
-# built-in modules
+
 
 from __future__ import absolute_import
 from __future__ import division
@@ -20,11 +20,11 @@ import unicodedata
 
 from typing import Union
 
-# 3rd-party modules
+
 
 import pandas as pd
 
-# self-made modules
+
 
 import lmp.config
 import lmp.dataset

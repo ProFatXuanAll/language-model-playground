@@ -7,7 +7,7 @@ Usage:
     generated = lmp.util.generate_sequence_by_config(...)
 """
 
-# built-in modules
+
 
 from __future__ import absolute_import
 from __future__ import division
@@ -16,15 +16,15 @@ from __future__ import unicode_literals
 from typing import List
 from typing import Union
 
-# 3rd-party modules
+
 
 import torch
 
-# self-made modules
+
 
 import lmp.config
 import lmp.model
-import lmp.tokenizer
+import lmp.tknzr
 
 
 @torch.no_grad()
@@ -34,7 +34,7 @@ def generate_sequence(
         device: torch.device,
         max_seq_len: int,
         model: Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel],
-        tokenizer: lmp.tokenizer.BaseTokenizer
+        tokenizer: lmp.tknzr.BaseTknzr
 ) -> List[str]:
     r"""Sequences generation using beam search.
 
@@ -88,10 +88,10 @@ def generate_sequence(
             '`Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel]`.'
         )
 
-    if not isinstance(tokenizer, lmp.tokenizer.BaseTokenizer):
+    if not isinstance(tokenizer, lmp.tknzr.BaseTknzr):
         raise TypeError(
             '`tokenizer` must be an instance of '
-            '`lmp.tokenizer.BaseTokenizer`.'
+            '`lmp.tknzr.BaseTknzr`.'
         )
 
     # Value check.
@@ -191,7 +191,7 @@ def generate_sequence_by_config(
         config: lmp.config.BaseConfig,
         max_seq_len: int,
         model: Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel],
-        tokenizer: lmp.tokenizer.BaseTokenizer
+        tokenizer: lmp.tknzr.BaseTknzr
 ) -> List[str]:
     r"""Helper function for sequences generation.
 

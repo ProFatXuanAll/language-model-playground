@@ -6,7 +6,7 @@ Usage:
     lmp.util.train_model(...)
 """
 
-# built-in modules
+
 
 from __future__ import absolute_import
 from __future__ import division
@@ -18,7 +18,7 @@ import os
 
 from typing import Union
 
-# 3rd-party modules
+
 
 import torch
 import torch.nn
@@ -28,13 +28,13 @@ import torch.utils.tensorboard
 
 from tqdm import tqdm
 
-# self-made modules
+
 
 import lmp.config
 import lmp.dataset
 import lmp.model
 import lmp.path
-import lmp.tokenizer
+import lmp.tknzr
 
 
 def train_model(

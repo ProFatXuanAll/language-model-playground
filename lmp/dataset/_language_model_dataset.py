@@ -6,26 +6,12 @@ Usage:
     dataset = lmp.dataset.LanguageModelDataset(...)
 """
 
-# built-in modules
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
-from typing import Callable
-from typing import Generator
-from typing import Iterable
-from typing import Tuple
-
-# 3rd-party modules
+from typing import Callable, Generator, Iterable, Tuple
 
 import torch.utils.data
 
-# self-made modules
-
-import lmp.tokenizer
-
+import lmp.tknzr
 
 # Define types for type annotation.
 
@@ -95,7 +81,7 @@ class LanguageModelDataset(torch.utils.data.Dataset):
 
     @staticmethod
     def create_collate_fn(
-            tokenizer: lmp.tokenizer.BaseTokenizer,
+            tokenizer: lmp.tknzr.BaseTknzr,
             max_seq_len: int = -1
     ) -> CollateFn:
         r"""Create `collate_fn` for `torch.utils.data.DataLoader`.
@@ -114,7 +100,7 @@ class LanguageModelDataset(torch.utils.data.Dataset):
         Raises:
             TypeError:
                 When `tokenizer` is not an instance of
-                `lmp.tokenizer.BaseTokenizer` or `max_seq_len` is not an instance
+                `lmp.tknzr.BaseTknzr` or `max_seq_len` is not an instance
                 of `int`.
             ValueError:
                 When `0 <= max_seq_len <= 1` or `max_seq_len < -1`.
@@ -123,10 +109,10 @@ class LanguageModelDataset(torch.utils.data.Dataset):
             A function used by `torch.utils.data.DataLoader`.
         """
         # Type check
-        if not isinstance(tokenizer, lmp.tokenizer.BaseTokenizer):
+        if not isinstance(tokenizer, lmp.tknzr.BaseTknzr):
             raise TypeError(
                 '`tokenizer` must be an instance of '
-                '`lmp.tokenizer.BaseTokenizer`.'
+                '`lmp.tknzr.BaseTknzr`.'
             )
 
         if not isinstance(max_seq_len, int):

@@ -12,7 +12,6 @@ Example
     log_path = lmp.path.LOG_PATH
 """
 
-# built-in modules
 
 import os
 

@@ -7,7 +7,7 @@ Usage:
     perplexity = lmp.util.perplexity_eval(...)
 """
 
-# built-in modules
+
 
 from __future__ import absolute_import
 from __future__ import division
@@ -17,16 +17,16 @@ from typing import Iterable
 from typing import List
 from typing import Union
 
-# 3rd-party modules
+
 
 import torch
 
 from tqdm import tqdm
 
-# self-made modules
+
 
 import lmp.model
-import lmp.tokenizer
+import lmp.tknzr
 
 
 @torch.no_grad()
@@ -34,7 +34,7 @@ def perplexity_eval(
         device: torch.device,
         model: Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel],
         sequence: str,
-        tokenizer: lmp.tokenizer.BaseTokenizer
+        tokenizer: lmp.tknzr.BaseTknzr
 ) -> float:
     r"""Helper function for calculating perplexity.
 
@@ -75,9 +75,9 @@ def perplexity_eval(
     if not isinstance(sequence, str):
         raise TypeError('`sequence` must be an instance of `str`.')
 
-    if not isinstance(tokenizer, lmp.tokenizer.BaseTokenizer):
+    if not isinstance(tokenizer, lmp.tknzr.BaseTknzr):
         raise TypeError(
-            '`tokenizer` must be an instance of `lmp.tokenizer.BaseTokenizer`.'
+            '`tokenizer` must be an instance of `lmp.tknzr.BaseTknzr`.'
         )
 
     # Value check.
@@ -130,7 +130,7 @@ def batch_perplexity_eval(
         dataset: Iterable[str],
         device: torch.device,
         model: Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel],
-        tokenizer: lmp.tokenizer.BaseTokenizer
+        tokenizer: lmp.tknzr.BaseTknzr
 ) -> List[float]:
     r"""Helper function for calculating dataset perplexity.
 

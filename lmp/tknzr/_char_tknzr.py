@@ -1,14 +1,14 @@
 r"""Character tokenizer using `dict` structure.
 
 Usage:
-    from lmp.tokenizer import CharDictTokenizer
+    from lmp.tknzr import CharTknzr
 
     batch_sequences = (
         'I like apple.',
         'I really like to eat apple.'
     )
 
-    tokenizer = CharDictTokenizer()
+    tokenizer = CharTknzr()
     tokenizer.build_vocab(batch_sequences)
 
     sequence = batch_sequences[0]
@@ -24,10 +24,7 @@ Usage:
 """
 
 
-from typing import Iterable
-from typing import List
-
-# self-made modules
+from typing import Iterable, List
 
 from lmp.tknzr._base_tknzr import BaseTknzr
 
@@ -72,9 +69,9 @@ class CharTknzr(BaseTknzr):
         r"""Perform tokenization on input sequence.
 
         Input sequence will first be normalized by
-        `lmp.tokenizer.BaseTokenizer.normalize(sequence)`, then be splitted
+        `lmp.tknzr.BaseTknzr.normalize(sequence)`, then be splitted
         into tokens by `list(sequence)`. See
-        `lmp.tokenizer.BaseTokenizer.normalize` for details on normalization
+        `lmp.tknzr.BaseTknzr.normalize` for details on normalization
         process.
 
         Parameters
@@ -102,8 +99,8 @@ class CharTknzr(BaseTknzr):
 
         Since each tokens are originally tokenized as characters, we can simply
         join them into single sequence. Output sequence will be normalized
-        by `lmp.tokenizer.BaseTokenizer.normalize(sequence)`. See
-        `lmp.tokenizer.BaseTokenizer.normalize` for details on normalization
+        by `lmp.tknzr.BaseTknzr.normalize(sequence)`. See
+        `lmp.tknzr.BaseTknzr.normalize` for details on normalization
         process.
 
         Parameters

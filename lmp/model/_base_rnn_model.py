@@ -8,14 +8,6 @@ Usage:
     pred = model.predict(...)
 """
 
-# built-in modules
-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
-# 3rd-party modules
 
 import torch
 import torch.nn
@@ -209,7 +201,7 @@ class BaseRNNModel(torch.nn.Module):
         Args:
             batch_sequences:
                 Batch of sequences which have been encoded by
-                `lmp.tokenizer.BaseTokenizer` with numeric type `torch.int64`.
+                `lmp.tknzr.BaseTknzr` with numeric type `torch.int64`.
 
         Returns:
             Logits for each token in sequences with numeric type `torch.float32`.
@@ -243,7 +235,7 @@ class BaseRNNModel(torch.nn.Module):
         Args:
             batch_sequences:
                 Batch of sequences which have been encoded by
-                `lmp.tokenizer.BaseTokenizer` with numeric type `torch.int64`.
+                `lmp.tknzr.BaseTknzr` with numeric type `torch.int64`.
 
         Raises:
             TypeError:

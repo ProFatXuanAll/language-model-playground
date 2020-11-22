@@ -7,7 +7,7 @@ Usage:
     optimizer = lmp.util.load_optimizer_by_config(...)
 """
 
-# built-in modules
+
 
 from __future__ import absolute_import
 from __future__ import division
@@ -20,11 +20,11 @@ import os
 from typing import Iterable
 from typing import Union
 
-# 3rd-party modules
+
 
 import torch
 
-# self-made modules
+
 
 import lmp.config
 import lmp.model

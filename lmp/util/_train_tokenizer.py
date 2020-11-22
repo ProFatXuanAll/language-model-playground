@@ -6,24 +6,24 @@ Usage:
     lmp.util.train_tokenizer(...)
     lmp.util.train_tokenizer_by_config(...)
 """
-# built-in modules
+
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-# self-made modules
+
 
 import lmp.config
 import lmp.dataset
-import lmp.tokenizer
+import lmp.tknzr
 
 
 def train_tokenizer(
         dataset: lmp.dataset.LanguageModelDataset,
         min_count: int,
-        tokenizer: lmp.tokenizer.BaseTokenizer
+        tokenizer: lmp.tknzr.BaseTknzr
 ) -> None:
     r"""Helper function for training tokenizer.
 
@@ -51,9 +51,9 @@ def train_tokenizer(
     if not isinstance(min_count, int):
         raise TypeError('`min_count` must be an instance of `int`.')
 
-    if not isinstance(tokenizer, lmp.tokenizer.BaseTokenizer):
+    if not isinstance(tokenizer, lmp.tknzr.BaseTknzr):
         raise TypeError(
-            '`tokenizer` must be an instance of `lmp.tokenizer.BaseTokenizer`.'
+            '`tokenizer` must be an instance of `lmp.tknzr.BaseTknzr`.'
         )
 
     # Value check.
@@ -66,7 +66,7 @@ def train_tokenizer(
 def train_tokenizer_by_config(
         config: lmp.config.BaseConfig,
         dataset: lmp.dataset.LanguageModelDataset,
-        tokenizer: lmp.tokenizer.BaseTokenizer
+        tokenizer: lmp.tknzr.BaseTknzr
 ) -> None:
     r"""Helper function for training tokenizer.
 

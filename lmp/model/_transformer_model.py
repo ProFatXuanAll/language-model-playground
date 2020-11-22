@@ -13,8 +13,9 @@ DESCRIPTION
 """
 
 import math
-import torch
+
 import numpy as np
+import torch
 
 
 class PositionalEncoding(torch.nn.Module):
@@ -209,7 +210,11 @@ class FeedForward(torch.nn.Module):
             input:
                 Input tensor.
         """
-        return self.dropout(self.w_out(self.dropout(torch.nn.functional.relu(self.w_in(input)))))
+        return self.dropout(
+            self.w_out(
+                self.dropout(
+                    torch.nn.functional.relu(
+                        self.w_in(input)))))
 
 
 class AddNorm(torch.nn.Module):
@@ -281,7 +286,13 @@ class Decoder(torch.nn.Module):
     Stack decoder layers
     """
 
-    def __init__(self, d_model: int, heads: int,  d_ff: int, layers: int, dropout: float):
+    def __init__(
+            self,
+            d_model: int,
+            heads: int,
+            d_ff: int,
+            layers: int,
+            dropout: float):
         r"""
         Args:
             d_model:
@@ -402,7 +413,8 @@ class TransformerModel(torch.nn.Module):
         """
         mask = self.subseqmask(input)
         input = self.positional_encoding(self.embedding(input))
-        return self.decoder(input, mask) @ self.embedding.weight.transpose(0, 1)
+        return self.decoder(
+            input, mask) @ self.embedding.weight.transpose(0, 1)
 
     def predict(self, input: torch.Tensor):
         r"""

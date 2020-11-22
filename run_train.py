@@ -6,7 +6,7 @@ Usage:
 Run 'python run_train.py --help' for help.
 """
 
-# built-in modules
+
 
 from __future__ import absolute_import
 from __future__ import division
@@ -16,11 +16,11 @@ from __future__ import unicode_literals
 import argparse
 import time
 
-# 3rd-party modules
+
 
 import torch
 
-# self-made modules
+
 
 import lmp
 

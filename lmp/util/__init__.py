@@ -15,14 +15,14 @@ Usage:
     tokenizer = lmp.util.train_tokenizer_by_config(...)
 """
 
-# built-in modules
+
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-# self-made modules
+
 
 from lmp.util._analogy_eval import analogy_eval
 from lmp.util._analogy_eval import analogy_inference

@@ -8,19 +8,8 @@ Usage:
     pred = model.predict(...)
 """
 
-# built-in modules
-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
-
-# 3rd-party modules
 
 import torch
-
-# self-made modules
 
 from lmp.model._base_res_rnn_model import BaseResRNNModel
 from lmp.model._res_lstm_block import ResLSTMBlock

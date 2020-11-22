@@ -8,21 +8,12 @@ Usage:
     pred = model.predict(...)
 """
 
-# built-in modules
-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
-# 3rd-party modules
 
 import torch
 import torch.nn
 
-# self-made modules
-
-from lmp.model._base_self_attention_res_rnn_model import BaseSelfAttentionResRNNModel
+from lmp.model._base_self_attention_res_rnn_model import \
+    BaseSelfAttentionResRNNModel
 from lmp.model._res_gru_block import ResGRUBlock
 
 

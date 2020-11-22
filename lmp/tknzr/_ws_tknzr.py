@@ -1,14 +1,14 @@
 r"""Whitespace Tokenizer using `dict` structure.
 
 Usage:
-    from lmp.tokenizer import WhitespaceDictTokenizer
+    from lmp.tknzr import WsTknzr
 
     batch_sequences = (
         'I like apple.',
         'I really like to eat apple.'
     )
 
-    tokenizer = WhitespaceDictTokenizer()
+    tokenizer = WsTknzr()
     tokenizer.build_vocab(batch_sequences)
 
     sequence = batch_sequences[0]
@@ -23,13 +23,8 @@ Usage:
     batch_sequences = tokenizer.batch_decode(batch_token_ids)
 """
 
-
 import re
-
-from typing import Iterable
-from typing import List
-
-# self-made modules
+from typing import Iterable, List
 
 from lmp.tknzr._base_tknzr import BaseTknzr
 
@@ -74,9 +69,9 @@ class WsTknzr(BaseTknzr):
         r"""Perform tokenization on input sequence.
 
         Input sequence will first be normalized by
-        `lmp.tokenizer.BaseTokenizer.normalize(sequence)`, then be splitted
+        `lmp.tknzr.BaseTknzr.normalize(sequence)`, then be splitted
         into tokens by `re.split(r'\s+', sequence)`. See
-        `lmp.tokenizer.BaseTokenizer.normalize` for details on normalization
+        `lmp.tknzr.BaseTknzr.normalize` for details on normalization
         process.
 
         Parameters
@@ -111,8 +106,8 @@ class WsTknzr(BaseTknzr):
         Since each tokens are originally tokenized by whitespace characters,
         we can simply join them using single whitespace character. Output
         sequence will be normalized using
-        `lmp.tokenizer.BaseTokenizer.normalize`. See
-        `lmp.tokenizer.BaseTokenizer.normalize` for details on normalization
+        `lmp.tknzr.BaseTknzr.normalize`. See
+        `lmp.tknzr.BaseTknzr.normalize` for details on normalization
         process.
 
         Parameters

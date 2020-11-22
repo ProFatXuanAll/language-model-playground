@@ -8,26 +8,13 @@ Usage:
     config = config.load(path)
 """
 
-# built-in modules
-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
 
 import json
 import math
 import os
-
-from typing import Generator
-from typing import Tuple
-from typing import Union
-
-# 3rd-party modules
+from typing import Generator, Tuple, Union
 
 import torch
-
-# self-made modules
 
 import lmp.path
 

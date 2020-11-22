@@ -21,4 +21,5 @@ class TestSign:
         assert hasattr(BaseTknzr, 'batch_dec')
 
     def test_init(self, tknzr):
+        """Subclass only need to implement tknzr and dtknzr."""
         assert tknzr

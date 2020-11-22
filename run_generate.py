@@ -6,7 +6,7 @@ Usage:
 Run 'python run_generate.py --help' for help.
 """
 
-# built-in modules
+
 
 from __future__ import absolute_import
 from __future__ import division
@@ -15,7 +15,7 @@ from __future__ import unicode_literals
 
 import argparse
 
-# self-made modules
+
 
 import lmp
 

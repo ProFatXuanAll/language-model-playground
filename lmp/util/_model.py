@@ -7,7 +7,7 @@ Usage:
     model = lmp.util.load_model_by_config(...)
 """
 
-# built-in modules
+
 
 from __future__ import absolute_import
 from __future__ import division
@@ -18,15 +18,15 @@ import os
 
 from typing import Union
 
-# 3rd-party modules
+
 
 import torch
 
-# self-made modules
+
 
 import lmp.config
 import lmp.model
-import lmp.tokenizer
+import lmp.tknzr
 
 
 def load_model(
@@ -317,7 +317,7 @@ def load_model(
 def load_model_by_config(
         checkpoint: int,
         config: lmp.config.BaseConfig,
-        tokenizer: lmp.tokenizer.BaseTokenizer
+        tokenizer: lmp.tknzr.BaseTknzr
 ) -> Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel]:
     r"""Helper function for constructing language model.
 
@@ -337,7 +337,7 @@ def load_model_by_config(
     Raises:
         TypeError:
             When `config` is not an instance of `lmp.config.BaseConfig` or
-            `tokenizer` is not an instance of `lmp.tokenizer.BaseTokenizer`.
+            `tokenizer` is not an instance of `lmp.tknzr.BaseTknzr`.
         ValueError:
             When `checkpoint < -1` or `config.model_class` does not support.
 
@@ -350,9 +350,9 @@ def load_model_by_config(
             '`config` must be an instance of `lmp.config.BaseConfig`.'
         )
 
-    if not isinstance(tokenizer, lmp.tokenizer.BaseTokenizer):
+    if not isinstance(tokenizer, lmp.tknzr.BaseTknzr):
         raise TypeError(
-            '`tokenizer` must be an instance of `lmp.tokenizer.BaseTokenizer`.'
+            '`tokenizer` must be an instance of `lmp.tknzr.BaseTknzr`.'
         )
 
     return load_model(

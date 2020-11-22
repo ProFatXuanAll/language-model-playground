@@ -7,7 +7,7 @@ Usage:
     acc_per_cat = lmp.util.analogy_eval(...)
 """
 
-# built-in modules
+
 
 from __future__ import absolute_import
 from __future__ import division
@@ -16,25 +16,25 @@ from __future__ import unicode_literals
 from typing import Dict
 from typing import Union
 
-# 3rd-party modules
+
 
 import torch
 
 from sklearn.metrics import accuracy_score
 from tqdm import tqdm
 
-# self-made modules
+
 
 import lmp.dataset
 import lmp.model
-import lmp.tokenizer
+import lmp.tknzr
 
 
 @torch.no_grad()
 def analogy_inference(
         device: torch.device,
         model: Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel],
-        tokenizer: lmp.tokenizer.BaseTokenizer,
+        tokenizer: lmp.tknzr.BaseTknzr,
         word_a: str,
         word_b: str,
         word_c: str
@@ -80,9 +80,9 @@ def analogy_inference(
             '`Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel]`.'
         )
 
-    if not isinstance(tokenizer, lmp.tokenizer.BaseTokenizer):
+    if not isinstance(tokenizer, lmp.tknzr.BaseTknzr):
         raise TypeError(
-            '`tokenizer` must be an instance of `lmp.tokenizer.BaseTokenizer`.'
+            '`tokenizer` must be an instance of `lmp.tknzr.BaseTknzr`.'
         )
 
     if not isinstance(word_a, str):
@@ -130,7 +130,7 @@ def analogy_eval(
         dataset: lmp.dataset.AnalogyDataset,
         device: torch.device,
         model: Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel],
-        tokenizer: lmp.tokenizer.BaseTokenizer
+        tokenizer: lmp.tknzr.BaseTknzr
 ) -> Dict[str, float]:
     r"""Helper function for calculating word analogy dataset accuracy.
 

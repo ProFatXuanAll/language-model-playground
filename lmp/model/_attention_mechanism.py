@@ -6,16 +6,8 @@ Usage:
     ht = lmp.model.attention_mechanism(...)
 """
 
-# built-in modules
-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
 
 import math
-
-# 3rd-party modules
 
 import torch
 import torch.nn

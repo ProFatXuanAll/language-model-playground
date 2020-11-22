@@ -6,22 +6,10 @@ Usage:
     dataset = lmp.dataset.AnalogyDataset(...)
 """
 
-# built-in modules
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-from typing import Callable
-from typing import Generator
-from typing import Iterable
-from typing import List
-from typing import Tuple
-
-# 3rd-party modules
+from typing import Callable, Generator, Iterable, List, Tuple
 
 import torch.utils.data
-
 
 # Define types for type annotation.
 CollateFnReturn = Tuple[

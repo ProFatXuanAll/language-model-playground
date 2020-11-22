@@ -7,7 +7,7 @@ Usage:
     lmp.set_seed_by_config(...)
 """
 
-# built-in modules
+
 
 from __future__ import absolute_import
 from __future__ import division
@@ -16,12 +16,12 @@ from __future__ import unicode_literals
 
 import random
 
-# 3rd-party modules
+
 
 import numpy as np
 import torch
 
-# self-made modules
+
 
 import lmp.config
 

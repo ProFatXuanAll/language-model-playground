@@ -7,16 +7,16 @@ Usage:
     tokenizer = lmp.util.load_tokenizer_by_config(...)
 """
 
-# built-in modules
+
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-# self-made modules
 
-import lmp.tokenizer
+
+import lmp.tknzr
 import lmp.config
 
 
@@ -25,7 +25,7 @@ def load_tokenizer(
         experiment: str,
         is_uncased: bool,
         tokenizer_class: str
-) -> lmp.tokenizer.BaseTokenizer:
+) -> lmp.tknzr.BaseTknzr:
     r"""Helper function for constructing tokenizer.
 
     Supported options:
@@ -57,10 +57,10 @@ def load_tokenizer(
             docstring for arguments constraints.
 
     Returns:
-        `CharDictTokenizer` if `tokenizer_class == 'char_dict'`.
-        `CharListTokenizer` if `tokenizer_class == 'char_list'`.
-        `WhitespaceDictTokenizer` if `tokenizer_class == 'whitespace_dict'`.
-        `WhitespaceListTokenizer` if `tokenizer_class == 'whitespace_list'`.
+        `CharTknzr` if `tokenizer_class == 'char_dict'`.
+        `CharTknzr` if `tokenizer_class == 'char_list'`.
+        `WsTknzr` if `tokenizer_class == 'whitespace_dict'`.
+        `WsTknzr` if `tokenizer_class == 'whitespace_list'`.
     """
     # Type check.
     if not isinstance(checkpoint, int):
@@ -80,18 +80,18 @@ def load_tokenizer(
         raise ValueError('`checkpoint` must be bigger than or equal to `-1`.')
 
     if tokenizer_class == 'char_dict':
-        tokenizer = lmp.tokenizer.CharDictTokenizer(is_uncased=is_uncased)
+        tokenizer = lmp.tknzr.CharTknzr(is_uncased=is_uncased)
 
     elif tokenizer_class == 'char_list':
-        tokenizer = lmp.tokenizer.CharListTokenizer(is_uncased=is_uncased)
+        tokenizer = lmp.tknzr.CharTknzr(is_uncased=is_uncased)
 
     elif tokenizer_class == 'whitespace_dict':
-        tokenizer = lmp.tokenizer.WhitespaceDictTokenizer(
+        tokenizer = lmp.tknzr.WsTknzr(
             is_uncased=is_uncased
         )
 
     elif tokenizer_class == 'whitespace_list':
-        tokenizer = lmp.tokenizer.WhitespaceListTokenizer(
+        tokenizer = lmp.tknzr.WsTknzr(
             is_uncased=is_uncased
         )
 
@@ -119,7 +119,7 @@ def load_tokenizer(
 def load_tokenizer_by_config(
         checkpoint: int,
         config: lmp.config.BaseConfig
-) -> lmp.tokenizer.BaseTokenizer:
+) -> lmp.tknzr.BaseTknzr:
     r"""Helper function for constructing tokenizer.
 
     Load pre-trained tokenizer when `checkpoint != -1`.
