@@ -10,15 +10,10 @@ Welcome to Language Model Playground's documentation!
     :maxdepth: 2
     :caption: Contents:
 
+    lmp/index
+    how_to_doc
+    how_to_test
     glossary
-
-All documents follow numpydoc_ standard. Please RTFM.
-
-.. _numpydoc: https://numpydoc.readthedocs.io/en/latest/format.html#docstring-standard
-
-.. autoclass:: lmp.tknzr.BaseTknzr
-    :members:
-
 
 Indices and tables
 ==================
