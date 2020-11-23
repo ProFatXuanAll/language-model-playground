@@ -27,4 +27,5 @@ tqdm = "4.52.0"
 python_version = "3.8"
 
 [scripts]
-test = "coverage run -m pytest"
+test = "coverage run --branch --omit=.venv/* -m pytest"
+test-report = "coverage report"
