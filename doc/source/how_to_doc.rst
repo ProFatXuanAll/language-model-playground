@@ -26,8 +26,8 @@ Build Document
 --------------
 
 To build document, we use sphinx_ to generate document in HTML format.
-Run the following script under ``doc`` path::
+Run the following script::
 
-    make html
+    pipenv run doc
 
 .. _sphinx: https://www.sphinx-doc.org/en/master/#

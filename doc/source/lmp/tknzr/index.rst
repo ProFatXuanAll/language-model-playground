@@ -2,9 +2,9 @@
 ===================
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 1
     :caption: Contents:
 
-    _base_tknzr.py
-    _char_tknzr.py
-    _ws_tknzr.py
+    BaseTknzr.py
+    CharTknzr.py
+    WsTknzr.py

@@ -47,22 +47,16 @@ pipenv shell
 pipenv install --dev
 ```
 
-2. 移動到文件資料夾
+2. 編譯文件
 
 ```sh
-cd doc
+pipenv run doc
 ```
 
-3. 編譯文件
+3. 在瀏覽器中開啟 `doc/build/index.html`
 
 ```sh
-make html
-```
-
-4. 在瀏覽器中開啟 `doc/build/index.html`
-
-```sh
-xdg-open build/index.html
+xdg-open doc/build/index.html
 ```
 
 ### 測試

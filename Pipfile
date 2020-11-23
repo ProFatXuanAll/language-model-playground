@@ -11,6 +11,7 @@ numpydoc = "1.1.0"
 pylint = "2.6.0"
 pytest = "6.1.2"
 sphinx = "3.3.1"
+sphinx-theme = "1.0"
 
 [packages]
 matplotlib = "3.3.2"
@@ -27,5 +28,6 @@ tqdm = "4.52.0"
 python_version = "3.8"
 
 [scripts]
+doc = "sphinx-build -b html doc/source doc/build"
 test = "coverage run --branch --omit=.venv/* -m pytest"
 test-report = "coverage report"
