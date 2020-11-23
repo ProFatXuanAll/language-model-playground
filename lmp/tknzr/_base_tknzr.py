@@ -6,7 +6,7 @@ import os
 import re
 import unicodedata
 from collections import Counter
-from typing import Dict, List, Sequence
+from typing import Dict, List, Optional, Sequence
 
 import lmp.path
 import lmp.tknzr.util
@@ -29,16 +29,10 @@ class BaseTknzr(abc.ABC):
     min_count : int
         Minimum token frequency for each token to be included in tokenizer's
         vocabulary.
-    id2tk : Dict[int, str], optional
-        Id (an integer) to token (a string) lookup table.
-        If ``id2tk is not None``, then ``tk2id is not None`` must be true, and
-        both must have equal size.
-        Otherwise ``id2tk`` are treated as ``None``.
     tk2id : Dict[str, int], optional
         Token (a string) to id (an integer) lookup table.
-        If ``tk2id is not None``, then ``id2tk is not None`` must be true, and
-        both must have equal size.
-        Otherwise ``tk2id`` are treated as ``None``.
+        If ``tk2id is not None``, then initialize lookup table with ``tk2id``.
+        Otherwise initialize lookup table with special tokens only.
 
     Attributes
     ==========
@@ -81,36 +75,35 @@ class BaseTknzr(abc.ABC):
     vocab_size : int
         Number of tokens in tokenizer's vocabulary.
     """
-    file_name: str = 'tknzr.json'
-    tknzr_name: str = 'base'
     bos_tk: str = '[bos]'
     bos_tkid: int = 0
     eos_tk: str = '[eos]'
     eos_tkid: int = 1
+    file_name: str = 'tknzr.json'
     pad_tk: str = '[pad]'
     pad_tkid: int = 2
+    tknzr_name: str = 'base'
     unk_tk: str = '[unk]'
     unk_tkid: int = 3
 
     def __init__(
             self,
             is_uncased: bool,
-            min_count: int,
             max_vocab: int,
+            min_count: int,
             *,
-            id2tk: Dict[int, str] = None,
-            tk2id: Dict[str, int] = None,
+            tk2id: Optional[Dict[str, int]] = None,
     ):
+        if not isinstance(is_uncased, bool):
+            raise TypeError(f'is_uncased must be bool type.')
         self.is_uncased = is_uncased
-        self.min_count = min_count
         self.max_vocab = max_vocab
+        self.min_count = min_count
 
         # Load pre-trained vocabulary.
-        if id2tk is not None \
-                and tk2id is not None \
-                and len(id2tk) == len(tk2id):
-            self.id2tk = id2tk
+        if tk2id is not None:
             self.tk2id = tk2id
+            self.id2tk = {v: k for k, v in tk2id.items()}
         # Initialize vocabulary with special tokens.
         else:
             self.id2tk = {}
@@ -151,7 +144,16 @@ class BaseTknzr(abc.ABC):
             raise FileExistsError(f'{file_dir} is not a directory.')
 
         with open(file_path, 'w', encoding='utf8') as output_file:
-            json.dump(self.__dict__, output_file, ensure_ascii=False)
+            json.dump(
+                {
+                    'is_uncased': self.is_uncased,
+                    'max_vocab': self.max_vocab,
+                    'min_count': self.min_count,
+                    'tk2id': self.tk2id,
+                },
+                output_file,
+                ensure_ascii=False
+            )
 
     @classmethod
     def load(cls, exp_name: str):
@@ -477,7 +479,7 @@ class BaseTknzr(abc.ABC):
         for seq in batch_seq:
             c.update(self.tknz(self.norm(seq)))
 
-        max_id = len(self.tk2id)
+        max_id = max(self.tk2id.values()) + 1
         for tk, tk_count in c.most_common():
             # Stop adding tokens when pass vocabulary size limit.
             if max_id >= self.max_vocab:
