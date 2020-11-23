@@ -6,18 +6,18 @@ import os
 import re
 import unicodedata
 from collections import Counter
-from typing import Dict, List, Optional, Sequence
+from typing import ClassVar, Dict, List, Optional, Sequence
 
 import lmp.path
 import lmp.tknzr.util
 
 
 class BaseTknzr(abc.ABC):
-    r"""Tokenizer abstract base class.
+    r""":term:`Tokenizer` abstract base class.
 
     Provide basic functionality for text preprocessing, save and load
     preprocessing configurations.
-    All tokenizers must inherit this base class.
+    All :term:`tokenizer`\s must inherit this base class.
 
     Parameters
     ==========
@@ -36,55 +36,65 @@ class BaseTknzr(abc.ABC):
 
     Attributes
     ==========
-    bos_tk : str
+    bos_tk : ClassVar[str]
         Token which represents the begining of a sequence.
         Sequences will be prepended with ``bos_tk`` when encoded by
         :py:meth:`lmp.tknzr.BaseTknzr.enc`.
-    bos_tkid : int
+    bos_tkid : ClassVar[int]
         Token id of ``bos_tk``.
-    eos_tk : str
+    eos_tk : ClassVar[str]
         Token which represents the end of a sequence.
         Sequences will be appended with ``eos_tk`` when encoded by
         :py:meth:`lmp.tknzr.BaseTknzr.enc`.
-    eos_tkid : int
+    eos_tkid : ClassVar[int]
         Token id of ``eos_tk``.
-    file_name : str
+    file_name : ClassVar[str]
         Tokenizer's configuration output file name.
     id2tk : Dict[int, str]
         Id (an integer) to token (a string) lookup table.
     is_uncased : bool
         When performing :py:meth:`lmp.tknzr.BaseTknzr.norm`, convert input
         sequence into lowercase if ``is_uncased == True``.
-    pad_tk : str
+    max_vocab : int
+        Maximum vocabulary size.
+    min_count : int
+        Minimum token frequency for each token to be included in tokenizer's
+        vocabulary.
+    pad_tk : ClassVar[str]
         Token which represents paddings of a sequence.
         Sequences may be appended with ``pad_tk`` when encoded by
         :py:meth:`lmp.tknzr.BaseTknzr.enc`.
-    pad_tkid : int
+    pad_tkid : ClassVar[int]
         Token id of ``pad_tk``.
     tk2id : Dict[str, int]
         Token (a string) to id (an integer) lookup table.
-    tknzr_name : str
+    tknzr_name : ClassVar[str]
         Display name for tokenizer on CLI.
         Used only for command line argument parsing.
-    unk_tk : str
+    unk_tk : ClassVar[str]
         Token which represents unknown tokens in a sequence.
         Tokens in sequence may be replaced with ``unk_tk`` when encoded by
         :py:meth:`lmp.tknzr.BaseTknzr.enc`.
-    unk_tkid : int
+    unk_tkid : ClassVar[int]
         Token id of ``unk_tk``.
     vocab_size : int
         Number of tokens in tokenizer's vocabulary.
+
+    Raises
+    ======
+    TypeError
+        When parameters are not confront their respective type annotation.
     """
-    bos_tk: str = '[bos]'
-    bos_tkid: int = 0
-    eos_tk: str = '[eos]'
-    eos_tkid: int = 1
-    file_name: str = 'tknzr.json'
-    pad_tk: str = '[pad]'
-    pad_tkid: int = 2
-    tknzr_name: str = 'base'
-    unk_tk: str = '[unk]'
-    unk_tkid: int = 3
+    bos_tk: ClassVar[str] = '[bos]'
+    bos_tkid: ClassVar[int] = 0
+    eos_tk: ClassVar[str] = '[eos]'
+    eos_tkid: ClassVar[int] = 1
+    file_name: ClassVar[str] = 'tknzr.json'
+    pad_tk: ClassVar[str] = '[pad]'
+    pad_tkid: ClassVar[int] = 2
+    tknzr_name: ClassVar[str] = 'base'
+    unk_tk: ClassVar[str] = '[unk]'
+    unk_tkid: ClassVar[int] = 3
 
     def __init__(
             self,
@@ -95,7 +105,8 @@ class BaseTknzr(abc.ABC):
             tk2id: Optional[Dict[str, int]] = None,
     ):
         if not isinstance(is_uncased, bool):
-            raise TypeError(f'is_uncased must be bool type.')
+            raise TypeError(f'`is_uncased` must be an instance of `bool`.')
+
         self.is_uncased = is_uncased
         self.max_vocab = max_vocab
         self.min_count = min_count
@@ -121,8 +132,10 @@ class BaseTknzr(abc.ABC):
     def save(self, exp_name: str) -> None:
         r"""Save tokenizer configuration in JSON format.
 
-        This method will save the trained tokenizer's configuration into JSON
-        format and named it with :py:attr:`lmp.tknzr.BaseTknzr.file_name`.
+        Save the trained tokenizer's configuration into JSON format and named
+        it with :py:attr:`lmp.tknzr.BaseTknzr.file_name`.
+        This method will create experiment path first if experiment path does
+        not exist.
 
         Parameters
         ==========
@@ -157,7 +170,7 @@ class BaseTknzr(abc.ABC):
 
     @classmethod
     def load(cls, exp_name: str):
-        r"""Load tokenizer JSON file.
+        r"""Load tokenizer configuration from JSON file.
 
         Parameters
         ==========

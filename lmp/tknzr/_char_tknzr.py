@@ -1,6 +1,7 @@
 r"""Character tokenizer using `dict` structure.
 
-Usage:
+Usage::
+
     from lmp.tknzr import CharTknzr
 
     batch_sequences = (
@@ -24,7 +25,7 @@ Usage:
 """
 
 
-from typing import Iterable, List
+from typing import List, Sequence
 
 from lmp.tknzr._base_tknzr import BaseTknzr
 
@@ -32,40 +33,74 @@ from lmp.tknzr._base_tknzr import BaseTknzr
 class CharTknzr(BaseTknzr):
     r"""Character tokenizer using `dict` structure.
 
-    Attributes:
-        bos_token:
-            Token represent the begining of a sequence. Sequences will be
-            encoded into following format:
-                [bos] t1 t2 ... tn [eos] [pad] [pad] ... [pad]
-        eos_token:
-            Token represent the end of a sequence. Sequences will be encoded
-            into following format:
-                [bos] t1 t2 ... tn [eos] [pad] [pad] ... [pad]
-        id_to_token:
-            Token to id inverse look up data structure. Implemented with `dict`
-            data structure.
-        is_uncased:
-            Whether to differentiate upper cases and lower cases.
-        pad_token:
-            Token represent padding of a sequence. Only used when sequence
-            length is shorter than must.
-        token_to_id:
-            Token to id look up data structure. Implemented with `dict` data
-            structure.
-        unk_token:
-            Token represent unknown word in a sequence. If a token is not in
-            tokenizer's vocabulary, then that token will be replaced by unknown
-            token.
-        vocab_size:
-            Number of words in tokenizer's vocabulary.
+    Parameters
+    ==========
+    is_uncased : bool
+        When performing :py:meth:`lmp.tknzr.BaseTknzr.norm`, convert input
+        sequence into lowercase if ``is_uncased == True``.
+    max_vocab : int
+        Maximum vocabulary size.
+    min_count : int
+        Minimum token frequency for each token to be included in tokenizer's
+        vocabulary.
+    tk2id : Dict[str, int], optional
+        Token (a string) to id (an integer) lookup table.
+        If ``tk2id is not None``, then initialize lookup table with ``tk2id``.
+        Otherwise initialize lookup table with special tokens only.
+
+    Attributes
+    ==========
+    bos_tk : ClassVar[str]
+        Token which represents the begining of a sequence.
+        Sequences will be prepended with ``bos_tk`` when encoded by
+        :py:meth:`lmp.tknzr.BaseTknzr.enc`.
+    bos_tkid : ClassVar[int]
+        Token id of ``bos_tk``.
+    eos_tk : ClassVar[str]
+        Token which represents the end of a sequence.
+        Sequences will be appended with ``eos_tk`` when encoded by
+        :py:meth:`lmp.tknzr.BaseTknzr.enc`.
+    eos_tkid : ClassVar[int]
+        Token id of ``eos_tk``.
+    file_name : ClassVar[str]
+        Tokenizer's configuration output file name.
+    id2tk : Dict[int, str]
+        Id (an integer) to token (a string) lookup table.
+    is_uncased : bool
+        When performing :py:meth:`lmp.tknzr.BaseTknzr.norm`, convert input
+        sequence into lowercase if ``is_uncased == True``.
+    max_vocab : int
+        Maximum vocabulary size.
+    min_count : int
+        Minimum token frequency for each token to be included in tokenizer's
+        vocabulary.
+    pad_tk : ClassVar[str]
+        Token which represents paddings of a sequence.
+        Sequences may be appended with ``pad_tk`` when encoded by
+        :py:meth:`lmp.tknzr.BaseTknzr.enc`.
+    pad_tkid : ClassVar[int]
+        Token id of ``pad_tk``.
+    tk2id : Dict[str, int]
+        Token (a string) to id (an integer) lookup table.
+    tknzr_name : ClassVar[str]
+        Display name for tokenizer on CLI.
+        Used only for command line argument parsing.
+    unk_tk : ClassVar[str]
+        Token which represents unknown tokens in a sequence.
+        Tokens in sequence may be replaced with ``unk_tk`` when encoded by
+        :py:meth:`lmp.tknzr.BaseTknzr.enc`.
+    unk_tkid : ClassVar[int]
+        Token id of ``unk_tk``.
+    vocab_size : int
+        Number of tokens in tokenizer's vocabulary.
 
     Raises
-        ======
-        TypeError:
-            When `is_uncased` is not an instance of `bool`.
+    ======
+    TypeError
+        When parameters are not confront their respective type annotation.
     """
 
-    def tokenize(self, sequence: str) -> List[str]:
+    def tokenize(self, seq: str) -> List[str]:
         r"""Perform tokenization on input sequence.
 
         Input sequence will first be normalized by
@@ -76,8 +111,8 @@ class CharTknzr(BaseTknzr):
 
         Parameters
         ==========
-            sequence:
-                Input sequence to be tokenized.
+        seq : str
+            Input sequence to be tokenized.
 
         Raises
         ======
@@ -90,11 +125,11 @@ class CharTknzr(BaseTknzr):
         """
         try:
             # First do normalization, then perform tokenization.
-            return list(self.normalize(sequence))
+            return list(self.norm(seq))
         except TypeError:
-            raise TypeError('`sequence` must be an instance of `str`.')
+            raise TypeError('`seq` must be an instance of `str`.')
 
-    def detokenize(self, tokens: Iterable[str]) -> str:
+    def detokenize(self, tks: Sequence[str]) -> str:
         r"""Convert tokens back to sequence.
 
         Since each tokens are originally tokenized as characters, we can simply
@@ -118,13 +153,11 @@ class CharTknzr(BaseTknzr):
             Sequence converted from input tokens.
         """
         # Type check.
-        if not isinstance(tokens, Iterable):
+        if not isinstance(tks, Sequence):
             raise TypeError('`tokens` must be an instance of `Iterable[str]`.')
 
-        tokens = list(tokens)
-
-        if not all(map(lambda token: isinstance(token, str), tokens)):
+        if not all(map(lambda token: isinstance(tks, str), tks)):
             raise TypeError('`tokens` must be an instance of `Iterable[str]`.')
 
         # First perform detokenization, then do normalization.
-        return self.normalize(''.join(tokens))
+        return self.norm(''.join(tks))
