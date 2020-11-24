@@ -10,7 +10,7 @@ from lmp.dset._base_dset import BaseDset
 
 
 class WikiText2Dset(BaseDset):
-    r"""WikiText-2 Dataset.
+    r"""[WikiText-2]_ Dataset.
 
     WikiText-2 is an English dataset which is part of the WikiText Long Term
     Dependency Language Modeling Dataset.
@@ -21,10 +21,15 @@ class WikiText2Dset(BaseDset):
     ==========
     ver: str, optional
         Version of the dataset.
-        If ``ver is None``, then use default version ``self.__class__.df_ver`
-        of the dataset.
-        Version must be supported by the dataset, see ``self.__class__.vers``
-        for list of supported versions.
+        If ``ver is None``, then use default version (which is ``train``) of
+        the dataset.
+        Version must be supported by the dataset, supported versions are
+
+        - ``train``: Training set.
+        - ``test``: Testing set.
+        - ``valid``: Validation set.
+
+        Defaults to ``None``.
 
     Attributes
     ==========
@@ -37,6 +42,9 @@ class WikiText2Dset(BaseDset):
         All samples in the dataset.
     ver: str
         Version of the dataset.
+    vers: ClassVar[List[str]]
+        All supported version of the dataset.
+        This is used to check whether specified version ``ver`` is supported.
 
     Raises
     ======
@@ -44,6 +52,21 @@ class WikiText2Dset(BaseDset):
         When ``ver`` is not and instance of ``str``.
     ValueError
         When dataset version ``ver`` is not supported.
+
+    See Also
+    ========
+    lmp.dset.BaseDset
+
+    References
+    ==========
+    .. [WikiText-2] Stephen Merity, Caiming Xiong, James Bradbury, and
+        Richard Socher. 2016. Pointer Sentinel Mixture Models
+
+    Examples
+    ========
+    >>> from lmp.dset import WikiText2Dset
+    >>> dset = WikiText2Dset(ver='train')
+    >>> dset[0]
     """
     df_ver: ClassVar[str] = 'train'
     dset_name: ClassVar[str] = 'wikitext-2'
