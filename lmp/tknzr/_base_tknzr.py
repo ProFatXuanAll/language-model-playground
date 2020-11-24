@@ -403,7 +403,7 @@ class BaseTknzr(abc.ABC):
             self,
             tkids: Sequence[int],
             *,
-            rm_sp_tks: Optional[bool] = False
+            rm_sp_tks: Optional[bool] = False,
     ) -> str:
         r"""Decode sequence of :term:`token id`\s back to text.
 
@@ -465,7 +465,7 @@ class BaseTknzr(abc.ABC):
             self,
             batch_txt: Sequence[str],
             *,
-            max_seq_len: int = -1
+            max_seq_len: int = -1,
     ) -> List[List[int]]:
         r"""Encode batch of text into batch of sequences of token ids.
 
@@ -524,7 +524,8 @@ class BaseTknzr(abc.ABC):
     def batch_dec(
             self,
             batch_tkids: Sequence[Sequence[int]],
-            rm_sp_tks: bool = False
+            *,
+            rm_sp_tks: bool = False,
     ) -> List[str]:
         r"""Decode batch of sequences of :term:`token id`\s back to batch of text.
 
