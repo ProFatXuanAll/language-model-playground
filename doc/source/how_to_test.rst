@@ -1,8 +1,8 @@
 How To Test Guide
 =================
 
-Style Guide
------------
+Test Style Guide
+----------------
 
 We use pytest_ testing framework to test our code.
 We use coverage_ to provide test coverage report.
@@ -18,9 +18,9 @@ Run the following command in project root directory::
 
     pipenv run test
 
-Generate Test Report
---------------------
+Generate Test Coverage Report
+-----------------------------
 
 Run the following command in project root directory::
 
-    pipenv run test-report
+    pipenv run test-coverage

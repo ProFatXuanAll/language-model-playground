@@ -17,7 +17,7 @@ class BaseTknzr(abc.ABC):
 
     Provide basic functionality for text preprocessing, save and load
     preprocessing configurations.
-    All :term:`tokenizer`\s must inherit this base class.
+    All tokenizers must inherit this base class.
 
     Parameters
     ==========
@@ -77,13 +77,26 @@ class BaseTknzr(abc.ABC):
         :py:meth:`lmp.tknzr.BaseTknzr.enc`.
     unk_tkid : ClassVar[int]
         Token id of ``unk_tk``.
-    vocab_size : int
-        Number of tokens in tokenizer's vocabulary.
 
     Raises
     ======
     TypeError
         When parameters are not confront their respective type annotation.
+
+    Examples
+    ========
+    >>> from typing import List
+    >>> from lmp.tknzr import BaseTknzr
+    >>> class SimpleTknzr(BaseTknzr):
+    ...     def tknz(self, seq: str) -> List[str]:
+    ...         return [seq]
+    ...     def dtknz(self, tks: List[str]) -> str:
+    ...         return ''.join(tks)
+    >>> tknzr = SimpleTknzr(is_uncased=False, max_vocab=10, min_count=2)
+    >>> tknzr.tknz('hello world')
+    ['hello world']
+    >>> tknzr.dtknz(['hello world'])
+    hello world
     """
     bos_tk: ClassVar[str] = '[bos]'
     bos_tkid: ClassVar[int] = 0
@@ -146,6 +159,12 @@ class BaseTknzr(abc.ABC):
         ======
         FileExistsError
             When experiment path already exists but is not a directory.
+
+        Examples
+        ========
+        >>> from lmp.tknzr import BaseTknzr
+        >>> tknzr = BaseTknzr(is_uncased=False, max_vocab=10, min_count=2)
+        >>> tknzr.save('my_exp')
         """
         file_dir = os.path.join(lmp.path.EXP_PATH, exp_name)
         file_path = os.path.join(file_dir, self.__class__.file_name)
@@ -172,6 +191,8 @@ class BaseTknzr(abc.ABC):
     def load(cls, exp_name: str):
         r"""Load tokenizer configuration from JSON file.
 
+        Load pre-trained tokenizer using saved configuration.
+
         Parameters
         ==========
         exp_name
@@ -180,15 +201,27 @@ class BaseTknzr(abc.ABC):
         Raises
         ======
         FileNotFoundError
-            If directory `experiment` or file `experiment/tokenizer.json`
-            does not exist.
+            If file ``exp/exp_name/tknzr.json`` does not exist.
         JSONDecodeError
-            If tokenizer is not in JSON format.
+            If tokenizer configuration is not in JSON format.
         TypeError
-            When `experiment` is not an instance of `str`.
+            When ``exp_name`` is not an instance of ``str``.
         ValueError
-            When `experiment` is empty string.
+            When ``exp_name`` is empty string.
+
+        See Also
+        ========
+        lmp.tknzr.BaseTknzr.save :
+            Save tokenizer configuration in JSON format.
+
+        Examples
+        ========
+        >>> from lmp.tknzr import BaseTknzr
+        >>> tknzr = BaseTknzr.load('my_exp')
         """
+        if not exp_name:
+            raise ValueError('`exp_name` must be non-empty.')
+
         file_path = os.path.join(lmp.path.EXP_PATH, exp_name, cls.file_name)
 
         if not os.path.exists(file_path):

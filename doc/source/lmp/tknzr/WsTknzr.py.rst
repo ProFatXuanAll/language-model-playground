@@ -1,5 +1,5 @@
 :py:mod:`lmp.tknzr.WsTknzr`
 =============================
 
-.. automodule:: lmp.tknzr.WsTknzr
+.. autoclass:: lmp.tknzr.WsTknzr
     :members:

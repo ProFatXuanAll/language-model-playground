@@ -1,5 +1,5 @@
 :py:mod:`lmp.tknzr.CharTknzr`
 ===============================
 
-.. automodule:: lmp.tknzr.CharTknzr
+.. autoclass:: lmp.tknzr.CharTknzr
     :members:
