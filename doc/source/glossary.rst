@@ -63,6 +63,18 @@ Glossary
 
         .. _STANZA: https://stanfordnlp.github.io/stanza/tokenize.html
 
+    token id
+        Since :term:`token` (a string) cannot be directly used to compute, we assign
+        each token a **id** and replace tokens with their own ids to perform
+        furthur calculation.
+        Sometimes we also need a mechaism to convert token id back to their
+        original token, in such cases we should assume that the
+        :term:`vocabulary` only consist of **unique** token and id pairs.
+
+        For example, we can use a token id to perform embedding matrix lookup,
+        the lookup result is a vector (which we suppose to) represent that
+        token.
+
     Tokenizer
     tokenizer
         Tools for text :term:`tokenization`.
