@@ -13,8 +13,8 @@ def subclass_tknzr_cstr() -> Type[BaseTknzr]:
     class SubclassTknzr(BaseTknzr):
         r"""Only implement ``tknz`` and ``dtknz``."""
 
-        def tknz(self, seq: str) -> List[str]:
-            return [seq]
+        def tknz(self, txt: str) -> List[str]:
+            return [txt]
 
         def dtknz(self, tks: List[str]) -> str:
             return ''.join(tks)

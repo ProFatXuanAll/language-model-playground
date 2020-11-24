@@ -8,3 +8,4 @@
     BaseTknzr.py
     CharTknzr.py
     WsTknzr.py
+    util.py

@@ -1,4 +1,4 @@
-:py:mod:`lmp.tknzr.BaseTknzr`
+:py:class:`lmp.tknzr.BaseTknzr`
 ===============================
 
 .. autoclass:: lmp.tknzr.BaseTknzr

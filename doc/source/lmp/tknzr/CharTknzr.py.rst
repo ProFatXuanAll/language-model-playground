@@ -1,4 +1,4 @@
-:py:mod:`lmp.tknzr.CharTknzr`
+:py:class:`lmp.tknzr.CharTknzr`
 ===============================
 
 .. autoclass:: lmp.tknzr.CharTknzr

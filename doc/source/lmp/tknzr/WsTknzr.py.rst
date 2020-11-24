@@ -1,4 +1,4 @@
-:py:mod:`lmp.tknzr.WsTknzr`
+:py:class:`lmp.tknzr.WsTknzr`
 =============================
 
 .. autoclass:: lmp.tknzr.WsTknzr

@@ -99,7 +99,7 @@ class WsTknzr(BaseTknzr):
         When parameters are not confront their respective type annotation.
     """
 
-    def tokenize(self, seq: str) -> List[str]:
+    def tknz(self, txt: str) -> List[str]:
         r"""Perform tokenization on input sequence.
 
         Input sequence will first be normalized by
@@ -110,8 +110,8 @@ class WsTknzr(BaseTknzr):
 
         Parameters
         ==========
-            sequence:
-                Input sequence to be tokenized.
+        txt:
+            Input sequence to be tokenized.
 
         Raises
         ======
@@ -124,7 +124,7 @@ class WsTknzr(BaseTknzr):
         """
         try:
             # First do normalization, then perform tokenization.
-            tokens = re.split(r'\s+', self.norm(seq))
+            tokens = re.split(r'\s+', self.norm(txt))
 
             # Return empty list when `sequence` is empty string. This is need since
             # `re.split(r'\s+', '')` return `['']` instead of `[]`.
@@ -134,7 +134,7 @@ class WsTknzr(BaseTknzr):
         except TypeError:
             raise TypeError('`sequence` must be an instance of `str`.')
 
-    def detokenize(self, tks: Sequence[str]) -> str:
+    def dtknz(self, tks: Sequence[str]) -> str:
         r"""Convert tokens back to sequence.
 
         Since each tokens are originally tokenized by whitespace characters,

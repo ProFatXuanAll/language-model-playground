@@ -100,7 +100,7 @@ class CharTknzr(BaseTknzr):
         When parameters are not confront their respective type annotation.
     """
 
-    def tokenize(self, seq: str) -> List[str]:
+    def tknz(self, txt: str) -> List[str]:
         r"""Perform tokenization on input sequence.
 
         Input sequence will first be normalized by
@@ -125,11 +125,11 @@ class CharTknzr(BaseTknzr):
         """
         try:
             # First do normalization, then perform tokenization.
-            return list(self.norm(seq))
+            return list(self.norm(txt))
         except TypeError:
             raise TypeError('`seq` must be an instance of `str`.')
 
-    def detokenize(self, tks: Sequence[str]) -> str:
+    def dtknz(self, tks: Sequence[str]) -> str:
         r"""Convert tokens back to sequence.
 
         Since each tokens are originally tokenized as characters, we can simply

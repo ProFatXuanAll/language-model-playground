@@ -40,8 +40,8 @@ def tk2id(request) -> Union[None, Dict[str, int]]:
     {'input': '０', 'output': '0'},  # Full-width to half-width.
     {'input': 'é', 'output': 'é'},  # NFKD to NFKC.
 ])
-def non_nfkc_seq(request) -> Dict[str, str]:
-    r"""Input sequence with non-NFKC normalized character."""
+def non_nfkc_txt(request) -> Dict[str, str]:
+    r"""Text with Non-NFKC normalized characters."""
     return request.param
 
 
@@ -49,8 +49,8 @@ def non_nfkc_seq(request) -> Dict[str, str]:
     {'input': 'a  b  c', 'output': 'a b c'},
     {'input': '  ', 'output': ''},
 ])
-def cws_seq(request) -> Dict[str, str]:
-    r"""Input sequence with consecutive whitespaces."""
+def cws_txt(request) -> Dict[str, str]:
+    r"""Text with consecutive whitespaces."""
     return request.param
 
 
@@ -59,8 +59,8 @@ def cws_seq(request) -> Dict[str, str]:
     {'input': 'abc ', 'output': 'abc'},
     {'input': ' abc ', 'output': 'abc'},
 ])
-def htws_seq(request) -> Dict[str, str]:
-    r"""Input sequence with whitespaces at head and tail."""
+def htws_txt(request) -> Dict[str, str]:
+    r"""Text with whitespaces at head and tail."""
     return request.param
 
 
@@ -68,8 +68,8 @@ def htws_seq(request) -> Dict[str, str]:
     {'input': 'ABC', 'output': 'abc'},
     {'input': 'abc', 'output': 'abc'},
 ])
-def case_seq(request) -> Dict[str, str]:
-    r"""Input sequence with whitespaces at head and tail."""
+def case_txt(request) -> Dict[str, str]:
+    r"""Text with whitespaces at head and tail."""
     return request.param
 
 

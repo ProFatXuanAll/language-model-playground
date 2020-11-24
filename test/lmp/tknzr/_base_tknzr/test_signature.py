@@ -103,8 +103,6 @@ def test_instance_method(subclass_tknzr):
     assert inspect.ismethod(subclass_tknzr.enc)
     assert hasattr(BaseTknzr, 'norm')
     assert inspect.ismethod(subclass_tknzr.norm)
-    assert hasattr(BaseTknzr, 'pad_to_max')
-    assert inspect.ismethod(subclass_tknzr.pad_to_max)
     assert hasattr(BaseTknzr, 'save')
     assert inspect.ismethod(subclass_tknzr.save)
     assert inspect.signature(BaseTknzr.save) == Signature(
@@ -125,8 +123,6 @@ def test_instance_method(subclass_tknzr):
     )
     assert hasattr(BaseTknzr, 'tknz')
     assert inspect.ismethod(subclass_tknzr.tknz)
-    assert hasattr(BaseTknzr, 'trunc_to_max')
-    assert inspect.ismethod(subclass_tknzr.trunc_to_max)
 
 
 def test_abstract_method():
