@@ -13,13 +13,13 @@ class BaseDset(torch.utils.data.Dataset):
     ==========
     ver: str, optional
         Version of the dataset.
-        If ``ver is None``, then use default version ``self.__class__.df_ver`
+        If ``ver is None``, then use default version ``self.__class__.df_ver``
         of the dataset.
-        Version must be supported by the dataset, see ``self.__class__.vers``
-        for list of supported versions.
 
     Attributes
     ==========
+    df_ver: ClassVar[str]
+        Default version of the dataset.
     dset_name: ClassVar[str]
         Display name for dataset on CLI.
         Used only for command line argument parsing.
@@ -29,6 +29,9 @@ class BaseDset(torch.utils.data.Dataset):
         All samples in the dataset.
     ver: str
         Version of the dataset.
+    vers: ClassVar[List[str]]
+        All supported version of the dataset.
+        This is used to check whether specified version ``ver`` is supported.
 
     Raises
     ======

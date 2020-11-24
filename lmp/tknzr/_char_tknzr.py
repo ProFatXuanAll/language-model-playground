@@ -76,6 +76,10 @@ class CharTknzr(BaseTknzr):
     TypeError
         When parameters are not confront their respective type annotation.
 
+    See Also
+    ========
+    lmp.tknzr.BaseTknzr
+
     Examples
     ========
     >>> from typing import List, Sequence
