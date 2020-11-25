@@ -37,34 +37,6 @@ def tk2id(request) -> Union[None, Dict[str, int]]:
 
 
 @pytest.fixture(params=[
-    {'input': '０', 'output': '0'},  # Full-width to half-width.
-    {'input': 'é', 'output': 'é'},  # NFKD to NFKC.
-])
-def non_nfkc_txt(request) -> Dict[str, str]:
-    r"""Text with Non-NFKC normalized characters."""
-    return request.param
-
-
-@pytest.fixture(params=[
-    {'input': 'a  b  c', 'output': 'a b c'},
-    {'input': '  ', 'output': ''},
-])
-def cws_txt(request) -> Dict[str, str]:
-    r"""Text with consecutive whitespaces."""
-    return request.param
-
-
-@pytest.fixture(params=[
-    {'input': ' abc', 'output': 'abc'},
-    {'input': 'abc ', 'output': 'abc'},
-    {'input': ' abc ', 'output': 'abc'},
-])
-def htws_txt(request) -> Dict[str, str]:
-    r"""Text with whitespaces at head and tail."""
-    return request.param
-
-
-@pytest.fixture(params=[
     {'input': 'ABC', 'output': 'abc'},
     {'input': 'abc', 'output': 'abc'},
 ])

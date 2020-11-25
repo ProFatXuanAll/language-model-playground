@@ -24,6 +24,8 @@ class CharTknzr(BaseTknzr):
         If ``tk2id is not None``, then initialize lookup table with ``tk2id``.
         Otherwise initialize lookup table with special tokens only.
         See attributes for details.
+    kwargs: Dict
+        Subclass tokenizers' parameters extension.
 
     Attributes
     ==========

@@ -77,6 +77,7 @@ def parse_arg() -> argparse.Namespace:
             dset_name,
             description=f'Sample {dset_name} dataset using index.',
         )
+        # Optional arguments.
         dset_parser.add_argument(
             '--idx',
             default=0,
