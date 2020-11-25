@@ -30,15 +30,15 @@ class BaseDset(torch.utils.data.Dataset):
     ver: str
         Version of the dataset.
     vers: ClassVar[List[str]]
-        All supported version of the dataset.
-        This is used to check whether specified version ``ver`` is supported.
+        All available version of the dataset.
+        Used to check whether specified version ``ver`` is available.
 
     Raises
     ======
     TypeError
         When ``ver`` is not and instance of ``str``.
     ValueError
-        When dataset version ``ver`` is not supported.
+        When dataset version ``ver`` is not available.
     """
     df_ver: ClassVar[str] = ''
     dset_name: ClassVar[str] = 'base'
@@ -55,8 +55,8 @@ class BaseDset(torch.utils.data.Dataset):
             raise TypeError('`ver` must be an instance of `str`.')
         elif ver not in self.__class__.vers:
             raise ValueError(
-                f'version {ver} is not supported.\n'
-                + 'Supported version:\n'
+                f'Version {ver} is not available.\n'
+                + 'Available versions:\n'
                 + ''.join(map(lambda ver: f'\t- {ver}\n', self.__class__.vers))
             )
 
