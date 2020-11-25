@@ -16,7 +16,7 @@ class BaseTknzr(abc.ABC):
     r""":term:`Tokenizer` abstract base class.
 
     Provide basic functionality for text processing, save and load processing
-    configurations.
+    configuration.
     All tokenizers must inherit :py:class:`lmp.tknzr.BaseTknzr`.
 
     Parameters

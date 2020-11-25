@@ -10,9 +10,9 @@ CFG_NAME = 'cfg.json'
 
 
 def save(args: argparse.Namespace, exp_name: str) -> None:
-    r"""Save training configuration.
+    r"""Save training configuration in JSON format.
 
-    Save training configuration in JSON format.
+    Save training configuration in to path ``exp/exp_name/cfg.json``.
     All CLI arguments will be saved.
     If experiment path ``exp/exp_name/cfg.json`` does not exists, then create
     path recursively.
@@ -58,15 +58,21 @@ def save(args: argparse.Namespace, exp_name: str) -> None:
 
 
 def load(exp_name: str) -> argparse.Namespace:
-    r"""Load pre-trained configuration.
+    r"""Load pre-trained configuration from JSON file.
 
-    Load pre-trained configuration from JSON file.
+    Load pre-trained configuration from path ``exp/exp_name/cfg.json``.
+    Experiments must been performed before using this function.
     Wrap configuration in :py:class:`argparse.Namespace` for convenience.
 
     Parameters
     ==========
     exp_name: str
         Pre-trained experiment name.
+
+    Returns
+    =======
+    argparse.Namespace
+        Pre-trained experiment configuration.
 
     Raises
     ======
