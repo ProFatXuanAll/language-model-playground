@@ -1,3 +1,5 @@
+r"""Utilities for text pre-processing and post-processing."""
+
 import re
 import typing
 import unicodedata
@@ -23,7 +25,7 @@ def norm(txt: str) -> str:
 
     Examples
     ========
-    >>> from lmp.tknzr.util import norm
+    >>> from lmp.dset.util import norm
     >>> norm('１２３４５６７８９')
     '123456789'
     """
@@ -73,11 +75,11 @@ def trunc_to_max(seq, *, max_seq_len=-1):
 
     See Also
     ========
-    lmp.tknzr.util.pad_to_max
+    lmp.dset.util.pad_to_max
 
     Examples
     ========
-    >>> from lmp.tknzr.util import trunc_to_max
+    >>> from lmp.dset.util import trunc_to_max
     >>> trunc_to_max(['a', 'b', 'c'], max_seq_len=2)
     ['a', 'b']
     >>> trunc_to_max(['a', 'b', 'c'], max_seq_len=3)
@@ -147,11 +149,11 @@ def pad_to_max(seq, pad, *, max_seq_len=-1):
 
     See Also
     ========
-    lmp.tknzr.util.trunc_to_max
+    lmp.dset.util.trunc_to_max
 
     Examples
     ========
-    >>> from lmp.tknzr.util import pad_to_max
+    >>> from lmp.dset.util import pad_to_max
     >>> pad_to_max(['a', 'b', 'c'], 'p', max_seq_len=4)
     ['a', 'b', 'c', 'p']
     >>> pad_to_max(['a', 'b', 'c'], 'p', max_seq_len=3)

@@ -1,15 +1,15 @@
 r""":term:`Tokenizer` base class."""
 
 import abc
+import argparse
 import json
 import os
-import re
-import unicodedata
 from collections import Counter
 from typing import ClassVar, Dict, List, Optional, Sequence
 
+import lmp.dset
+import lmp.dset.util
 import lmp.path
-import lmp.tknzr.util
 
 
 class BaseTknzr(abc.ABC):
@@ -32,6 +32,8 @@ class BaseTknzr(abc.ABC):
         If ``tk2id is not None``, then initialize lookup table with ``tk2id``.
         Otherwise initialize lookup table with special tokens only.
         See attributes for details.
+    kwargs: Dict
+        Subclass tokenizers' parameters extension.
 
     Attributes
     ==========
@@ -112,9 +114,10 @@ class BaseTknzr(abc.ABC):
             min_count: int,
             *,
             tk2id: Optional[Dict[str, int]] = None,
+            **kwargs: Dict,
     ):
         if not isinstance(is_uncased, bool):
-            raise TypeError(f'`is_uncased` must be an instance of `bool`.')
+            raise TypeError('`is_uncased` must be an instance of `bool`.')
 
         self.is_uncased = is_uncased
         self.max_vocab = max_vocab
@@ -239,7 +242,7 @@ class BaseTknzr(abc.ABC):
     def norm(self, txt: str) -> str:
         r"""Perform normalization on text.
 
-        text will first be normalized using :py:func:`lmp.tknzr.util.norm`.
+        text will first be normalized using :py:func:`lmp.dset.util.norm`.
         If ``self.is_uncased == True``, then output text will be converted into
         lowercase.
 
@@ -255,7 +258,7 @@ class BaseTknzr(abc.ABC):
 
         See Also
         ========
-        lmp.tknzr.util.norm
+        lmp.dset.util.norm
 
         Examples
         ========
@@ -264,7 +267,7 @@ class BaseTknzr(abc.ABC):
         >>> tknzr.norm('ABC')
         'abc'
         """
-        norm_txt = lmp.tknzr.util.norm(txt)
+        norm_txt = lmp.dset.util.norm(txt)
         if self.is_uncased:
             return norm_txt.lower()
         return norm_txt
@@ -372,10 +375,10 @@ class BaseTknzr(abc.ABC):
 
         See Also
         ========
+        lmp.dset.util.pad_to_max
+        lmp.dset.util.trunc_to_max
         lmp.tknzr.BaseTknzr.dec
         lmp.tknzr.BaseTknzr.tknz
-        lmp.tknzr.util.pad_to_max
-        lmp.tknzr.util.trunc_to_max
         """
         # Prepend `[bos]` token id.
         tkids = [self.__class__.bos_tkid]
@@ -393,8 +396,8 @@ class BaseTknzr(abc.ABC):
 
         # First truncate sequence to maximum sequence length, then pad sequence
         # to maximum sequence length.
-        return lmp.tknzr.util.pad_to_max(
-            lmp.tknzr.util.trunc_to_max(tkids, max_seq_len=max_seq_len),
+        return lmp.dset.util.pad_to_max(
+            lmp.dset.util.trunc_to_max(tkids, max_seq_len=max_seq_len),
             self.__class__.pad_tkid,
             max_seq_len=max_seq_len
         )
@@ -493,10 +496,10 @@ class BaseTknzr(abc.ABC):
 
         See Also
         ========
+        lmp.dset.util.pad_to_max
+        lmp.dset.util.trunc_to_max
         lmp.tknzr.BaseTknzr.batch_dec
         lmp.tknzr.BaseTknzr.enc
-        lmp.tknzr.util.pad_to_max
-        lmp.tknzr.util.trunc_to_max
         """
         batch_tkids = [self.enc(txt, max_seq_len=-1) for txt in batch_txt]
 
@@ -507,13 +510,13 @@ class BaseTknzr(abc.ABC):
 
         # Truncate each token ids sequence in batch to maximum sequence length.
         batch_tkids = [
-            lmp.tknzr.util.trunc_to_max(tkids, max_seq_len=max_seq_len)
+            lmp.dset.util.trunc_to_max(tkids, max_seq_len=max_seq_len)
             for tkids in batch_tkids
         ]
 
         # Pad each token ids sequence in batch to maximum sequence length.
         return [
-            lmp.tknzr.util.pad_to_max(
+            lmp.dset.util.pad_to_max(
                 tkids,
                 self.__class__.pad_tkid,
                 max_seq_len=max_seq_len
@@ -629,3 +632,83 @@ class BaseTknzr(abc.ABC):
         lmp.tknzr.BaseTknzr.build_vocab
         """
         return len(self.tk2id)
+
+    @staticmethod
+    def train_parser(parser: argparse.ArgumentParser) -> None:
+        r"""Training tokenizer CLI arguments parser.
+
+        Parameters
+        ==========
+        parser: argparse.ArgumentParser
+            Parser for CLI arguments.
+
+        See Also
+        ========
+        lmp.script.train_tokenizer
+
+        Examples
+        ========
+        >>> import argparse
+        >>> from lmp.tknzr import BaseTknzr
+        >>> parser = argparse.ArgumentParser()
+        >>> BaseTknzr.train_parser(parser)
+        >>> args = parser.parse_args([
+        ...     '--dset_name', 'wikitext-2',
+        ...     '--exp_name', 'my_exp',
+        ...     '--max_vocab', '10',
+        ...     '--min_count', '2',
+        ...     '--ver', 'train',
+        ... ])
+        >>> args.dset_name == 'wikitext-2'
+        True
+        >>> args.exp_name == 'my_exp'
+        True
+        >>> args.is_uncased == False
+        True
+        >>> args.max_vocab == 10
+        True
+        >>> args.min_count == 2
+        True
+        >>> args.ver == 'train'
+        True
+        """
+        # Required arguments.
+        group = parser.add_argument_group('common arguments')
+        group.add_argument(
+            '--dset_name',
+            choices=lmp.dset.DSET_OPTS.keys(),
+            help='Name of the dataset which is used to train tokenizer.',
+            required=True,
+            type=str,
+        )
+        group.add_argument(
+            '--exp_name',
+            help='Name of the tokenizer training experiment.',
+            required=True,
+            type=str,
+        )
+        group.add_argument(
+            '--max_vocab',
+            help='Maximum vocabulary size.',
+            required=True,
+            type=int,
+        )
+        group.add_argument(
+            '--min_count',
+            help='Minimum token frequency for token to be included in vocabulary.',
+            required=True,
+            type=int,
+        )
+        group.add_argument(
+            '--ver',
+            help='Version of the dataset which is used to train tokenizer.',
+            required=True,
+            type=str,
+        )
+
+        # Optional arguments.
+        group.add_argument(
+            '--is_uncased',
+            action='store_true',
+            help='Convert all text and tokens into lowercase if set.',
+        )

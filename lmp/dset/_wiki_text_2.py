@@ -1,15 +1,14 @@
 r"""WikiText-2 Dataset."""
 
-import argparse
 import io
 import os
 import re
 import zipfile
 from typing import ClassVar, List, Optional
 
+import lmp.dset.util
 import lmp.path
-import lmp.tknzr.util
-from lmp.dset._base_dset import BaseDset
+from lmp.dset._base import BaseDset
 
 
 class WikiText2Dset(BaseDset):
@@ -97,6 +96,6 @@ class WikiText2Dset(BaseDset):
         pttn = re.compile(r'( =){1,3} .+ (= ){1,3}')
         spls = filter(lambda spl: not pttn.match(spl), spls)
         # Normalized dataset.
-        spls = list(map(lmp.tknzr.util.norm, spls))
+        spls = list(map(lmp.dset.util.norm, spls))
 
         self.spls = spls

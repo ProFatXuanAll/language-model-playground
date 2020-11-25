@@ -6,7 +6,8 @@
 
 .. toctree::
     :maxdepth: 1
-    :caption: Dataset Classes:
+    :caption: Dataset Classes and Utilities:
 
     BaseDset.py
     WikiText2Dset.py
+    util.py

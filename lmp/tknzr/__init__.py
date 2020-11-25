@@ -1,19 +1,41 @@
-r"""Tokenizer module.
+r""":term:`Tokenizer` module.
 
-All tokenizer must import from this file.
+All tokenizer classes must be re-imported in this file.
 
-Example
-=======
+Attributes
+==========
+ALL_TKNZRS: List[:py:class:`lmp.tknzr.BaseTknzr`]
+    All available tokenizer.
+    Every time a new tokenizer is add, it must also be added to the list.
+TKNZR_OPTS: Final[Dict[str, :py:class:`lmp.tknzr.BaseTknzr`]]
+    Mapping from tokenizer's name to tokenizer's class.
+    All tokenizer must have class attribute ``tknzr_name``.
 
-::
+Examples
+========
+Check ``'character'`` is in available tokenizer class.
 
-    import lmp.tknzr
+>>> from lmp.tknzr import TKNZR_OPTS
+>>> 'character' in TKNZR_OPTS
+True
 
-    tknzr = lmp.tknzr.CharTknzr(...)
-    tknzr = lmp.tknzr.WsTknzr(...)
+Get ``'character'`` tokenizer class.
+
+>>> from lmp.tknzr import CharTknzr
+>>> TKNZR_OPTS['character'] == CharTknzr
+True
 """
 
-import lmp.tknzr.util
+
+from typing import Dict, Final, List
+
+import lmp.dset.util
 from lmp.tknzr._base import BaseTknzr
 from lmp.tknzr._char import CharTknzr
 from lmp.tknzr._ws import WsTknzr
+
+ALL_TKNZRS: Final[List[BaseTknzr]] = [
+    CharTknzr,
+    WsTknzr,
+]
+TKNZR_OPTS: Final[Dict[str, BaseTknzr]] = {t.tknzr_name: t for t in ALL_TKNZRS}

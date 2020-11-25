@@ -1,7 +1,7 @@
 r"""Whitespace :term:`tokenizer` class."""
 
 import re
-from typing import List, Sequence
+from typing import ClassVar, List, Sequence
 
 from lmp.tknzr._base import BaseTknzr
 
@@ -25,6 +25,8 @@ class WsTknzr(BaseTknzr):
         If ``tk2id is not None``, then initialize lookup table with ``tk2id``.
         Otherwise initialize lookup table with special tokens only.
         See attributes for details.
+    kwargs: Dict
+        Subclass tokenizers' parameters extension.
 
     Attributes
     ==========
@@ -91,6 +93,7 @@ class WsTknzr(BaseTknzr):
     >>> tknzr.dtknz(['a', 'b', 'c'])
     'a b c'
     """
+    tknzr_name: ClassVar[str] = 'whitespace'
 
     def tknz(self, txt: str) -> List[str]:
         r"""Perform whitespace :term:`tokenization` on text.

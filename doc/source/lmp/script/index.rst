@@ -3,6 +3,7 @@
 
 .. toctree::
     :maxdepth: 1
-    :caption: Contents:
+    :caption: Available scripts:
 
     sample_from_dataset.py
+    train_tokenizer.py
