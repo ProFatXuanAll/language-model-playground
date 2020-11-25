@@ -32,7 +32,7 @@ True
 
 from typing import Dict, Final, Set
 
-from lmp.dset._base_dset import BaseDset
+from lmp.dset._base import BaseDset
 from lmp.dset._wiki_text_2 import WikiText2Dset
 
 ALL_DSETS = [

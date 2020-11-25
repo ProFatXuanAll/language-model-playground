@@ -76,28 +76,6 @@ autopep8 -r -i -a -a -a test
 coverage -m pytest
 ```
 
-### 下載資料集
-
-1. 新增資料夾 `data`。
-
-```sh
-mkdir data
-```
-
-2. 下載中文資料集：從 kaggle 上下載 [news_colleciton.csv](https://www.kaggle.com/ceshine/yet-another-chinese-news-dataset)，解壓縮 `zip` 檔後把資料放到 `data/news_collection.csv`。
-
-```sh
-unzip yet-another-chinese-news-dataset.zip && chmod 666 news_collection.csv && mv news_collection.csv data/news_collection.csv
-```
-
-3. 下載英文資料集：從 The WikiText Long Term Dependency Language Modeling Dataset 上下載 [WikiText-2](https://blog.einstein.ai/the-wikitext-long-term-dependency-language-modeling-dataset/)，解壓縮 `zip` 檔後把資料放到 `data/wiki.train.tokens`, `data/wiki.valid.tokens`, `data/wiki.test.tokens`。
-
-4. 下載文字類比測試資料集：從以下[網站](http://www.fit.vutbr.cz/~imikolov/rnnlm/word-test.v1.txt)上下載 `word-test.v1.txt` 後把資料放到 `data/word-test.v1.txt`
-
-```sh
-wget -c http://www.fit.vutbr.cz/~imikolov/rnnlm/word-test.v1.txt && chmod 666 word-test.v1.txt && mv word-test.v1.txt data/word-test.v1.txt
-```
-
 ### 訓練
 
 1. 訓練範例中文語言模型。

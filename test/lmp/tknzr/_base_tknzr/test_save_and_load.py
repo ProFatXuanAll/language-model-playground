@@ -11,7 +11,7 @@ from typing import Type
 
 import pytest
 
-from lmp.tknzr._base_tknzr import BaseTknzr
+from lmp.tknzr._base import BaseTknzr
 
 
 def test_config_file_exist(
@@ -40,11 +40,11 @@ def test_config_file_format(
 def test_load_result(
         exp_name: str,
         subclass_tknzr: BaseTknzr,
-        subclass_tknzr_cstr: Type[BaseTknzr],
+        subclass_tknzr_clss: Type[BaseTknzr],
 ):
     r"""Ensure configuration consistency between save and load."""
     subclass_tknzr.save(exp_name)
-    load_tknzr = subclass_tknzr_cstr.load(exp_name)
+    load_tknzr = subclass_tknzr_clss.load(exp_name)
 
     assert subclass_tknzr.is_uncased == load_tknzr.is_uncased
     assert subclass_tknzr.id2tk == load_tknzr.id2tk

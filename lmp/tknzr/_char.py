@@ -1,16 +1,15 @@
-r"""Whitespace :term:`tokenizer` class."""
-
-import re
-from typing import List, Sequence
-
-from lmp.tknzr._base_tknzr import BaseTknzr
+r"""Character :term:`tokenizer` class."""
 
 
-class WsTknzr(BaseTknzr):
-    r"""Whitespace :term:`tokenizer` class.
+from typing import ClassVar, List, Sequence
 
-    Tokenize text into (unicode) whitespace seperate tokens.
-    No whitespace will be preserved after tokenization.
+from lmp.tknzr._base import BaseTknzr
+
+
+class CharTknzr(BaseTknzr):
+    r"""Character :term:`tokenizer` class.
+
+    Tokenize text into (unicode) character.
 
     Parameters
     ==========
@@ -84,19 +83,19 @@ class WsTknzr(BaseTknzr):
     Examples
     ========
     >>> from typing import List, Sequence
-    >>> from lmp.tknzr import WsTknzr
-    >>> tknzr = WsTknzr(is_uncased=False, max_vocab=10, min_count=2)
-    >>> tknzr.tknz('a b c')
+    >>> from lmp.tknzr import CharTknzr
+    >>> tknzr = CharTknzr(is_uncased=False, max_vocab=10, min_count=2)
+    >>> tknzr.tknz('abc')
     ['a', 'b', 'c']
     >>> tknzr.dtknz(['a', 'b', 'c'])
-    'a b c'
+    'abc'
     """
+    tknzr_name: ClassVar[str] = 'character'
 
     def tknz(self, txt: str) -> List[str]:
-        r"""Perform whitespace :term:`tokenization` on text.
+        r"""Perform character :term:`tokenization` on text.
 
-        Text will first be normalized and then be tokenized using whitespace
-        as separation.
+        Text will first be normalized and then be tokenized.
 
         Parameters
         ==========
@@ -106,37 +105,29 @@ class WsTknzr(BaseTknzr):
         Returns
         =======
         List[str]
-            List of normalized tokens tokenized from text.
-            No whitespace will be preserved after tokenization.
+            List of normalized character tokens tokenized from text.
 
         See Also
         ========
-        lmp.tknzr.WsTknzr.dtknz
+        lmp.tknzr.CharTknzr.dtknz
         lmp.tknzr.BaseTknzr.norm
 
         Examples
         ========
-        >>> from lmp.tknzr import WsTknzr
-        >>> tknzr = WsTknzr(is_uncased=False, max_vocab=10, min_count=2)
-        >>> tknzr.tknz('a b c')
+        >>> from lmp.tknzr import CharTknzr
+        >>> tknzr = CharTknzr(is_uncased=False, max_vocab=10, min_count=2)
+        >>> tknzr.tknz('abc')
         ['a', 'b', 'c']
         >>> tknzr.tknz('abc def')
-        ['abc', 'def']
+        ['a', 'b', 'c', ' ', 'd', 'e', 'f']
         """
         # First do normalization, then perform tokenization.
-        tks = re.split(r'\s+', self.norm(txt))
-
-        # Return empty list when `txt` is empty string.
-        # This is needed since `re.split(r'\s+', '')` return `['']` instead of
-        # `[]`.
-        if tks == ['']:
-            return []
-        return tks
+        return list(self.norm(txt))
 
     def dtknz(self, tks: Sequence[str]) -> str:
         r"""Convert :term:`tokens` back to one and only one text.
 
-        Tokens are simply joined with single whitespace and then normalized.
+        Tokens are simply joined without whitespace and then normalized.
 
         Parameters
         ==========
@@ -146,21 +137,22 @@ class WsTknzr(BaseTknzr):
         Returns
         =======
         str
-            Normalized text with whitespaces in between each token.
+            Normalized text without additional whitespaces other than ones
+            come from tokens.
 
         See Also
         ========
-        lmp.tknzr.WsTknzr.tknz
+        lmp.tknzr.CharTknzr.tknz
         lmp.tknzr.BaseTknzr.norm
 
         Examples
         ========
-        >>> from lmp.tknzr import WsTknzr
-        >>> tknzr = WsTknzr(is_uncased=False, max_vocab=10, min_count=2)
+        >>> from lmp.tknzr import CharTknzr
+        >>> tknzr = CharTknzr(is_uncased=False, max_vocab=10, min_count=2)
         >>> tknzr.dtknz(['a', 'b', 'c'])
-        'a b c'
-        >>> tknzr.dtknz(['abc', 'def'])
+        'abc'
+        >>> tknzr.dtknz(['a', 'b', 'c', ' ', 'd', 'e', 'f'])
         'abc def'
         """
         # First perform detokenization, then do normalization.
-        return self.norm(' '.join(tks))
+        return self.norm(''.join(tks))
