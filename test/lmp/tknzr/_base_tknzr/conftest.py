@@ -4,11 +4,11 @@ from typing import Dict, List, Type, Union
 
 import pytest
 
-from lmp.tknzr._base_tknzr import BaseTknzr
+from lmp.tknzr._base import BaseTknzr
 
 
 @pytest.fixture
-def subclass_tknzr_cstr() -> Type[BaseTknzr]:
+def subclass_tknzr_clss() -> Type[BaseTknzr]:
     r"""Simple ``BaseTknzr`` subclass."""
     class SubclassTknzr(BaseTknzr):
         r"""Only implement ``tknz`` and ``dtknz``."""
@@ -27,11 +27,11 @@ def subclass_tknzr(
         is_uncased: bool,
         max_vocab: int,
         min_count: int,
-        subclass_tknzr_cstr: Type[BaseTknzr],
+        subclass_tknzr_clss: Type[BaseTknzr],
         tk2id: Union[None, Dict[str, int]],
 ):
     r"""Simple ``BaseTknzr`` subclass instance."""
-    return subclass_tknzr_cstr(
+    return subclass_tknzr_clss(
         is_uncased,
         max_vocab,
         min_count,

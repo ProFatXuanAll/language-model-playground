@@ -6,7 +6,7 @@ Test target:
 
 from typing import Dict
 
-from lmp.tknzr._base_tknzr import BaseTknzr
+from lmp.tknzr._base import BaseTknzr
 
 
 def test_nfkc(subclass_tknzr: BaseTknzr, non_nfkc_txt: Dict[str, str]):

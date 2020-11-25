@@ -14,6 +14,6 @@ Example
 """
 
 import lmp.tknzr.util
-from lmp.tknzr._base_tknzr import BaseTknzr
-from lmp.tknzr._char_tknzr import CharTknzr
-from lmp.tknzr._ws_tknzr import WsTknzr
+from lmp.tknzr._base import BaseTknzr
+from lmp.tknzr._char import CharTknzr
+from lmp.tknzr._ws import WsTknzr
