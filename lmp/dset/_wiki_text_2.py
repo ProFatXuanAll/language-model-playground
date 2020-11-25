@@ -1,11 +1,14 @@
 r"""WikiText-2 Dataset."""
 
+import argparse
 import io
 import os
+import re
 import zipfile
 from typing import ClassVar, List, Optional
 
 import lmp.path
+import lmp.tknzr.util
 from lmp.dset._base_dset import BaseDset
 
 
@@ -23,7 +26,7 @@ class WikiText2Dset(BaseDset):
         Version of the dataset.
         If ``ver is None``, then use default version (which is ``train``) of
         the dataset.
-        Version must be supported by the dataset, supported versions are
+        Version must be available, available versions are
 
         - ``train``: Training set.
         - ``test``: Testing set.
@@ -43,15 +46,15 @@ class WikiText2Dset(BaseDset):
     ver: str
         Version of the dataset.
     vers: ClassVar[List[str]]
-        All supported version of the dataset.
-        This is used to check whether specified version ``ver`` is supported.
+        All available version of the dataset.
+        Used to check whether specified version ``ver`` is available.
 
     Raises
     ======
     TypeError
         When ``ver`` is not and instance of ``str``.
     ValueError
-        When dataset version ``ver`` is not supported.
+        When dataset version ``ver`` is not available.
 
     See Also
     ========
@@ -65,8 +68,9 @@ class WikiText2Dset(BaseDset):
     Examples
     ========
     >>> from lmp.dset import WikiText2Dset
-    >>> dset = WikiText2Dset(ver='train')
-    >>> dset[0]
+    >>> dset = WikiText2Dset(ver='test')
+    >>> dset[0][:31]
+    Robert <unk> is an English film
     """
     df_ver: ClassVar[str] = 'train'
     dset_name: ClassVar[str] = 'wikitext-2'
@@ -80,11 +84,19 @@ class WikiText2Dset(BaseDset):
         with zipfile.ZipFile(
             os.path.join(lmp.path.DATA_PATH, 'wikitext-2-v1.zip'),
             'r',
-        ) as zf:
+        ) as input_zip_file:
             with io.TextIOWrapper(
-                zf.open(f'wikitext-2/wiki.{self.ver}.tokens', 'r'),
+                input_zip_file.open(f'wikitext-2/wiki.{self.ver}.tokens', 'r'),
                 encoding='utf-8',
-            ) as input_file:
-                spls = input_file.readlines()
+            ) as input_text_file:
+                data = input_text_file.read()
+
+        # Remove empty line.
+        spls = filter(lambda spl: spl.strip(), re.split(r'\n', data))
+        # Remove section and subsection titles.
+        pttn = re.compile(r'( =){1,3} .+ (= ){1,3}')
+        spls = filter(lambda spl: not pttn.match(spl), spls)
+        # Normalized dataset.
+        spls = list(map(lmp.tknzr.util.norm, spls))
 
         self.spls = spls
