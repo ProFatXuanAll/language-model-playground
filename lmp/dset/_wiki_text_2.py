@@ -1,10 +1,10 @@
-r"""WikiText-2 Dataset."""
+r"""WikiText-2 dataset."""
 
-import io
 import os
 import re
-import zipfile
+from io import TextIOWrapper
 from typing import ClassVar, List, Optional
+from zipfile import ZipFile
 
 import lmp.dset.util
 import lmp.path
@@ -12,7 +12,7 @@ from lmp.dset._base import BaseDset
 
 
 class WikiText2Dset(BaseDset):
-    r"""[WikiText-2]_ Dataset.
+    r"""[WikiText-2]_ dataset.
 
     WikiText-2 is an English dataset which is part of the WikiText Long Term
     Dependency Language Modeling Dataset.
@@ -23,8 +23,8 @@ class WikiText2Dset(BaseDset):
     ==========
     ver: str, optional
         Version of the dataset.
-        If ``ver is None``, then use default version (which is ``train``) of
-        the dataset.
+        If ``ver is None``, then use default version ``WikiText2Dset.df_ver``
+        of the dataset.
         Version must be available, available versions are
 
         - ``train``: Training set.
@@ -35,11 +35,13 @@ class WikiText2Dset(BaseDset):
 
     Attributes
     ==========
+    df_ver: ClassVar[str]
+        Default version is ``train``.
     dset_name: ClassVar[str]
         Display name for dataset on CLI.
         Used only for command line argument parsing.
     lang: ClassVar[str]
-        Language of the dataset.
+        Use English as primary language.
     spls: Sequence[str]
         All samples in the dataset.
     ver: str
@@ -80,12 +82,12 @@ class WikiText2Dset(BaseDset):
         super().__init__(ver=ver)
 
         # Read text file inside WikiText-2 zip file.
-        with zipfile.ZipFile(
+        with ZipFile(
             os.path.join(lmp.path.DATA_PATH, 'wikitext-2-v1.zip'),
             'r',
-        ) as input_zip_file:
-            with io.TextIOWrapper(
-                input_zip_file.open(f'wikitext-2/wiki.{self.ver}.tokens', 'r'),
+        ) as input_zipfile:
+            with TextIOWrapper(
+                input_zipfile.open(os.path.join('wikitext-2', f'wiki.{self.ver}.tokens'), 'r'),
                 encoding='utf-8',
             ) as input_text_file:
                 data = input_text_file.read()

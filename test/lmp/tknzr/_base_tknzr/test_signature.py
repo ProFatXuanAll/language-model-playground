@@ -84,6 +84,11 @@ def test_instance_method(subclass_tknzr):
                 default=None,
                 annotation=Optional[Dict[str, int]],
             ),
+            Parameter(
+                name='kwargs',
+                kind=Parameter.VAR_KEYWORD,
+                annotation=Optional[Dict],
+            ),
         ],
         return_annotation=Signature.empty
     )
