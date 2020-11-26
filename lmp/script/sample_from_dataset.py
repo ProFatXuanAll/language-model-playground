@@ -61,22 +61,28 @@ def parse_arg() -> argparse.Namespace:
           Default to ``dset``'s default version.
     --idx Sample index.
           Default to ``0``.
+
+    Returns
+    =======
+    argparse.Namespace
+        Arguments from CLI.
     """
     # Create parser.
     parser = argparse.ArgumentParser(
         'python -m lmp.script.sample_from_dataset',
         description='Sample dataset using index.',
     )
+
     # Create subparser for each dataset.
     subparsers = parser.add_subparsers(dest='dset_name', required=True)
-    for dset_name in DSET_OPTS:
-        # Get dataset class.
-        dset_clss = DSET_OPTS[dset_name]
+
+    for dset_name, dset_clss in DSET_OPTS.items():
         # Use dataset name as CLI argument.
         dset_parser = subparsers.add_parser(
             dset_name,
             description=f'Sample {dset_name} dataset using index.',
         )
+
         # Optional arguments.
         dset_parser.add_argument(
             '--idx',
