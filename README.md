@@ -9,12 +9,13 @@
 
 ### 環境
 
-1. Python 版本: 3.6+
+1. Python 版本: 3.8+
 
 2. CUDA 版本: 10.0+
 
 ### 安裝
 
+0. 這個專案有包含資料集，因為檔案較大所以我們使用 `git lfs` 進行版本控制，請先安裝 `git lfs` 之後執行 `git lfs install`
 1. 從 github 複製專案。
 
 ```sh
