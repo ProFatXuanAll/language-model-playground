@@ -33,9 +33,11 @@ True
 from typing import Dict, Final, Set
 
 from lmp.dset._base import BaseDset
+from lmp.dset._ch_poem import ChPoemDset
 from lmp.dset._wiki_text_2 import WikiText2Dset
 
 ALL_DSETS = [
+    ChPoemDset,
     WikiText2Dset,
 ]
 DSET_OPTS: Final[Dict[str, BaseDset]] = {d.dset_name: d for d in ALL_DSETS}

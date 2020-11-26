@@ -32,7 +32,7 @@ class BaseTknzr(abc.ABC):
         If ``tk2id is not None``, then initialize lookup table with ``tk2id``.
         Otherwise initialize lookup table with special tokens only.
         See attributes for details.
-    kwargs: Dict
+    kwargs: Dict, optional
         Subclass tokenizers' parameters extension.
 
     Attributes
@@ -114,7 +114,7 @@ class BaseTknzr(abc.ABC):
             min_count: int,
             *,
             tk2id: Optional[Dict[str, int]] = None,
-            **kwargs: Dict,
+            **kwargs: Optional[Dict],
     ):
         if not isinstance(is_uncased, bool):
             raise TypeError('`is_uncased` must be an instance of `bool`.')
