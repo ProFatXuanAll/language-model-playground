@@ -58,6 +58,7 @@ class BaseTknzr(abc.ABC):
         ``self.is_uncased == True``.
     max_vocab: int
         Maximum vocabulary size.
+        Set to ``-1`` to include as many tokens as possible in vocabulary.
     min_count: int
         Minimum token frequency for each token to be included in tokenizer's
         vocabulary.
@@ -599,7 +600,8 @@ class BaseTknzr(abc.ABC):
         max_id = max(self.tk2id.values()) + 1
         for tk, tk_count in c.most_common():
             # Stop adding tokens when pass vocabulary size limit.
-            if max_id >= self.max_vocab:
+            # If `self.max_vocab == 1`, then add as many tokens as possible.
+            if self.max_vocab != -1 and max_id >= self.max_vocab:
                 break
 
             # Stop adding the token when the token frequency is low.
@@ -689,7 +691,10 @@ class BaseTknzr(abc.ABC):
         )
         group.add_argument(
             '--max_vocab',
-            help='Maximum vocabulary size.',
+            help=' '.join([
+                'Maximum vocabulary size.',
+                'If set to `-1`, then include as many token as possible.',
+            ]),
             required=True,
             type=int,
         )

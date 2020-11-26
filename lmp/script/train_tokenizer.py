@@ -10,16 +10,17 @@ lmp.tknzr
 
 Examples
 ========
-The following example train :py:class:`lmp.tknzr.CharTknzr` on
+The following example train :py:class:`lmp.tknzr.WsTknzr` on
 :py:class:`lmp.dset.WikiText2Dset` using ``train`` version.
 
 .. code-block:: sh
 
-    python -m lmp.script.train_tokenizer --dset_name wikitext-2 \
-                                         --exp_name my_exp \
-                                         --max_vocab 10 \
-                                         --min_count 2 \
-                                         --ver train
+    python -m lmp.script.train_tokenizer whitespace \
+        --dset_name wikitext-2 \
+        --exp_name my_exp \
+        --max_vocab 10 \
+        --min_count 2 \
+        --ver train
 
 The training result will be save at ``exp/my_exp``, and can be reused by other
 scripts.
@@ -28,33 +29,47 @@ One can include more tokens in vocabulary using ``--max_vocab``:
 
 .. code-block:: sh
 
-    python -m lmp.script.train_tokenizer --dset_name wikitext-2 \
-                                         --exp_name my_exp \
-                                         --max_vocab 10000 \
-                                         --min_count 2 \
-                                         --ver train
+    python -m lmp.script.train_tokenizer whitespace \
+        --dset_name wikitext-2 \
+        --exp_name my_exp \
+        --max_vocab 10000 \
+        --min_count 2 \
+        --ver train
+
+Set ``--max_vocab`` to ``-1`` to include all tokens in the dataset:
+
+.. code-block:: sh
+
+    python -m lmp.script.train_tokenizer whitespace \
+        --dset_name wikitext-2 \
+        --exp_name my_exp \
+        --max_vocab -1 \
+        --min_count 2 \
+        --ver train
 
 Use ``--min_count`` to filter out tokens such as typos, names, locations, etc.
 
 .. code-block:: sh
 
-    python -m lmp.script.train_tokenizer --dset_name wikitext-2 \
-                                         --exp_name my_exp \
-                                         --max_vocab 10000 \
-                                         --min_count 5 \
-                                         --ver train
+    python -m lmp.script.train_tokenizer whitespace
+        --dset_name wikitext-2 \
+        --exp_name my_exp \
+        --max_vocab 10000 \
+        --min_count 5 \
+        --ver train
 
 Use ``--is_uncased`` to avoid differ tokens with same charaters but in
 different case.
 
 .. code-block:: sh
 
-    python -m lmp.script.train_tokenizer --dset_name wikitext-2 \
-                                         --exp_name my_exp \
-                                         --is_uncased \
-                                         --max_vocab 10000 \
-                                         --min_count 5 \
-                                         --ver train
+    python -m lmp.script.train_tokenizer whitespace
+        --dset_name wikitext-2 \
+        --exp_name my_exp \
+        --is_uncased \
+        --max_vocab 10000 \
+        --min_count 5 \
+        --ver train
 
 Use ``-h`` or ``--help`` options to get list of available tokenizer.
 
@@ -75,6 +90,11 @@ def parse_arg() -> argparse.Namespace:
 
     Argument must begin with a tokenizer name ``tknzr_name``.
     All arguments are added with tokenizer's static method ``train_parser``.
+
+    Returns
+    =======
+    argparse.Namespace
+        Arguments from CLI.
     """
     # Create parser.
     parser = argparse.ArgumentParser(
@@ -85,10 +105,7 @@ def parse_arg() -> argparse.Namespace:
     # Create subparser for each tokenizer.
     subparsers = parser.add_subparsers(dest='tknzr_name', required=True)
 
-    for tknzr_name in lmp.tknzr.TKNZR_OPTS:
-        # Get tokenizer class.
-        tknzr_clss = lmp.tknzr.TKNZR_OPTS[tknzr_name]
-
+    for tknzr_name, tknzr_clss in lmp.tknzr.TKNZR_OPTS.items():
         # Use tokenizer name as CLI argument.
         tknzr_parser = subparsers.add_parser(
             tknzr_name,

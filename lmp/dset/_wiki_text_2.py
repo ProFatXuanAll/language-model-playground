@@ -93,11 +93,19 @@ class WikiText2Dset(BaseDset):
                 data = input_text_file.read()
 
         # Remove empty line.
-        spls = filter(lambda spl: spl.strip(), re.split(r'\n', data))
-        # Remove section and subsection titles.
-        pttn = re.compile(r'( =){1,3} .+ (= ){1,3}')
-        spls = filter(lambda spl: not pttn.match(spl), spls)
-        # Normalized dataset.
-        spls = list(map(lmp.dset.util.norm, spls))
+        spls = map(lambda spl: spl.strip(), re.split(r'\n+', data))
+        spls = filter(lambda spl: spl, spls)
 
-        self.spls = spls
+        # Remove section and subsection titles.
+        pttn = re.compile(r'=.+=')
+        spls = filter(lambda spl: not pttn.match(spl), spls)
+
+        # Normalized dataset.
+        spls = map(lmp.dset.util.norm, spls)
+
+        # Replace unknown token `<unk>` with `[unk]`.
+        # Do not use name `pttn` since it cause bug (from `re` module).
+        pttn2 = re.compile(r'<unk>')
+        spls = map(lambda spl: pttn2.sub('[unk]', spl), spls)
+
+        self.spls = list(spls)
