@@ -5,6 +5,8 @@ This script is usually run before training model.
 
 See Also
 ========
+lmp.script.tokenize
+    Use pre-trained tokenizer to tokenize text.
 lmp.tknzr
     All available tokenizers.
 
