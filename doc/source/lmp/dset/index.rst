@@ -1,5 +1,5 @@
 :py:mod:`lmp.dset`
-===================
+==================
 
 .. automodule:: lmp.dset
     :members:

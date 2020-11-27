@@ -30,5 +30,3 @@ from lmp.util._perplexity_eval import batch_perplexity_eval, perplexity_eval
 from lmp.util._seed import set_seed, set_seed_by_config
 from lmp.util._tokenizer import load_tokenizer, load_tokenizer_by_config
 from lmp.util._train_model import train_model
-from lmp.util._train_tokenizer import (train_tokenizer,
-                                       train_tokenizer_by_config)

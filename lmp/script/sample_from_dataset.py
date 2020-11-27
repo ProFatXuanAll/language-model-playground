@@ -48,6 +48,7 @@ versions.
 
 import argparse
 
+import lmp.util.dset
 from lmp.dset import DSET_OPTS
 
 
@@ -109,8 +110,8 @@ def main() -> None:
     # Parse command-line argument.
     args = parse_arg()
 
-    # Get dataset with specified version.
-    dset = DSET_OPTS[args.dset_name](ver=args.ver)
+    # Get dataset instance with specified version.
+    dset = lmp.util.dset.load(dset_name=args.dset_name, ver=args.ver)
 
     # Output sample result.
     print(dset[args.idx])
