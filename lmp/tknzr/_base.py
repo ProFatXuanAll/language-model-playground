@@ -33,7 +33,8 @@ class BaseTknzr(abc.ABC):
         Otherwise initialize lookup table with special tokens only.
         See attributes for details.
     kwargs: Dict, optional
-        Subclass tokenizers' parameters extension.
+        Useless parameter.
+        Intended left for subclass parameters extension.
 
     Attributes
     ==========

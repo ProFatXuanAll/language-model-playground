@@ -6,6 +6,7 @@
     :caption: Contents:
 
     dset/index
+    model/index
     script/index
     tknzr/index
     util/index
