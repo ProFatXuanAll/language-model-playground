@@ -33,6 +33,7 @@ from lmp.model._res_gru_block import ResGRUBlock
 from lmp.model._res_gru_model import ResGRUModel
 from lmp.model._res_lstm_block import ResLSTMBlock
 from lmp.model._res_lstm_model import ResLSTMModel
+from lmp.model._rnn import RNNModel
 from lmp.model._self_attention_gru_model import SelfAttentionGRUModel
 from lmp.model._self_attention_lstm_model import SelfAttentionLSTMModel
 from lmp.model._self_attention_res_gru_model import SelfAttentionResGRUModel

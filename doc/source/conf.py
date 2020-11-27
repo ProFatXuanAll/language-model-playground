@@ -41,7 +41,10 @@ extensions = [
     'sphinx_rtd_theme',
 ]
 
-intersphinx_mapping = {'python': ('https://docs.python.org/3', None)}
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/3', None),
+    'torch': ('https://pytorch.org/docs/master/', None),
+}
 
 # Parse NumPy style docstrings but not google style docstrings.
 napoleon_google_docstring = False

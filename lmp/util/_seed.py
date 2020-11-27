@@ -7,10 +7,6 @@ Usage:
     lmp.set_seed_by_config(...)
 """
 
-
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-
 import random
 
 import numpy as np
@@ -47,4 +43,3 @@ def set_seed(seed: int) -> None:
         torch.cuda.manual_seed_all(seed)
         torch.backends.cudnn.deterministic = True
         torch.backends.cudnn.benchmark = False
-
