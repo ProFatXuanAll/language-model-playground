@@ -21,7 +21,6 @@ import torch.utils.data
 import torch.utils.tensorboard
 from tqdm import tqdm
 
-import lmp.config
 import lmp.dataset
 import lmp.model
 import lmp.path
