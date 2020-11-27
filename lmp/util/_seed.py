@@ -16,8 +16,6 @@ import random
 import numpy as np
 import torch
 
-import lmp.config
-
 
 def set_seed(seed: int) -> None:
     r"""Helper function for setting random seed.
@@ -50,22 +48,3 @@ def set_seed(seed: int) -> None:
         torch.backends.cudnn.deterministic = True
         torch.backends.cudnn.benchmark = False
 
-
-def set_seed_by_config(config: lmp.config.BaseConfig) -> None:
-    r"""Helper function for setting random seed.
-
-    Args:
-        config:
-            Configuration object with attribute `seed`.
-
-    Raises:
-        TypeError:
-            When `config` is not an instance of `lmp.config.BaseConfig`.
-    """
-    # Type check.
-    if not isinstance(config, lmp.config.BaseConfig):
-        raise TypeError(
-            '`config` must be an instance of `lmp.config.BaseConfig`.'
-        )
-
-    set_seed(config.seed)

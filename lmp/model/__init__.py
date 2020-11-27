@@ -37,4 +37,3 @@ from lmp.model._self_attention_gru_model import SelfAttentionGRUModel
 from lmp.model._self_attention_lstm_model import SelfAttentionLSTMModel
 from lmp.model._self_attention_res_gru_model import SelfAttentionResGRUModel
 from lmp.model._self_attention_res_lstm_model import SelfAttentionResLSTMModel
-from lmp.model._transformer_model import TransformerModel

@@ -17,7 +17,6 @@ from typing import Iterable, Union
 
 import torch
 
-import lmp.config
 import lmp.model
 import lmp.path
 
@@ -139,7 +138,7 @@ def load_optimizer(
 
 def load_optimizer_by_config(
         checkpoint: int,
-        config: lmp.config.BaseConfig,
+        config,
         model: Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel]
 ) -> Union[torch.optim.SGD, torch.optim.Adam]:
     r"""Helper function for constructing optimizer.
@@ -166,16 +165,10 @@ def load_optimizer_by_config(
     Returns:
         Same as `load_optimizer`.
     """
-    # Type check.
-    if not isinstance(config, lmp.config.BaseConfig):
-        raise TypeError(
-            '`config` must be an instance of `lmp.config.BaseConfig`.'
-        )
 
     if not isinstance(model, (
             lmp.model.BaseRNNModel,
             lmp.model.BaseResRNNModel,
-            lmp.model.TransformerModel
     )):
         raise TypeError(
             '`model` must be an instance of '
