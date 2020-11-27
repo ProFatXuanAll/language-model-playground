@@ -30,9 +30,10 @@ Use ``-h`` or ``--help`` options to get list of available options.
 
 import argparse
 
-import lmp.cfg
 import lmp.dset
 import lmp.tknzr
+import lmp.util.cfg
+import lmp.util.tknzr
 
 
 def parse_arg() -> argparse.Namespace:
@@ -77,10 +78,13 @@ def main() -> None:
     args = parse_arg()
 
     # Load pre-trained tokenizer configuration.
-    cfg = lmp.cfg.load(exp_name=args.exp_name)
+    tknzr_cfg = lmp.util.cfg.load(exp_name=args.exp_name)
 
-    # Get tokenizer.
-    tknzr = lmp.tknzr.TKNZR_OPTS[cfg.tknzr_name].load(exp_name=args.exp_name)
+    # Load pre-trained tokenizer instance.
+    tknzr = lmp.util.tknzr.load(
+        exp_name=args.exp_name,
+        tknzr_name=tknzr_cfg.tknzr_name,
+    )
 
     # Tokenize text.
     print(tknzr.tknz(args.txt))

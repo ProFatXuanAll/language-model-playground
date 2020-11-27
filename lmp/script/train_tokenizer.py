@@ -82,9 +82,11 @@ Use ``-h`` or ``--help`` options to get list of available tokenizer.
 
 import argparse
 
-import lmp.cfg
 import lmp.dset
 import lmp.tknzr
+import lmp.util.cfg
+import lmp.util.dset
+import lmp.util.tknzr
 
 
 def parse_arg() -> argparse.Namespace:
@@ -126,13 +128,13 @@ def main() -> None:
     args = parse_arg()
 
     # Save training configuration.
-    lmp.cfg.save(args=args, exp_name=args.exp_name)
+    lmp.util.cfg.save(args=args, exp_name=args.exp_name)
 
-    # Get dataset.
-    dset = lmp.dset.DSET_OPTS[args.dset_name](ver=args.ver)
+    # Get dataset instance with specified version.
+    dset = lmp.util.dset.load(dset_name=args.dset_name, ver=args.ver)
 
-    # Get tokenizer.
-    tknzr = lmp.tknzr.TKNZR_OPTS[args.tknzr_name](**args.__dict__)
+    # Get new tokenizer instance.
+    tknzr = lmp.util.tknzr.create(**args.__dict__)
 
     # Build tokenizer's vocabulary.
     tknzr.build_vocab(dset)

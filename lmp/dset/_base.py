@@ -69,7 +69,7 @@ class BaseDset(torch.utils.data.Dataset):
         Yields
         ======
         str
-            Each text sapmle in `self.spls`.
+            Each text sapmle in ``self.spls``.
         """
         for spl in self.spls:
             yield spl
@@ -95,9 +95,9 @@ class BaseDset(torch.utils.data.Dataset):
         Raises
         ======
         IndexError
-            When `idx >= len(self.spls)`.
+            When ``idx >= len(self.spls)``.
         TypeError
-            When `idx` is not an instance of `int`.
+            When ``idx`` is not an instance of ``int``.
         """
         # Type check.
         if not isinstance(idx, int):

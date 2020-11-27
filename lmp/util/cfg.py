@@ -31,14 +31,14 @@ def save(args: argparse.Namespace, exp_name: str) -> None:
 
     See Also
     ========
-    lmp.cfg.load
+    lmp.util.cfg.load
 
     Examples
     ========
     >>> import argparse
-    >>> import lmp.cfg
+    >>> import lmp.util.cfg
     >>> args = argparse.Namespace(a=1, b=2, c=3)
-    >>> lmp.cfg.save(args=args, exp_name='my_exp')
+    >>> lmp.util.cfg.save(args=args, exp_name='my_exp')
     None
     """
     # Get file directory and path.
@@ -83,16 +83,16 @@ def load(exp_name: str) -> argparse.Namespace:
 
     See Also
     ========
-    lmp.cfg.save
+    lmp.util.cfg.save
 
     Examples
     ========
     >>> import argparse
-    >>> import lmp.cfg
+    >>> import lmp.util.cfg
     >>> args = argparse.Namespace(a=1, b=2, c=3)
-    >>> lmp.cfg.save(args=args, exp_name='my_exp')
+    >>> lmp.util.cfg.save(args=args, exp_name='my_exp')
     None
-    >>> args == lmp.cfg.load(exp_name='my_exp')
+    >>> args == lmp.util.cfg.load(exp_name='my_exp')
     True
     """
     # Get file path.
