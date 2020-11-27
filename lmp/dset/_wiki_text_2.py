@@ -97,15 +97,14 @@ class WikiText2Dset(BaseDset):
         spls = filter(lambda spl: spl, spls)
 
         # Remove section and subsection titles.
-        pttn = re.compile(r'=.+=')
-        spls = filter(lambda spl: not pttn.match(spl), spls)
+        title_pttn = re.compile(r'=.+=')
+        spls = filter(lambda spl: not title_pttn.match(spl), spls)
 
         # Normalized dataset.
         spls = map(lmp.dset.util.norm, spls)
 
         # Replace unknown token `<unk>` with `[unk]`.
-        # Do not use name `pttn` since it cause bug (from `re` module).
-        pttn2 = re.compile(r'<unk>')
-        spls = map(lambda spl: pttn2.sub('[unk]', spl), spls)
+        unk_pttn = re.compile(r'<unk>')
+        spls = map(lambda spl: unk_pttn.sub('[unk]', spl), spls)
 
         self.spls = list(spls)

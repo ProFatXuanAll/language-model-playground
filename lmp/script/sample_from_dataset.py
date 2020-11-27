@@ -57,10 +57,10 @@ def parse_arg() -> argparse.Namespace:
     Argument must begin with a dataset name ``dset_name``.
     The following arguments are optional:
 
-    --ver Version of the dataset.
-          Default to ``dset``'s default version.
-    --idx Sample index.
-          Default to ``0``.
+    --ver  Version of the dataset.
+           Default to ``dset``'s default version.
+    --idx  Sample index.
+           Default to ``0``.
 
     Returns
     =======
