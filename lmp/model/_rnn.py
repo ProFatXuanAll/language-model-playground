@@ -1,12 +1,14 @@
 r"""Neural network language model based on vanilla RNN."""
 
-from typing import Dict, Optional
+from typing import ClassVar, Dict, Optional
 
 import torch
 import torch.nn as nn
 
+from lmp.model._base import BaseModel
 
-class RNNModel(torch.nn.Module):
+
+class RNNModel(BaseModel):
     r"""Neural network language model based on vanilla RNN.
 
     For comment throughout this class, we use the following symbols to denote
@@ -69,6 +71,9 @@ class RNNModel(torch.nn.Module):
         Dropout recurrent units if ``n_hid_layer > 1``.
     loss_fn: torch.nn.CrossEntropyLoss
         Loss function of next token prediction.
+    model_name: ClassVar[str]
+        Display name for model on CLI.
+        Only used for command line argument parsing.
     out: torch.nn.Softmax
         Softmax activation which transform logits to prediction.
     post_hid: torch.nn.Sequential
@@ -80,6 +85,7 @@ class RNNModel(torch.nn.Module):
         dimension ``d_emb`` to hidden dimension ``d_hid``.
         Drop rectified units with probability ``p_hid``.
     """
+    model_name: ClassVar[str] = 'RNN'
 
     def __init__(
             self,
@@ -213,23 +219,30 @@ class RNNModel(torch.nn.Module):
 
         Forward pass algorithm is structured as follow:
 
-        1. Input batch of token ids. (shape: ``(B, S)``)
-        2. Use batch of token ids to perform token embeddings lookup on
-           ``self.emb``. (shape: ``(B, S, E)``)
-        3. Use ``self.emb_dp`` to drop some features in token embeddings
+        #. Input batch of token ids.
+           (shape: ``(B, S)``)
+        #. Use batch of token ids to perform token embeddings lookup on
+           ``self.emb``.
            (shape: ``(B, S, E)``)
-        4. Use ``self.pre_hid`` to transform token embeddings from embedding
-           dimension ``E`` to hidden dimension ``H``. (shape: ``(B, S, H)``)
-        4. Use ``self.hid`` to encode temporal features. (shape: ``(B, S, H)``)
-        5. Use ``self.post_hid`` to transform token's recurrent hidden
+        #. Use ``self.emb_dp`` to drop some features in token embeddings
+           (shape: ``(B, S, E)``)
+        #. Use ``self.pre_hid`` to transform token embeddings from embedding
+           dimension ``E`` to hidden dimension ``H``.
+           (shape: ``(B, S, H)``)
+        #. Use ``self.hid`` to encode temporal features.
+           (shape: ``(B, S, H)``)
+        #. Use ``self.post_hid`` to transform token's recurrent hidden
            representation from hidden dimension ``H`` to embedding dimension
-           ``E``. (shape: ``(B, S, E)``)
-        6. Calculate inner product with weight transpose of ``self.emb``.
+           ``E``.
+           (shape: ``(B, S, E)``)
+        #. Calculate inner product with weight transpose of ``self.emb``.
            This reduce parameters since we share weight on token embedding and
-           output projection. (shape: ``(B, S, V)``)
-        7. Return logits.
+           output projection.
+           (shape: ``(B, S, V)``)
+        #. Return logits.
            Use ``self.pred`` to convert logit into prediction.
            Use ``self.cal_loss`` to perform optimization.
+           (shape: ``(B, S, V)``)
 
         Parameters
         ==========

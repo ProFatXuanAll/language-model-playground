@@ -63,7 +63,7 @@ class CharTknzr(BaseTknzr):
         Token (a string) to id (an integer) lookup table.
     tknzr_name: ClassVar[str]
         Display name for tokenizer on CLI.
-        Used only for command line argument parsing.
+        Only used for command line argument parsing.
     unk_tk: ClassVar[str]
         Token which represents unknown tokens in a text.
         Tokens in text may be replaced with ``self.__class__.unk_tk`` when

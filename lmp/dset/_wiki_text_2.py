@@ -39,7 +39,7 @@ class WikiText2Dset(BaseDset):
         Default version is ``train``.
     dset_name: ClassVar[str]
         Display name for dataset on CLI.
-        Used only for command line argument parsing.
+        Only used for command line argument parsing.
     lang: ClassVar[str]
         Use English as primary language.
     spls: Sequence[str]
