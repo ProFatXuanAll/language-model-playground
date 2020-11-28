@@ -22,7 +22,7 @@ class BaseDset(torch.utils.data.Dataset):
         Default version of the dataset.
     dset_name: ClassVar[str]
         Display name for dataset on CLI.
-        Used only for command line argument parsing.
+        Only used for command line argument parsing.
     lang: ClassVar[str]
         Language of the dataset.
     spls: Sequence[str]
