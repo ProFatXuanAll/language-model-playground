@@ -18,7 +18,8 @@ def create(tknzr_name: str, **kwargs: Optional[Dict]) -> BaseTknzr:
         Name of the tokenizer to create.
     kwargs: Dict, optional
         Tokenizer specific parameters.
-        All tokenizer specific parameters must be passed as keyword arguments.
+        All tokenizer specific parameters must be passed in as keyword
+        arguments.
 
     Returns
     =======
@@ -49,9 +50,9 @@ def load(exp_name: str, tknzr_name: str) -> BaseTknzr:
     Parameters
     ==========
     exp_name: str
-        Pre-trained tokenized experiment name.
+        Pre-trained tokenizer experiment name.
     tknzr_name: str
-        Name of the tokenizer to create.
+        Name of the tokenizer to load.
 
     Returns
     =======
@@ -67,9 +68,14 @@ def load(exp_name: str, tknzr_name: str) -> BaseTknzr:
     ========
     >>> from lmp.tknzr import WsTknzr
     >>> import lmp.util.tknzr
-    >>> tknzr = lmp.util.tknzr.create('whitespace', is_uncased=True, max_vocab=10, min_count=2)
-    >>> tknzr.save('my_exp')
-    >>> isinstance(lmp.util.tknzr.load('my_exp', 'whitespace'), WsTknzr)
+    >>> tknzr = lmp.util.tknzr.create(
+    ...     tknzr_name='whitespace', is_uncased=True, max_vocab=10, min_count=2,
+    ... )
+    >>> tknzr.save(exp_name='my_exp')
+    >>> isinstance(
+    ...     lmp.util.tknzr.load(exp_name='my_exp', tknzr_name='whitespace'),
+    ...     WsTknzr,
+    ... )
     True
     """
     return TKNZR_OPTS[tknzr_name].load(exp_name=exp_name)
