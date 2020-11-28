@@ -1,5 +1,6 @@
 r"""Neural network language model based on vanilla RNN."""
 
+import argparse
 from typing import ClassVar, Dict, Optional
 
 import torch
@@ -359,3 +360,105 @@ class RNNModel(BaseModel):
         # Input  shape: `(B, S, V)`.
         # Output shape: `(B, S, V)`.
         return self.out(logits)
+
+    @staticmethod
+    def train_parser(parser: argparse.ArgumentParser) -> None:
+        r"""Training vanilla RNN language model CLI arguments parser.
+
+        Parameters
+        ==========
+        parser: argparse.ArgumentParser
+            Parser for CLI arguments.
+
+        See Also
+        ========
+        lmp.model.BaseModel.train_parser
+            Training language model CLI arguments.
+        lmp.script.train_model
+            Language model training script.
+
+        Examples
+        ========
+        >>> import argparse
+        >>> from lmp.model import RNNModel
+        >>> parser = argparse.ArgumentParser()
+        >>> RNNModel.train_parser(parser)
+        >>> args = parser.parse_args([
+        ...     '--batch_size', '32',
+        ...     '--ckpt_step', '5000',
+        ...     '--d_emb', '100',
+        ...     '--d_hid', '300',
+        ...     '--dset_name', 'wikitext-2',
+        ...     '--exp_name', 'my_exp',
+        ...     '--log_step', '2500',
+        ...     '--n_epoch', '10',
+        ...     '--n_hid_layer', '2',
+        ...     '--n_post_hid_layer', '1',
+        ...     '--n_pre_hid_layer', '1',
+        ...     '--p_emb', '0.1',
+        ...     '--p_hid', '0.1',
+        ...     '--tknzr_exp_name', 'my_tknzr_exp',
+        ...     '--ver', 'train',
+        ... ])
+        >>> args.d_emb == 100
+        True
+        >>> args.d_hid == 300
+        True
+        >>> args.n_hid_layer == 2
+        True
+        >>> args.n_post_hid_layer == 1
+        True
+        >>> args.n_pre_hid_layer == 1
+        True
+        >>> args.p_emb == 0.1
+        True
+        >>> args.p_hid == 0.1
+        True
+        """
+        # Load common arguments.
+        BaseModel.train_parser(parser=parser)
+
+        # Required arguments.
+        group = parser.add_argument_group('model arguments')
+        group.add_argument(
+            '--d_emb',
+            help='Token embedding dimension.',
+            required=True,
+            type=int,
+        )
+        group.add_argument(
+            '--d_hid',
+            help='Hidden dimension for MLP and RNN.',
+            required=True,
+            type=int,
+        )
+        group.add_argument(
+            '--n_hid_layer',
+            help='Number of RNN layers.',
+            required=True,
+            type=int,
+        )
+        group.add_argument(
+            '--n_post_hid_layer',
+            help='Number of MLP layers ``+ 1`` after RNN layer.',
+            required=True,
+            type=int,
+        )
+        group.add_argument(
+            '--n_pre_hid_layer',
+            help='Number of MLP layers ``+ 1`` before RNN layer.',
+            required=True,
+            type=int,
+        )
+        group.add_argument(
+            '--p_emb',
+            help='Dropout probability for token embeddings.',
+            required=True,
+            type=float,
+        )
+        group.add_argument(
+            '--p_hid',
+            help='Dropout probability for hidden representation.',
+            required=True,
+            type=float,
+        )
