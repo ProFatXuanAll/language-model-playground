@@ -1,11 +1,13 @@
 r"""Neural network language model base class."""
 
 import abc
+import argparse
 import os
 from typing import ClassVar, Dict, Optional
 
 import torch
 
+import lmp.dset
 import lmp.path
 
 
@@ -242,3 +244,120 @@ class BaseModel(abc.ABC, torch.nn.Module):
         self.load_state_dict(torch.load(file_path))
 
         return self
+
+    @staticmethod
+    def train_parser(parser: argparse.ArgumentParser) -> None:
+        r"""Training language model CLI arguments parser.
+
+        Parameters
+        ==========
+        parser: argparse.ArgumentParser
+            Parser for CLI arguments.
+
+        See Also
+        ========
+        lmp.script.train_model
+
+        Examples
+        ========
+        >>> import argparse
+        >>> from lmp.model import BaseModel
+        >>> parser = argparse.ArgumentParser()
+        >>> BaseModel.train_parser(parser)
+        >>> args = parser.parse_args([
+        ...     '--batch_size', '32',
+        ...     '--ckpt_step', '5000',
+        ...     '--dset_name', 'wikitext-2',
+        ...     '--exp_name', 'my_exp',
+        ...     '--log_step', '2500',
+        ...     '--lr', '1e-4',
+        ...     '--n_epoch', '10',
+        ...     '--tknzr_exp_name', 'my_tknzr_exp',
+        ...     '--ver', 'train',
+        ... ])
+        >>> args.batch_size == 32
+        True
+        >>> args.ckpt_step == 5000
+        True
+        >>> args.dset_name == 'wikitext-2'
+        True
+        >>> args.exp_name == 'my_exp'
+        True
+        >>> args.log_step == 2500
+        True
+        >>> args.lr == 1e-4
+        True
+        >>> args.n_epoch == 10
+        True
+        >>> args.seed == 42
+        True
+        >>> args.tknzr_exp_name == 'my_tknzr_exp'
+        True
+        >>> args.ver == 'train'
+        True
+        """
+        # Required arguments.
+        group = parser.add_argument_group('common arguments')
+        group.add_argument(
+            '--batch_size',
+            help='Batch size.',
+            required=True,
+            type=int,
+        )
+        group.add_argument(
+            '--ckpt_step',
+            help='Checkpoint save interval.',
+            required=True,
+            type=int,
+        )
+        group.add_argument(
+            '--dset_name',
+            choices=lmp.dset.DSET_OPTS.keys(),
+            help='Name of the dataset which is used to train language model.',
+            required=True,
+            type=str,
+        )
+        group.add_argument(
+            '--exp_name',
+            help='Name of the language model training experiment.',
+            required=True,
+            type=str,
+        )
+        group.add_argument(
+            '--log_step',
+            help='Performance log interval.',
+            required=True,
+            type=int,
+        )
+        group.add_argument(
+            '--lr',
+            help='Learning rate.',
+            required=True,
+            type=float,
+        )
+        group.add_argument(
+            '--n_epoch',
+            help='Number of training epoch.',
+            required=True,
+            type=int,
+        )
+        group.add_argument(
+            '--tknzr_exp_name',
+            help='Name of the pre-trained tokenizer experiment.',
+            required=True,
+            type=str,
+        )
+        group.add_argument(
+            '--ver',
+            help='Version of the dataset which is used to train language model.',
+            required=True,
+            type=str,
+        )
+
+        # Optional Arguments.
+        group.add_argument(
+            '--seed',
+            default=42,
+            help='Random seed.',
+            type=int,
+        )

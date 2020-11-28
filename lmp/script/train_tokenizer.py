@@ -116,7 +116,7 @@ def parse_arg() -> argparse.Namespace:
             description=f'Training {tknzr_name} tokenizer.',
         )
 
-        # Add customized training script.
+        # Add customized arguments.
         tknzr_clss.train_parser(tknzr_parser)
 
     return parser.parse_args()
