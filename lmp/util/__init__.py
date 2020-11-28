@@ -20,4 +20,3 @@ from lmp.util._generate_sequence import (generate_sequence,
                                          generate_sequence_by_config)
 from lmp.util._optimizer import load_optimizer, load_optimizer_by_config
 from lmp.util._perplexity_eval import batch_perplexity_eval, perplexity_eval
-from lmp.util._train_model import train_model

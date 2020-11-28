@@ -159,7 +159,9 @@ class BaseTknzr(abc.ABC):
         Raises
         ======
         FileExistsError
-            When experiment path already exists but is not a directory.
+            When experiment directory path already exists but is not a
+            directory, or when expeirment file path already exists but is a
+            directory.
 
         See Also
         ========
@@ -170,6 +172,7 @@ class BaseTknzr(abc.ABC):
         >>> from lmp.tknzr import BaseTknzr
         >>> tknzr = BaseTknzr(is_uncased=False, max_vocab=10, min_count=2)
         >>> tknzr.save('my_exp')
+        None
         """
         file_dir = os.path.join(lmp.path.EXP_PATH, exp_name)
         file_path = os.path.join(file_dir, self.__class__.file_name)
@@ -179,6 +182,9 @@ class BaseTknzr(abc.ABC):
 
         elif not os.path.isdir(file_dir):
             raise FileExistsError(f'{file_dir} is not a directory.')
+
+        elif not os.path.isdir(file_path):
+            raise FileExistsError(f'{file_path} is a directory.')
 
         with open(file_path, 'w', encoding='utf8') as output_file:
             json.dump(

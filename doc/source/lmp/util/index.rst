@@ -7,5 +7,6 @@
 
     cfg.py
     dset.py
+    model.py
     rand.py
     tknzr.py

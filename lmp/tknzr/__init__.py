@@ -14,7 +14,7 @@ TKNZR_OPTS: Final[Dict[str, :py:class:`lmp.tknzr.BaseTknzr`]]
 
 Examples
 ========
-Check ``'character'`` is in available tokenizer class.
+Check ``'character'`` is an available tokenizer class.
 
 >>> from lmp.tknzr import TKNZR_OPTS
 >>> 'character' in TKNZR_OPTS
