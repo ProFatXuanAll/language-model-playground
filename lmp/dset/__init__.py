@@ -6,7 +6,8 @@ Attributes
 ==========
 ALL_DSETS: List[:py:class:`lmp.dset.BaseDset`]
     All available dataset.
-    Every time a new dataset is add, it must also be added to the list.
+    Every time a new dataset is added, it must also be added to ``ALL_DSETS``
+    list.
 DSET_OPTS: Final[Dict[str, :py:class:`lmp.dset.BaseDset`]]
     Mapping from dataset's name to dataset's class.
     All dataset must have class attribute ``dset_name``.

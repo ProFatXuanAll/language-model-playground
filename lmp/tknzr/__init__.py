@@ -5,11 +5,12 @@ All tokenizer classes must be re-imported in this file.
 Attributes
 ==========
 ALL_TKNZRS: List[:py:class:`lmp.tknzr.BaseTknzr`]
-    All available tokenizer.
-    Every time a new tokenizer is add, it must also be added to the list.
+    All available tokenizers.
+    Every time a new tokenizer is added, it must also be added to
+    ``ALL_TKNZRS`` list.
 TKNZR_OPTS: Final[Dict[str, :py:class:`lmp.tknzr.BaseTknzr`]]
     Mapping from tokenizer's name to tokenizer's class.
-    All tokenizer must have class attribute ``tknzr_name``.
+    All tokenizers must have class attribute ``tknzr_name``.
 
 Examples
 ========
@@ -29,7 +30,6 @@ True
 
 from typing import Dict, Final, List
 
-import lmp.dset.util
 from lmp.tknzr._base import BaseTknzr
 from lmp.tknzr._char import CharTknzr
 from lmp.tknzr._ws import WsTknzr
