@@ -73,7 +73,7 @@ class BaseTknzr(abc.ABC):
         Token (a string) to id (an integer) lookup table.
     tknzr_name: ClassVar[str]
         Display name for tokenizer on CLI.
-        Used only for command line argument parsing.
+        Only used for command line argument parsing.
     unk_tk: ClassVar[str]
         Token which represents unknown tokens in a text.
         Tokens in text may be replaced with ``self.__class__.unk_tk`` when
@@ -159,7 +159,9 @@ class BaseTknzr(abc.ABC):
         Raises
         ======
         FileExistsError
-            When experiment path already exists but is not a directory.
+            When experiment directory path already exists but is not a
+            directory, or when expeirment file path already exists but is a
+            directory.
 
         See Also
         ========
@@ -170,6 +172,7 @@ class BaseTknzr(abc.ABC):
         >>> from lmp.tknzr import BaseTknzr
         >>> tknzr = BaseTknzr(is_uncased=False, max_vocab=10, min_count=2)
         >>> tknzr.save('my_exp')
+        None
         """
         file_dir = os.path.join(lmp.path.EXP_PATH, exp_name)
         file_path = os.path.join(file_dir, self.__class__.file_name)
@@ -179,6 +182,9 @@ class BaseTknzr(abc.ABC):
 
         elif not os.path.isdir(file_dir):
             raise FileExistsError(f'{file_dir} is not a directory.')
+
+        elif not os.path.isdir(file_path):
+            raise FileExistsError(f'{file_path} is a directory.')
 
         with open(file_path, 'w', encoding='utf8') as output_file:
             json.dump(
@@ -285,15 +291,15 @@ class BaseTknzr(abc.ABC):
         txt: str
             Text to be tokenized.
 
-        Raises
-        ======
-        NotImplementedError
-            When subclass do not implement tokenization.
-
         Returns
         =======
         List[str]
             List of normalized tokens tokenized from text.
+
+        Raises
+        ======
+        NotImplementedError
+            When subclass do not implement tokenization.
 
         See Also
         ========
@@ -317,15 +323,15 @@ class BaseTknzr(abc.ABC):
         tks: Seqeuence[str]
             Sequence of tokens to be detokenized.
 
-        Raises
-        ======
-        NotImplementedError
-            When subclass do not implement detokenization.
-
         Returns
         =======
         str
             Normalized text detokenized from tokens.
+
+        Raises
+        ======
+        NotImplementedError
+            When subclass do not implement detokenization.
 
         See Also
         ========

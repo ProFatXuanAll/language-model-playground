@@ -44,7 +44,7 @@ class ChPoemDset(BaseDset):
         Default version is ``唐``.
     dset_name: ClassVar[str]
         Display name for dataset on CLI.
-        Used only for command line argument parsing.
+        Only used for command line argument parsing.
     lang: ClassVar[str]
         Use Chinese as primary language.
     spls: Sequence[str]

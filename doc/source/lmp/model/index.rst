@@ -8,4 +8,5 @@
     :maxdepth: 1
     :caption: Model Classes:
 
+    BaseModel.py
     RNNModel.py

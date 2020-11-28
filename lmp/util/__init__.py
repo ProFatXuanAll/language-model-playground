@@ -15,14 +15,8 @@ Usage:
     tokenizer = lmp.util.train_tokenizer_by_config(...)
 """
 
-
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-
 from lmp.util._analogy_eval import analogy_eval, analogy_inference
 from lmp.util._generate_sequence import (generate_sequence,
                                          generate_sequence_by_config)
 from lmp.util._optimizer import load_optimizer, load_optimizer_by_config
 from lmp.util._perplexity_eval import batch_perplexity_eval, perplexity_eval
-from lmp.util._seed import set_seed
-from lmp.util._train_model import train_model
