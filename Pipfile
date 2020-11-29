@@ -30,5 +30,6 @@ python_version = "3.8"
 [scripts]
 doc = "sphinx-build -b html doc/source doc/build"
 doc-coverage = "sphinx-build -b coverage doc/source doc/build"
+lint = "flake8 lmp test"
 test = "coverage run --branch --omit=.venv/* -m pytest"
 test-coverage = "coverage report"
