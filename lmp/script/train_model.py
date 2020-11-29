@@ -10,72 +10,28 @@ lmp.model
 
 Examples
 ========
-The following example train :py:class:`lmp.model.Wsmodel` on
+The following example train :py:class:`lmp.model.RNNModel` on
 :py:class:`lmp.dset.WikiText2Dset` using ``train`` version.
 
 .. code-block:: sh
 
-    python -m lmp.script.train_tokenizer whitespace \
+    python -m lmp.script.train_model RNN \
+        --batch_size 32 \
+        --ckpt_step 5000 \
         --dset_name wikitext-2 \
-        --exp_name my_exp \
-        --max_vocab 10 \
-        --min_count 2 \
-        --ver train
-
-The training result will be save at ``exp/my_exp``, and can be reused by other
-scripts.
-
-One can include more tokens in vocabulary using ``--max_vocab``:
-
-.. code-block:: sh
-
-    python -m lmp.script.train_tokenizer whitespace \
-        --dset_name wikitext-2 \
-        --exp_name my_exp \
-        --max_vocab 10000 \
-        --min_count 2 \
-        --ver train
-
-Set ``--max_vocab`` to ``-1`` to include all tokens in the dataset:
-
-.. code-block:: sh
-
-    python -m lmp.script.train_tokenizer whitespace \
-        --dset_name wikitext-2 \
-        --exp_name my_exp \
-        --max_vocab -1 \
-        --min_count 2 \
-        --ver train
-
-Use ``--min_count`` to filter out tokens such as typos, names, locations, etc.
-
-.. code-block:: sh
-
-    python -m lmp.script.train_tokenizer whitespace
-        --dset_name wikitext-2 \
-        --exp_name my_exp \
-        --max_vocab 10000 \
-        --min_count 5 \
-        --ver train
-
-Use ``--is_uncased`` to avoid differ tokens with same charaters but in
-different case.
-
-.. code-block:: sh
-
-    python -m lmp.script.train_tokenizer whitespace
-        --dset_name wikitext-2 \
-        --exp_name my_exp \
-        --is_uncased \
-        --max_vocab 10000 \
-        --min_count 5 \
-        --ver train
-
-Use ``-h`` or ``--help`` options to get list of available tokenizer.
-
-.. code-block:: sh
-
-    python -m lmp.script.train_tokenizer -h
+        --exp_name my_model_exp \
+        --log_step 2500 \
+        --lr 1e-4 \
+        --n_epoch 10 \
+        --tknzr_exp_name my_exp \
+        --ver train \
+        --d_emb 100 \
+        --d_hid 300 \
+        --n_hid_layer 2 \
+        --n_post_hid_layer 2 \
+        --n_pre_hid_layer 2 \
+        --p_emb 0.1 \
+        --p_hid 0.1
 """
 
 import argparse
@@ -273,10 +229,45 @@ def main() -> None:
         device = torch.device('cuda')
 
     # Get new model instance.
-    model = lmp.util.model.create(**args.__dict__)
+    model = lmp.util.model.create(
+        n_vocab=tknzr.vocab_size,
+        pad_tkid=tknzr.pad_tkid,
+        **args.__dict__,
+    )
+
+    # Move model to running device.
+    model = model.to(device)
+
+    # Get new optimizer instance.
+    opt = torch.optim.Adam(model.parameters(), lr=args.lr)
 
     # Get tensorboard logger instance.
     writer = lmp.util.log.get_tb_logger(exp_name=args.exp_name)
+
+    for epoch in range(args.n_epoch):
+        for batch_txt in dldr:
+            batch_tkids = tknzr.batch_enc(batch_txt=batch_txt)
+            batch_tkids = torch.LongTensor(batch_tkids)
+            batch_tkids = batch_tkids.to(device)
+
+            batch_prev_tkids = batch_tkids[..., :-1]
+            batch_next_tkids = batch_tkids[..., 1:]
+
+            loss = model.cal_loss(
+                batch_prev_tkids=batch_prev_tkids,
+                batch_next_tkids=batch_next_tkids,
+            )
+
+            loss.backward()
+
+            opt.step()
+            opt.zero_grad()
+
+            break
+        break
+
+    # Close tensorboard logger.
+    writer.close()
 
 
 if __name__ == '__main__':

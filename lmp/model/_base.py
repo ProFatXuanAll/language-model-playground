@@ -39,14 +39,14 @@ class BaseModel(abc.ABC, torch.nn.Module):
         super().__init__()
 
     @abc.abstractmethod
-    def forward(self, batch_tkid: torch.Tensor) -> torch.Tensor:
+    def forward(self, batch_prev_tkids: torch.Tensor) -> torch.Tensor:
         r"""Perform forward pass.
 
         Parameters
         ==========
-        batch_tkid: torch.Tensor
-            Batch of token ids encoded by :py:class:`lmp.tknzr.BaseTknzr`.
-            ``batch_tkid`` has shape ``(B, S)`` and ``dtype == torch.int64``.
+        batch_prev_tkids: torch.Tensor
+            Batch of previous token ids encoded by :py:class:`lmp.tknzr.BaseTknzr`.
+            ``batch_prev_tkids`` has shape ``(B, S)`` and ``dtype == torch.int64``.
 
         Returns
         =======
@@ -66,20 +66,22 @@ class BaseModel(abc.ABC, torch.nn.Module):
     @abc.abstractmethod
     def cal_loss(
             self,
-            batch_tkid: torch.Tensor,
-            batch_next_tkid: torch.Tensor
+            batch_prev_tkids: torch.Tensor,
+            batch_next_tkids: torch.Tensor,
     ) -> torch.Tensor:
         r"""Calculate language model training loss.
 
+        Use teacher forcing to implement this method.
+
         Parameters
         ==========
-        batch_tkid: torch.Tensor
-            Batch of token ids encoded by :py:class:`lmp.tknzr.BaseTknzr`.
-            ``batch_tkid`` has shape ``(B, S)`` and ``dtype == torch.int64``.
-        batch_next_tkid: torch.Tensor
+        batch_prev_tkids: torch.Tensor
+            Batch of previous token ids encoded by :py:class:`lmp.tknzr.BaseTknzr`.
+            ``batch_prev_tkids`` has shape ``(B, S)`` and ``dtype == torch.int64``.
+        batch_next_tkids: torch.Tensor
             Prediction targets.
-            Batch of token ids encoded by :py:class:`lmp.tknzr.BaseTknzr`.
-            ``batch_next_tkid`` has same shape and ``dtype`` as ``batch_tkid``.
+            Batch of next token ids encoded by :py:class:`lmp.tknzr.BaseTknzr`.
+            ``batch_next_tkids`` has same shape and ``dtype`` as ``batch_prev_tkids``.
 
         Returns
         =======
@@ -97,14 +99,14 @@ class BaseModel(abc.ABC, torch.nn.Module):
         )
 
     @abc.abstractmethod
-    def pred(self, batch_tkid: torch.Tensor) -> torch.Tensor:
+    def pred(self, batch_prev_tkids: torch.Tensor) -> torch.Tensor:
         r"""Next token prediction.
 
         Parameters
         ==========
-        batch_tkid: torch.Tensor
-            Batch of token ids encoded by :py:class:`lmp.tknzr.BaseTknzr`.
-            ``batch_tkid`` has shape ``(B, S)`` and ``dtype == torch.int64``.
+        batch_prev_tkids: torch.Tensor
+            Batch of previous token ids encoded by :py:class:`lmp.tknzr.BaseTknzr`.
+            ``batch_prev_tkids`` has shape ``(B, S)`` and ``dtype == torch.int64``.
 
         Returns
         =======
