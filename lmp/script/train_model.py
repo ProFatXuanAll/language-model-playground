@@ -230,8 +230,7 @@ def main() -> None:
 
     # Get new model instance.
     model = lmp.util.model.create(
-        n_vocab=tknzr.vocab_size,
-        pad_tkid=tknzr.pad_tkid,
+        tknzr=tknzr,
         **args.__dict__,
     )
 

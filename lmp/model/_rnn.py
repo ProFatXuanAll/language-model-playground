@@ -7,6 +7,7 @@ import torch
 import torch.nn as nn
 
 from lmp.model._base import BaseModel
+from lmp.tknzr._base import BaseTknzr
 
 
 class RNNModel(BaseModel):
@@ -44,18 +45,14 @@ class RNNModel(BaseModel):
     n_pre_hid_layer: int
         Number of MLP layers ``+ 1`` before RNN layer.
         Must be bigger than or equal to ``1``.
-    n_vocab: int
-        Token vocabulary size.
-        Must be bigger than or equal to ``1``.
     p_emb: float
         Dropout probability for token embeddings.
         Must satisfy ``0.0 <= p_emb <= 1.0``.
     p_hid: float
         Dropout probability for hidden representation.
         Must satisfy ``0.0 <= p_hid <= 1.0``.
-    pad_tkid
-        Padding token id.
-        Must satisfy ``0 <= pad_tkid <= n_vocab - 1``.
+    tknzr: lmp.tknzr.BaseTknzr
+        Tokenizer with attributes ``pad_tkid`` and ``vocab_size``.
 
     Attributes
     ==========
@@ -96,10 +93,9 @@ class RNNModel(BaseModel):
             n_hid_layer: int,
             n_post_hid_layer: int,
             n_pre_hid_layer: int,
-            n_vocab: int,
             p_emb: float,
             p_hid: float,
-            pad_tkid: int,
+            tknzr: BaseTknzr,
             **kwargs: Optional[Dict],
     ):
         super().__init__()
@@ -113,9 +109,9 @@ class RNNModel(BaseModel):
         # Output shape       : `(B, S, E)`.
         # Output tensor dtype: `torch.float32`.
         self.emb = nn.Embedding(
-            num_embeddings=n_vocab,
+            num_embeddings=tknzr.vocab_size,
             embedding_dim=d_emb,
-            padding_idx=pad_tkid,
+            padding_idx=tknzr.pad_tkid,
         )
 
         # Token embedding dropout layer.
@@ -288,15 +284,16 @@ class RNNModel(BaseModel):
         # Output shape: `(B, S, V)`.
         return batch @ self.emb.weight.transpose(0, 1)
 
-    def cal_loss(
+    def loss_fn(
             self,
             batch_prev_tkids: torch.Tensor,
-            batch_next_tkids: torch.Tensor
+            batch_next_tkids: torch.Tensor,
     ) -> torch.Tensor:
         r"""Calculate language model training loss.
 
         Use cross-entropy to calculate next token prediction loss.
         Prediction means choose a token from vocabulary as next token.
+        Use teacher forcing to implement this method.
 
         Parameters
         ==========

@@ -18,11 +18,14 @@ class BaseModel(abc.ABC, torch.nn.Module):
     parameters.
     All language model must inherit :py:class:`lmp.model.BaseModel`.
 
-    Parameters
-    ==========
-    kwargs: Dict, optional
-        Useless parameter.
-        Intended left for subclass parameters extension.
+    For comment throughout this class and its subclasses, we use the following
+    symbols to denote the shape of tensors:
+
+    - ``B``: Batch size.
+    - ``E``: Token embedding dimension.
+    - ``H``: Hidden representation dimension.
+    - ``S``: Length of sequence of tokens.
+    - ``V``: Vocabulary size.
 
     Attributes
     ==========
@@ -35,9 +38,6 @@ class BaseModel(abc.ABC, torch.nn.Module):
     file_name: ClassVar[str] = 'model-{}.pt'
     model_name: ClassVar[str] = 'base'
 
-    def __init__(self, **kwargs: Optional[Dict]):
-        super().__init__()
-
     @abc.abstractmethod
     def forward(self, batch_prev_tkids: torch.Tensor) -> torch.Tensor:
         r"""Perform forward pass.
@@ -45,8 +45,10 @@ class BaseModel(abc.ABC, torch.nn.Module):
         Parameters
         ==========
         batch_prev_tkids: torch.Tensor
-            Batch of previous token ids encoded by :py:class:`lmp.tknzr.BaseTknzr`.
-            ``batch_prev_tkids`` has shape ``(B, S)`` and ``dtype == torch.int64``.
+            Batch of previous token ids encoded by
+            :py:class:`lmp.tknzr.BaseTknzr` subclass instance.
+            ``batch_prev_tkids`` has shape ``(B, S)`` and
+            ``dtype == torch.int64``.
 
         Returns
         =======
@@ -64,29 +66,32 @@ class BaseModel(abc.ABC, torch.nn.Module):
         )
 
     @abc.abstractmethod
-    def cal_loss(
+    def loss_fn(
             self,
             batch_prev_tkids: torch.Tensor,
             batch_next_tkids: torch.Tensor,
     ) -> torch.Tensor:
         r"""Calculate language model training loss.
 
-        Use teacher forcing to implement this method.
-
         Parameters
         ==========
         batch_prev_tkids: torch.Tensor
-            Batch of previous token ids encoded by :py:class:`lmp.tknzr.BaseTknzr`.
-            ``batch_prev_tkids`` has shape ``(B, S)`` and ``dtype == torch.int64``.
+            Batch of previous token ids encoded by
+            :py:class:`lmp.tknzr.BaseTknzr` subclass instance.
+            ``batch_prev_tkids`` has shape ``(B, S)`` and
+            ``dtype == torch.int64``.
         batch_next_tkids: torch.Tensor
             Prediction targets.
-            Batch of next token ids encoded by :py:class:`lmp.tknzr.BaseTknzr`.
-            ``batch_next_tkids`` has same shape and ``dtype`` as ``batch_prev_tkids``.
+            Batch of next token ids encoded by
+            :py:class:`lmp.tknzr.BaseTknzr` subclass instance.
+            ``batch_next_tkids`` has same shape and ``dtype`` as
+            ``batch_prev_tkids``.
 
         Returns
         =======
         torch.Tensor
             Average next token prediction loss.
+            Returned tensor has shape ``(1)`` and ``dtype == torch.float32``.
 
         Raises
         ======
@@ -95,7 +100,7 @@ class BaseModel(abc.ABC, torch.nn.Module):
         """
         raise NotImplementedError(
             f'In class `{self.__class__.__name__}`: '
-            'method `cal_loss` not implemented yet.'
+            'method `loss_fn` not implemented yet.'
         )
 
     @abc.abstractmethod
@@ -105,8 +110,10 @@ class BaseModel(abc.ABC, torch.nn.Module):
         Parameters
         ==========
         batch_prev_tkids: torch.Tensor
-            Batch of previous token ids encoded by :py:class:`lmp.tknzr.BaseTknzr`.
-            ``batch_prev_tkids`` has shape ``(B, S)`` and ``dtype == torch.int64``.
+            Batch of previous token ids encoded by
+            :py:class:`lmp.tknzr.BaseTknzr` subclass instance.
+            ``batch_prev_tkids`` has shape ``(B, S)`` and
+            ``dtype == torch.int64``.
 
         Returns
         =======
@@ -138,7 +145,7 @@ class BaseModel(abc.ABC, torch.nn.Module):
         ckpt: int
             Model training checkpoint.
         exp_name: str
-            Training experiment name of the model.
+            Name of the language model training experiment.
 
         Raises
         ======
@@ -221,6 +228,8 @@ class BaseModel(abc.ABC, torch.nn.Module):
         >>> from lmp.model import BaseModel
         >>> model = BaseModel.load('my_exp')
         """
+        # TODO: add ckpt==-1 utilities.
+
         if not exp_name:
             raise ValueError('`exp_name` must be non-empty.')
 
@@ -267,18 +276,13 @@ class BaseModel(abc.ABC, torch.nn.Module):
         >>> parser = argparse.ArgumentParser()
         >>> BaseModel.train_parser(parser)
         >>> args = parser.parse_args([
-        ...     '--batch_size', '32',
         ...     '--ckpt_step', '5000',
         ...     '--dset_name', 'wikitext-2',
         ...     '--exp_name', 'my_exp',
         ...     '--log_step', '2500',
-        ...     '--lr', '1e-4',
-        ...     '--n_epoch', '10',
         ...     '--tknzr_exp_name', 'my_tknzr_exp',
         ...     '--ver', 'train',
         ... ])
-        >>> args.batch_size == 32
-        True
         >>> args.ckpt_step == 5000
         True
         >>> args.dset_name == 'wikitext-2'
@@ -286,10 +290,6 @@ class BaseModel(abc.ABC, torch.nn.Module):
         >>> args.exp_name == 'my_exp'
         True
         >>> args.log_step == 2500
-        True
-        >>> args.lr == 1e-4
-        True
-        >>> args.n_epoch == 10
         True
         >>> args.seed == 42
         True
@@ -300,12 +300,6 @@ class BaseModel(abc.ABC, torch.nn.Module):
         """
         # Required arguments.
         group = parser.add_argument_group('common arguments')
-        group.add_argument(
-            '--batch_size',
-            help='Batch size.',
-            required=True,
-            type=int,
-        )
         group.add_argument(
             '--ckpt_step',
             help='Checkpoint save interval.',
@@ -328,18 +322,6 @@ class BaseModel(abc.ABC, torch.nn.Module):
         group.add_argument(
             '--log_step',
             help='Performance log interval.',
-            required=True,
-            type=int,
-        )
-        group.add_argument(
-            '--lr',
-            help='Learning rate.',
-            required=True,
-            type=float,
-        )
-        group.add_argument(
-            '--n_epoch',
-            help='Number of training epoch.',
             required=True,
             type=int,
         )
