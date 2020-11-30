@@ -10,72 +10,28 @@ lmp.model
 
 Examples
 ========
-The following example train :py:class:`lmp.tknzr.WsTknzr` on
+The following example train :py:class:`lmp.model.RNNModel` on
 :py:class:`lmp.dset.WikiText2Dset` using ``train`` version.
 
 .. code-block:: sh
 
-    python -m lmp.script.train_tokenizer whitespace \
+    python -m lmp.script.train_model RNN \
+        --batch_size 32 \
+        --ckpt_step 5000 \
         --dset_name wikitext-2 \
-        --exp_name my_exp \
-        --max_vocab 10 \
-        --min_count 2 \
-        --ver train
-
-The training result will be save at ``exp/my_exp``, and can be reused by other
-scripts.
-
-One can include more tokens in vocabulary using ``--max_vocab``:
-
-.. code-block:: sh
-
-    python -m lmp.script.train_tokenizer whitespace \
-        --dset_name wikitext-2 \
-        --exp_name my_exp \
-        --max_vocab 10000 \
-        --min_count 2 \
-        --ver train
-
-Set ``--max_vocab`` to ``-1`` to include all tokens in the dataset:
-
-.. code-block:: sh
-
-    python -m lmp.script.train_tokenizer whitespace \
-        --dset_name wikitext-2 \
-        --exp_name my_exp \
-        --max_vocab -1 \
-        --min_count 2 \
-        --ver train
-
-Use ``--min_count`` to filter out tokens such as typos, names, locations, etc.
-
-.. code-block:: sh
-
-    python -m lmp.script.train_tokenizer whitespace
-        --dset_name wikitext-2 \
-        --exp_name my_exp \
-        --max_vocab 10000 \
-        --min_count 5 \
-        --ver train
-
-Use ``--is_uncased`` to avoid differ tokens with same charaters but in
-different case.
-
-.. code-block:: sh
-
-    python -m lmp.script.train_tokenizer whitespace
-        --dset_name wikitext-2 \
-        --exp_name my_exp \
-        --is_uncased \
-        --max_vocab 10000 \
-        --min_count 5 \
-        --ver train
-
-Use ``-h`` or ``--help`` options to get list of available tokenizer.
-
-.. code-block:: sh
-
-    python -m lmp.script.train_tokenizer -h
+        --exp_name my_model_exp \
+        --log_step 2500 \
+        --lr 1e-4 \
+        --n_epoch 10 \
+        --tknzr_exp_name my_exp \
+        --ver train \
+        --d_emb 100 \
+        --d_hid 300 \
+        --n_hid_layer 2 \
+        --n_post_hid_layer 2 \
+        --n_pre_hid_layer 2 \
+        --p_emb 0.1 \
+        --p_hid 0.1
 """
 
 import argparse
@@ -91,10 +47,11 @@ from tqdm import tqdm
 
 import lmp.dset
 import lmp.model
-import lmp.tknzr
 import lmp.util.cfg
 import lmp.util.dset
+import lmp.util.log
 import lmp.util.model
+import lmp.util.rand
 import lmp.util.tknzr
 
 # def train_model(
@@ -108,116 +65,6 @@ import lmp.util.tknzr
 #         optimizer: Union[torch.optim.SGD, torch.optim.Adam],
 #         vocab_size: int
 # ) -> None:
-#     r"""Helper function for training language model.
-
-#     Continue training from pre-trained ckpt when `ckpt != -1`.
-
-#     Args:
-#         ckpt:
-#             Pre-trained model's ckpt. Must be bigger than or equal to
-#             `-1`.
-#         ckpt_step:
-#             ckpt save interval. Must be bigger than or equal to `1`.
-#         data_loader:
-#             `torch.utils.data.DataLoader` for sampling.
-#         device:
-#             Model running device.
-#         epoch:
-#             Number of training epoch. Must be bigger than or equal to `1`.
-#         experiment:
-#             Name of the current experiment. Must not be empty.
-#         max_norm:
-#             Maximum gradient norm. Must be bigger than `0.0`.
-#         model:
-#             Language model.
-#         optimizer:
-#             Language model's optimizer.
-#         vocab_size:
-#             Number of classes to predict. Must be bigger than or equal to `1`.
-
-#     Raises:
-#         TypeError:
-#             When one of the arguments are not an instance of their type
-#             annotation respectively.
-#         ValueError:
-#             When one of the arguments do not follow their constraints. See
-#             docstring for arguments constraints.
-#     """
-#     # Type check.
-#     if not isinstance(ckpt, int):
-#         raise TypeError('`ckpt` must be an instance of `int`.')
-
-#     if not isinstance(ckpt_step, int):
-#         raise TypeError('`ckpt_step` must be an instance of `int`.')
-
-#     if not isinstance(data_loader, torch.utils.data.DataLoader):
-#         raise TypeError(
-#             '`data_loader` must be an instance of '
-#             '`torch.utils.data.DataLoader`.'
-#         )
-
-#     if not isinstance(device, torch.device):
-#         raise TypeError('`device` must be an instance of `torch.device`.')
-
-#     if not isinstance(epoch, int):
-#         raise TypeError('`epoch` must be an instance of `int`.')
-
-#     if not isinstance(experiment, str):
-#         raise TypeError('`experiment` must be an instance of `str`.')
-
-#     if not isinstance(max_norm, float):
-#         raise TypeError('`max_norm` must be an instance of `float`.')
-
-#     if not isinstance(model, (
-#             lmp.model.BaseRNNModel,
-#             lmp.model.BaseResRNNModel,
-#             lmp.model.TransformerModel,
-#     )):
-#         raise TypeError(
-#             '`model` must be an instance of '
-#             '`Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel]`.'
-#         )
-
-#     if not isinstance(optimizer, (torch.optim.SGD, torch.optim.Adam)):
-#         raise TypeError(
-#             '`optimizer` must be an instance of '
-#             '`Union[torch.optim.SGD, torch.optim.Adam]`.'
-#         )
-
-#     if not isinstance(vocab_size, int):
-#         raise TypeError('`vocab_size` must be an instance of `int`.')
-
-#     # Value check.
-#     if ckpt < -1:
-#         raise ValueError('`ckpt` must be bigger than or equal to `-1`.')
-
-#     if ckpt_step < 1:
-#         raise ValueError(
-#             '`ckpt_step` must be bigger than or equal to `1`.'
-#         )
-
-#     if epoch < 1:
-#         raise ValueError('`epoch` must be bigger than or equal to `1`.')
-
-#     if not experiment:
-#         raise ValueError('`experiment` must not be empty.')
-
-#     if max_norm < 0.0 or math.isnan(max_norm):
-#         raise ValueError('`max_norm` must be bigger than `0.0`.')
-
-#     if vocab_size < 1:
-#         raise ValueError('`vocab_size` must be bigger than or equal to `1`.')
-
-#     # Set experiment output folder.
-#     file_dir = os.path.join(lmp.path.DATA_PATH, experiment)
-#     log_dir = os.path.join(lmp.path.DATA_PATH, 'log', experiment)
-
-#     if not os.path.exists(file_dir):
-#         os.makedirs(file_dir)
-
-#     if not os.path.exists(log_dir):
-#         os.makedirs(log_dir)
-
 #     # Set experiment log folder.
 #     writer = torch.utils.tensorboard.SummaryWriter(log_dir)
 #     writer.add_graph(model, next(iter(data_loader))[0].to(device))
@@ -318,8 +165,8 @@ import lmp.util.tknzr
 def parse_arg() -> argparse.Namespace:
     r"""Parse arguments from CLI.
 
-    Argument must begin with a tokenizer name ``tknzr_name``.
-    All arguments are added with tokenizer's static method ``train_parser``.
+    Argument must begin with a model name ``model_name``.
+    All arguments are added with model's static method ``train_parser``.
 
     Returns
     =======
@@ -328,22 +175,22 @@ def parse_arg() -> argparse.Namespace:
     """
     # Create parser.
     parser = argparse.ArgumentParser(
-        'python -m lmp.script.train_tokenizer',
-        description='Train tokenizer.',
+        'python -m lmp.script.train_model',
+        description='Train language model.',
     )
 
-    # Create subparser for each tokenizer.
-    subparsers = parser.add_subparsers(dest='tknzr_name', required=True)
+    # Create subparser for each model.
+    subparsers = parser.add_subparsers(dest='model_name', required=True)
 
-    for tknzr_name, tknzr_clss in lmp.tknzr.TKNZR_OPTS.items():
-        # Use tokenizer name as CLI argument.
-        tknzr_parser = subparsers.add_parser(
-            tknzr_name,
-            description=f'Training {tknzr_name} tokenizer.',
+    for model_name, model_clss in lmp.model.MODEL_OPTS.items():
+        # Use model name as CLI argument.
+        model_parser = subparsers.add_parser(
+            model_name,
+            description=f'Training {model_name} language model.',
         )
 
-        # Add customized training script.
-        tknzr_clss.train_parser(tknzr_parser)
+        # Add customized arguments.
+        model_clss.train_parser(model_parser)
 
     return parser.parse_args()
 
@@ -356,17 +203,71 @@ def main() -> None:
     # Save training configuration.
     lmp.util.cfg.save(args=args, exp_name=args.exp_name)
 
+    # Set random seed for reproducibility.
+    lmp.util.rand.set_seed(seed=args.seed)
+
     # Get dataset instance with specified version.
     dset = lmp.util.dset.load(dset_name=args.dset_name, ver=args.ver)
 
-    # Get new tokenizer instance.
-    tknzr = lmp.util.tknzr.create(**args.__dict__)
+    # Mini-batch random sampler.
+    dldr = torch.utils.data.DataLoader(
+        dataset=dset,
+        batch_size=args.batch_size,
+        shuffle=True,
+    )
 
-    # Build tokenizer's vocabulary.
-    tknzr.build_vocab(dset)
+    # Load pre-trained tokenizer.
+    tknzr_cfg = lmp.util.cfg.load(exp_name=args.tknzr_exp_name)
+    tknzr = lmp.util.tknzr.load(
+        exp_name=args.tknzr_exp_name,
+        tknzr_name=tknzr_cfg.tknzr_name,
+    )
 
-    # Save training result.
-    tknzr.save(args.exp_name)
+    # Get model running device.
+    device = torch.device('cpu')
+    if torch.cuda.is_available():
+        device = torch.device('cuda')
+
+    # Get new model instance.
+    model = lmp.util.model.create(
+        n_vocab=tknzr.vocab_size,
+        pad_tkid=tknzr.pad_tkid,
+        **args.__dict__,
+    )
+
+    # Move model to running device.
+    model = model.to(device)
+
+    # Get new optimizer instance.
+    opt = torch.optim.Adam(model.parameters(), lr=args.lr)
+
+    # Get tensorboard logger instance.
+    writer = lmp.util.log.get_tb_logger(exp_name=args.exp_name)
+
+    for epoch in range(args.n_epoch):
+        for batch_txt in dldr:
+            batch_tkids = tknzr.batch_enc(batch_txt=batch_txt)
+            batch_tkids = torch.LongTensor(batch_tkids)
+            batch_tkids = batch_tkids.to(device)
+
+            batch_prev_tkids = batch_tkids[..., :-1]
+            batch_next_tkids = batch_tkids[..., 1:]
+
+            loss = model.cal_loss(
+                batch_prev_tkids=batch_prev_tkids,
+                batch_next_tkids=batch_next_tkids,
+            )
+
+            loss.backward()
+
+            opt.step()
+            opt.zero_grad()
+
+            break
+        break
+
+    # Close tensorboard logger.
+    writer.close()
 
 
 if __name__ == '__main__':
