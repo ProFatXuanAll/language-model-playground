@@ -58,7 +58,7 @@ def test_class_method():
                 name='exp_name',
                 kind=Parameter.POSITIONAL_OR_KEYWORD,
                 default=Parameter.empty,
-                annotation=str
+                annotation=str,
             ),
         ]
     )
@@ -122,13 +122,13 @@ def test_instance_method(subclass_tknzr):
                 name='batch_txt',
                 kind=Parameter.POSITIONAL_OR_KEYWORD,
                 default=Parameter.empty,
-                annotation=Sequence[str]
+                annotation=Sequence[str],
             ),
             Parameter(
                 name='max_seq_len',
                 kind=Parameter.KEYWORD_ONLY,
                 default=-1,
-                annotation=int
+                annotation=int,
             ),
         ], 
         return_annotation=List[List[int]]
@@ -146,13 +146,13 @@ def test_instance_method(subclass_tknzr):
                 name='batch_tkids',
                 kind=Parameter.POSITIONAL_OR_KEYWORD,
                 default=Parameter.empty,
-                annotation=Sequence[Sequence[int]]
+                annotation=Sequence[Sequence[int]],
             ),
             Parameter(
                 name='rm_sp_tks',
                 kind=Parameter.KEYWORD_ONLY,
                 default=False,
-                annotation=bool
+                annotation=bool,
             ),
         ], 
         return_annotation=List[str]
@@ -171,7 +171,7 @@ def test_instance_method(subclass_tknzr):
                 name='batch_txt',
                 kind=Parameter.POSITIONAL_OR_KEYWORD,
                 default=Parameter.empty,
-                annotation=Sequence[str]
+                annotation=Sequence[str],
             ),
         ], 
         return_annotation=Signature.empty
@@ -190,13 +190,13 @@ def test_instance_method(subclass_tknzr):
                 name='tkids',
                 kind=Parameter.POSITIONAL_OR_KEYWORD,
                 default=Parameter.empty,
-                annotation=Sequence[int]
+                annotation=Sequence[int],
             ),
             Parameter(
                 name='rm_sp_tks',
                 kind=Parameter.KEYWORD_ONLY,
                 default=False,
-                annotation=Optional[bool]
+                annotation=Optional[bool],
             ),
         ], 
         return_annotation=str
@@ -215,7 +215,7 @@ def test_instance_method(subclass_tknzr):
                 name='tks',
                 kind=Parameter.POSITIONAL_OR_KEYWORD,
                 default=Parameter.empty,
-                annotation=Sequence[str]
+                annotation=Sequence[str],
             ),
         ], 
         return_annotation=str
@@ -234,13 +234,13 @@ def test_instance_method(subclass_tknzr):
                 name='txt',
                 kind=Parameter.POSITIONAL_OR_KEYWORD,
                 default=Parameter.empty,
-                annotation=Parameter.empty
+                annotation=Parameter.empty,
             ),
             Parameter(
                 name='max_seq_len',
                 kind=Parameter.KEYWORD_ONLY,
                 default=-1,
-                annotation=Optional[int]
+                annotation=Optional[int],
             ),
         ], 
         return_annotation=List[int]
@@ -259,7 +259,7 @@ def test_instance_method(subclass_tknzr):
                 name='txt',
                 kind=Parameter.POSITIONAL_OR_KEYWORD,
                 default=Parameter.empty,
-                annotation=str
+                annotation=str,
             ),
         ], 
         return_annotation=str
@@ -296,7 +296,7 @@ def test_instance_method(subclass_tknzr):
                 name='txt',
                 kind=Parameter.POSITIONAL_OR_KEYWORD,
                 default=Parameter.empty,
-                annotation=str
+                annotation=str,
             ),
         ], 
         return_annotation=List[str]
