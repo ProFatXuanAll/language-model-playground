@@ -654,6 +654,7 @@ class BaseTknzr(abc.ABC):
         See Also
         ========
         lmp.script.train_tokenizer
+            Tokenizer training script.
 
         Examples
         ========

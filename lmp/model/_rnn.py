@@ -1,5 +1,6 @@
 r"""Neural network language model based on vanilla RNN."""
 
+import argparse
 from typing import ClassVar, Dict, Optional
 
 import torch
@@ -214,7 +215,7 @@ class RNNModel(BaseModel):
         # Output tensor dtype    : `torch.float32`.
         self.loss_fn = nn.CrossEntropyLoss()
 
-    def forward(self, batch_tkid: torch.Tensor) -> torch.Tensor:
+    def forward(self, batch_prev_tkids: torch.Tensor) -> torch.Tensor:
         r"""Perform forward pass.
 
         Forward pass algorithm is structured as follow:
@@ -246,9 +247,9 @@ class RNNModel(BaseModel):
 
         Parameters
         ==========
-        batch_tkid: torch.Tensor
-            Batch of token ids encoded by :py:class:`lmp.tknzr.BaseTknzr`.
-            ``batch_tkid`` has shape ``(B, S)`` and ``dtype == torch.int64``.
+        batch_prev_tkids: torch.Tensor
+            Batch of previous token ids encoded by :py:class:`lmp.tknzr.BaseTknzr`.
+            ``batch_prev_tkids`` has shape ``(B, S)`` and ``dtype == torch.int64``.
 
         Returns
         =======
@@ -258,7 +259,7 @@ class RNNModel(BaseModel):
         # Token embedding lookup.
         # Input  shape: `(B, S)`.
         # Output shape: `(B, S, E)`.
-        batch = self.emb(batch_tkid)
+        batch = self.emb(batch_prev_tkids)
 
         # Token embedding dropout.
         # Input  shape: `(B, S, E)`.
@@ -289,8 +290,8 @@ class RNNModel(BaseModel):
 
     def cal_loss(
             self,
-            batch_tkid: torch.Tensor,
-            batch_next_tkid: torch.Tensor
+            batch_prev_tkids: torch.Tensor,
+            batch_next_tkids: torch.Tensor
     ) -> torch.Tensor:
         r"""Calculate language model training loss.
 
@@ -299,13 +300,13 @@ class RNNModel(BaseModel):
 
         Parameters
         ==========
-        batch_tkid: torch.Tensor
-            Batch of token ids encoded by :py:class:`lmp.tknzr.BaseTknzr`.
-            ``batch_tkid`` has shape ``(B, S)`` and ``dtype == torch.int64``.
-        batch_next_tkid: torch.Tensor
+        batch_prev_tkids: torch.Tensor
+            Batch of previous token ids encoded by :py:class:`lmp.tknzr.BaseTknzr`.
+            ``batch_prev_tkids`` has shape ``(B, S)`` and ``dtype == torch.int64``.
+        batch_next_tkids: torch.Tensor
             Prediction targets.
-            Batch of token ids encoded by :py:class:`lmp.tknzr.BaseTknzr`.
-            ``batch_next_tkid`` has same shape and ``dtype`` as ``batch_tkid``.
+            Batch of next token ids encoded by :py:class:`lmp.tknzr.BaseTknzr`.
+            ``batch_next_tkids`` has same shape and ``dtype`` as ``batch_prev_tkids``.
 
         Returns
         =======
@@ -315,7 +316,7 @@ class RNNModel(BaseModel):
         # Forward pass.
         # Input  shape: `(B, S)`.
         # Output shape: `(B, S, V)`.
-        logits = self(batch_tkid)
+        logits = self(batch_prev_tkids)
 
         # Reshape logits to calculate loss.
         # Input  shape: `(B, S, V)`.
@@ -325,23 +326,23 @@ class RNNModel(BaseModel):
         # Reshape target to calculate loss.
         # Input  shape: `(B, S)`.
         # Output shape: `(BxS)`.
-        batch_next_tkid = batch_next_tkid.reshape(-1)
+        batch_next_tkids = batch_next_tkids.reshape(-1)
 
         # Calculate average prediction loss.
         # Input  shape: `(BxS, V), (BxS)`.
         # Output shape: `(1)`.
-        return self.loss_fn(logits, batch_next_tkid)
+        return self.loss_fn(logits, batch_next_tkids)
 
-    def pred(self, batch_tkid: torch.Tensor) -> torch.Tensor:
+    def pred(self, batch_prev_tkids: torch.Tensor) -> torch.Tensor:
         r"""Next token prediction.
 
         Prediction means choose a token from vocabulary as next token.
 
         Parameters
         ==========
-        batch_tkid: torch.Tensor
-            Batch of token ids encoded by :py:class:`lmp.tknzr.BaseTknzr`.
-            ``batch_tkid`` has shape ``(B, S)`` and ``dtype == torch.int64``.
+        batch_prev_tkids: torch.Tensor
+            Batch of previous token ids encoded by :py:class:`lmp.tknzr.BaseTknzr`.
+            ``batch_prev_tkids`` has shape ``(B, S)`` and ``dtype == torch.int64``.
 
         Returns
         =======
@@ -353,9 +354,111 @@ class RNNModel(BaseModel):
         # Forward pass.
         # Input  shape: `(B, S)`.
         # Output shape: `(B, S, V)`.
-        logits = self(batch_tkid)
+        logits = self(batch_prev_tkids)
 
         # Convert logits to probabilities using softmax.
         # Input  shape: `(B, S, V)`.
         # Output shape: `(B, S, V)`.
         return self.out(logits)
+
+    @staticmethod
+    def train_parser(parser: argparse.ArgumentParser) -> None:
+        r"""Training vanilla RNN language model CLI arguments parser.
+
+        Parameters
+        ==========
+        parser: argparse.ArgumentParser
+            Parser for CLI arguments.
+
+        See Also
+        ========
+        lmp.model.BaseModel.train_parser
+            Training language model CLI arguments.
+        lmp.script.train_model
+            Language model training script.
+
+        Examples
+        ========
+        >>> import argparse
+        >>> from lmp.model import RNNModel
+        >>> parser = argparse.ArgumentParser()
+        >>> RNNModel.train_parser(parser)
+        >>> args = parser.parse_args([
+        ...     '--batch_size', '32',
+        ...     '--ckpt_step', '5000',
+        ...     '--d_emb', '100',
+        ...     '--d_hid', '300',
+        ...     '--dset_name', 'wikitext-2',
+        ...     '--exp_name', 'my_exp',
+        ...     '--log_step', '2500',
+        ...     '--n_epoch', '10',
+        ...     '--n_hid_layer', '2',
+        ...     '--n_post_hid_layer', '1',
+        ...     '--n_pre_hid_layer', '1',
+        ...     '--p_emb', '0.1',
+        ...     '--p_hid', '0.1',
+        ...     '--tknzr_exp_name', 'my_tknzr_exp',
+        ...     '--ver', 'train',
+        ... ])
+        >>> args.d_emb == 100
+        True
+        >>> args.d_hid == 300
+        True
+        >>> args.n_hid_layer == 2
+        True
+        >>> args.n_post_hid_layer == 1
+        True
+        >>> args.n_pre_hid_layer == 1
+        True
+        >>> args.p_emb == 0.1
+        True
+        >>> args.p_hid == 0.1
+        True
+        """
+        # Load common arguments.
+        BaseModel.train_parser(parser=parser)
+
+        # Required arguments.
+        group = parser.add_argument_group('model arguments')
+        group.add_argument(
+            '--d_emb',
+            help='Token embedding dimension.',
+            required=True,
+            type=int,
+        )
+        group.add_argument(
+            '--d_hid',
+            help='Hidden dimension for MLP and RNN.',
+            required=True,
+            type=int,
+        )
+        group.add_argument(
+            '--n_hid_layer',
+            help='Number of RNN layers.',
+            required=True,
+            type=int,
+        )
+        group.add_argument(
+            '--n_post_hid_layer',
+            help='Number of MLP layers ``+ 1`` after RNN layer.',
+            required=True,
+            type=int,
+        )
+        group.add_argument(
+            '--n_pre_hid_layer',
+            help='Number of MLP layers ``+ 1`` before RNN layer.',
+            required=True,
+            type=int,
+        )
+        group.add_argument(
+            '--p_emb',
+            help='Dropout probability for token embeddings.',
+            required=True,
+            type=float,
+        )
+        group.add_argument(
+            '--p_hid',
+            help='Dropout probability for hidden representation.',
+            required=True,
+            type=float,
+        )
