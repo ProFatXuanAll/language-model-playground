@@ -68,24 +68,24 @@ class BaseModel(abc.ABC, torch.nn.Module):
     @abc.abstractmethod
     def loss_fn(
             self,
-            batch_prev_tkids: torch.Tensor,
             batch_next_tkids: torch.Tensor,
+            batch_prev_tkids: torch.Tensor,
     ) -> torch.Tensor:
         r"""Calculate language model training loss.
 
         Parameters
         ==========
-        batch_prev_tkids: torch.Tensor
-            Batch of previous token ids encoded by
-            :py:class:`lmp.tknzr.BaseTknzr` subclass instance.
-            ``batch_prev_tkids`` has shape ``(B, S)`` and
-            ``dtype == torch.int64``.
         batch_next_tkids: torch.Tensor
             Prediction targets.
             Batch of next token ids encoded by
             :py:class:`lmp.tknzr.BaseTknzr` subclass instance.
             ``batch_next_tkids`` has same shape and ``dtype`` as
             ``batch_prev_tkids``.
+        batch_prev_tkids: torch.Tensor
+            Batch of previous token ids encoded by
+            :py:class:`lmp.tknzr.BaseTknzr` subclass instance.
+            ``batch_prev_tkids`` has shape ``(B, S)`` and
+            ``dtype == torch.int64``.
 
         Returns
         =======
@@ -179,7 +179,7 @@ class BaseModel(abc.ABC, torch.nn.Module):
         elif not os.path.isdir(file_dir):
             raise FileExistsError(f'{file_dir} is not a directory.')
 
-        elif not os.path.isdir(file_path):
+        elif os.path.isdir(file_path):
             raise FileExistsError(f'{file_path} is a directory.')
 
         # Save model parameters in zip compressed pickle.
@@ -301,6 +301,24 @@ class BaseModel(abc.ABC, torch.nn.Module):
         # Required arguments.
         group = parser.add_argument_group('common arguments')
         group.add_argument(
+            '--batch_size',
+            help='Mini-batch size.',
+            required=True,
+            type=int,
+        )
+        group.add_argument(
+            '--beta1',
+            help='First beta coefficient of Adam optimizer.',
+            required=True,
+            type=float,
+        )
+        group.add_argument(
+            '--beta2',
+            help='Second beta coefficient of Adam optimizer.',
+            required=True,
+            type=float,
+        )
+        group.add_argument(
             '--ckpt_step',
             help='Checkpoint save interval.',
             required=True,
@@ -312,6 +330,12 @@ class BaseModel(abc.ABC, torch.nn.Module):
             help='Name of the dataset which is used to train language model.',
             required=True,
             type=str,
+        )
+        group.add_argument(
+            '--eps',
+            help='Denominator smooth term of Adam optimizer.',
+            required=True,
+            type=float,
         )
         group.add_argument(
             '--exp_name',
@@ -326,6 +350,24 @@ class BaseModel(abc.ABC, torch.nn.Module):
             type=int,
         )
         group.add_argument(
+            '--lr',
+            help='Learning rate.',
+            required=True,
+            type=float,
+        )
+        group.add_argument(
+            '--max_norm',
+            help='Gradient max-norm constraint.',
+            required=True,
+            type=float,
+        )
+        group.add_argument(
+            '--n_epoch',
+            help='Number of training epochs.',
+            required=True,
+            type=int,
+        )
+        group.add_argument(
             '--tknzr_exp_name',
             help='Name of the pre-trained tokenizer experiment.',
             required=True,
@@ -336,6 +378,12 @@ class BaseModel(abc.ABC, torch.nn.Module):
             help='Version of the dataset which is used to train language model.',
             required=True,
             type=str,
+        )
+        group.add_argument(
+            '--wd',
+            help='Weight decay coefficient of Adam optimizer.',
+            required=True,
+            type=float,
         )
 
         # Optional Arguments.

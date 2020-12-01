@@ -17,11 +17,15 @@ The following example train :py:class:`lmp.model.RNNModel` on
 
     python -m lmp.script.train_model RNN \
         --batch_size 32 \
+        --beta1 0.9 \
+        --beta2 0.99 \
         --ckpt_step 5000 \
         --dset_name wikitext-2 \
+        --eps 1e-8 \
         --exp_name my_model_exp \
         --log_step 2500 \
         --lr 1e-4 \
+        --max_norm 1 \
         --n_epoch 10 \
         --tknzr_exp_name my_exp \
         --ver train \
@@ -31,7 +35,8 @@ The following example train :py:class:`lmp.model.RNNModel` on
         --n_post_hid_layer 2 \
         --n_pre_hid_layer 2 \
         --p_emb 0.1 \
-        --p_hid 0.1
+        --p_hid 0.1 \
+        --wd 1e-2
 """
 
 import argparse
@@ -40,6 +45,7 @@ import os
 from typing import Union
 
 import torch
+import torch.nn.utils
 import torch.optim
 import torch.utils.data
 import torch.utils.tensorboard
@@ -53,113 +59,6 @@ import lmp.util.log
 import lmp.util.model
 import lmp.util.rand
 import lmp.util.tknzr
-
-# def train_model(
-#         ckpt: int,
-#         ckpt_step: int,
-#         data_loader: torch.utils.data.DataLoader,
-#         epoch: int,
-#         experiment: str,
-#         max_norm: float,
-#         model: Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel],
-#         optimizer: Union[torch.optim.SGD, torch.optim.Adam],
-#         vocab_size: int
-# ) -> None:
-#     # Set experiment log folder.
-#     writer = torch.utils.tensorboard.SummaryWriter(log_dir)
-#     writer.add_graph(model, next(iter(data_loader))[0].to(device))
-
-#     # Define objective function.
-#     criterion = torch.nn.CrossEntropyLoss()
-
-#     # Step = number of updates.
-#     # Every update must increment `step`.
-#     step = 0
-
-#     # Set model to train mode.
-#     model.train()
-
-#     # Clean up gradient in model parameters.
-#     model.zero_grad()
-
-#     # Initialize total loss.
-#     total_loss = 0.0
-
-#     for cur_epoch in range(epoch):
-
-#         epoch_iterator = tqdm(
-#             data_loader,
-#             desc=f'epoch: {cur_epoch}, loss: {0:.6f}'
-#         )
-
-#         for x, y in epoch_iterator:
-#             # Increment step for each update.
-#             step += 1
-
-#             # Continue training from previous ckpt step.
-#             if step < ckpt:
-#                 continue
-
-#             # Put tensors on to specified device (CPU or GPU). Reshape `y` into
-#             # shape (B x S) for cross-entropy.
-#             # x.size = (B, S)
-#             # y.size = (B x S)
-#             x = x.to(device)
-#             y = y.reshape(-1).to(device)
-
-#             # Forward pass.
-#             # pred_y_logits.size = (B, S, V)
-#             pred_y_logits = model(x)
-
-#             # Reshape `pred_y_logits` into shape (B x S, V) for cross-entropy.
-#             pred_y_logits = pred_y_logits.reshape(-1, vocab_size)
-
-#             # Perform cross-entropy.
-#             loss = criterion(pred_y_logits, y)
-
-#             # Calculate total loss.
-#             total_loss += loss.item()
-
-#             # Log loss.
-#             epoch_iterator.set_description(
-#                 f'epoch: {cur_epoch}, loss: {loss.item():.6f}'
-#             )
-
-#             # Backward pass.
-#             loss.backward()
-
-#             # Perform gradient clipping to avoid gradient explosion.
-#             torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm)
-
-#             # Gradient descent.
-#             optimizer.step()
-
-#             # `torch` required manually clean up gradient.
-#             optimizer.zero_grad()
-
-#             # Save ckpt for each `ckpt_step`.
-#             if step % ckpt_step == 0:
-#                 torch.save(
-#                     model.state_dict(),
-#                     os.path.join(file_dir, f'model-{step}.pt')
-#                 )
-#                 torch.save(
-#                     optimizer.state_dict(),
-#                     os.path.join(file_dir, f'optimizer-{step}.pt')
-#                 )
-#                 # Log average loss.
-#                 writer.add_scalar('loss', total_loss / ckpt_step, step)
-#                 total_loss = 0.0
-
-#     # Save last ckpt.
-#     torch.save(
-#         model.state_dict(),
-#         os.path.join(file_dir, f'model-{step}.pt')
-#     )
-#     torch.save(
-#         optimizer.state_dict(),
-#         os.path.join(file_dir, f'optimizer-{step}.pt')
-#     )
 
 
 def parse_arg() -> argparse.Namespace:
@@ -233,37 +132,98 @@ def main() -> None:
         tknzr=tknzr,
         **args.__dict__,
     )
+    model = model.train()
 
     # Move model to running device.
     model = model.to(device)
 
     # Get new optimizer instance.
-    opt = torch.optim.Adam(model.parameters(), lr=args.lr)
+    optim = torch.optim.AdamW(
+        model.parameters(),
+        betas=(args.beta1, args.beta2),
+        lr=args.lr,
+        eps=args.eps,
+        weight_decay=args.wd,
+    )
 
     # Get tensorboard logger instance.
     writer = lmp.util.log.get_tb_logger(exp_name=args.exp_name)
 
+    # Log performance target.
+    pre_avg_loss = 0.0
+    avg_loss = 0.0
+
+    # Global optimization step.
+    step = 0
+
     for epoch in range(args.n_epoch):
-        for batch_txt in dldr:
+        tqdm_dldr = tqdm(
+            dldr,
+            desc=f'epoch: {epoch}, loss:{pre_avg_loss:.6f}',
+        )
+        for batch_txt in tqdm_dldr:
+            # Encode batch text into batch token ids.
             batch_tkids = tknzr.batch_enc(batch_txt=batch_txt)
+
+            # Convert batch token ids to `torch.Tensor` with
+            # `dtype == torch.int64`.
             batch_tkids = torch.LongTensor(batch_tkids)
+
+            # Move tensors to model running device.
             batch_tkids = batch_tkids.to(device)
 
+            # Format batch token ids to satisfy language model training format.
             batch_prev_tkids = batch_tkids[..., :-1]
             batch_next_tkids = batch_tkids[..., 1:]
 
-            loss = model.cal_loss(
-                batch_prev_tkids=batch_prev_tkids,
+            # Calculate loss using loss function.
+            loss = model.loss_fn(
                 batch_next_tkids=batch_next_tkids,
+                batch_prev_tkids=batch_prev_tkids,
             )
 
+            # Accumulate average loss.
+            avg_loss += loss.item()
+
+            # Backward pass / back propagation.
             loss.backward()
 
-            opt.step()
-            opt.zero_grad()
+            # Perform gradient clipping to avoid gradient explosion.
+            torch.nn.utils.clip_grad_norm_(
+                model.parameters(),
+                max_norm=args.max_norm,
+            )
 
-            break
-        break
+            # Gradient descent.
+            optim.step()
+
+            # Clean up gradient.
+            # This is needed only in `torch`.
+            optim.zero_grad()
+
+            # Increment global step.
+            step += 1
+
+            # Save checkpoint for each `ckpt_step` step.
+            if step % args.ckpt_step == 0:
+                model.save(ckpt=step, exp_name=args.exp_name)
+
+            # Log performance for each `log_step` step.
+            if step % args.log_step == 0:
+                # Log on CLI.
+                tqdm_dldr.set_description(
+                    f'epoch: {epoch}, loss:{avg_loss:.6f}',
+                )
+
+                # Log on tensorboard
+                writer.add_scalar('loss', avg_loss / args.log_step, step)
+
+                # Refresh log performance.
+                pre_avg_loss = avg_loss
+                avg_loss = 0.0
+
+    # Save last checkpoint.
+    model.save(ckpt=step, exp_name=args.exp_name)
 
     # Close tensorboard logger.
     writer.close()
