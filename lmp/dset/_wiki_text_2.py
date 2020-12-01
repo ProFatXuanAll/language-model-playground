@@ -16,8 +16,10 @@ class WikiText2Dset(BaseDset):
 
     WikiText-2 is an English dataset which is part of the WikiText Long Term
     Dependency Language Modeling Dataset.
-    See https://blog.einstein.ai/the-wikitext-long-term-dependency-language-modeling-dataset/
-    for more details on dataset.
+    See WikiText_ for more details on dataset.
+
+    .. _WikiText: https://blog.einstein.ai/the-wikitext-long-term-dependency
+        -language-modeling-dataset/
 
     Parameters
     ==========
@@ -38,8 +40,8 @@ class WikiText2Dset(BaseDset):
     df_ver: ClassVar[str]
         Default version is ``train``.
     dset_name: ClassVar[str]
-        Display name for dataset on CLI.
-        Used only for command line argument parsing.
+        Dataset name is ``wikitext-2``.
+        Used for command line argument parsing.
     lang: ClassVar[str]
         Use English as primary language.
     spls: Sequence[str]
@@ -87,7 +89,8 @@ class WikiText2Dset(BaseDset):
             'r',
         ) as input_zipfile:
             with TextIOWrapper(
-                input_zipfile.open(os.path.join('wikitext-2', f'wiki.{self.ver}.tokens'), 'r'),
+                input_zipfile.open(os.path.join(
+                    'wikitext-2', f'wiki.{self.ver}.tokens'), 'r'),
                 encoding='utf-8',
             ) as input_text_file:
                 data = input_text_file.read()

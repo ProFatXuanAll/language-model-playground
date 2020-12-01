@@ -8,14 +8,10 @@ Usage:
 """
 
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-
 from typing import List, Union
 
 import torch
 
-import lmp.config
 import lmp.model
 import lmp.tknzr
 
@@ -74,7 +70,6 @@ def generate_sequence(
     if not isinstance(model, (
             lmp.model.BaseRNNModel,
             lmp.model.BaseResRNNModel,
-            lmp.model.TransformerModel
     )):
         raise TypeError(
             '`model` must be an instance of '
@@ -181,7 +176,7 @@ def generate_sequence(
 def generate_sequence_by_config(
         beam_width: int,
         begin_of_sequence: str,
-        config: lmp.config.BaseConfig,
+        config,
         max_seq_len: int,
         model: Union[lmp.model.BaseRNNModel, lmp.model.BaseResRNNModel],
         tokenizer: lmp.tknzr.BaseTknzr
@@ -215,11 +210,6 @@ def generate_sequence_by_config(
     Returns:
         Generated sequences.
     """
-    # Type check.
-    if not isinstance(config, lmp.config.BaseConfig):
-        raise TypeError(
-            '`config` must be an instance of `lmp.config.BaseConfig`.'
-        )
 
     return generate_sequence(
         beam_width=beam_width,

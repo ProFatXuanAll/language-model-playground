@@ -7,4 +7,5 @@
 
     sample_from_dataset.py
     tokenize.py
+    train_model.py
     train_tokenizer.py
