@@ -1,40 +1,43 @@
-r"""Language model module.
+r"""Neural network language model module.
 
-All model must import from this file.
+All language model classes must be re-imported in this file.
 
-Usage:
-    import lmp.model
+Attributes
+==========
+ALL_MODELS: List[:py:class:`lmp.model.BaseModel`]
+    All available language models.
+    Every time a new language model is added, it must also be added to
+    ``ALL_MODELS`` list.
+MODEL_OPTS: Final[Dict[str, :py:class:`lmp.model.BaseModel`]]
+    Mapping from language model's name to language model's class.
+    All language models must have class attribute ``model_name``.
 
-    model = lmp.model.BaseResRNNModel(...)
-    model = lmp.model.BaseRNNModel(...)
-    model = lmp.model.BaseSelfAttentionResRNNModel(...)
-    model = lmp.model.BaseSelfAttentionRNNModel(...)
-    model = lmp.model.GRUModel(...)
-    model = lmp.model.LSTMModel(...)
-    model = lmp.model.ResGRUModel(...)
-    model = lmp.model.ResLSTMModel(...)
-    model = lmp.model.SelfAttentionGRUModel(...)
-    model = lmp.model.SelfAttentionLSTMModel(...)
-    model = lmp.model.SelfAttentionResGRUModel(...)
-    model = lmp.model.SelfAttentionResLSTMModel(...)
+Examples
+========
+Check ``'RNN'`` is an available language model.
+
+>>> from lmp.model import MODEL_OPTS
+>>> 'RNN' in MODEL_OPTS
+True
+
+Get ``'RNN'`` language model class.
+
+>>> from lmp.model import RNNModel
+>>> MODEL_OPTS['RNN'] == RNNModel
+True
 """
 
 
-from lmp.model._attention_mechanism import attention_mechanism
-from lmp.model._base_res_rnn_block import BaseResRNNBlock
-from lmp.model._base_res_rnn_model import BaseResRNNModel
-from lmp.model._base_rnn_model import BaseRNNModel
-from lmp.model._base_self_attention_res_rnn_model import \
-    BaseSelfAttentionResRNNModel
-from lmp.model._base_self_attention_rnn_model import BaseSelfAttentionRNNModel
-from lmp.model._gru_model import GRUModel
-from lmp.model._lstm_model import LSTMModel
-from lmp.model._res_gru_block import ResGRUBlock
-from lmp.model._res_gru_model import ResGRUModel
-from lmp.model._res_lstm_block import ResLSTMBlock
-from lmp.model._res_lstm_model import ResLSTMModel
-from lmp.model._self_attention_gru_model import SelfAttentionGRUModel
-from lmp.model._self_attention_lstm_model import SelfAttentionLSTMModel
-from lmp.model._self_attention_res_gru_model import SelfAttentionResGRUModel
-from lmp.model._self_attention_res_lstm_model import SelfAttentionResLSTMModel
-from lmp.model._transformer_model import TransformerModel
+from typing import Dict, Final, List
+
+from lmp.model._base import BaseModel
+from lmp.model._gru import GRUModel
+from lmp.model._lstm import LSTMModel
+from lmp.model._rnn import RNNModel
+
+ALL_MODELS: Final[List[BaseModel]] = [
+    GRUModel,
+    LSTMModel,
+    RNNModel,
+]
+MODEL_OPTS: Final[Dict[str, BaseModel]] = {m.model_name: m for m in ALL_MODELS}

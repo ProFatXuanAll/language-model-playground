@@ -7,4 +7,7 @@
 
     cfg.py
     dset.py
+    log.py
+    model.py
+    rand.py
     tknzr.py

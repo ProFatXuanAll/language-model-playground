@@ -24,3 +24,7 @@ Generate Test Coverage Report
 Run the following command in project root directory::
 
     pipenv run test-coverage
+
+.. todo::
+
+    Add more test writing guide line.

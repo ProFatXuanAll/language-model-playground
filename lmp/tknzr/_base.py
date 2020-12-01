@@ -22,18 +22,20 @@ class BaseTknzr(abc.ABC):
     Parameters
     ==========
     is_uncased: bool
-        See attributes for details.
+        Convert text into lowercase if set to ``True``.
     max_vocab: int
-        See attributes for details.
+        Maximum vocabulary size.
+        Set to ``-1`` to include as many tokens as possible in vocabulary.
     min_count: int
-        See attributes for details.
+        Minimum token frequency for each token to be included in tokenizer's
+        vocabulary.
     tk2id: Dict[str, int], optional
         Token (a string) to id (an integer) lookup table.
         If ``tk2id is not None``, then initialize lookup table with ``tk2id``.
         Otherwise initialize lookup table with special tokens only.
-        See attributes for details.
     kwargs: Dict, optional
-        Subclass tokenizers' parameters extension.
+        Useless parameter.
+        Left intended for subclass parameters extension.
 
     Attributes
     ==========
@@ -72,7 +74,8 @@ class BaseTknzr(abc.ABC):
         Token (a string) to id (an integer) lookup table.
     tknzr_name: ClassVar[str]
         Display name for tokenizer on CLI.
-        Used only for command line argument parsing.
+        Used for command line argument parsing.
+        Subclass must overwrite ``tknzr_name`` attribute.
     unk_tk: ClassVar[str]
         Token which represents unknown tokens in a text.
         Tokens in text may be replaced with ``self.__class__.unk_tk`` when
@@ -86,16 +89,6 @@ class BaseTknzr(abc.ABC):
     ======
     TypeError
         When parameters are not confront their respective type annotation.
-
-    Examples
-    ========
-    >>> from typing import List, Sequence
-    >>> from lmp.tknzr import BaseTknzr
-    >>> class SimpleTknzr(BaseTknzr):
-    ...     def tknzr(self, txt: str) -> List[str]:
-    ...         return [self.norm(txt)]
-    ...     def dtknzr(self, tks: Sequence[str]) -> str:
-    ...         return self.norm(''.join(tks))
     """
     bos_tk: ClassVar[str] = '[bos]'
     bos_tkid: ClassVar[int] = 0
@@ -158,7 +151,9 @@ class BaseTknzr(abc.ABC):
         Raises
         ======
         FileExistsError
-            When experiment path already exists but is not a directory.
+            When experiment directory path already exists but is not a
+            directory, or when expeirment file path already exists but is a
+            directory.
 
         See Also
         ========
@@ -169,6 +164,7 @@ class BaseTknzr(abc.ABC):
         >>> from lmp.tknzr import BaseTknzr
         >>> tknzr = BaseTknzr(is_uncased=False, max_vocab=10, min_count=2)
         >>> tknzr.save('my_exp')
+        None
         """
         file_dir = os.path.join(lmp.path.EXP_PATH, exp_name)
         file_path = os.path.join(file_dir, self.__class__.file_name)
@@ -178,6 +174,9 @@ class BaseTknzr(abc.ABC):
 
         elif not os.path.isdir(file_dir):
             raise FileExistsError(f'{file_dir} is not a directory.')
+
+        elif os.path.isdir(file_path):
+            raise FileExistsError(f'{file_path} is a directory.')
 
         with open(file_path, 'w', encoding='utf8') as output_file:
             json.dump(
@@ -224,18 +223,26 @@ class BaseTknzr(abc.ABC):
         >>> from lmp.tknzr import BaseTknzr
         >>> tknzr = BaseTknzr.load('my_exp')
         """
+        if not isinstance(exp_name, str):
+            raise TypeError('`exp_name` must be an instance of `str`.')
+
         if not exp_name:
             raise ValueError('`exp_name` must be non-empty.')
 
         file_path = os.path.join(lmp.path.EXP_PATH, exp_name, cls.file_name)
 
         if not os.path.exists(file_path):
-            # TODO: add run training tokenizer script hint
-            raise FileNotFoundError(f'File {file_path} does not exist.')
+            raise FileNotFoundError(
+                f'Tokenizer file path {file_path} does not exist.'
+                + ' You must run `python -m lmp.script.train_tokenizer` first.'
+            )
 
         if os.path.isdir(file_path):
-            # TODO: add remove dir and run training tokenizer script hint
-            raise FileExistsError(f'{file_path} is a directory.')
+            raise FileExistsError(
+                f'Tokenizer file path {file_path} is a directory.'
+                + f' Remove {file_path} first then do'
+                + ' `python -m lmp.script.train_tokenizer`.'
+            )
 
         with open(file_path, 'r', encoding='utf-8') as input_file:
             return cls(**json.load(input_file))
@@ -284,15 +291,15 @@ class BaseTknzr(abc.ABC):
         txt: str
             Text to be tokenized.
 
-        Raises
-        ======
-        NotImplementedError
-            When subclass do not implement tokenization.
-
         Returns
         =======
         List[str]
             List of normalized tokens tokenized from text.
+
+        Raises
+        ======
+        NotImplementedError
+            When subclass do not implement tokenization.
 
         See Also
         ========
@@ -316,15 +323,15 @@ class BaseTknzr(abc.ABC):
         tks: Seqeuence[str]
             Sequence of tokens to be detokenized.
 
-        Raises
-        ======
-        NotImplementedError
-            When subclass do not implement detokenization.
-
         Returns
         =======
         str
             Normalized text detokenized from tokens.
+
+        Raises
+        ======
+        NotImplementedError
+            When subclass do not implement detokenization.
 
         See Also
         ========
@@ -542,7 +549,7 @@ class BaseTknzr(abc.ABC):
             Batch of sequences of token ids to be decoded.
         rm_sp_tks: bool, optional
             Whether to remove special tokens.
-            See :py:meth:`lmp.tknzr.BaseTknzr.dec` for the usage of ``rm_sp_tks``.
+            See :py:meth:`lmp.tknzr.BaseTknzr.dec` for ``rm_sp_tks`` usage.
             Defaults to ``False``.
 
         Returns
@@ -647,6 +654,7 @@ class BaseTknzr(abc.ABC):
         See Also
         ========
         lmp.script.train_tokenizer
+            Tokenizer training script.
 
         Examples
         ========
@@ -700,7 +708,10 @@ class BaseTknzr(abc.ABC):
         )
         group.add_argument(
             '--min_count',
-            help='Minimum token frequency for token to be included in vocabulary.',
+            help=(
+                'Minimum token frequency for token to be included in'
+                + ' vocabulary.'
+            ),
             required=True,
             type=int,
         )

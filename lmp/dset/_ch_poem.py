@@ -43,8 +43,8 @@ class ChPoemDset(BaseDset):
     df_ver: ClassVar[str]
         Default version is ``唐``.
     dset_name: ClassVar[str]
-        Display name for dataset on CLI.
-        Used only for command line argument parsing.
+        Dataset name is ``chinese-poem``.
+        Used for command line argument parsing.
     lang: ClassVar[str]
         Use Chinese as primary language.
     spls: Sequence[str]
@@ -91,7 +91,8 @@ class ChPoemDset(BaseDset):
             'r',
         ) as input_zipfile:
             with TextIOWrapper(
-                input_zipfile.open(os.path.join('ch-poem', f'{self.ver}.csv'), 'r'),
+                input_zipfile.open(os.path.join(
+                    'ch-poem', f'{self.ver}.csv'), 'r'),
                 encoding='utf-8',
             ) as input_text_file:
                 df = pd.read_csv(input_text_file)
