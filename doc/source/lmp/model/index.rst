@@ -9,4 +9,6 @@
     :caption: Model Classes:
 
     BaseModel.py
+    GRUModel.py
+    LSTMModel.py
     RNNModel.py
