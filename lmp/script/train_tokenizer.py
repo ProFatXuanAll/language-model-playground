@@ -12,8 +12,9 @@ lmp.tknzr
 
 Examples
 ========
-The following example train :py:class:`lmp.tknzr.WsTknzr` on
-:py:class:`lmp.dset.WikiText2Dset` using ``train`` version.
+The following example train :py:class:`lmp.tknzr.WsTknzr` (``whitespace``)
+on :py:class:`lmp.dset.WikiText2Dset` using ``train`` version.
+(``--dset_name wikitext-2`` and ``--ver train``).
 
 .. code-block:: sh
 
@@ -73,7 +74,7 @@ different case.
         --min_count 5 \
         --ver train
 
-Use ``-h`` or ``--help`` options to get list of available tokenizer.
+Use ``-h`` or ``--help`` options to get list of available tokenizers.
 
 .. code-block:: sh
 

@@ -14,64 +14,26 @@ class CharTknzr(BaseTknzr):
     Parameters
     ==========
     is_uncased: bool
-        See attributes for details.
+        Convert text into lowercase if set to ``True``.
     max_vocab: int
-        See attributes for details.
+        Maximum vocabulary size.
+        Set to ``-1`` to include as many tokens as possible in vocabulary.
     min_count: int
-        See attributes for details.
+        Minimum token frequency for each token to be included in tokenizer's
+        vocabulary.
     tk2id: Dict[str, int], optional
         Token (a string) to id (an integer) lookup table.
         If ``tk2id is not None``, then initialize lookup table with ``tk2id``.
         Otherwise initialize lookup table with special tokens only.
-        See attributes for details.
     kwargs: Dict, optional
-        Subclass tokenizers' parameters extension.
+        Useless parameter.
+        Left intended for subclass parameters extension.
 
     Attributes
     ==========
-    bos_tk: ClassVar[str]
-        Token which represents the begining of a text.
-        Text will be prepended with ``self.__class__.bos_tk`` when encoded by
-        ``self.enc()``.
-    bos_tkid: ClassVar[int]
-        Token id of ``self.__class__.bos_tk``.
-    eos_tk: ClassVar[str]
-        Token which represents the end of a text.
-        Text will be appended with ``self.__class__.eos_tk`` when encoded by
-        ``self.enc()``.
-    eos_tkid: ClassVar[int]
-        Token id of ``self.__class__.eos_tk``.
-    file_name: ClassVar[str]
-        Tokenizer's configuration output file name.
-    id2tk: Dict[int, str]
-        Id (an integer) to token (a string) lookup table.
-    is_uncased: bool
-        When performing ``self.norm()``, convert text into lowercase if
-        ``self.is_uncased == True``.
-    max_vocab: int
-        Maximum vocabulary size.
-    min_count: int
-        Minimum token frequency for each token to be included in tokenizer's
-        vocabulary.
-    pad_tk: ClassVar[str]
-        Token which represents paddings of a text.
-        Text may be appended with ``self.__class__.pad_tk`` when encoded by
-        ``self.enc()``.
-    pad_tkid: ClassVar[int]
-        Token id of ``self.__class__.pad_tk``.
-    tk2id: Dict[str, int]
-        Token (a string) to id (an integer) lookup table.
     tknzr_name: ClassVar[str]
-        Display name for tokenizer on CLI.
-        Only used for command line argument parsing.
-    unk_tk: ClassVar[str]
-        Token which represents unknown tokens in a text.
-        Tokens in text may be replaced with ``self.__class__.unk_tk`` when
-        encoded by ``self.enc()``.
-    unk_tkid: ClassVar[int]
-        Token id of ``self.__class__.unk_tk``.
-        Token ids in a sequence may be replaced with
-        ``self.__class__.unk_tkid`` when decoded by ``self.dec()``.
+        Tokenizer name is ``character``.
+        Used for command line argument parsing.
 
     Raises
     ======
