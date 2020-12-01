@@ -31,7 +31,7 @@ Before You Commit
 
 #. Run ``autopep8 -i -a -a -a lmp test`` to automatically lint your code to
    conform `PEP 8`_.
-   ``autopep8`` might not be able to catch all syntax problems, for futher
+   ``autopep8`` might not be able to catch all syntax problems, for further
    linting see steps below.
 
 #. Run ``flake8 lmp test`` to lint your code to conform `PEP 8`_.

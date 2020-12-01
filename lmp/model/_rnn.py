@@ -15,7 +15,7 @@ class RNNModel(BaseModel):
     r"""Vanilla RNN language model.
 
     Use ``self.loss_fn`` for training and use ``self.pred`` for inference.
-    Both are depends on forward pass alogorithm ``self.forward``.
+    Both are depended on forward pass alogorithm ``self.forward``.
 
     Parameters
     ==========
@@ -62,7 +62,7 @@ class RNNModel(BaseModel):
         Vanilla RNN which encode temporal features.
         Each time step's hidden state depends on current input and previous
         hidden state.
-        Dropout recurrent units if ``n_hid_lyr > 1``.
+        Dropout temporal features if ``n_hid_lyr > 1``.
     model_name: ClassVar[str]
         Model name is ``RNN``.
         Used for command line argument parsing.
