@@ -223,18 +223,26 @@ class BaseTknzr(abc.ABC):
         >>> from lmp.tknzr import BaseTknzr
         >>> tknzr = BaseTknzr.load('my_exp')
         """
+        if isinstance(exp_name, str):
+            raise TypeError('`exp_name` must be an instance of `str`.')
+
         if not exp_name:
             raise ValueError('`exp_name` must be non-empty.')
 
         file_path = os.path.join(lmp.path.EXP_PATH, exp_name, cls.file_name)
 
         if not os.path.exists(file_path):
-            # TODO: add run training tokenizer script hint
-            raise FileNotFoundError(f'File {file_path} does not exist.')
+            raise FileNotFoundError(
+                f'Tokenizer file path {file_path} does not exist.'
+                + ' You must run `python -m lmp.script.train_tokenizer` first.'
+            )
 
         if os.path.isdir(file_path):
-            # TODO: add remove dir and run training tokenizer script hint
-            raise FileExistsError(f'{file_path} is a directory.')
+            raise FileExistsError(
+                f'Tokenizer file path {file_path} is a directory.'
+                + f' Remove {file_path} first then do'
+                + ' `python -m lmp.script.train_tokenizer`.'
+            )
 
         with open(file_path, 'r', encoding='utf-8') as input_file:
             return cls(**json.load(input_file))

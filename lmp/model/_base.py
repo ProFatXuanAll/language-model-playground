@@ -3,6 +3,7 @@ r"""Neural network language model base class."""
 import abc
 import argparse
 import os
+import re
 from typing import ClassVar, Dict, Optional
 
 import torch
@@ -229,25 +230,50 @@ class BaseModel(abc.ABC, torch.nn.Module):
         >>> from lmp.model import BaseModel
         >>> model = BaseModel.load('my_exp')
         """
-        # TODO: add ckpt==-1 utilities.
+        if isinstance(ckpt, int):
+            raise TypeError('`ckpt` must be an instance of `int`.')
+        if isinstance(exp_name, str):
+            raise TypeError('`exp_name` must be an instance of `str`.')
 
+        if ckpt < -1:
+            raise ValueError('`ckpt` must satisfy `ckpt >= -1`.')
         if not exp_name:
             raise ValueError('`exp_name` must be non-empty.')
 
+        file_dir = os.path.join(lmp.path.EXP_PATH, exp_name)
+        if not os.path.exists(file_dir):
+            raise FileNotFoundError(
+                f'Experiment file path {file_dir} does not exist.'
+                + ' You must run `python -m lmp.script.train_model` first.'
+            )
+
+        # Load latest checkpoint.
+        if ckpt == -1:
+            ckpt_files = filter(
+                lambda ckpt_f: re.match(r'model-\d+.pt', ckpt_f),
+                os.listdir(file_dir),
+            )
+            ckpt_files = map(
+                lambda ckpt_f: re.match(r'model-(\d+).pt', ckpt_f).group(1),
+                ckpt_files,
+            )
+            ckpt = max(ckpt_files)
+
         # Format file name with checkpoint step.
-        file_path = os.path.join(
-            lmp.path.EXP_PATH,
-            exp_name,
-            cls.file_name.format(ckpt),
-        )
+        file_path = os.path.join(file_dir, cls.file_name.format(ckpt))
 
         if not os.path.exists(file_path):
-            # TODO: add run training model script hint
-            raise FileNotFoundError(f'File {file_path} does not exist.')
+            raise FileNotFoundError(
+                f'Checkpoint file path {file_path} does not exist.'
+                + ' You must run `python -m lmp.script.train_model` first.'
+            )
 
         if os.path.isdir(file_path):
-            # TODO: add remove dir and run training model script hint
-            raise FileExistsError(f'{file_path} is a directory.')
+            raise FileExistsError(
+                f'Checkpoint file path {file_path} is a directory.'
+                + f' Remove {file_path} first then do'
+                + ' `python -m lmp.script.train_model`.'
+            )
 
         # Construct new model.
         self = cls(**kwargs)

@@ -231,10 +231,7 @@ def main() -> None:
         device = torch.device('cuda')
 
     # Get new model instance.
-    model = lmp.util.model.create(
-        tknzr=tknzr,
-        **args.__dict__,
-    )
+    model = lmp.util.model.create(tknzr=tknzr, **args.__dict__)
     model = model.train()
 
     # Move model to running device.
