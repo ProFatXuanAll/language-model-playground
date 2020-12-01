@@ -34,8 +34,15 @@ def create(model_name: str, **kwargs: Optional[Dict]) -> BaseModel:
     Examples
     ========
     >>> from lmp.model import RNNModel
+    >>> from lmp.tknzr import CharTknzr
     >>> import lmp.util.model
-    >>> isinstance(lmp.util.model.create('RNN'), RNNModel)
+    >>> tknzr = CharTknzr(is_uncased=False, max_vocab=10, min_count=2)
+    >>> model = lmp.util.model.create(
+    ...     model_name='RNN', d_emb=10, d_hid=10, n_hid_lyr=2,
+    ...     n_post_hid_lyr=2, n_pre_hid_lyr=2, tknzr=tknzr, p_emb=0.1,
+    ...     p_hid=0.1,
+    ... )
+    >>> isinstance(model, RNNModel)
     True
     """
     return MODEL_OPTS[model_name](**kwargs)
@@ -54,6 +61,8 @@ def load(
 
     Parameters
     ==========
+    ckpt: int
+
     exp_name: str
         Pre-trained language model experiment name.
     model_name: str
@@ -76,17 +85,23 @@ def load(
     Examples
     ========
     >>> from lmp.model import RNNModel
+    >>> from lmp.tknzr import CharTknzr
     >>> import lmp.util.model
+    >>> tknzr = CharTknzr(is_uncased=False, max_vocab=10, min_count=2)
     >>> model = lmp.util.model.create(
     ...     model_name='RNN', d_emb=10, d_hid=10, n_hid_lyr=2,
-    ...     n_post_hid_lyr=2, n_pre_hid_lyr=2, n_vocab=10, p_emb=0.1,
-    ...     p_hid=0.1, pad_tkid=0,
+    ...     n_post_hid_lyr=2, n_pre_hid_lyr=2, tknzr=tknzr, p_emb=0.1,
+    ...     p_hid=0.1,
     ... )
-    >>> model.save(ckpt=0, exp_name='my_exp')
-    >>> isinstance(
-    ...     lmp.util.model.load(ckpt=0, exp_name='my_exp', model_name='RNN'),
-    ...     RNNModel,
+    >>> model.save(ckpt=1, exp_name='my_exp')
+    >>> load_model = lmp.util.model.load(
+    ...     ckpt=1, exp_name='my_exp', model_name='RNN', d_emb=10, d_hid=10,
+    ...     n_hid_lyr=2, n_post_hid_lyr=2, n_pre_hid_lyr=2, tknzr=tknzr,
+    ...     p_emb=0.1, p_hid=0.1,
     ... )
+    >>> isinstance(load_model, RNNModel)
+    True
+    >>> (model.emb.weight == load_model.emb.weight).all().item()
     True
     """
     return MODEL_OPTS[model_name].load(ckpt=ckpt, exp_name=exp_name, **kwargs)

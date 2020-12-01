@@ -223,7 +223,7 @@ class BaseTknzr(abc.ABC):
         >>> from lmp.tknzr import BaseTknzr
         >>> tknzr = BaseTknzr.load('my_exp')
         """
-        if isinstance(exp_name, str):
+        if not isinstance(exp_name, str):
             raise TypeError('`exp_name` must be an instance of `str`.')
 
         if not exp_name:

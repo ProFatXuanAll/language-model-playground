@@ -230,9 +230,9 @@ class BaseModel(abc.ABC, torch.nn.Module):
         >>> from lmp.model import BaseModel
         >>> model = BaseModel.load('my_exp')
         """
-        if isinstance(ckpt, int):
+        if not isinstance(ckpt, int):
             raise TypeError('`ckpt` must be an instance of `int`.')
-        if isinstance(exp_name, str):
+        if not isinstance(exp_name, str):
             raise TypeError('`exp_name` must be an instance of `str`.')
 
         if ckpt < -1:
