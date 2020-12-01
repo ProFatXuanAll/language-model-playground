@@ -28,7 +28,7 @@ The following example train :py:class:`lmp.model.RNNModel` (``RNN``) on
         --lr 1e-4 \
         --max_norm 1 \
         --n_epoch 10 \
-        --tknzr_exp_name my_exp \
+        --tknzr_exp_name my_tknzr_exp \
         --ver train \
         --d_emb 100 \
         --d_hid 300 \
@@ -39,8 +39,8 @@ The following example train :py:class:`lmp.model.RNNModel` (``RNN``) on
         --p_hid 0.1 \
         --wd 1e-2
 
-The training result will be save at ``exp/my_exp``, and can be reused by other
-scripts.
+The training result will be save at ``exp/my_model_exp``, and can be reused by
+other scripts.
 We only save checkpoint for each ``--ckpt_step`` step and log performance for
 each ``--log_step``.
 
@@ -61,7 +61,7 @@ might be overfitting if trained to much epochs.
         --lr 1e-4 \
         --max_norm 1 \
         --n_epoch 100 \
-        --tknzr_exp_name my_exp \
+        --tknzr_exp_name my_tknzr_exp \
         --ver train \
         --d_emb 100 \
         --d_hid 300 \
@@ -97,7 +97,7 @@ One can reduce overfitting with the following way:
         --lr 1e-4 \
         --max_norm 1 \
         --n_epoch 10 \
-        --tknzr_exp_name my_exp \
+        --tknzr_exp_name my_tknzr_exp \
         --ver train \
         --d_emb 50 \
         --d_hid 100 \
@@ -127,7 +127,7 @@ We also use ``--max_norm`` to avoid gradient explosion.
         --lr 5e-4 \
         --max_norm 5 \
         --n_epoch 10 \
-        --tknzr_exp_name my_exp \
+        --tknzr_exp_name my_tknzr_exp \
         --ver train \
         --d_emb 100 \
         --d_hid 300 \
