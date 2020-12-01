@@ -109,3 +109,6 @@ venv.bak/
 # experiment and logging
 exp/
 log/
+
+# Mac OS
+.DS_Store
