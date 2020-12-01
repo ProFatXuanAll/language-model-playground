@@ -38,14 +38,20 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinx.ext.intersphinx',
     'sphinx.ext.napoleon',
+    'sphinx.ext.todo',
+    'sphinx.ext.viewcode',
     'sphinx_rtd_theme',
 ]
 
+# Generate automatic links to following projects.
 intersphinx_mapping = {
     'numpy': ('http://docs.scipy.org/doc/numpy/', None),
     'python': ('https://docs.python.org/3', None),
     'torch': ('https://pytorch.org/docs/master/', None),
 }
+
+# Show todo items in output documents.
+todo_include_todos = True
 
 # Parse NumPy style docstrings but not google style docstrings.
 napoleon_google_docstring = False
@@ -73,5 +79,5 @@ html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
 
 
-##Add source suffix
+# Add source suffix.
 source_suffix = ['.rst', '.md']

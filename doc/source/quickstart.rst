@@ -1,114 +1,131 @@
-Quick start
-=================
+Quick Start
+===========
 
-Setup environment
+We provide installation instructions only for Ubuntu ``18.04+`` (for now).
+
+.. todo::
+
+    Run test on Mac and Windows.
+
+Environment Prerequest
 ----------------------
-1. Python version: ``3.8``
+1. We only use python version ``3.8+``.
+   You can install python with
 
-2. CUDA version: 10.0+
+   .. code-block:: shell
 
-Installation and Geting Started
---------------------------------------
-1. Since the project contains big dataset, we use ``git lfs`` to control versoin. Please install ``git lfs`` first, 
-and execute
+        apt-get install python3.8 python3.8-dev
 
-.. code-block:: shell
+2. We use PyTorch_ and thus use ``CUDA`` version: ``10.0+``.
+   This only work if you have **Nvidia** GPUs.
+   You can install ``CUDA`` library with
 
-    git lfs install
+   .. code-block:: shell
 
-2. Clone the project from github
+        apt-get install nvidia-driver-450
 
-.. code-block:: shell
+3. We use ``pipenv`` to install dependencies.
+   You can install ``pipenv`` with
 
-    git clone https://github.com/ProFatXuanAll/language-model-playground.git
+   .. code-block:: shell
 
-3. Change current directory
+        pip install pipenv
 
-.. code-block:: shell
+4. Since the project contains big dataset, we use ``git lfs`` to control
+   dataset version.
+   Please install ``git lfs`` first, and execute
 
-    cd language-model-playground
+   .. code-block:: shell
 
-4. Install the dependency
+        git lfs install
 
-.. code-block:: shell
+.. _PyTorch: https://pytorch.org/
 
-    pipenv install --dev
+Installation
+------------
 
-5. Start the virtual Environment
+1. Clone the project from GitHub.
 
-.. code-block:: shell
+   .. code-block:: shell
 
-    pipenv shell
+        git clone https://github.com/ProFatXuanAll/language-model-playground.git
 
-6. compile the document
+2. Change current directory to ``language-model-playground``.
 
-.. code-block:: shell
+   .. code-block:: shell
 
-    pipenv run doc
+        cd language-model-playground
 
-7. Open the document through browser
+3. Install dependencies.
+   We use ``pipenv`` to create virtual environment and install dependencies in
+   virtual environment.
 
-.. code-block:: shell
+   .. code-block:: shell
 
-    xdg-open doc/build/index.html
+        pipenv install
+
+4. Start the virtual environment created by ``pipenv``.
+
+   .. code-block:: shell
+
+        pipenv shell
+
+5. Now you can run any script under :py:mod:`lmp.script`!
+   For example, you can take a look on chinese poem dataset by running
+   :py:mod:`lmp.script.sample_from_dataset`
+
+   .. code-block:: shell
+
+        python -m lmp.script.sample_from_dataset --dset_name chinese-poem
+
+Documents
+---------
+
+You can read documents on *this website* or use the following steps to build
+documents locally.
+We use Sphinx_ to build our documents.
+
+.. _Sphinx: https://www.sphinx-doc.org/en/master/
+
+.. todo::
+
+    Publish documents on https://readthedocs.org/.
+
+1. Install documentation dependencies.
+
+   .. code-block:: shell
+
+        pipenv install --dev
+
+2. Compile documents.
+
+   .. code-block:: shell
+
+        pipenv run doc
+
+3. Open in the browser.
+
+   .. code-block:: shell
+
+        xdg-open doc/build/index.html
 
 
+Testing
+-------
+1. Install testing dependencies.
 
-Generating Document
-------------------------------
+   .. code-block:: shell
 
-1. Installation the Document dependency
+        pipenv install --dev
 
-.. code-block:: shell
+2. Run test.
 
-    pipenv install --dev
+   .. code-block:: shell
 
-2. Compile the Document
+        pipenv run test
 
-.. code-block:: shell
+3. Get test coverage report.
 
-    pipenv run doc
+   .. code-block:: shell
 
-3. Open in the browser
-
-.. code-block:: shell
-
-    xdg-open doc/build/index.html
-
-
-Testing Language Model Playground
--------------------------------------
-1. Installation the Document dependency
-
-.. code-block:: shell
-
-    pipenv install --dev
-
-2. Execute the test
-
-.. code-block:: shell
-
-    isort .
-    autopep8 -r -i -a -a -a lmp
-    autopep8 -r -i -a -a -a test
-    pipenv run test
-    pipenv run test-coverage
-
-Development Document
-------------------------
-
-1. Make sure your code conform `numpydoc docstring guide. <https://numpydoc.readthedocs.io/en/latest/format.html>`_ 
-
-2. Do type annotation for every function and method (You might need to see `typing <https://docs.python.org/3/library/typing.html>`_).
-
-3. Write docstring for every class, function and method.
-
-4. Run ``pylint your_code.py`` to automatically check your code whether conform to `PEP 8 <https://www.python.org/dev/peps/pep-0008/>`_.
-
-5. Run ``autopep8 -i -a -a your_code.py`` to automatically fix your code and conform to `PEP 8 <https://www.python.org/dev/peps/pep-0008/>`_.
-
-6. Run ``mypy your_code.py`` to check type annotaions.
-
-7. Run ``python -m unittest`` to perform unit tests.
-
-8. Write unit tests for your code and make them maintainable.
+        pipenv run test-coverage
