@@ -5,6 +5,7 @@ from typing import ClassVar, Dict, Optional
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
 from lmp.model._base import BaseModel
 from lmp.tknzr._base import BaseTknzr
@@ -22,7 +23,7 @@ class RNNModel(BaseModel):
     - ``S``: Length of sequence of tokens.
     - ``V``: Vocabulary size.
 
-    Use ``self.cal_loss`` for training and use ``self.pred`` for inference.
+    Use ``self.loss_fn`` for training and use ``self.pred`` for inference.
     Both are depends on forward pass alogorithm ``self.forward``.
 
     Parameters
@@ -67,13 +68,9 @@ class RNNModel(BaseModel):
         Each time step's hidden state depends on current input and previous
         hidden state.
         Dropout recurrent units if ``n_hid_layer > 1``.
-    loss_fn: torch.nn.CrossEntropyLoss
-        Loss function of next token prediction.
     model_name: ClassVar[str]
         Display name for model on CLI.
         Only used for command line argument parsing.
-    out: torch.nn.Softmax
-        Softmax activation which transform logits to prediction.
     post_hid: torch.nn.Sequential
         Rectified MLP which transform temporal features from hidden dimension
         ``d_hid`` to embedding dimension ``d_emb``.
@@ -190,27 +187,6 @@ class RNNModel(BaseModel):
         post_hid.append(nn.Linear(in_features=d_hid, out_features=d_emb))
         self.post_hid = nn.Sequential(*post_hid)
 
-        # Softmax activation which transform logits to prediction.
-        # Input              : Batch of next token prediction logits.
-        # Input shape        : `(B, S, V)`.
-        # Input tensor dtype : `torch.float32`.
-        # Output             : Batch of next token prediction probabilities.
-        # Output shape       : `(B, S, V)`.
-        # Output tensor dtype: `torch.float32`.
-        self.out = nn.Softmax(dim=-1)
-
-        # Loss function of next token prediction.
-        # Prediction             : Batch of next token prediction logits.
-        # Prediction shape       : `(BxS, V)`.
-        # Prediction tensor dtype: `torch.float32`.
-        # Target                 : Batch of next token prediction target.
-        # Target shape           : `(BxS)`.
-        # Target tensor dtype    : `torch.int64`.
-        # Output                 : Average next tokens prediction loss.
-        # Output shape           : `(1)`.
-        # Output tensor dtype    : `torch.float32`.
-        self.loss_fn = nn.CrossEntropyLoss()
-
     def forward(self, batch_prev_tkids: torch.Tensor) -> torch.Tensor:
         r"""Perform forward pass.
 
@@ -238,7 +214,7 @@ class RNNModel(BaseModel):
            (shape: ``(B, S, V)``)
         #. Return logits.
            Use ``self.pred`` to convert logit into prediction.
-           Use ``self.cal_loss`` to perform optimization.
+           Use ``self.loss_fn`` to perform optimization.
            (shape: ``(B, S, V)``)
 
         Parameters
@@ -286,8 +262,8 @@ class RNNModel(BaseModel):
 
     def loss_fn(
             self,
-            batch_prev_tkids: torch.Tensor,
             batch_next_tkids: torch.Tensor,
+            batch_prev_tkids: torch.Tensor,
     ) -> torch.Tensor:
         r"""Calculate language model training loss.
 
@@ -297,13 +273,13 @@ class RNNModel(BaseModel):
 
         Parameters
         ==========
-        batch_prev_tkids: torch.Tensor
-            Batch of previous token ids encoded by :py:class:`lmp.tknzr.BaseTknzr`.
-            ``batch_prev_tkids`` has shape ``(B, S)`` and ``dtype == torch.int64``.
         batch_next_tkids: torch.Tensor
             Prediction targets.
             Batch of next token ids encoded by :py:class:`lmp.tknzr.BaseTknzr`.
             ``batch_next_tkids`` has same shape and ``dtype`` as ``batch_prev_tkids``.
+        batch_prev_tkids: torch.Tensor
+            Batch of previous token ids encoded by :py:class:`lmp.tknzr.BaseTknzr`.
+            ``batch_prev_tkids`` has shape ``(B, S)`` and ``dtype == torch.int64``.
 
         Returns
         =======
@@ -318,17 +294,24 @@ class RNNModel(BaseModel):
         # Reshape logits to calculate loss.
         # Input  shape: `(B, S, V)`.
         # Output shape: `(BxS, V)`.
-        logits = logits.reshape(-1, self.emb.weight.num_embeddings)
+        logits = logits.reshape(-1, self.emb.num_embeddings)
 
         # Reshape target to calculate loss.
         # Input  shape: `(B, S)`.
         # Output shape: `(BxS)`.
         batch_next_tkids = batch_next_tkids.reshape(-1)
 
-        # Calculate average prediction loss.
-        # Input  shape: `(BxS, V), (BxS)`.
-        # Output shape: `(1)`.
-        return self.loss_fn(logits, batch_next_tkids)
+        # Loss function of next token prediction.
+        # Prediction             : Batch of next token prediction logits.
+        # Prediction shape       : `(BxS, V)`.
+        # Prediction tensor dtype: `torch.float32`.
+        # Target                 : Batch of next token prediction target.
+        # Target shape           : `(BxS)`.
+        # Target tensor dtype    : `torch.int64`.
+        # Output                 : Average next tokens prediction loss.
+        # Output shape           : `(1)`.
+        # Output tensor dtype    : `torch.float32`.
+        return F.cross_entropy(logits, batch_next_tkids)
 
     def pred(self, batch_prev_tkids: torch.Tensor) -> torch.Tensor:
         r"""Next token prediction.
@@ -354,9 +337,13 @@ class RNNModel(BaseModel):
         logits = self(batch_prev_tkids)
 
         # Convert logits to probabilities using softmax.
-        # Input  shape: `(B, S, V)`.
-        # Output shape: `(B, S, V)`.
-        return self.out(logits)
+        # Input              : Batch of next token prediction logits.
+        # Input shape        : `(B, S, V)`.
+        # Input tensor dtype : `torch.float32`.
+        # Output             : Batch of next token prediction probabilities.
+        # Output shape       : `(B, S, V)`.
+        # Output tensor dtype: `torch.float32`.
+        return F.softmax(logits, dim=-1)
 
     @staticmethod
     def train_parser(parser: argparse.ArgumentParser) -> None:
