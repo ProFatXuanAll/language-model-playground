@@ -10,8 +10,9 @@ lmp.model
 
 Examples
 ========
-The following example train :py:class:`lmp.model.RNNModel` on
-:py:class:`lmp.dset.WikiText2Dset` using ``train`` version.
+The following example train :py:class:`lmp.model.RNNModel` (``RNN``) on
+:py:class:`lmp.dset.WikiText2Dset` using ``train`` version
+(``--dset_name wikitext-2`` and ``--ver train``).
 
 .. code-block:: sh
 
@@ -19,11 +20,11 @@ The following example train :py:class:`lmp.model.RNNModel` on
         --batch_size 32 \
         --beta1 0.9 \
         --beta2 0.99 \
-        --ckpt_step 5000 \
+        --ckpt_step 1000 \
         --dset_name wikitext-2 \
         --eps 1e-8 \
         --exp_name my_model_exp \
-        --log_step 2500 \
+        --log_step 200 \
         --lr 1e-4 \
         --max_norm 1 \
         --n_epoch 10 \
@@ -31,18 +32,120 @@ The following example train :py:class:`lmp.model.RNNModel` on
         --ver train \
         --d_emb 100 \
         --d_hid 300 \
-        --n_hid_layer 2 \
-        --n_post_hid_layer 2 \
-        --n_pre_hid_layer 2 \
+        --n_hid_lyr 2 \
+        --n_post_hid_lyr 2 \
+        --n_pre_hid_lyr 2 \
         --p_emb 0.1 \
         --p_hid 0.1 \
         --wd 1e-2
+
+The training result will be save at ``exp/my_exp``, and can be reused by other
+scripts.
+We only save checkpoint for each ``--ckpt_step`` step and log performance for
+each ``--log_step``.
+
+One can train more epochs by increasing ``--n_epoch``, but be careful model
+might be overfitting if trained to much epochs.
+
+.. code-block:: sh
+
+    python -m lmp.script.train_model RNN \
+        --batch_size 32 \
+        --beta1 0.9 \
+        --beta2 0.99 \
+        --ckpt_step 1000 \
+        --dset_name wikitext-2 \
+        --eps 1e-8 \
+        --exp_name my_model_exp \
+        --log_step 200 \
+        --lr 1e-4 \
+        --max_norm 1 \
+        --n_epoch 100 \
+        --tknzr_exp_name my_exp \
+        --ver train \
+        --d_emb 100 \
+        --d_hid 300 \
+        --n_hid_lyr 2 \
+        --n_post_hid_lyr 2 \
+        --n_pre_hid_lyr 2 \
+        --p_emb 0.1 \
+        --p_hid 0.1 \
+        --wd 1e-2
+
+One can reduce overfitting with the following way:
+
+- Increase ``--batch_size`` which makes samples more dynamic.
+- Increase ``--wd`` which makes L2 penalty larger as weight grows.
+- Reduce model parameters (In :py:class:`lmp.model.RNNModel` this means
+  ``--d_emb``, ``--d_hid``, ``n_hid_lyr``, ``n_post_hid_lyr`` and
+  ``n_pre_hid_lyr``).
+- Use dropout (In :py:class:`lmp.model.RNNModel` this means ``--p_emb`` and
+  ``--p_hid``).
+- Use any combinations of above tricks.
+
+.. code-block:: sh
+
+    python -m lmp.script.train_model RNN \
+        --batch_size 32 \
+        --beta1 0.9 \
+        --beta2 0.99 \
+        --ckpt_step 1000 \
+        --dset_name wikitext-2 \
+        --eps 1e-8 \
+        --exp_name my_model_exp \
+        --log_step 200 \
+        --lr 1e-4 \
+        --max_norm 1 \
+        --n_epoch 10 \
+        --tknzr_exp_name my_exp \
+        --ver train \
+        --d_emb 50 \
+        --d_hid 100 \
+        --n_hid_lyr 1 \
+        --n_post_hid_lyr 1 \
+        --n_pre_hid_lyr 1 \
+        --p_emb 0.5 \
+        --p_hid 0.5 \
+        --wd 1e-1
+
+We use :py:class:`torch.optim.AdamW` to perform optimization.
+Use ``--beta1``, ``--beta2``, ``--eps``, ``--lr`` and ``--wd`` to adjust
+optimizer hyper-parameters.
+We also use ``--max_norm`` to avoid gradient explosion.
+
+.. code-block:: sh
+
+    python -m lmp.script.train_model RNN \
+        --batch_size 32 \
+        --beta1 0.95 \
+        --beta2 0.98 \
+        --ckpt_step 1000 \
+        --dset_name wikitext-2 \
+        --eps 1e-6 \
+        --exp_name my_model_exp \
+        --log_step 200 \
+        --lr 5e-4 \
+        --max_norm 5 \
+        --n_epoch 10 \
+        --tknzr_exp_name my_exp \
+        --ver train \
+        --d_emb 100 \
+        --d_hid 300 \
+        --n_hid_lyr 2 \
+        --n_post_hid_lyr 2 \
+        --n_pre_hid_lyr 2 \
+        --p_emb 0.1 \
+        --p_hid 0.1 \
+        --wd 1e-2
+
+Use ``-h`` or ``--help`` options to get list of available models.
+
+.. code-block:: sh
+
+    python -m lmp.script.train_model -h
 """
 
 import argparse
-import math
-import os
-from typing import Union
 
 import torch
 import torch.nn.utils

@@ -78,8 +78,8 @@ def load(
     >>> from lmp.model import RNNModel
     >>> import lmp.util.model
     >>> model = lmp.util.model.create(
-    ...     model_name='RNN', d_emb=10, d_hid=10, n_hid_layer=2,
-    ...     n_post_hid_layer=2, n_pre_hid_layer=2, n_vocab=10, p_emb=0.1,
+    ...     model_name='RNN', d_emb=10, d_hid=10, n_hid_lyr=2,
+    ...     n_post_hid_lyr=2, n_pre_hid_lyr=2, n_vocab=10, p_emb=0.1,
     ...     p_hid=0.1, pad_tkid=0,
     ... )
     >>> model.save(ckpt=0, exp_name='my_exp')

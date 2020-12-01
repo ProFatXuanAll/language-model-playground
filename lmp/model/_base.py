@@ -12,7 +12,7 @@ import lmp.path
 
 
 class BaseModel(abc.ABC, torch.nn.Module):
-    r"""Neural network language model base class.
+    r"""Neural network language model abstract base class.
 
     Provide basic functionality for save and load pred-trained model
     parameters.
@@ -33,7 +33,8 @@ class BaseModel(abc.ABC, torch.nn.Module):
         Model parameters output file name.
     model_name: ClassVar[str]
         Display name for model on CLI.
-        Only used for command line argument parsing.
+        Used for command line argument parsing.
+        Subclass must overwrite ``model_name`` attribute.
     """
     file_name: ClassVar[str] = 'model-{}.pt'
     model_name: ClassVar[str] = 'base'
@@ -268,6 +269,7 @@ class BaseModel(abc.ABC, torch.nn.Module):
         See Also
         ========
         lmp.script.train_model
+            Language model training script.
 
         Examples
         ========
@@ -276,26 +278,50 @@ class BaseModel(abc.ABC, torch.nn.Module):
         >>> parser = argparse.ArgumentParser()
         >>> BaseModel.train_parser(parser)
         >>> args = parser.parse_args([
-        ...     '--ckpt_step', '5000',
+        ...     '--batch_size', '32',
+        ...     '--beta1', '0.9',
+        ...     '--beta2', '0.99',
+        ...     '--ckpt_step', '1000',
         ...     '--dset_name', 'wikitext-2',
+        ...     '--eps', '1e-8',
         ...     '--exp_name', 'my_exp',
-        ...     '--log_step', '2500',
+        ...     '--log_step', '200',
+        ...     '--lr', '1e-4',
+        ...     '--max_norm', '1',
+        ...     '--n_epoch', '10',
         ...     '--tknzr_exp_name', 'my_tknzr_exp',
         ...     '--ver', 'train',
+        ...     '--wd', '1e-2',
         ... ])
-        >>> args.ckpt_step == 5000
+        >>> args.batch_size == 32
+        True
+        >>> args.beta1 == 0.9
+        True
+        >>> args.beta2 == 0.99
+        True
+        >>> args.ckpt_step == 1000
         True
         >>> args.dset_name == 'wikitext-2'
         True
+        >>> args.eps == 1e-8
+        True
         >>> args.exp_name == 'my_exp'
         True
-        >>> args.log_step == 2500
+        >>> args.log_step == 200
+        True
+        >>> args.lr == 1e-4
+        True
+        >>> args.max_norm == 1
+        True
+        >>> args.n_epoch == 10
         True
         >>> args.seed == 42
         True
         >>> args.tknzr_exp_name == 'my_tknzr_exp'
         True
         >>> args.ver == 'train'
+        True
+        >>> args.wd == 1e-2
         True
         """
         # Required arguments.
@@ -308,13 +334,13 @@ class BaseModel(abc.ABC, torch.nn.Module):
         )
         group.add_argument(
             '--beta1',
-            help='First beta coefficient of Adam optimizer.',
+            help='First beta coefficient of AdamW optimizer.',
             required=True,
             type=float,
         )
         group.add_argument(
             '--beta2',
-            help='Second beta coefficient of Adam optimizer.',
+            help='Second beta coefficient of AdamW optimizer.',
             required=True,
             type=float,
         )
@@ -333,7 +359,7 @@ class BaseModel(abc.ABC, torch.nn.Module):
         )
         group.add_argument(
             '--eps',
-            help='Denominator smooth term of Adam optimizer.',
+            help='Denominator smooth term of AdamW optimizer.',
             required=True,
             type=float,
         )
@@ -375,13 +401,16 @@ class BaseModel(abc.ABC, torch.nn.Module):
         )
         group.add_argument(
             '--ver',
-            help='Version of the dataset which is used to train language model.',
+            help=(
+                'Version of the dataset which is used to train language'
+                + ' model.'
+            ),
             required=True,
             type=str,
         )
         group.add_argument(
             '--wd',
-            help='Weight decay coefficient of Adam optimizer.',
+            help='Weight decay coefficient of AdamW optimizer.',
             required=True,
             type=float,
         )
