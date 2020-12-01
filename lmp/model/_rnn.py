@@ -62,7 +62,8 @@ class RNNModel(BaseModel):
         Vanilla RNN which encode temporal features.
         Each time step's hidden state depends on current input and previous
         hidden state.
-        Dropout temporal features if ``n_hid_lyr > 1``.
+        Dropout temporal features with probability ``p_hid`` if
+        ``n_hid_lyr > 1``.
     model_name: ClassVar[str]
         Model name is ``RNN``.
         Used for command line argument parsing.

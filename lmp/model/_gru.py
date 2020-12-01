@@ -12,8 +12,7 @@ from lmp.tknzr._base import BaseTknzr
 class GRUModel(RNNModel):
     r"""GRU language model.
 
-    Use ``self.loss_fn`` for training and use ``self.pred`` for inference.
-    Both are depended on forward pass alogorithm ``self.forward``.
+    Same architecture as :py:class:`lmp.model.RNNModel` but use GRU layer.
 
     Parameters
     ==========
@@ -54,7 +53,8 @@ class GRUModel(RNNModel):
         GRU which encode temporal features.
         Each time step's hidden state depends on current input and previous
         hidden state.
-        Dropout temporal features if ``n_hid_lyr > 1``.
+        Dropout temporal features with probability ``p_hid`` if
+        ``n_hid_lyr > 1``.
     model_name: ClassVar[str]
         Model name is ``GRU``.
         Used for command line argument parsing.
@@ -87,6 +87,13 @@ class GRUModel(RNNModel):
         )
 
         # Override RNN layer with GRU layer.
+        # Dropout temporal features if `n_hid_lyr > 1`.
+        # Input              : Output of `self.pre_hid`.
+        # Input shape        : `(B, S, H)`.
+        # Input tensor dtype : `torch.float32`.
+        # Output             : Batch of recurrent token hidden states.
+        # Output shape       : `(B, S, H)`.
+        # Output tensor dtype: `torch.float32`.
         if n_hid_lyr == 1:
             self.hid = nn.GRU(
                 input_size=d_hid,
