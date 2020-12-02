@@ -2,8 +2,8 @@ r"""Evaluate language model on given sample.
 
 Tool for evaluating language model on given sample.
 Pre-trained model are used to calculate perplexity on given sample.
-This script serve as model validation, and it is usually run after
-training model.
+This script serve as model validation, and it is usually run after training
+model.
 
 See Also
 ========
@@ -62,7 +62,7 @@ def parse_arg() -> argparse.Namespace:
     # Create parser.
     parser = argparse.ArgumentParser(
         'python -m lmp.script.evaluate_model_on_sample',
-        description='Evaluate language model.',
+        description='Evaluate language model on given sample.',
     )
 
     # Required arguments.
@@ -144,7 +144,7 @@ def main() -> None:
         batch_prev_tkids=batch_prev_tkids,
     )
 
-    # Output perplexity.
+    # Output perplexity on given sample.
     print(ppl)
 
 

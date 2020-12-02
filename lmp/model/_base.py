@@ -134,6 +134,7 @@ class BaseModel(abc.ABC, torch.nn.Module):
             'method `pred` not implemented yet.'
         )
 
+    @torch.no_grad()
     def ppl(
             self,
             batch_next_tkids: torch.Tensor,
