@@ -2,7 +2,7 @@ r"""Test :py:class:`lmp.tknzr.BaseTknzr` signature."""
 
 import inspect
 from inspect import Parameter, Signature
-from typing import ClassVar, Dict, Optional, Union, get_type_hints
+from typing import ClassVar, Dict, Optional, Union, get_type_hints, Sequence, List
 
 from lmp.tknzr._base import BaseTknzr
 
@@ -47,6 +47,21 @@ def test_class_method():
     assert hasattr(BaseTknzr, 'load')
     assert inspect.ismethod(BaseTknzr.load)
     # TODO: add signature test for the function.
+    assert inspect.signature(BaseTknzr.load) == Signature(
+        parameters=[
+            Parameter(
+                name='cls',
+                kind=Parameter.POSITIONAL_OR_KEYWORD,
+                default=Parameter.empty,
+            ),
+            Parameter(
+                name='exp_name',
+                kind=Parameter.POSITIONAL_OR_KEYWORD,
+                default=Parameter.empty,
+                annotation=str,
+            ),
+        ]
+    )
 
 
 def test_instance_method(subclass_tknzr):
@@ -96,18 +111,160 @@ def test_instance_method(subclass_tknzr):
     # TODO: add signature test for the rest functions.
     assert hasattr(BaseTknzr, 'batch_enc')
     assert inspect.ismethod(subclass_tknzr.batch_enc)
+    assert inspect.signature(BaseTknzr.batch_enc) == Signature(
+        parameters=[
+            Parameter(
+                name='self',
+                kind=Parameter.POSITIONAL_OR_KEYWORD,
+                default=Parameter.empty,
+            ),
+            Parameter(
+                name='batch_txt',
+                kind=Parameter.POSITIONAL_OR_KEYWORD,
+                default=Parameter.empty,
+                annotation=Sequence[str],
+            ),
+            Parameter(
+                name='max_seq_len',
+                kind=Parameter.KEYWORD_ONLY,
+                default=-1,
+                annotation=int,
+            ),
+        ], 
+        return_annotation=List[List[int]]
+    )
     assert hasattr(BaseTknzr, 'batch_dec')
     assert inspect.ismethod(subclass_tknzr.batch_dec)
+    assert inspect.signature(BaseTknzr.batch_dec) == Signature(
+        parameters=[
+            Parameter(
+                name='self',
+                kind=Parameter.POSITIONAL_OR_KEYWORD,
+                default=Parameter.empty,
+            ),
+            Parameter(
+                name='batch_tkids',
+                kind=Parameter.POSITIONAL_OR_KEYWORD,
+                default=Parameter.empty,
+                annotation=Sequence[Sequence[int]],
+            ),
+            Parameter(
+                name='rm_sp_tks',
+                kind=Parameter.KEYWORD_ONLY,
+                default=False,
+                annotation=bool,
+            ),
+        ], 
+        return_annotation=List[str]
+    )
+
     assert hasattr(BaseTknzr, 'build_vocab')
     assert inspect.ismethod(subclass_tknzr.build_vocab)
+    assert inspect.signature(BaseTknzr.build_vocab) == Signature(
+        parameters=[
+            Parameter(
+                name='self',
+                kind=Parameter.POSITIONAL_OR_KEYWORD,
+                default=Parameter.empty,
+            ),
+            Parameter(
+                name='batch_txt',
+                kind=Parameter.POSITIONAL_OR_KEYWORD,
+                default=Parameter.empty,
+                annotation=Sequence[str],
+            ),
+        ], 
+        return_annotation=Signature.empty
+    )
+
     assert hasattr(BaseTknzr, 'dec')
     assert inspect.ismethod(subclass_tknzr.dec)
+    assert inspect.signature(BaseTknzr.dec) == Signature(
+        parameters=[
+            Parameter(
+                name='self',
+                kind=Parameter.POSITIONAL_OR_KEYWORD,
+                default=Parameter.empty,
+            ),
+            Parameter(
+                name='tkids',
+                kind=Parameter.POSITIONAL_OR_KEYWORD,
+                default=Parameter.empty,
+                annotation=Sequence[int],
+            ),
+            Parameter(
+                name='rm_sp_tks',
+                kind=Parameter.KEYWORD_ONLY,
+                default=False,
+                annotation=Optional[bool],
+            ),
+        ], 
+        return_annotation=str
+    )
+
     assert hasattr(BaseTknzr, 'dtknz')
     assert inspect.ismethod(subclass_tknzr.dtknz)
+    assert inspect.signature(BaseTknzr.dtknz) == Signature(
+        parameters=[
+            Parameter(
+                name='self',
+                kind=Parameter.POSITIONAL_OR_KEYWORD,
+                default=Parameter.empty,
+            ),
+            Parameter(
+                name='tks',
+                kind=Parameter.POSITIONAL_OR_KEYWORD,
+                default=Parameter.empty,
+                annotation=Sequence[str],
+            ),
+        ], 
+        return_annotation=str
+    )
+
     assert hasattr(BaseTknzr, 'enc')
     assert inspect.ismethod(subclass_tknzr.enc)
+    assert inspect.signature(BaseTknzr.enc) == Signature(
+        parameters=[
+            Parameter(
+                name='self',
+                kind=Parameter.POSITIONAL_OR_KEYWORD,
+                default=Parameter.empty,
+            ),
+            Parameter(
+                name='txt',
+                kind=Parameter.POSITIONAL_OR_KEYWORD,
+                default=Parameter.empty,
+                annotation=Parameter.empty,
+            ),
+            Parameter(
+                name='max_seq_len',
+                kind=Parameter.KEYWORD_ONLY,
+                default=-1,
+                annotation=Optional[int],
+            ),
+        ], 
+        return_annotation=List[int]
+    )
+
     assert hasattr(BaseTknzr, 'norm')
     assert inspect.ismethod(subclass_tknzr.norm)
+    assert inspect.signature(BaseTknzr.norm) == Signature(
+        parameters=[
+            Parameter(
+                name='self',
+                kind=Parameter.POSITIONAL_OR_KEYWORD,
+                default=Parameter.empty,
+            ),
+            Parameter(
+                name='txt',
+                kind=Parameter.POSITIONAL_OR_KEYWORD,
+                default=Parameter.empty,
+                annotation=str,
+            ),
+        ], 
+        return_annotation=str
+    )
+
     assert hasattr(BaseTknzr, 'save')
     assert inspect.ismethod(subclass_tknzr.save)
     assert inspect.signature(BaseTknzr.save) == Signature(
@@ -128,6 +285,22 @@ def test_instance_method(subclass_tknzr):
     )
     assert hasattr(BaseTknzr, 'tknz')
     assert inspect.ismethod(subclass_tknzr.tknz)
+    assert inspect.signature(BaseTknzr.tknz) == Signature(
+        parameters=[
+            Parameter(
+                name='self',
+                kind=Parameter.POSITIONAL_OR_KEYWORD,
+                default=Parameter.empty,
+            ),
+            Parameter(
+                name='txt',
+                kind=Parameter.POSITIONAL_OR_KEYWORD,
+                default=Parameter.empty,
+                annotation=str,
+            ),
+        ], 
+        return_annotation=List[str]
+    )
 
 
 def test_abstract_method():
