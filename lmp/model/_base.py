@@ -134,6 +134,76 @@ class BaseModel(abc.ABC, torch.nn.Module):
             'method `pred` not implemented yet.'
         )
 
+    def ppl(
+            self,
+            batch_next_tkids: torch.Tensor,
+            batch_prev_tkids: torch.Tensor,
+    ) -> float:
+        r"""Calculate mean perplexity on batch of token ids.
+
+        Perplexity is calculate by the following formula
+
+        .. math::
+
+            \begin{align*}
+            & \text{ppl}(w_1, w_2, \dots, w_n) \\
+            &= \sqrt[n]{\frac{1}{P(w_1, w_2, \dots, w_n)}} \\
+            &= \big(P(w_1, w_2, \dots, w_n)\big)^{\frac{-1}{n}} \\
+            &= \big(
+               P(w_1) P(w_2|w_1) \dots, P(w_n|w_1, \dots, w_{n-1}))
+               \big)^{\frac{-1}{n}} \\
+            &= \big(
+               \prod_{i=1}^n P(w_i|w_1, \dots, w_{i-1})
+               \big)^{\frac{-1}{n}} \\
+            &= e^{\log\big(
+               \prod_{i=1}^n P(w_i|w_1, \dots, w_{i-1})
+               \big)^{\frac{-1}{n}}} \\
+            &= e^{\frac{-1}{n} \sum_{i=1}^n \log P(w_i|w_1, \dots, w_{i-1})}
+            \end{align*}
+
+        Each token ids in batch will calculate their own perplexities then
+        return average perplexity over batch (using arithmatic mean).
+
+        Parameters
+        ==========
+        batch_next_tkids: torch.Tensor
+            Prediction targets.
+            Batch of next token ids encoded by
+            :py:class:`lmp.tknzr.BaseTknzr` subclass instance.
+            ``batch_next_tkids`` has same shape and ``dtype`` as
+            ``batch_prev_tkids``.
+        batch_prev_tkids: torch.Tensor
+            Batch of previous token ids encoded by
+            :py:class:`lmp.tknzr.BaseTknzr` subclass instance.
+            ``batch_prev_tkids`` has shape ``(B, S)`` and
+            ``dtype == torch.int64``.
+
+        Returns
+        =======
+        float
+            Average perplexity on batch of token ids.
+        """
+        # Get next token id's probabilities.
+        # Use `batch_next_tkids` as index to gather values from prediction.
+        # Since prediction has shape `(B, S, V)`, we need to gather along the
+        # last dimension `V`.
+        batch_next_tkids_prob = torch.gather(
+            self.pred(batch_prev_tkids=batch_prev_tkids),
+            -1,
+            batch_next_tkids.unsqueeze(-1)
+        ).squeeze(-1)
+
+        # Calculate perplexity for each token ids sequence in batch.
+        # Convert to log space for numerically save computation.
+        # Exponentiate calculated result to convert back from log space.
+        batch_ppl = (
+            - 1 / batch_next_tkids.size(-1)
+            * batch_next_tkids_prob.log().sum(dim=-1)
+        ).exp()
+
+        # Return average perplexity of the batch.
+        return batch_ppl.mean().item()
+
     def save(self, ckpt: int, exp_name: str) -> None:
         r"""Save model parameters in compressed pickle.
 
