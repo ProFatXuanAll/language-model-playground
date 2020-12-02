@@ -1,8 +1,10 @@
 r"""Test :py:class:`lmp.tknzr.BaseTknzr` signature."""
 
+import argparse
 import inspect
 from inspect import Parameter, Signature
-from typing import ClassVar, Dict, Optional, Union, get_type_hints, Sequence, List
+from typing import (ClassVar, Dict, List, Optional, Sequence, Union,
+                    get_type_hints)
 
 from lmp.tknzr._base import BaseTknzr
 
@@ -46,14 +48,9 @@ def test_class_method():
     r"""Ensure class methods' signature."""
     assert hasattr(BaseTknzr, 'load')
     assert inspect.ismethod(BaseTknzr.load)
-    # TODO: add signature test for the function.
+    assert BaseTknzr.load.__self__ == BaseTknzr
     assert inspect.signature(BaseTknzr.load) == Signature(
         parameters=[
-            Parameter(
-                name='cls',
-                kind=Parameter.POSITIONAL_OR_KEYWORD,
-                default=Parameter.empty,
-            ),
             Parameter(
                 name='exp_name',
                 kind=Parameter.POSITIONAL_OR_KEYWORD,
@@ -105,10 +102,8 @@ def test_instance_method(subclass_tknzr):
                 annotation=Optional[Dict],
             ),
         ],
-        return_annotation=Signature.empty
+        return_annotation=Signature.empty,
     )
-
-    # TODO: add signature test for the rest functions.
     assert hasattr(BaseTknzr, 'batch_enc')
     assert inspect.ismethod(subclass_tknzr.batch_enc)
     assert inspect.signature(BaseTknzr.batch_enc) == Signature(
@@ -130,8 +125,8 @@ def test_instance_method(subclass_tknzr):
                 default=-1,
                 annotation=int,
             ),
-        ], 
-        return_annotation=List[List[int]]
+        ],
+        return_annotation=List[List[int]],
     )
     assert hasattr(BaseTknzr, 'batch_dec')
     assert inspect.ismethod(subclass_tknzr.batch_dec)
@@ -154,8 +149,8 @@ def test_instance_method(subclass_tknzr):
                 default=False,
                 annotation=bool,
             ),
-        ], 
-        return_annotation=List[str]
+        ],
+        return_annotation=List[str],
     )
 
     assert hasattr(BaseTknzr, 'build_vocab')
@@ -173,8 +168,8 @@ def test_instance_method(subclass_tknzr):
                 default=Parameter.empty,
                 annotation=Sequence[str],
             ),
-        ], 
-        return_annotation=Signature.empty
+        ],
+        return_annotation=None,
     )
 
     assert hasattr(BaseTknzr, 'dec')
@@ -198,8 +193,8 @@ def test_instance_method(subclass_tknzr):
                 default=False,
                 annotation=Optional[bool],
             ),
-        ], 
-        return_annotation=str
+        ],
+        return_annotation=str,
     )
 
     assert hasattr(BaseTknzr, 'dtknz')
@@ -217,8 +212,8 @@ def test_instance_method(subclass_tknzr):
                 default=Parameter.empty,
                 annotation=Sequence[str],
             ),
-        ], 
-        return_annotation=str
+        ],
+        return_annotation=str,
     )
 
     assert hasattr(BaseTknzr, 'enc')
@@ -234,7 +229,7 @@ def test_instance_method(subclass_tknzr):
                 name='txt',
                 kind=Parameter.POSITIONAL_OR_KEYWORD,
                 default=Parameter.empty,
-                annotation=Parameter.empty,
+                annotation=str,
             ),
             Parameter(
                 name='max_seq_len',
@@ -242,8 +237,8 @@ def test_instance_method(subclass_tknzr):
                 default=-1,
                 annotation=Optional[int],
             ),
-        ], 
-        return_annotation=List[int]
+        ],
+        return_annotation=List[int],
     )
 
     assert hasattr(BaseTknzr, 'norm')
@@ -261,8 +256,8 @@ def test_instance_method(subclass_tknzr):
                 default=Parameter.empty,
                 annotation=str,
             ),
-        ], 
-        return_annotation=str
+        ],
+        return_annotation=str,
     )
 
     assert hasattr(BaseTknzr, 'save')
@@ -281,7 +276,7 @@ def test_instance_method(subclass_tknzr):
                 annotation=str,
             ),
         ],
-        return_annotation=None
+        return_annotation=None,
     )
     assert hasattr(BaseTknzr, 'tknz')
     assert inspect.ismethod(subclass_tknzr.tknz)
@@ -298,8 +293,8 @@ def test_instance_method(subclass_tknzr):
                 default=Parameter.empty,
                 annotation=str,
             ),
-        ], 
-        return_annotation=List[str]
+        ],
+        return_annotation=List[str],
     )
 
 
@@ -336,3 +331,20 @@ def test_instance_attribute(
             BaseTknzr.pad_tk: BaseTknzr.pad_tkid,
             BaseTknzr.unk_tk: BaseTknzr.unk_tkid,
         }
+
+
+def test_static_method():
+    r"""Ensure static methods' signature."""
+    assert hasattr(BaseTknzr, 'train_parser')
+    assert inspect.isfunction(BaseTknzr.train_parser)
+    assert inspect.signature(BaseTknzr.train_parser) == Signature(
+        parameters=[
+            Parameter(
+                name='parser',
+                kind=Parameter.POSITIONAL_OR_KEYWORD,
+                default=Parameter.empty,
+                annotation=argparse.ArgumentParser,
+            ),
+        ],
+        return_annotation=None,
+    )
