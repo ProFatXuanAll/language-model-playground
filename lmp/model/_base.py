@@ -385,6 +385,7 @@ class BaseModel(abc.ABC, torch.nn.Module):
         ...     '--log_step', '200',
         ...     '--lr', '1e-4',
         ...     '--max_norm', '1',
+        ...     '--max_seq_len', '-1',
         ...     '--n_epoch', '10',
         ...     '--tknzr_exp_name', 'my_tknzr_exp',
         ...     '--ver', 'train',
@@ -409,6 +410,8 @@ class BaseModel(abc.ABC, torch.nn.Module):
         >>> args.lr == 1e-4
         True
         >>> args.max_norm == 1
+        True
+        >>> args.max_seq_len == -1
         True
         >>> args.n_epoch == 10
         True
@@ -485,6 +488,15 @@ class BaseModel(abc.ABC, torch.nn.Module):
             type=float,
         )
         group.add_argument(
+            '--max_seq_len',
+            help=' '.join([
+                'Maximum sequence length constraint.',
+                'Set to `-1` to allow arbitrary token sequence length.'
+            ]),
+            required=True,
+            type=int,
+        )
+        group.add_argument(
             '--n_epoch',
             help='Number of training epochs.',
             required=True,
@@ -498,10 +510,10 @@ class BaseModel(abc.ABC, torch.nn.Module):
         )
         group.add_argument(
             '--ver',
-            help=(
-                'Version of the dataset which is used to train language'
-                + ' model.'
-            ),
+            help=' '.join([
+                'Version of the dataset which is used to train language',
+                'model.',
+            ]),
             required=True,
             type=str,
         )

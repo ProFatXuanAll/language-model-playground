@@ -1,6 +1,5 @@
 r"""LSTM language model."""
 
-import argparse
 from typing import ClassVar, Dict, Optional
 
 import torch.nn as nn

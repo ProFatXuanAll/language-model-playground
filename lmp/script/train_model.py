@@ -27,6 +27,7 @@ The following example train :py:class:`lmp.model.RNNModel` (``RNN``) on
         --log_step 200 \
         --lr 1e-4 \
         --max_norm 1 \
+        --max_seq_len -1 \
         --n_epoch 10 \
         --tknzr_exp_name my_tknzr_exp \
         --ver train \
@@ -60,6 +61,7 @@ might be overfitting if trained to much epochs.
         --log_step 200 \
         --lr 1e-4 \
         --max_norm 1 \
+        --max_seq_len -1 \
         --n_epoch 100 \
         --tknzr_exp_name my_tknzr_exp \
         --ver train \
@@ -96,6 +98,7 @@ One can reduce overfitting with the following way:
         --log_step 200 \
         --lr 1e-4 \
         --max_norm 1 \
+        --max_seq_len -1 \
         --n_epoch 10 \
         --tknzr_exp_name my_tknzr_exp \
         --ver train \
@@ -126,6 +129,7 @@ We also use ``--max_norm`` to avoid gradient explosion.
         --log_step 200 \
         --lr 5e-4 \
         --max_norm 5 \
+        --max_seq_len -1 \
         --n_epoch 10 \
         --tknzr_exp_name my_tknzr_exp \
         --ver train \
@@ -263,7 +267,10 @@ def main() -> None:
         )
         for batch_txt in tqdm_dldr:
             # Encode batch text into batch token ids.
-            batch_tkids = tknzr.batch_enc(batch_txt=batch_txt)
+            batch_tkids = tknzr.batch_enc(
+                batch_txt=batch_txt,
+                max_seq_len=args.max_seq_len,
+            )
 
             # Convert batch token ids to `torch.Tensor` with
             # `dtype == torch.int64`.

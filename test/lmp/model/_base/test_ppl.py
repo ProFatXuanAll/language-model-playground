@@ -6,7 +6,6 @@ Test target:
 
 import pytest
 import torch
-from typing import Dict
 
 from lmp.model._base import BaseModel
 

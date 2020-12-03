@@ -126,7 +126,10 @@ def main() -> None:
 
     # Encode text into token ids.
     # Wrap as batch with only one sample since `model.ppl` only accept batch.
-    batch_tkids = tknzr.batch_enc(batch_txt=[args.txt])
+    batch_tkids = tknzr.batch_enc(
+        batch_txt=[args.txt],
+        max_seq_len=model_cfg.max_seq_len,
+    )
 
     # Convert token ids to `torch.Tensor` with `dtype == torch.int64`.
     batch_tkids = torch.LongTensor(batch_tkids)

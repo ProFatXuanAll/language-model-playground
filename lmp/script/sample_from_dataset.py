@@ -94,10 +94,10 @@ def parse_arg() -> argparse.Namespace:
         dset_parser.add_argument(
             '--ver',
             default=None,
-            help=(
-                f'Version of the {dset_name} dataset. '
-                + f'Defaults to {dset_clss.df_ver}.'
-            ),
+            help=' '.join([
+                f'Version of the {dset_name} dataset.',
+                f'Defaults to {dset_clss.df_ver}.',
+            ]),
             choices=dset_clss.vers,
             type=str,
         )

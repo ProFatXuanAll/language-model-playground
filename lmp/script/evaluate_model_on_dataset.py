@@ -120,10 +120,10 @@ def parse_arg() -> argparse.Namespace:
         dset_parser.add_argument(
             '--ver',
             default=None,
-            help=(
-                f'Version of the {dset_name} dataset. '
-                + f'Defaults to {dset_clss.df_ver}.'
-            ),
+            help=' '.join([
+                f'Version of the {dset_name} dataset.',
+                f'Defaults to {dset_clss.df_ver}.',
+            ]),
             choices=dset_clss.vers,
             type=str,
         )
@@ -182,7 +182,10 @@ def main() -> None:
     for batch_txt in tqdm(dldr):
 
         # Encode batch text into batch of token ids.
-        batch_tkids = tknzr.batch_enc(batch_txt=batch_txt)
+        batch_tkids = tknzr.batch_enc(
+            batch_txt=batch_txt,
+            max_seq_len=model_cfg.max_seq_len,
+        )
 
         # Convert batch of token ids to `torch.Tensor` with
         # `dtype == torch.int64`.

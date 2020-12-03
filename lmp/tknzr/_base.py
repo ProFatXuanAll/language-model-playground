@@ -708,10 +708,10 @@ class BaseTknzr(abc.ABC):
         )
         group.add_argument(
             '--min_count',
-            help=(
-                'Minimum token frequency for token to be included in'
-                + ' vocabulary.'
-            ),
+            help=' '.join([
+                'Minimum token frequency for token to be included in',
+                'vocabulary.',
+            ]),
             required=True,
             type=int,
         )
