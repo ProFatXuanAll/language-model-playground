@@ -313,10 +313,10 @@ class BaseModel(abc.ABC, torch.nn.Module):
 
         file_dir = os.path.join(lmp.path.EXP_PATH, exp_name)
         if not os.path.exists(file_dir):
-            raise FileNotFoundError(
-                f'Experiment file path {file_dir} does not exist.'
-                + ' You must run `python -m lmp.script.train_model` first.'
-            )
+            raise FileNotFoundError(' '.join([
+                f'Experiment file path {file_dir} does not exist.',
+                'You must run `python -m lmp.script.train_model` first.',
+            ]))
 
         # Load latest checkpoint.
         if ckpt == -1:
@@ -334,17 +334,17 @@ class BaseModel(abc.ABC, torch.nn.Module):
         file_path = os.path.join(file_dir, cls.file_name.format(ckpt))
 
         if not os.path.exists(file_path):
-            raise FileNotFoundError(
-                f'Checkpoint file path {file_path} does not exist.'
-                + ' You must run `python -m lmp.script.train_model` first.'
-            )
+            raise FileNotFoundError(' '.join([
+                f'Checkpoint file path {file_path} does not exist.',
+                'You must run `python -m lmp.script.train_model` first.',
+            ]))
 
         if os.path.isdir(file_path):
-            raise FileExistsError(
-                f'Checkpoint file path {file_path} is a directory.'
-                + f' Remove {file_path} first then do'
-                + ' `python -m lmp.script.train_model`.'
-            )
+            raise FileExistsError(' '.join([
+                f'Checkpoint file path {file_path} is a directory.',
+                f'Remove {file_path} first then do',
+                '`python -m lmp.script.train_model`.',
+            ]))
 
         # Construct new model.
         self = cls(**kwargs)

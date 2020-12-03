@@ -1,7 +1,10 @@
 r"""Model utilities."""
 
-from typing import Dict, Optional
+import os
+import re
+from typing import Dict, List, Optional
 
+import lmp.path
 from lmp.model import MODEL_OPTS, BaseModel
 
 
@@ -105,3 +108,58 @@ def load(
     True
     """
     return MODEL_OPTS[model_name].load(ckpt=ckpt, exp_name=exp_name, **kwargs)
+
+
+def list_ckpts(
+        exp_name: str,
+        first_ckpt: int,
+        last_ckpt: int,
+) -> List[int]:
+    r"""List all pre-trained model checkpoint.
+
+    List all pre-trained model checkpoint from ``first_ckpt`` to ``last_ckpt``.
+    Last checkpoint is also included.
+    All checkpoint must named with format ``r'model-\d+.pt'``.
+    If ``first_ckpt == -1``, then only include last checkpoint.
+    If ``last_ckpt == -1``, then include all checkpoint start after
+    ``first_ckpt``.
+
+    Parameters
+    ==========
+    exp_name: str
+        Pre-trained language model experiment name.
+    first_ckpt: int
+        First checkpoint to include.
+    last_ckpt: int
+        Last checkpoint to include.
+
+    Returns
+    =======
+    List[int]
+        All available checkpoints from ``first_ckpt`` to ``last_ckpt``.
+        Checkpoint are sorted in ascending order.
+
+    Raises
+    ======
+    ValueError
+        If no checkpoint is available between ``first_ckpt`` to ``last_ckpt``.
+    """
+    ckpts = os.listdir(os.path.join(lmp.path.EXP_PATH, exp_name))
+    ckpts = filter(lambda ckpt: re.match(r'model-\d+.pt', ckpt), ckpts)
+    ckpts = map(lambda ckpt: re.match(r'model-(\d+).pt', ckpt).group(1), ckpts)
+    ckpts = list(map(int, ckpts))
+
+    if first_ckpt == -1:
+        first_ckpt = max(ckpts)
+    if last_ckpt == -1:
+        last_ckpt = max(ckpts)
+
+    ckpts = list(filter(lambda ckpt: first_ckpt <= ckpt <= last_ckpt, ckpts))
+
+    if not ckpts:
+        raise ValueError(' '.join([
+            f'No checkpoint available between {first_ckpt} to {last_ckpt}.',
+            'You must run `python -m lmp.script.train_model` first.',
+        ]))
+
+    return sorted(ckpts)

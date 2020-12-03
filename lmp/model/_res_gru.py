@@ -51,6 +51,13 @@ class ResGRUBlock(ResRNNBlock):
             p_hid: float,
             **kwargs: Optional[Dict],
     ):
+        super().__init__(
+            d_hid=d_hid,
+            n_hid_lyr=n_hid_lyr,
+            p_hid=p_hid,
+            **kwargs,
+        )
+
         # Create GRU layers and put in module list.
         # GRU in `self.blocks` are treated as sequential GRU.
         # Input              : Output of `ResGRUModel.pre_hid`.

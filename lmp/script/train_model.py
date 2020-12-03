@@ -2,6 +2,9 @@ r"""Train language model.
 
 Tool for training language model on particular dataset.
 This script is usually run after training tokenizer.
+Training performance will be shown on both CLI and tensorboard.
+Use ``pipenv run tensorboard`` to launch tensorboard and use browser to open
+URL http://localhost:6006/ to see training performance.
 
 See Also
 ========
@@ -317,13 +320,15 @@ def main() -> None:
 
             # Log performance for each `log_step` step.
             if step % args.log_step == 0:
+                avg_loss = avg_loss / args.log_step
+
                 # Log on CLI.
                 tqdm_dldr.set_description(
                     f'epoch: {epoch}, loss:{avg_loss:.6f}',
                 )
 
                 # Log on tensorboard
-                writer.add_scalar('loss', avg_loss / args.log_step, step)
+                writer.add_scalar('loss', avg_loss, step)
 
                 # Refresh log performance.
                 pre_avg_loss = avg_loss

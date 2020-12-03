@@ -11,10 +11,3 @@ for language model and generate text using language model.
 - :py:mod:`lmp.tknzr` define all available tokenizers.
 - :py:mod:`lmp.util` contains utilities shared throughout this project.
 """
-
-
-import lmp.dset
-import lmp.model
-import lmp.path
-import lmp.script
-import lmp.tknzr

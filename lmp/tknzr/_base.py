@@ -232,17 +232,17 @@ class BaseTknzr(abc.ABC):
         file_path = os.path.join(lmp.path.EXP_PATH, exp_name, cls.file_name)
 
         if not os.path.exists(file_path):
-            raise FileNotFoundError(
-                f'Tokenizer file path {file_path} does not exist.'
-                + ' You must run `python -m lmp.script.train_tokenizer` first.'
-            )
+            raise FileNotFoundError(' '.join([
+                f'Tokenizer file path {file_path} does not exist.',
+                'You must run `python -m lmp.script.train_tokenizer` first.',
+            ]))
 
         if os.path.isdir(file_path):
-            raise FileExistsError(
-                f'Tokenizer file path {file_path} is a directory.'
-                + f' Remove {file_path} first then do'
-                + ' `python -m lmp.script.train_tokenizer`.'
-            )
+            raise FileExistsError(' '.join([
+                f'Tokenizer file path {file_path} is a directory.',
+                f'Remove {file_path} first then do',
+                '`python -m lmp.script.train_tokenizer`.',
+            ]))
 
         with open(file_path, 'r', encoding='utf-8') as input_file:
             return cls(**json.load(input_file))

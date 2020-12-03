@@ -59,6 +59,8 @@ class ResRNNBlock(nn.Module):
             p_hid: float,
             **kwargs: Optional[Dict],
     ):
+        super().__init__()
+
         # Create vanilla RNN layers and put in module list.
         # RNN in `self.blocks` are treated as sequential RNN.
         # Input              : Output of `ResRNNModel.pre_hid`.

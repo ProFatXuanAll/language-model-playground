@@ -51,6 +51,13 @@ class ResLSTMBlock(ResRNNBlock):
             p_hid: float,
             **kwargs: Optional[Dict],
     ):
+        super().__init__(
+            d_hid=d_hid,
+            n_hid_lyr=n_hid_lyr,
+            p_hid=p_hid,
+            **kwargs,
+        )
+
         # Create LSTM layers and put in module list.
         # LSTM in `self.blocks` are treated as sequential LSTM.
         # Input              : Output of `ResLSTMModel.pre_hid`.
