@@ -8,9 +8,9 @@ from lmp.tknzr._base import BaseTknzr
 
 
 @pytest.fixture
-def subclass_tknzr_clss() -> Type[BaseTknzr]:
+def subclss_tknzr_clss() -> Type[BaseTknzr]:
     r"""Simple ``BaseTknzr`` subclass."""
-    class SubclassTknzr(BaseTknzr):
+    class SubclssTknzr(BaseTknzr):
         r"""Only implement ``tknz`` and ``dtknz``."""
 
         def tknz(self, txt: str) -> List[str]:
@@ -19,19 +19,19 @@ def subclass_tknzr_clss() -> Type[BaseTknzr]:
         def dtknz(self, tks: List[str]) -> str:
             return ''.join(tks)
 
-    return SubclassTknzr
+    return SubclssTknzr
 
 
 @pytest.fixture
-def subclass_tknzr(
+def subclss_tknzr(
         is_uncased: bool,
         max_vocab: int,
         min_count: int,
-        subclass_tknzr_clss: Type[BaseTknzr],
+        subclss_tknzr_clss: Type[BaseTknzr],
         tk2id: Union[None, Dict[str, int]],
 ):
     r"""Simple ``BaseTknzr`` subclass instance."""
-    return subclass_tknzr_clss(
+    return subclss_tknzr_clss(
         is_uncased,
         max_vocab,
         min_count,
