@@ -1,6 +1,9 @@
 :py:mod:`lmp.util`
 ==================
 
+.. automodule:: lmp.util
+    :members:
+
 .. toctree::
     :maxdepth: 1
     :caption: Available utilities:

@@ -69,7 +69,8 @@ def load(exp_name: str, tknzr_name: str) -> BaseTknzr:
     >>> from lmp.tknzr import WsTknzr
     >>> import lmp.util.tknzr
     >>> tknzr = lmp.util.tknzr.create(
-    ...     tknzr_name='whitespace', is_uncased=True, max_vocab=10, min_count=2,
+    ...     tknzr_name='whitespace', is_uncased=True, max_vocab=10,
+    ...     min_count=2,
     ... )
     >>> tknzr.save(exp_name='my_exp')
     >>> isinstance(

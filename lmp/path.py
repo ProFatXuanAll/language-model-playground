@@ -1,15 +1,32 @@
-r"""Path variables.
+r"""Path variables shared throughout this project.
+
+Attributes
+==========
+PROJECT_ROOT: Final[str]
+    Absolute path of the project root directory.
+DATA_PATH: Final[str]
+    Absolute path of all the dataset.
+    Some of the dataset size are too big to be tracked on GitHub, thus we need
+    to use ``git lfs`` to track large file storage.
+EXP_PATH: Final[str]
+    Absolute path of all experiments.
+    Experiment are ignore by `.git`, no experiment results (model checkpoints,
+    tokenizer cofiguration, etc.) will be commited.
+LOG_PATH: Final[str]
+    Absolute path of all experiments' log.
+    Experiment are ignore by `.git`, no experiment logs will be commited.
 
 Example
 =======
-
-::
-
-    import lmp.path
-
-    data_path = lmp.path.DATA_PATH
-    exp_path = lmp.path.EXP_PATH
-    log_path = lmp.path.LOG_PATH
+>>> import lmp.path
+>>> isinstance(lmp.path.PROJECT_ROOT, str)
+True
+>>> isinstance(lmp.path.DATA_PATH, str)
+True
+>>> isinstance(lmp.path.EXP_PATH, str)
+True
+>>> isinstance(lmp.path.LOG_PATH, str)
+True
 """
 
 

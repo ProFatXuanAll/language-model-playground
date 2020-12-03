@@ -1,6 +1,9 @@
 :py:mod:`lmp.script`
 ====================
 
+.. automodule:: lmp.script
+    :members:
+
 .. toctree::
     :maxdepth: 1
     :caption: Available scripts:
