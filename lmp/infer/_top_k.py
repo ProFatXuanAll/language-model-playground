@@ -1,6 +1,7 @@
-r"""Top ``1`` inference method."""
+r"""Top ``K`` inference method."""
 
-from typing import ClassVar
+import argparse
+from typing import ClassVar, Dict, Optional
 
 import torch
 
@@ -9,19 +10,36 @@ from lmp.model import BaseModel
 from lmp.tknzr import BaseTknzr
 
 
-class Top1Infer(BaseInfer):
-    r"""Top ``1`` inference method.
+class TopKInfer(BaseInfer):
+    r"""Top ``K`` inference method.
 
-    Use index with maximum probability as next token id prediction.
-    It is a greedy algorithm, simple but lack of dynamic.
+    Use indice with the top ``K`` highest probability as possible next token
+    id, then randomly choose ``1`` index out of ``K`` as next token id
+    prediction.
+    It is a non-greedy algorithm since the best prediction is not always
+    choosen, but it provide dynamic of generation result (because of
+    randomness, obviously).
+
+    For comment throughout this class and its subclasses, we use ``K`` to
+    denote the number of candidate token ids with highest probabilities then
+    the rest during the process of text generation.
 
     Attributes
     ==========
     infer_name: ClassVar[str]
-        Inference method name is ``top-1``.
+        Inference method name is ``top-k``.
         Used for command line argument parsing.
     """
-    infer_name: ClassVar[str] = 'top-1'
+    infer_name: ClassVar[str] = 'top-k'
+
+    def __init__(self, k: int, max_seq_len: int, **kwargs: Optional[Dict]):
+        super().__init__(max_seq_len=max_seq_len)
+        if not isinstance(k, int):
+            raise TypeError('`k` must be an instance of `int`.')
+        if not k > 0:
+            raise ValueError('`k` must satisfy `k > 0`.')
+
+        self.k = k
 
     @torch.no_grad()
     def gen(
@@ -32,7 +50,7 @@ class Top1Infer(BaseInfer):
     ) -> str:
         r"""Generate text conditional on text segment.
 
-        Top ``1`` inference algorithm is structured as follow:
+        Top ``K`` inference algorithm is structured as follow:
 
         #. Encode input text as ``1`` sample batch.
            (shape: ``(1, S')``)
@@ -48,8 +66,14 @@ class Top1Infer(BaseInfer):
                (shape: ``(1, S, V)``)
             #. Get the last next token id probability distribution.
                (shape: ``(1, V)``)
-            #. Get the index with maximum probability as the last next token id
-               prediction result.
+            #. Get the top ``K`` highest probability distribution and their
+               respective indices.
+               (shape: ``(1, K)``)
+            #. Use top ``K`` highest probability to construct multinomial
+               distribution.
+            #. Sample ``1`` index from top ``K`` indices tensor using
+               previously constructed multinomial distribution.
+               Use sampled index as next token id prediction result.
                (shape: ``(1, 1)``)
             #. Concate the last next token id prediction result with previous
                next token id prediction result.
@@ -129,17 +153,52 @@ class Top1Infer(BaseInfer):
             # Output dtype : `torch.float32`.
             batch_next_tkid_probs = batch_next_tkids_probs[:, -1]
 
-            # Use token id with the largest probability among the rest as
+            # Use the top K highest probabilities among the rest as possible
             # next token prediction result.
-            # Input tensor : The last next token id probability distribution.
-            # Input shape  : `(1, V)`.
-            # Input dtype  : `torch.float32`.
-            # Output tensor: The last next token id prediction result.
-            # Output shape : `(1, 1)`.
-            # Output dtype : `torch.int64`.
-            batch_next_tkid = batch_next_tkid_probs.argmax(
+            # Input tensor                   : The last next token id
+            #                                  probability distribution.
+            # Input shape                    : `(1, V)`.
+            # Input dtype                    : `torch.float32`.
+            # `batch_topk_tkid_probs` tensor : The top K next token id
+            #                                  probability distribution.
+            # `batch_topk_tkid_probs` shape  : `(1, K)`.
+            # `batch_topk_tkid_probs` dtype  : `torch.float32`.
+            # `batch_topk_tkid` tensor       : The top K next token id.
+            # `batch_topk_tkid` shape        : `(1, K)`.
+            # `batch_topk_tkid` dtype        : `torch.int64`.
+            (
+                batch_topk_tkid_probs,
+                batch_topk_tkid,
+            ) = batch_next_tkid_probs.topk(
+                k=self.k,
                 dim=-1,
-                keepdim=True,
+            )
+
+            # Use the top K highest probabilities to construct multinomial
+            # distribution, then sample index from multinomial distribution as
+            # the last next token id prediction result.
+            # Input tensor          : The top K next token id probability
+            #                         distribution.
+            # Input shape           : `(1, K)`.
+            # Input dtype           : `torch.float32`.
+            # Candidate index tensor: Sampled index of the top K next token id.
+            #                         Sampled index is not a token id but is
+            #                         an index of top K next token id tensor.
+            # Candidate index shape : `(1, 1)`.
+            # Candidate index dtype : `torch.int64`.
+            # Next token id tensor  : Sampled token id from top K.
+            #                         Use sampled index to get sampled token
+            #                         id from top K next token id tensor.
+            # Next token id shape   : `(1, 1)`.
+            # Next token id dtype   : `torch.int64`.
+            batch_next_tkid_cand_idx = torch.multinomial(
+                batch_topk_tkid_probs,
+                num_samples=1,
+            )
+            batch_next_tkid = torch.gather(
+                batch_topk_tkid,
+                -1,
+                batch_next_tkid_cand_idx,
             )
 
             # Concate the last next token id prediction result with previous
@@ -165,3 +224,52 @@ class Top1Infer(BaseInfer):
             batch_tkids=batch_prev_tkids.tolist(),
             rm_sp_tks=True,
         )[0]
+
+    @staticmethod
+    def infer_parser(parser: argparse.ArgumentParser) -> None:
+        r"""Top ``K`` inference method CLI arguments parser.
+
+        Parameters
+        ==========
+        parser: argparse.ArgumentParser
+            Parser for CLI arguments.
+
+        See Also
+        ========
+        lmp.script.generate_text
+            Generate text using pre-trained language model.
+
+        Examples
+        ========
+        >>> import argparse
+        >>> from lmp.infer import TopKInfer
+        >>> parser = argparse.ArgumentParser()
+        >>> TopKInfer.infer_parser(parser)
+        >>> args = parser.parse_args([
+        ...     '--ckpt', '5000',
+        ...     '--exp_name', 'my_exp',
+        ...     '--k', '10',
+        ...     '--txt', 'Hello world',
+        ... ])
+        >>> args.ckpt == 5000
+        True
+        >>> args.exp_name == 'my_exp'
+        True
+        >>> args.k == 10
+        True
+        >>> args.txt == 'Hello world'
+        True
+        >>> args.seed == 42
+        True
+        """
+        # Load common arguments.
+        BaseInfer.infer_parser(parser=parser)
+
+        # Required arguments.
+        group = parser.add_argument_group('inference method arguments')
+        group.add_argument(
+            '--k',
+            help='Sample from token ids with top k highest probabilities.',
+            required=True,
+            type=int,
+        )

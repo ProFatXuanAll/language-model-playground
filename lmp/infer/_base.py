@@ -124,13 +124,13 @@ class BaseInfer(abc.ABC):
         ...     '--exp_name', 'my_exp',
         ...     '--txt', 'Hello world',
         ... ])
-        >>> arg.ckpt == 5000
+        >>> args.ckpt == 5000
         True
-        >>> arg.exp_name == 'my_exp'
+        >>> args.exp_name == 'my_exp'
         True
-        >>> arg.txt == 'Hello world'
+        >>> args.txt == 'Hello world'
         True
-        >>> arg.seed == 42
+        >>> args.seed == 42
         True
         """
         # Required arguments.
