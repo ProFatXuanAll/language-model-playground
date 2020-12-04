@@ -17,7 +17,7 @@ class BaseModel(abc.ABC, torch.nn.Module):
 
     Provide basic functionality for save and load pred-trained model
     parameters.
-    All language model must inherit :py:class:`lmp.model.BaseModel`.
+    All language models must inherit :py:class:`lmp.model.BaseModel`.
 
     For comment throughout this class and its subclasses, we use the following
     symbols to denote the shape of tensors:
@@ -524,7 +524,7 @@ class BaseModel(abc.ABC, torch.nn.Module):
             type=float,
         )
 
-        # Optional Arguments.
+        # Optional arguments.
         group.add_argument(
             '--seed',
             default=42,

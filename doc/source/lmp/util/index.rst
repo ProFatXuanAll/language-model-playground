@@ -10,6 +10,7 @@
 
     cfg.py
     dset.py
+    infer.py
     log.py
     model.py
     rand.py

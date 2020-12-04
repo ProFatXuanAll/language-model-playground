@@ -9,6 +9,7 @@
     :caption: Contents:
 
     dset/index
+    infer/index
     model/index
     path.py
     script/index
