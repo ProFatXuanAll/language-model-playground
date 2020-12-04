@@ -62,10 +62,10 @@ class BaseModel(abc.ABC, torch.nn.Module):
         NotImplementedError
             When subclass do not implement forward pass.
         """
-        raise NotImplementedError(
-            f'In class `{self.__class__.__name__}`: '
-            'method `forward` not implemented yet.'
-        )
+        raise NotImplementedError(' '.join([
+            f'In class `{self.__class__.__name__}`:',
+            'method `forward` not implemented yet.',
+        ]))
 
     @abc.abstractmethod
     def loss_fn(
@@ -100,10 +100,10 @@ class BaseModel(abc.ABC, torch.nn.Module):
         NotImplementedError
             When subclass do not implement loss function.
         """
-        raise NotImplementedError(
-            f'In class `{self.__class__.__name__}`: '
-            'method `loss_fn` not implemented yet.'
-        )
+        raise NotImplementedError(' '.join([
+            f'In class `{self.__class__.__name__}`:',
+            'method `loss_fn` not implemented yet.',
+        ]))
 
     @abc.abstractmethod
     def pred(self, batch_prev_tkids: torch.Tensor) -> torch.Tensor:
@@ -129,10 +129,10 @@ class BaseModel(abc.ABC, torch.nn.Module):
         NotImplementedError
             When subclass do not implement next token prediction.
         """
-        raise NotImplementedError(
-            f'In class `{self.__class__.__name__}`: '
-            'method `pred` not implemented yet.'
-        )
+        raise NotImplementedError(' '.join([
+            f'In class `{self.__class__.__name__}`:',
+            'method `pred` not implemented yet.',
+        ]))
 
     @torch.no_grad()
     def ppl(

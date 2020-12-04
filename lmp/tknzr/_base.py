@@ -306,10 +306,10 @@ class BaseTknzr(abc.ABC):
         lmp.tknzr.BaseTknzr.dtknz
         lmp.tknzr.BaseTknzr.norm
         """
-        raise NotImplementedError(
-            f'In class `{self.__class__.__name__}`: '
-            'method `tknz` not implemented yet.'
-        )
+        raise NotImplementedError(' '.join([
+            f'In class `{self.__class__.__name__}`:',
+            'method `tknz` not implemented yet.',
+        ]))
 
     @abc.abstractmethod
     def dtknz(self, tks: Sequence[str]) -> str:
@@ -338,10 +338,10 @@ class BaseTknzr(abc.ABC):
         lmp.tknzr.BaseTknzr.tknz
         lmp.tknzr.BaseTknzr.norm
         """
-        raise NotImplementedError(
-            f'In class `{self.__class__.__name__}`: '
-            'method `dtknz` not implemented yet.'
-        )
+        raise NotImplementedError(' '.join([
+            f'In class `{self.__class__.__name__}`:',
+            'method `dtknz` not implemented yet.',
+        ]))
 
     def enc(self, txt: str, *, max_seq_len: Optional[int] = -1) -> List[int]:
         r"""Encode text into sequence of :term:`token id`\s.

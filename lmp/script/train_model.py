@@ -266,7 +266,7 @@ def main() -> None:
     for epoch in range(args.n_epoch):
         tqdm_dldr = tqdm(
             dldr,
-            desc=f'epoch: {epoch}, loss:{pre_avg_loss:.6f}',
+            desc=f'epoch: {epoch}, loss: {pre_avg_loss:.6f}',
         )
         for batch_txt in tqdm_dldr:
             # Encode batch text into batch token ids.
@@ -324,7 +324,7 @@ def main() -> None:
 
                 # Log on CLI.
                 tqdm_dldr.set_description(
-                    f'epoch: {epoch}, loss:{avg_loss:.6f}',
+                    f'epoch: {epoch}, loss: {avg_loss:.6f}',
                 )
 
                 # Log on tensorboard

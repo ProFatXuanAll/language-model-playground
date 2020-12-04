@@ -56,8 +56,14 @@ class BaseInfer(abc.ABC):
     def __init__(self, max_seq_len: int, **kwargs: Optional[Dict]):
         if not isinstance(max_seq_len, int):
             raise TypeError('`max_seq_len` must be an instance of `int`.')
+
+        # Set `self.max_seq_len` to `self.__class__.hard_max_seq_len` if
+        # violate maximum sequence length constraint.
         if not (0 <= max_seq_len <= self.__class__.hard_max_seq_len):
             self.max_seq_len = self.__class__.hard_max_seq_len
+        # Use `max_seq_len` normally.
+        else:
+            self.max_seq_len = max_seq_len
 
     @torch.no_grad()
     @abc.abstractmethod
