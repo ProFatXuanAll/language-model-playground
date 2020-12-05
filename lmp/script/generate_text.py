@@ -10,6 +10,8 @@ See Also
 ========
 lmp.model
     All available models.
+lmp.infer
+    All available inference methods.
 lmp.script.train_model
     Train language model.
 
