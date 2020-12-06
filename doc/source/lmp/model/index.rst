@@ -15,3 +15,6 @@
     ResGRUModel.py
     ResLSTMModel.py
     ResRNNModel.py
+    SAttnGRUModel.py
+    SAttnLSTMModel.py
+    SAttnRNNModel.py

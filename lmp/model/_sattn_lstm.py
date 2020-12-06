@@ -1,29 +1,30 @@
-r"""LSTM language model with residual connection."""
+r"""LSTM language model with self attention mechanism."""
 
 from typing import ClassVar, Dict, Optional
 
 import torch.nn as nn
 
-from lmp.model._res_rnn import ResRNNBlock, ResRNNModel
+from lmp.model._sattn_rnn import SAttnRNNBlock, SAttnRNNModel
 from lmp.tknzr._base import BaseTknzr
 
 
-class ResLSTMBlock(ResRNNBlock):
-    r"""Residual connected LSTM blocks.
+class SAttnLSTMBlock(SAttnRNNBlock):
+    r"""LSTM block with self attention mechanism.
 
-    Same architecture as :py:class:`lmp.model.ResRNNBlock` but replace RNN
+    Same architecture as :py:class:`lmp.model.SAttnRNNBlock` but replace RNN
     with LSTM instead.
 
     Parameters
     ==========
     d_hid: int
-        Hidden dimension for residual connected LSTM.
+        Hidden dimension for LSTM and self attention linear transformation
+        weights (including query, key, value and output).
         Must be bigger than or equal to ``1``.
     kwargs: Dict, optional
         Useless parameter.
         Left intended for subclass parameters extension.
     n_hid_lyr: int
-        Number of residual connected LSTM layers.
+        Number of self attention LSTM layers.
         Must be bigger than or equal to ``1``.
     p_hid: float
         Dropout probability for every hidden representations.
@@ -31,16 +32,15 @@ class ResLSTMBlock(ResRNNBlock):
 
     Attributes
     ==========
-    blocks: torch.nn.ModuleList[torch.nn.LSTM]
+    recur: torch.nn.ModuleList[torch.nn.LSTM]
         List of LSTM which encode temporal features.
         Each time step's hidden state depends on current input and previous
         hidden state.
-    blocks_dp: torch.nn.ModuleList[torch.nn.Dropout]
-        Drop each output temporal features of ``self.blocks`` with
-        probability ``p_hid``.
-        Do not dropout last temporal features output from ``self.blocks[-1]``
-        since :py:class:`lmp.model.ResLSTMModel` have ``self.post_hid`` which
-        drop output of ``self.hid``.
+
+    See Also
+    ========
+    lmp.model.SAttnLSTMModel
+        Model use self attention LSTM blocks.
     """
 
     def __init__(
@@ -59,23 +59,23 @@ class ResLSTMBlock(ResRNNBlock):
         )
 
         # Override RNN layer with LSTM.
-        # Input              : Output of `ResLSTMModel.pre_hid`.
+        # Input              : Output of `SAttnLSTMModel.pre_hid`.
         # Input shape        : `(B, S, H)`.
         # Input tensor dtype : `torch.float32`.
         # Output             : Batch of recurrent token hidden states.
         # Output shape       : `(B, S, H)`.
         # Output tensor dtype: `torch.float32`.
-        self.blocks = nn.ModuleList([
+        self.recur = nn.ModuleList([
             nn.LSTM(input_size=d_hid, hidden_size=d_hid, batch_first=True)
             for _ in range(n_hid_lyr)
         ])
 
 
-class ResLSTMModel(ResRNNModel):
-    r"""LSTM language model with residual connection.
+class SAttnLSTMModel(SAttnRNNModel):
+    r"""LSTM language model with self attention mechanism.
 
-    Same architecture as :py:class:`lmp.model.ResRNNModel` but use residual
-    connection on LSTM layer.
+    Same architecture as :py:class:`lmp.model.SAttnRNNModel` but use self
+    attention on LSTM layer.
 
     Parameters
     ==========
@@ -83,21 +83,21 @@ class ResLSTMModel(ResRNNModel):
         Token embedding dimension.
         Must be bigger than or equal to ``1``.
     d_hid: int
-        Hidden dimension for MLP and residual connected LSTM.
+        Hidden dimension for MLP and self attention LSTM.
         Must be bigger than or equal to ``1``.
     kwargs: Dict, optional
         Useless parameter.
         Left intended for subclass parameters extension.
     n_hid_lyr: int
-        Number of residual connected LSTM layers.
+        Number of self attention LSTM layers.
         Must be bigger than or equal to ``1``.
     n_post_hid_lyr: int
-        Number of MLP layers ``+1`` after residual connected LSTM layer.
+        Number of MLP layers ``+1`` after self attention LSTM layer.
         ``+1`` since we need at least one MLP layer to transform dimension.
         (If you want 2 layers, then you need to set ``n_post_hid_lyr = 1``.)
         Must be bigger than or equal to ``1``.
     n_pre_hid_lyr: int
-        Number of MLP layers ``+1`` before residual connected LSTM layer.
+        Number of MLP layers ``+1`` before self attention LSTM layer.
         ``+1`` since we need at least one MLP layer to transform dimension.
         (If you want 2 layers, then you need to set ``n_pre_hid_lyr = 1``.)
         Must be bigger than or equal to ``1``.
@@ -112,16 +112,16 @@ class ResLSTMModel(ResRNNModel):
 
     Attributes
     ==========
-    hid: ResLSTMBlock
-        Residual connected LSTM which encode temporal features.
+    hid: lmp.model.SAttnLSTMBlock
+        Self attention LSTM which encode temporal features.
         Each time step's hidden state depends on current input and previous
         hidden state.
         Drop temporal features with probability ``p_hid``.
     model_name: ClassVar[str]
-        Model name is ``res-LSTM``.
+        Model name is ``sattn-LSTM``.
         Used for command line argument parsing.
     """
-    model_name: ClassVar[str] = 'res-LSTM'
+    model_name: ClassVar[str] = 'sattn-LSTM'
 
     def __init__(
             self,
@@ -148,14 +148,14 @@ class ResLSTMModel(ResRNNModel):
             **kwargs,
         )
 
-        # Override residual connected RNN layer with residual connected LSTM.
+        # Override self attention RNN layer with self attention LSTM.
         # Input              : Output of `self.pre_hid`.
         # Input shape        : `(B, S, H)`.
         # Input tensor dtype : `torch.float32`.
         # Output             : Batch of recurrent token hidden states.
         # Output shape       : `(B, S, H)`.
         # Output tensor dtype: `torch.float32`.
-        self.hid = ResLSTMBlock(
+        self.hid = SAttnLSTMBlock(
             d_hid=d_hid,
             n_hid_lyr=n_hid_lyr,
             p_hid=p_hid,

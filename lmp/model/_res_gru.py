@@ -11,8 +11,8 @@ from lmp.tknzr._base import BaseTknzr
 class ResGRUBlock(ResRNNBlock):
     r"""Residual connected GRU blocks.
 
-    Each output of GRU will be added with its input and then dropout with
-    probability ``p_hid``.
+    Same architecture as :py:class:`lmp.model.ResRNNBlock` but replace RNN
+    with GRU instead.
 
     Parameters
     ==========
@@ -58,8 +58,7 @@ class ResGRUBlock(ResRNNBlock):
             **kwargs,
         )
 
-        # Create GRU layers and put in module list.
-        # GRU in `self.blocks` are treated as sequential GRU.
+        # Override RNN layer with GRU.
         # Input              : Output of `ResGRUModel.pre_hid`.
         # Input shape        : `(B, S, H)`.
         # Input tensor dtype : `torch.float32`.
@@ -75,7 +74,7 @@ class ResGRUBlock(ResRNNBlock):
 class ResGRUModel(ResRNNModel):
     r"""GRU language model with residual connection.
 
-    Same architecture as :py:class:`lmp.model.GRUModel` but use residual
+    Same architecture as :py:class:`lmp.model.ResRNNModel` but use residual
     connection on GRU layer.
 
     Parameters
@@ -150,8 +149,6 @@ class ResGRUModel(ResRNNModel):
         )
 
         # Override residual connected RNN layer with residual connected GRU.
-        # Each time step's hidden state depends on current input and previous
-        # hidden state.
         # Input              : Output of `self.pre_hid`.
         # Input shape        : `(B, S, H)`.
         # Input tensor dtype : `torch.float32`.

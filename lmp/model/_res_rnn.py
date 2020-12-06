@@ -248,8 +248,6 @@ class ResRNNModel(RNNModel):
         )
 
         # Override RNN layer with residual connected RNN.
-        # Each time step's hidden state depends on current input and previous
-        # hidden state.
         # Input              : Output of `self.pre_hid`.
         # Input shape        : `(B, S, H)`.
         # Input tensor dtype : `torch.float32`.
