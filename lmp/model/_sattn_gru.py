@@ -59,12 +59,12 @@ class SAttnGRUBlock(SAttnRNNBlock):
         )
 
         # Override RNN layer with GRU.
-        # Input              : Output of `SAttnGRUModel.pre_hid`.
-        # Input shape        : `(B, S, H)`.
-        # Input tensor dtype : `torch.float32`.
-        # Output             : Batch of recurrent token hidden states.
-        # Output shape       : `(B, S, H)`.
-        # Output tensor dtype: `torch.float32`.
+        # Input tensor : Output of `SAttnGRUModel.pre_hid`.
+        # Input shape  : `(B, S, H)`.
+        # Input dtype  : `torch.float32`.
+        # Output tensor: Batch of recurrent token hidden states.
+        # Output shape : `(B, S, H)`.
+        # Output dtype : `torch.float32`.
         self.recur = nn.ModuleList([
             nn.GRU(input_size=d_hid, hidden_size=d_hid, batch_first=True)
             for _ in range(n_hid_lyr)
@@ -149,12 +149,12 @@ class SAttnGRUModel(SAttnRNNModel):
         )
 
         # Override self attention RNN layer with self attention GRU.
-        # Input              : Output of `self.pre_hid`.
-        # Input shape        : `(B, S, H)`.
-        # Input tensor dtype : `torch.float32`.
-        # Output             : Batch of recurrent token hidden states.
-        # Output shape       : `(B, S, H)`.
-        # Output tensor dtype: `torch.float32`.
+        # Input tensor : Output of `self.pre_hid`.
+        # Input shape  : `(B, S, H)`.
+        # Input dtype  : `torch.float32`.
+        # Output tensor: Batch of recurrent token hidden states.
+        # Output shape : `(B, S, H)`.
+        # Output dtype : `torch.float32`.
         self.hid = SAttnGRUBlock(
             d_hid=d_hid,
             n_hid_lyr=n_hid_lyr,

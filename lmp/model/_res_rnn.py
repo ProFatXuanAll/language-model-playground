@@ -14,6 +14,17 @@ class ResRNNBlock(nn.Module):
 
     Each output of RNN will be added with its input and then dropout with
     probability ``p_hid``.
+    Residual connection are used as follow:
+
+    .. math::
+
+        \begin{align*}
+        t &\in [1, S] \\
+        l &\in [1, L] \\
+        h_{l, t} &= \text{RNN}(h_{l, t-1}) + h_{l, t-1}
+        \end{align*}
+
+    Where :math:`S` means ``seq_len`` and :math:`L` means ``n_hid_lyr``.
 
     For comment throughout this class and its subclasses, we use the following
     symbols to denote the shape of tensors:
@@ -39,16 +50,16 @@ class ResRNNBlock(nn.Module):
 
     Attributes
     ==========
-    blocks: torch.nn.ModuleList[torch.nn.RNN]
+    dp: torch.nn.ModuleList[torch.nn.Dropout]
+        Drop each output temporal features of ``self.recur`` with
+        probability ``p_hid``.
+        Do not dropout last temporal features output from ``self.recur[-1]``
+        since :py:class:`lmp.model.ResRNNModel` have ``self.post_hid`` which
+        drop output of ``self.hid``.
+    recur: torch.nn.ModuleList[torch.nn.RNN]
         List of vanilla RNN which encode temporal features.
         Each time step's hidden state depends on current input and previous
         hidden state.
-    blocks_dp: torch.nn.ModuleList[torch.nn.Dropout]
-        Drop each output temporal features of ``self.blocks`` with
-        probability ``p_hid``.
-        Do not dropout last temporal features output from ``self.blocks[-1]``
-        since :py:class:`lmp.model.ResRNNModel` have ``self.post_hid`` which
-        drop output of ``self.hid``.
     """
 
     def __init__(
@@ -62,14 +73,14 @@ class ResRNNBlock(nn.Module):
         super().__init__()
 
         # Create vanilla RNN layers and put in module list.
-        # RNN in `self.blocks` are treated as sequential RNN.
-        # Input              : Output of `ResRNNModel.pre_hid`.
-        # Input shape        : `(B, S, H)`.
-        # Input tensor dtype : `torch.float32`.
-        # Output             : Batch of recurrent token hidden states.
-        # Output shape       : `(B, S, H)`.
-        # Output tensor dtype: `torch.float32`.
-        self.blocks = nn.ModuleList([
+        # RNN in `self.recur` are treated as sequential RNN.
+        # Input tensor : Output of `ResRNNModel.pre_hid`.
+        # Input shape  : `(B, S, H)`.
+        # Input dtype  : `torch.float32`.
+        # Output tensor: Batch of recurrent token hidden states.
+        # Output shape : `(B, S, H)`.
+        # Output dtype : `torch.float32`.
+        self.recur = nn.ModuleList([
             nn.RNN(input_size=d_hid, hidden_size=d_hid, batch_first=True)
             for _ in range(n_hid_lyr)
         ])
@@ -77,16 +88,16 @@ class ResRNNBlock(nn.Module):
         # Create dropout layers.
         # Only need to create `n_hid_lyr - 1` since `ResRNNModel.post_hid`
         # drop output of `ResRNNModel.hid`.
-        # Input              : Output of `self.blocks`.
-        # Input shape        : `(B, S, H)`.
-        # Input tensor dtype : `torch.float32`.
-        # Output             : Batch of sparse recurrent token hidden states.
-        # Output shape       : `(B, S, H)`.
-        # Output tensor dtype: `torch.float32`.
-        self.blocks_dp = nn.ModuleList([
-            nn.Dropout(p=p_hid)
-            for _ in range(n_hid_lyr - 1)
-        ])
+        # Input tensor : Output of `self.recur`.
+        # Input shape  : `(B, S, H)`.
+        # Input dtype  : `torch.float32`.
+        # Output tensor: Batch of sparse recurrent token hidden states.
+        # Output shape : `(B, S, H)`.
+        # Output dtype: `torch.float32`.
+        self.dp = nn.ModuleList(
+            [nn.Dropout(p=p_hid) for _ in range(n_hid_lyr - 1)]
+            + [nn.Identity()]
+        )
 
     def forward(self, batch_tk_reps: torch.Tensor) -> torch.Tensor:
         r"""Perform forward pass.
@@ -95,7 +106,7 @@ class ResRNNBlock(nn.Module):
 
         #. Input batch of previous token hidden representations.
            (shape: ``(B, S, H)``)
-        #. Pair block and dropouts in ``self.blocks`` and ``self.blocks_dp``.
+        #. Pair block and dropouts in ``self.recur`` and ``self.dp``.
            Pair only first ``n_hid_lyr - 1`` blocks and dropouts.
            Use for-loop to perform the following operations:
 
@@ -104,15 +115,12 @@ class ResRNNBlock(nn.Module):
            #. Add input and output of paired block.
               (shape: ``(B, S, H)``)
            #. Use paired dropout to drop some features.
+              This step is skipped on last for loop step.
               (shape: ``(B, S, H)``)
+           #. Use sparse features as input of next loop.
 
-        #. Use last block in ``self.blocks`` to perform the following
-           operations:
-
-           #. Use last block to encode temporal features.
-              (shape: ``(B, S, H)``)
-           #. Add input and output of last block and return.
-              (shape: ``(B, S, H)``)
+        #. Return final output.
+           (shape: ``(B, S, H)``)
 
         Parameters
         ==========
@@ -130,30 +138,22 @@ class ResRNNBlock(nn.Module):
         # Initialize input of first block.
         batch_in = batch_tk_reps
 
-        # Pair block and dropout.
-        for block, dp in zip(self.blocks, self.blocks_dp):
+        # Pair recurrent layer and dropout.
+        for recur, dp in zip(self.recur, self.dp):
             # Encode temporal features.
-            # Input  shape: `(B, S, H)`.
+            # Input shape : `(B, S, H)`.
             # Output shape: `(B, S, H)`.
-            batch_out, _ = block(batch_in)
+            batch_out, _ = recur(batch_in)
 
             # Drop features on output of residual connection.
-            # Input  shape: `(B, S, H)`.
+            # Input shape : `(B, S, H)`.
             # Output shape: `(B, S, H)`.
             batch_out = dp(batch_out + batch_in)
 
             # Replace input of next block with output of previous block.
             batch_in = batch_out
 
-        # Encode temporal features on last time.
-        # Input  shape: `(B, S, H)`.
-        # Output shape: `(B, S, H)`.
-        batch_out, _ = self.blocks[-1](batch_in)
-
-        # Return output of residual connection.
-        # Input  shape: `(B, S, H)`.
-        # Output shape: `(B, S, H)`.
-        return batch_out + batch_in
+        return batch_out
 
 
 class ResRNNModel(RNNModel):
@@ -248,12 +248,12 @@ class ResRNNModel(RNNModel):
         )
 
         # Override RNN layer with residual connected RNN.
-        # Input              : Output of `self.pre_hid`.
-        # Input shape        : `(B, S, H)`.
-        # Input tensor dtype : `torch.float32`.
-        # Output             : Batch of recurrent token hidden states.
-        # Output shape       : `(B, S, H)`.
-        # Output tensor dtype: `torch.float32`.
+        # Input tensor : Output of `self.pre_hid`.
+        # Input shape  : `(B, S, H)`.
+        # Input dtype  : `torch.float32`.
+        # Output tensor: Batch of recurrent token hidden states.
+        # Output shape : `(B, S, H)`.
+        # Output dtype : `torch.float32`.
         self.hid = ResRNNBlock(
             d_hid=d_hid,
             n_hid_lyr=n_hid_lyr,

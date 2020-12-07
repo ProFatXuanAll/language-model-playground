@@ -88,12 +88,12 @@ class LSTMModel(RNNModel):
 
         # Override RNN layer with LSTM layer.
         # Dropout temporal features if `n_hid_lyr > 1`.
-        # Input              : Output of `self.pre_hid`.
-        # Input shape        : `(B, S, H)`.
-        # Input tensor dtype : `torch.float32`.
-        # Output             : Batch of recurrent token hidden states.
-        # Output shape       : `(B, S, H)`.
-        # Output tensor dtype: `torch.float32`.
+        # Input tensor : Output of `self.pre_hid`.
+        # Input shape  : `(B, S, H)`.
+        # Input dtype  : `torch.float32`.
+        # Output tensor: Batch of recurrent token hidden states.
+        # Output shape : `(B, S, H)`.
+        # Output dtype : `torch.float32`.
         if n_hid_lyr == 1:
             self.hid = nn.LSTM(
                 input_size=d_hid,

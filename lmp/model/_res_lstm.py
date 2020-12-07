@@ -31,16 +31,16 @@ class ResLSTMBlock(ResRNNBlock):
 
     Attributes
     ==========
-    blocks: torch.nn.ModuleList[torch.nn.LSTM]
+    dp: torch.nn.ModuleList[torch.nn.Dropout]
+        Drop each output temporal features of ``self.recur`` with
+        probability ``p_hid``.
+        Do not dropout last temporal features output from ``self.recur[-1]``
+        since :py:class:`lmp.model.ResLSTMModel` have ``self.post_hid`` which
+        drop output of ``self.hid``.
+    recur: torch.nn.ModuleList[torch.nn.LSTM]
         List of LSTM which encode temporal features.
         Each time step's hidden state depends on current input and previous
         hidden state.
-    blocks_dp: torch.nn.ModuleList[torch.nn.Dropout]
-        Drop each output temporal features of ``self.blocks`` with
-        probability ``p_hid``.
-        Do not dropout last temporal features output from ``self.blocks[-1]``
-        since :py:class:`lmp.model.ResLSTMModel` have ``self.post_hid`` which
-        drop output of ``self.hid``.
     """
 
     def __init__(
@@ -59,13 +59,13 @@ class ResLSTMBlock(ResRNNBlock):
         )
 
         # Override RNN layer with LSTM.
-        # Input              : Output of `ResLSTMModel.pre_hid`.
-        # Input shape        : `(B, S, H)`.
-        # Input tensor dtype : `torch.float32`.
-        # Output             : Batch of recurrent token hidden states.
-        # Output shape       : `(B, S, H)`.
-        # Output tensor dtype: `torch.float32`.
-        self.blocks = nn.ModuleList([
+        # Input tensor : Output of `ResLSTMModel.pre_hid`.
+        # Input shape  : `(B, S, H)`.
+        # Input dtype  : `torch.float32`.
+        # Output tensor: Batch of recurrent token hidden states.
+        # Output shape : `(B, S, H)`.
+        # Output dtype : `torch.float32`.
+        self.recur = nn.ModuleList([
             nn.LSTM(input_size=d_hid, hidden_size=d_hid, batch_first=True)
             for _ in range(n_hid_lyr)
         ])
@@ -149,12 +149,12 @@ class ResLSTMModel(ResRNNModel):
         )
 
         # Override residual connected RNN layer with residual connected LSTM.
-        # Input              : Output of `self.pre_hid`.
-        # Input shape        : `(B, S, H)`.
-        # Input tensor dtype : `torch.float32`.
-        # Output             : Batch of recurrent token hidden states.
-        # Output shape       : `(B, S, H)`.
-        # Output tensor dtype: `torch.float32`.
+        # Input tensor : Output of `self.pre_hid`.
+        # Input shape  : `(B, S, H)`.
+        # Input dtype  : `torch.float32`.
+        # Output tensor: Batch of recurrent token hidden states.
+        # Output shape : `(B, S, H)`.
+        # Output dtype : `torch.float32`.
         self.hid = ResLSTMBlock(
             d_hid=d_hid,
             n_hid_lyr=n_hid_lyr,

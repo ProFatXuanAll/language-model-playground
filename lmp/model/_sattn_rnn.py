@@ -79,6 +79,9 @@ class SAttnRNNBlock(nn.Module):
         See [Vaswani2017]_ for details on self attention key.
     out: torch.nn.ModuleList[torch.nn.Linear]
         Final linear transformation after weighted sum using attention scores.
+        Do not dropout last output features from ``self.out[-1]`` since
+        :py:class:`lmp.model.SAttnRNNModel` have ``self.post_hid`` which
+        drop output of ``self.hid``.
         See [Vaswani2017]_ for details on multi-heads self attention.
     query: torch.nn.ModuleList[torch.nn.Linear]
         Linear transformation which transform temporal features to query
@@ -112,12 +115,12 @@ class SAttnRNNBlock(nn.Module):
 
         # Create vanilla RNN layers and put in module list.
         # RNN in `self.recur` are treated as sequential RNN.
-        # Input              : Output of `SAttnRNNModel.pre_hid`.
-        # Input shape        : `(B, S, H)`.
-        # Input tensor dtype : `torch.float32`.
-        # Output             : Batch of recurrent token hidden states.
-        # Output shape       : `(B, S, H)`.
-        # Output tensor dtype: `torch.float32`.
+        # Input tensor : Output of `SAttnRNNModel.pre_hid`.
+        # Input shape  : `(B, S, H)`.
+        # Input dtype  : `torch.float32`.
+        # Output tensor: Batch of recurrent token hidden states.
+        # Output shape : `(B, S, H)`.
+        # Output dtype : `torch.float32`.
         self.recur = nn.ModuleList([
             nn.RNN(input_size=d_hid, hidden_size=d_hid, batch_first=True)
             for _ in range(n_hid_lyr)
@@ -125,12 +128,12 @@ class SAttnRNNBlock(nn.Module):
 
         # Create self attention query, key and value transformation layers and
         # put in module list.
-        # Input              : Output of `self.recur`.
-        # Input shape        : `(B, S, H)`.
-        # Input tensor dtype : `torch.float32`.
-        # Output             : Query, key and value token features.
-        # Output shape       : `(B, S, H)`.
-        # Output tensor dtype: `torch.float32`.
+        # Input tensor : Output of `self.recur`.
+        # Input shape  : `(B, S, H)`.
+        # Input dtype  : `torch.float32`.
+        # Output tensor: Query, key and value token features.
+        # Output shape : `(B, S, H)`.
+        # Output dtype : `torch.float32`.
         self.query = nn.ModuleList([
             nn.Linear(in_features=d_hid, out_features=d_hid)
             for _ in range(n_hid_lyr)
@@ -146,13 +149,12 @@ class SAttnRNNBlock(nn.Module):
 
         # Create self attention final output transformation layers and put in
         # module list.
-        # Input              : Output of self attention weighted sum.
-        # Input shape        : `(B, S, H)`.
-        # Input tensor dtype : `torch.float32`.
-        # Output             : Linear transformation on self attention weighted
-        #                      sum features.
-        # Output shape       : `(B, S, H)`.
-        # Output tensor dtype: `torch.float32`.
+        # Input tensor : Output of self attention weighted sum.
+        # Input shape  : `(B, S, H)`.
+        # Input dtype  : `torch.float32`.
+        # Output tensor: Linear transformation on self attention weighted sum.
+        # Output shape : `(B, S, H)`.
+        # Output dtype : `torch.float32`.
         self.out = nn.ModuleList([
             nn.Linear(in_features=d_hid, out_features=d_hid)
             for _ in range(n_hid_lyr)
@@ -161,14 +163,12 @@ class SAttnRNNBlock(nn.Module):
         # Create dropout layers.
         # Only need to create `n_hid_lyr - 1` since `SAttnRNNModel.post_hid`
         # drop output of `SAttnRNNModel.hid`.
-        # Input              : Output of linear transformation on self
-        #                      attention weighted sum features.
-        # Input shape        : `(B, S, H)`.
-        # Input tensor dtype : `torch.float32`.
-        # Output             : Sparse linear transformation on self attention
-        #                      weighted sum features.
-        # Output shape       : `(B, S, H)`.
-        # Output tensor dtype: `torch.float32`.
+        # Input tensor : Output of `self.out`.
+        # Input shape  : `(B, S, H)`.
+        # Input dtype  : `torch.float32`.
+        # Output tensor: Sparse output of `self.out`.
+        # Output shape : `(B, S, H)`.
+        # Output dtype : `torch.float32`.
         self.dp = nn.ModuleList(
             [nn.Dropout(p=p_hid) for _ in range(n_hid_lyr - 1)]
             + [nn.Identity()]
@@ -376,14 +376,12 @@ class SAttnRNNModel(RNNModel):
         self.pad_tkid = tknzr.pad_tkid
 
         # Override RNN layer with self attention RNN.
-        # Each time step's hidden state depends on current input and previous
-        # hidden state.
-        # Input              : Output of `self.pre_hid`.
-        # Input shape        : `(B, S, H)`.
-        # Input tensor dtype : `torch.float32`.
-        # Output             : Batch of recurrent token hidden states.
-        # Output shape       : `(B, S, H)`.
-        # Output tensor dtype: `torch.float32`.
+        # Input tensor : Output of `self.pre_hid`.
+        # Input shape  : `(B, S, H)`.
+        # Input dtype  : `torch.float32`.
+        # Output tensor: Batch of recurrent token hidden states.
+        # Output shape : `(B, S, H)`.
+        # Output dtype : `torch.float32`.
         self.hid = SAttnRNNBlock(
             d_hid=d_hid,
             n_hid_lyr=n_hid_lyr,
@@ -426,7 +424,9 @@ class SAttnRNNModel(RNNModel):
         """
         # Get input batch sequence length.
         seq_len = batch_prev_tkids.size(-1)
+
         # Create auto-regressive self attention masks.
+        # Need to move tensor to model running device.
         # Output shape: `(1, S, S)`.
         # Output dtype: `torch.bool`.
         reg_mask = torch.ones((1, seq_len, seq_len), dtype=torch.bool)

@@ -59,12 +59,12 @@ class SAttnLSTMBlock(SAttnRNNBlock):
         )
 
         # Override RNN layer with LSTM.
-        # Input              : Output of `SAttnLSTMModel.pre_hid`.
-        # Input shape        : `(B, S, H)`.
-        # Input tensor dtype : `torch.float32`.
-        # Output             : Batch of recurrent token hidden states.
-        # Output shape       : `(B, S, H)`.
-        # Output tensor dtype: `torch.float32`.
+        # Input tensor : Output of `SAttnLSTMModel.pre_hid`.
+        # Input shape  : `(B, S, H)`.
+        # Input dtype  : `torch.float32`.
+        # Output tensor: Batch of recurrent token hidden states.
+        # Output shape : `(B, S, H)`.
+        # Output dtype : `torch.float32`.
         self.recur = nn.ModuleList([
             nn.LSTM(input_size=d_hid, hidden_size=d_hid, batch_first=True)
             for _ in range(n_hid_lyr)
@@ -149,12 +149,12 @@ class SAttnLSTMModel(SAttnRNNModel):
         )
 
         # Override self attention RNN layer with self attention LSTM.
-        # Input              : Output of `self.pre_hid`.
-        # Input shape        : `(B, S, H)`.
-        # Input tensor dtype : `torch.float32`.
-        # Output             : Batch of recurrent token hidden states.
-        # Output shape       : `(B, S, H)`.
-        # Output tensor dtype: `torch.float32`.
+        # Input tensor : Output of `self.pre_hid`.
+        # Input shape  : `(B, S, H)`.
+        # Input dtype  : `torch.float32`.
+        # Output tensor: Batch of recurrent token hidden states.
+        # Output shape : `(B, S, H)`.
+        # Output dtype : `torch.float32`.
         self.hid = SAttnLSTMBlock(
             d_hid=d_hid,
             n_hid_lyr=n_hid_lyr,

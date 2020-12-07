@@ -95,12 +95,12 @@ class RNNModel(BaseModel):
 
         # Token embedding layer.
         # Use token ids to lookup token embeddings.
-        # Input              : Batch of token ids.
-        # Input shape        : `(B, S)`.
-        # Input tensor dtype : `torch.int64`.
-        # Output             : Batch of token embeddings.
-        # Output shape       : `(B, S, E)`.
-        # Output tensor dtype: `torch.float32`.
+        # Input tensor : Batch of token ids.
+        # Input shape  : `(B, S)`.
+        # Input dtype  : `torch.int64`.
+        # Output tensor: Batch of token embeddings.
+        # Output shape : `(B, S, E)`.
+        # Output dtype : `torch.float32`.
         self.emb = nn.Embedding(
             num_embeddings=tknzr.vocab_size,
             embedding_dim=d_emb,
@@ -109,23 +109,23 @@ class RNNModel(BaseModel):
 
         # Token embedding dropout layer.
         # Drop embedding features with probability `p_emb`.
-        # Input              : Output of `self.emb`.
-        # Input shape        : `(B, S, E)`.
-        # Input tensor dtype : `torch.float32`.
-        # Output             : Batch of sparse token embeddings.
-        # Output shape       : `(B, S, E)`.
-        # Output tensor dtype: `torch.float32`.
+        # Input tensor : Output of `self.emb`.
+        # Input shape  : `(B, S, E)`.
+        # Input dtype  : `torch.float32`.
+        # Output tensor: Batch of sparse token embeddings.
+        # Output shape : `(B, S, E)`.
+        # Output dtype : `torch.float32`.
         self.emb_dp = nn.Dropout(p=p_emb)
 
         # Rectified MLP which transform token embeddings from embedding
         # dimension `d_emb` to hidden dimension `d_hid`.
         # Drop rectified units with probability `p_hid`.
-        # Input              : Output of `self.emb_dp`.
-        # Input shape        : `(B, S, E)`.
-        # Input tensor dtype : `torch.float32`.
-        # Output             : Batch of sparse rectified token representation.
-        # Output shape       : `(B, S, H)`.
-        # Output tensor dtype: `torch.float32`.
+        # Input tensor : Output of `self.emb_dp`.
+        # Input shape  : `(B, S, E)`.
+        # Input dtype  : `torch.float32`.
+        # Output tensor: Batch of sparse rectified token representation.
+        # Output shape : `(B, S, H)`.
+        # Output dtype : `torch.float32`.
         pre_hid = [
             nn.Linear(in_features=d_emb, out_features=d_hid),
             nn.ReLU(),
@@ -143,12 +143,12 @@ class RNNModel(BaseModel):
         # Each time step's hidden state depends on current input and previous
         # hidden state.
         # Dropout temporal features if `n_hid_lyr > 1`.
-        # Input              : Output of `self.pre_hid`.
-        # Input shape        : `(B, S, H)`.
-        # Input tensor dtype : `torch.float32`.
-        # Output             : Batch of recurrent token hidden states.
-        # Output shape       : `(B, S, H)`.
-        # Output tensor dtype: `torch.float32`.
+        # Input tensor : Output of `self.pre_hid`.
+        # Input shape  : `(B, S, H)`.
+        # Input dtype  : `torch.float32`.
+        # Output tensor: Batch of recurrent token hidden states.
+        # Output shape : `(B, S, H)`.
+        # Output dtype : `torch.float32`.
         if n_hid_lyr == 1:
             self.hid = nn.RNN(
                 input_size=d_hid,
@@ -167,12 +167,12 @@ class RNNModel(BaseModel):
         # Rectified MLP which transform temporal features from hidden dimension
         # `d_hid` to embedding dimension `d_emb`.
         # Drop rectified units with probability `p_hid`.
-        # Input              : Output of `self.hid`.
-        # Input shape        : `(B, S, H)`.
-        # Input tensor dtype : `torch.float32`.
-        # Output             : Batch of sparse rectified next token embeddings.
-        # Output shape       : `(B, S, E)`.
-        # Output tensor dtype: `torch.float32`.
+        # Input tensor : Output of `self.hid`.
+        # Input shape  : `(B, S, H)`.
+        # Input dtype  : `torch.float32`.
+        # Output tensor: Batch of sparse rectified next token embeddings.
+        # Output shape : `(B, S, E)`.
+        # Output dtype : `torch.float32`.
         post_hid = []
         for _ in range(n_post_hid_lyr):
             post_hid.append(nn.Dropout(p=p_hid))
@@ -307,15 +307,15 @@ class RNNModel(BaseModel):
 
         # Loss function of next token prediction.
         # All logits are used since we use teacher forcing to optimize.
-        # Prediction             : Batch of next token prediction logits.
-        # Prediction shape       : `(BxS, V)`.
-        # Prediction tensor dtype: `torch.float32`.
-        # Target                 : Batch of next token prediction target.
-        # Target shape           : `(BxS)`.
-        # Target tensor dtype    : `torch.int64`.
-        # Output                 : Average next tokens prediction loss.
-        # Output shape           : `(1)`.
-        # Output tensor dtype    : `torch.float32`.
+        # Logits tensor: Batch of next token prediction logits.
+        # Logits shape : `(BxS, V)`.
+        # Logits dtype : `torch.float32`.
+        # Target tensor: Batch of next token prediction target.
+        # Target shape : `(BxS)`.
+        # Target dtype : `torch.int64`.
+        # Output tensor: Average next tokens prediction loss.
+        # Output shape : `(1)`.
+        # Output dtype : `torch.float32`.
         return F.cross_entropy(logits, batch_next_tkids)
 
     def pred(self, batch_prev_tkids: torch.Tensor) -> torch.Tensor:
@@ -345,12 +345,12 @@ class RNNModel(BaseModel):
         logits = self(batch_prev_tkids)
 
         # Convert logits to probabilities using softmax.
-        # Input              : Batch of next token prediction logits.
-        # Input shape        : `(B, S, V)`.
-        # Input tensor dtype : `torch.float32`.
-        # Output             : Batch of next token prediction probabilities.
-        # Output shape       : `(B, S, V)`.
-        # Output tensor dtype: `torch.float32`.
+        # Input tensor : Batch of next token prediction logits.
+        # Input shape  : `(B, S, V)`.
+        # Input dtype  : `torch.float32`.
+        # Output tensor: Batch of next token prediction probabilities.
+        # Output shape : `(B, S, V)`.
+        # Output dtype : `torch.float32`.
         return F.softmax(logits, dim=-1)
 
     @staticmethod
