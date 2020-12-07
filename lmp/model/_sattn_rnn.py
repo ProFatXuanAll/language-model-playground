@@ -23,20 +23,27 @@ class SAttnRNNBlock(nn.Module):
         \begin{align*}
         t &\in [1, S] \\
         l &\in [1, L] \\
-        \bar{h_{l, t}} &= \text{RNN}(h_{l, t-1}) \\
-        Q &= W_Q \bar{h_{l, t}} + b_Q \\
-        K &= W_K \bar{h_{l, t}} + b_K \\
-        V &= W_V \bar{h_{l, t}} + b_V \\
-        A &= \text{softmax}(\frac{Q K^\top}{\sqrt{S}})V \\
-        h_{l, t} &= W_O A + b_O
+        x_{1:S}^l &= x_1^l, \dots, x_S^l \\
+        h_0^l &= 0 \\
+        h_t^l &= \text{RNN}(x_t^l, h_{t-1}^l) \\
+        Q^l &= W_Q^l h_{1:S}^l + b_Q^l \\
+        K^l &= W_K^l h_{1:S}^l + b_K^l \\
+        V^l &= W_V^l h_{1:S}^l + b_V^l \\
+        A^l &= \text{softmax}(\frac{Q^l (K^{l})^{\top}}{\sqrt{S}})V^l \\
+        y_{1:S}^l &= W_O^l A^l + b_O^l \\
+        x_{1:S}^{l+1} &= y_{1:S}^l
         \end{align*}
 
-    Where :math:`S` means ``seq_len``, :math:`L` means ``n_hid_lyr``, :math:`t`
-    means time step, :math:`l` means layer.
-    :math:`W_Q, W_K, W_V, W_O` and :math:`b_Q, b_K, b_V, b_O` are linear
-    transformation weights and biases for query, key, value, and output,
-    respectively.
-    :math:`A` is self attention scores weighted sum.
+    Where :math:`x_{1:S}^l` is the input sequeence with length :math:`S` at
+    layer :math:`l`, :math:`L` means number of layer (same as ``n_hid_lyr``).
+    :math:`W_Q^l, W_K^l, W_V^l, W_O^l` and :math:`b_Q^l, b_K^l, b_V^l, b_O^l`
+    are linear transformation weights and biases for query, key, value, and
+    output at layer :math:`l`, respectively.
+    :math:`A^l` is self attention scores weighted sum.
+    :math:`x_t^l` means input sequence time step :math:`t` at layer :math:`l`,
+    :math:`h_t^l` means hidden representation encoded by recurrent layer
+    :math:`l`, :math:`h_0^l` means initial hidden representation of recurrent
+    layer :math:`l`, :math:`y_{1:t}^l` is the output of layer :math:`l`.
 
     Each output of RNN will then use self attention scores as weights to
     calculate weighted sum as final output.

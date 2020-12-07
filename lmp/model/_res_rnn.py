@@ -21,10 +21,18 @@ class ResRNNBlock(nn.Module):
         \begin{align*}
         t &\in [1, S] \\
         l &\in [1, L] \\
-        h_{l, t} &= \text{RNN}(h_{l, t-1}) + h_{l, t-1}
+        h_0^l &= 0 \\
+        h_t^l &= \text{RNN}(x_t^l, h_{t-1}^l) \\
+        y_t^l &= h_t^l + x_t^l \\
+        x_t^{l+1} &= y_t^l
         \end{align*}
 
-    Where :math:`S` means ``seq_len`` and :math:`L` means ``n_hid_lyr``.
+    Where :math:`S` means sequence length, :math:`L` means number of layer
+    (same as ``n_hid_lyr``), :math:`x_t^l` means input sequence time step
+    :math:`t` at layer :math:`l`, :math:`h_t^l` means hidden representation
+    time step :math:`t` encoded by recurrent layer :math:`l`, :math:`h_0^l`
+    means initial hidden representation of recurrent layer :math:`l`,
+    :math:`y_t^l` is the output of time step :math:`t` at layer :math:`l`.
 
     For comment throughout this class and its subclasses, we use the following
     symbols to denote the shape of tensors:

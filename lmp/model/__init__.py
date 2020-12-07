@@ -41,6 +41,9 @@ from lmp.model._lstm import LSTMModel
 from lmp.model._res_gru import ResGRUBlock, ResGRUModel
 from lmp.model._res_lstm import ResLSTMBlock, ResLSTMModel
 from lmp.model._res_rnn import ResRNNBlock, ResRNNModel
+from lmp.model._res_sattn_gru import ResSAttnGRUBlock, ResSAttnGRUModel
+from lmp.model._res_sattn_lstm import ResSAttnLSTMBlock, ResSAttnLSTMModel
+from lmp.model._res_sattn_rnn import ResSAttnRNNBlock, ResSAttnRNNModel
 from lmp.model._rnn import RNNModel
 from lmp.model._sattn_gru import SAttnGRUBlock, SAttnGRUModel
 from lmp.model._sattn_lstm import SAttnLSTMBlock, SAttnLSTMModel
@@ -53,6 +56,9 @@ ALL_MODELS: Final[List[BaseModel]] = [
     ResGRUModel,
     ResRNNModel,
     ResLSTMModel,
+    ResSAttnGRUModel,
+    ResSAttnLSTMModel,
+    ResSAttnRNNModel,
     SAttnGRUModel,
     SAttnLSTMModel,
     SAttnRNNModel,
@@ -62,6 +68,9 @@ PRIVA_MODELS: Final[Dict[str, List[torch.nn.Module]]] = {
     ResGRUModel.model_name: [ResGRUBlock],
     ResLSTMModel.model_name: [ResLSTMBlock],
     ResRNNModel.model_name: [ResRNNBlock],
+    ResSAttnGRUModel.model_name: [ResSAttnGRUBlock],
+    ResSAttnLSTMModel.model_name: [ResSAttnLSTMBlock],
+    ResSAttnRNNModel.model_name: [ResSAttnRNNBlock],
     SAttnGRUModel.model_name: [SAttnGRUBlock],
     SAttnLSTMModel.model_name: [SAttnLSTMBlock],
     SAttnRNNModel.model_name: [SAttnRNNBlock],
