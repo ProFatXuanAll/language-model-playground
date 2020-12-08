@@ -28,6 +28,64 @@ Glossary
         ``exp/my_exp``.
         All :term:`experiment` related files will be put under directory ``exp``.
 
+    language model
+    language models
+        A language model is a model which can calculate the probability of a
+        given text is comming from human language.
+
+        For example, the text "how are you?" is used in daily conversation and
+        thus language model should output high probability (or equivalently low
+        :term:`perplexity`).
+        On the other hand the text "you are how?" is meaningless and thus
+        language model should output low probability (or equivalently high
+        :term:`perplexity`).
+
+        More precisely, language model is an probabilistic algorithm which
+        input is text and output is probability (or :term:`perplexity`).
+        We denote language model as :math:`M` and input text as :math:`x`.
+        The hypothesis (expected behavior) of language models are:
+
+        - If :math:`M(x) \approx 1`, then :math:`x` is very likely comming from
+          human language.
+        - If :math:`M(x) \approx 0`, then :math:`x` is not likely comming from
+          human language.
+
+        The common way to evalute a language model is using :term:`perplexity`.
+        In early days language model are used to evaluate generated text from
+        speech recognition.
+        More recently, language models like GPT_ and BERT_ have shown to be
+        useful for lots of downstream NLP tasks including Natural Lanugage
+        Understanding (NLU), Natural Language Generation (NLG), Question
+        Answering (QA), cloze test, etc.
+
+        .. _GPT: https://s3-us-west-2.amazonaws.com/openai-assets/
+            research-covers/language-unsupervised/
+            language_understanding_paper.pdf
+        .. _BERT: https://arxiv.org/abs/1810.04805
+
+        In this project we have provided script for training language model
+        (:py:mod:`lmp.script.train_model`), evaluating language model (
+        :py:mod:`lmp.script.evaluate_model_on_dataset`) and generate text using
+        language model (:py:mod:`lmp.script.generate_text`).
+
+        .. seealso::
+            lmp.script
+                All available scripts related to language model.
+            lmp.model
+                All available language model.
+
+    NN
+    neural network
+        In this project we use famous deep learning framework PyTorch_ to
+        implement our language models.
+
+        .. _PyTorch: https://pytorch.org/
+
+        .. seealso::
+
+            lmp.model
+                All available models.
+
     NFKC
         **Unicode normalization** is a process which convert full-width
         character into half-width, convert same glyph into same unicode, etc.
@@ -38,6 +96,31 @@ Glossary
     OOV
     out-of-vocabulary
         Refers to :term:`tokens` which are **not** in :term:`vocabulary`.
+
+    perplexity
+        Perplexity is a way to evaluate :term:`language model`.
+        Given a text :math:`x` consist of :math:`n` tokens
+        :math:`x_1, x_2, \dots, x_n`, we want to calculate the probability of
+        text :math:`x` is comming from human language:
+
+        .. math::
+
+            \begin{align*}
+            ppl(x) &= \sqrt[n]{\frac{1}{P(x_1, x_2, \dots, x_n)}} \\
+            &= \bigg(P(x_1, x_2, \dots, x_n)\bigg)^{\frac{-1}{n}} \\
+            &= \bigg(P(x_1) P(x_2|x_1) P(x_3|x_1, x_2) \dots
+            P(x_n|x_1, x_2, \dots, x_{n - 1})\bigg)^{\frac{-1}{n}} \\
+            &= \bigg(\prod_{i = 1}^n P(x_i|x_1, \dots,
+            x_{i - 1})\bigg)^{\frac{-1}{n}} \\
+            &= e^{\log \prod_{i = 1}^n \big(P(x_i|x_1, \dots, x_{i - 1}
+            )\big)^{\frac{-1}{n}}} \\
+            &= e^{\frac{-1}{n}\log \prod_{i = 1}^n P(x_i|x_1, \dots, x_{i - 1}
+            )} \\
+            &= e^{\frac{-1}{n} \sum_{i = 1}^n \log P(x_i|x_1, \dots, x_{i - 1}
+            )} \\
+            &= \exp\bigg(\frac{-1}{n} \sum_{i = 1}^n \log P(x_i|x_1, \dots,
+            x_{i - 1})\bigg)
+            \end{align*}
 
     token
     tokens
@@ -77,6 +160,7 @@ Glossary
 
     Tokenizer
     tokenizer
+    tokenizers
         Tools for text :term:`tokenization`.
         It can refer to statistic-based tokenization models.
 

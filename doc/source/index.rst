@@ -6,13 +6,13 @@
 Welcome to Language Model Playground's documentation!
 =====================================================
 
-**Language model playground** is a tutorial of "How to implement neural network
-based language models".
-We use Pytorch_ to implement language models.
+**Language model playground** is a tutorial of "How to implement
+:term:`neural network` based :term:`language models`".
+We use Pytorch_ to implement :term:`language models`.
 
 .. _PyTorch: https://pytorch.org/
 
-We have implemented several language models including:
+We have implemented several :term:`language models` including:
 
 - RNN only models.
   (e.g. :py:mod:`lmp.model.RNNModel`)
@@ -45,23 +45,25 @@ Or you can create models using training script
 
     Add Transformer models.
 
-We have written serveral **scripts** to demostrate training pipline of language
-models and furthur usage on language models:
+We have written serveral **scripts** to demostrate training pipline of
+:term:`language models` and furthur usage on :term:`language models`:
 
 - Use :py:mod:`lmp.script.sample_from_dataset` to take a look at dataset we
   provided.
   (e.g. :py:class:`lmp.dset.WikiText2Dset`)
-- Use :py:mod:`lmp.script.train_tokenizer` to train tokenizers.
+- Use :py:mod:`lmp.script.train_tokenizer` to train :term:`tokenizers`.
   (e.g. :py:class:`lmp.tknzr.WsTknzr`)
-- Use :py:mod:`lmp.script.tokenize` to tokenize text with pre-trained
-  tokenizers.
-- Use :py:mod:`lmp.script.train_model` to train language models.
-- Use :py:mod:`lmp.script.evaluate_model_on_sample` to calculate perplexity on
-  given sample with pre-trained language model checkpoint.
-- Use :py:mod:`lmp.script.evaluate_model_on_dataset` to calculate perplexity on
-  dataset with range of pre-trained language model checkpoints.
+- Use :py:mod:`lmp.script.tokenize` to :term:`tokenize` text with pre-trained
+  :term:`tokenizers`.
+- Use :py:mod:`lmp.script.train_model` to train :term:`language models`.
+- Use :py:mod:`lmp.script.evaluate_model_on_sample` to calculate
+  :term:`perplexity` on given sample with pre-trained :term:`language model`
+  checkpoint.
+- Use :py:mod:`lmp.script.evaluate_model_on_dataset` to calculate
+  :term:`perplexity` on dataset with range of pre-trained
+  :term:`language model` checkpoints.
 - Use :py:mod:`lmp.script.generate_text` to generate text with pre-trained
-  language model checkpoint.
+  :term:`language model` checkpoint.
 - And more to come!
 
 Get started with :doc:`Quick start <quickstart>` or jump directly to contents
