@@ -6,32 +6,66 @@
 Welcome to Language Model Playground's documentation!
 =====================================================
 
-Language model playground is a tutorial of "How to implement neural network
+**Language model playground** is a tutorial of "How to implement neural network
 based language models".
 We use Pytorch_ to implement language models.
-We have implemented several language models including:
-
-- RNN only models.
-- RNN models with attention mechanism.
-- Transformer models.
 
 .. _PyTorch: https://pytorch.org/
 
-We have written serveral scripts to demostrate training pipline of language
+We have implemented several language models including:
+
+- RNN only models.
+  (e.g. :py:mod:`lmp.model.RNNModel`)
+- RNN models with residual connections.
+  (e.g. :py:mod:`lmp.model.ResRNNModel`)
+- RNN models with self attention mechanism.
+  (e.g. :py:mod:`lmp.model.SAttnRNNModel`)
+- Transformer models.
+- And more to come!
+
+You can easily create these models by ``import lmp.model`` and choose the model
+you want.
+Or you can create models using training script
+:py:mod:`lmp.script.train_model`.
+
+.. code-block:: python
+
+    import lmp.model
+
+    model = lmp.model.RNNModel(...)      # parameters go in here.
+    model = lmp.model.ResRNNModel(...)   # parameters go in here.
+    model = lmp.model.SAttnRNNModel(...) # parameters go in here.
+
+.. seealso::
+
+    :py:mod:`lmp.model`
+        All available models are put under :py:mod:`lmp.model`.
+
+.. todo::
+
+    Add Transformer models.
+
+We have written serveral **scripts** to demostrate training pipline of language
 models and furthur usage on language models:
 
 - Use :py:mod:`lmp.script.sample_from_dataset` to take a look at dataset we
   provided.
+  (e.g. :py:class:`lmp.dset.WikiText2Dset`)
 - Use :py:mod:`lmp.script.train_tokenizer` to train tokenizers.
+  (e.g. :py:class:`lmp.tknzr.WsTknzr`)
 - Use :py:mod:`lmp.script.tokenize` to tokenize text with pre-trained
   tokenizers.
 - Use :py:mod:`lmp.script.train_model` to train language models.
-- Use ``TODO`` to validate pre-trained language models with perplexity.
-- Use ``TODO`` to generate text with pre-trained language models.
+- Use :py:mod:`lmp.script.evaluate_model_on_sample` to calculate perplexity on
+  given sample with pre-trained language model checkpoint.
+- Use :py:mod:`lmp.script.evaluate_model_on_dataset` to calculate perplexity on
+  dataset with range of pre-trained language model checkpoints.
+- Use :py:mod:`lmp.script.generate_text` to generate text with pre-trained
+  language model checkpoint.
 - And more to come!
 
 Get started with :doc:`Quick start <quickstart>` or jump directly to contents
-you are intresting in!
+you are interesting in!
 
 .. toctree::
     :maxdepth: 2
