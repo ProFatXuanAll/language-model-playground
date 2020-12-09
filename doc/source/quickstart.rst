@@ -402,15 +402,13 @@ record yours!
 Documents
 ---------
 
-You can read documents on *this website* or use the following steps to build
+You can read documents on `this website`_ or use the following steps to build
 documents locally.
 We use Sphinx_ to build our documents.
 
+.. _`this website`: https://language-model-playground.readthedocs.io/en/
+    latest/index.html
 .. _Sphinx: https://www.sphinx-doc.org/en/master/
-
-.. todo::
-
-    Publish documents on https://readthedocs.org/.
 
 1. Install documentation dependencies.
 

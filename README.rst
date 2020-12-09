@@ -5,7 +5,10 @@ Neural network based Language Model implemented with PyTorch.
 
 .. _PyTorch: https://pytorch.org/
 
-See <documentation ./doc/source/index> for more details.
+See documentation_ for more details.
+
+.. _documentation: https://language-model-playground.readthedocs.io/en/
+        latest/index.html
 
 Environment Prerequest
 ----------------------
