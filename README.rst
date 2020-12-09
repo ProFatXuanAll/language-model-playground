@@ -80,5 +80,6 @@ LICENSE
 -------
 
 Beerware license.
-Anyone used this project must buy
-<ProFatXuanAll https://github.com/ProFatXuanAll> a beer if you meet him.
+Anyone used this project must buy ProFatXuanAll_ a beer if you met him.
+
+.. _ProFatXuanAll: https://github.com/ProFatXuanAll
