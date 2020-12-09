@@ -75,6 +75,7 @@ you are interesting in!
 
     quickstart
     lmp/index
+    experiment/index
     contribute
     how_to_doc
     how_to_test

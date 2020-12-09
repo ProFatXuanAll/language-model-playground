@@ -392,6 +392,13 @@ error as well.
     :py:mod:`lmp.infer`
         All available inference methods.
 
+7. Record Experiment Results
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Now you have done the experiment, you can record them and compare experiments
+performed by others.
+See :doc:`Experiment Results <experiment/index>` for others' experiment and
+record yours!
+
 Documents
 ---------
 
