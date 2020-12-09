@@ -4,6 +4,7 @@ import abc
 import argparse
 import json
 import os
+import typing
 from collections import Counter
 from typing import ClassVar, Dict, List, Optional, Sequence
 
@@ -118,19 +119,18 @@ class BaseTknzr(abc.ABC):
         self.min_count = min_count
 
         # Load pre-trained vocabulary.
+        self.tk2id: Dict[str, int] = {}
+        self.id2tk: Dict[int, str] = {}
         if tk2id is not None:
             self.tk2id = tk2id
             self.id2tk = {v: k for k, v in tk2id.items()}
         # Initialize vocabulary with special tokens.
         else:
-            self.id2tk = {}
-            self.tk2id = {}
-
             for tk, tkid in [
-                [self.__class__.bos_tk, self.__class__.bos_tkid],
-                [self.__class__.eos_tk, self.__class__.eos_tkid],
-                [self.__class__.pad_tk, self.__class__.pad_tkid],
-                [self.__class__.unk_tk, self.__class__.unk_tkid],
+                (self.__class__.bos_tk, self.__class__.bos_tkid),
+                (self.__class__.eos_tk, self.__class__.eos_tkid),
+                (self.__class__.pad_tk, self.__class__.pad_tkid),
+                (self.__class__.unk_tk, self.__class__.unk_tkid),
             ]:
                 self.tk2id[tk] = tkid
                 self.id2tk[tkid] = tk
@@ -459,7 +459,7 @@ class BaseTknzr(abc.ABC):
                 self.__class__.eos_tkid,
                 self.__class__.pad_tkid,
             ]
-            tkids = filter(lambda tkid: tkid not in sp_tkids, tkids)
+            tkids = list(filter(lambda tkid: tkid not in sp_tkids, tkids))
 
         tks = []
         # Convert token ids into tokens.
@@ -600,7 +600,7 @@ class BaseTknzr(abc.ABC):
         lmp.tknzr.BaseTknzr.vocab_size
         """
         # Count each token's frequency.
-        c = Counter()
+        c: typing.Counter[str] = Counter()
         for txt in batch_txt:
             c.update(self.tknz(self.norm(txt)))
 

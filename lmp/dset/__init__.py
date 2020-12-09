@@ -31,15 +31,18 @@ Get ``'wikitext-2'`` dataset class.
 True
 """
 
-from typing import Dict, Final, Set
+from typing import Dict, Final, List, Set, Type
 
 from lmp.dset._base import BaseDset
 from lmp.dset._ch_poem import ChPoemDset
 from lmp.dset._wiki_text_2 import WikiText2Dset
 
-ALL_DSETS = [
+ALL_DSETS: Final[List[Type[BaseDset]]] = [
     ChPoemDset,
     WikiText2Dset,
 ]
-DSET_OPTS: Final[Dict[str, BaseDset]] = {d.dset_name: d for d in ALL_DSETS}
+DSET_OPTS: Final[Dict[str, Type[BaseDset]]] = {
+    d.dset_name: d
+    for d in ALL_DSETS
+}
 LANG_SET: Final[Set[str]] = {d.lang for d in ALL_DSETS}

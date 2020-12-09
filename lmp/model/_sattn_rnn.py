@@ -1,7 +1,7 @@
 r"""RNN language model with self attention mechanism."""
 
 import math
-from typing import ClassVar, Dict, Optional
+from typing import ClassVar, Dict, List, Optional
 
 import torch
 import torch.nn as nn
@@ -176,10 +176,12 @@ class SAttnRNNBlock(nn.Module):
         # Output tensor: Sparse output of `self.out`.
         # Output shape : `(B, S, H)`.
         # Output dtype : `torch.float32`.
-        self.dp = nn.ModuleList(
-            [nn.Dropout(p=p_hid) for _ in range(n_hid_lyr - 1)]
-            + [nn.Identity()]
-        )
+        dp: List[nn.Module] = [
+            nn.Dropout(p=p_hid)
+            for _ in range(n_hid_lyr - 1)
+        ]
+        dp.append(nn.Identity())
+        self.dp = nn.ModuleList(dp)
 
     def forward(
             self,

@@ -28,14 +28,17 @@ True
 """
 
 
-from typing import Dict, Final, List
+from typing import Dict, Final, List, Type
 
 from lmp.infer._base import BaseInfer
 from lmp.infer._top_1 import Top1Infer
 from lmp.infer._top_k import TopKInfer
 
-ALL_INFERS: Final[List[BaseInfer]] = [
+ALL_INFERS: Final[List[Type[BaseInfer]]] = [
     Top1Infer,
     TopKInfer,
 ]
-INFER_OPTS: Final[Dict[str, BaseInfer]] = {i.infer_name: i for i in ALL_INFERS}
+INFER_OPTS: Final[Dict[str, Type[BaseInfer]]] = {
+    i.infer_name: i
+    for i in ALL_INFERS
+}

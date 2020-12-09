@@ -28,14 +28,17 @@ True
 """
 
 
-from typing import Dict, Final, List
+from typing import Dict, Final, List, Type
 
 from lmp.tknzr._base import BaseTknzr
 from lmp.tknzr._char import CharTknzr
 from lmp.tknzr._ws import WsTknzr
 
-ALL_TKNZRS: Final[List[BaseTknzr]] = [
+ALL_TKNZRS: Final[List[Type[BaseTknzr]]] = [
     CharTknzr,
     WsTknzr,
 ]
-TKNZR_OPTS: Final[Dict[str, BaseTknzr]] = {t.tknzr_name: t for t in ALL_TKNZRS}
+TKNZR_OPTS: Final[Dict[str, Type[BaseTknzr]]] = {
+    t.tknzr_name: t
+    for t in ALL_TKNZRS
+}

@@ -4,8 +4,8 @@ from typing import ClassVar, Dict, Optional
 
 import torch.nn as nn
 
-from lmp.model._sattn_rnn import SAttnRNNBlock
 from lmp.model._res_sattn_rnn import ResSAttnRNNBlock, ResSAttnRNNModel
+from lmp.model._sattn_rnn import SAttnRNNBlock
 from lmp.tknzr._base import BaseTknzr
 
 

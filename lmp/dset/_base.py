@@ -61,7 +61,7 @@ class BaseDset(torch.utils.data.Dataset):
                 + ''.join(map(lambda ver: f'\t- {ver}\n', self.__class__.vers))
             )
 
-        self.spls = []
+        self.spls: List[str] = []
         self.ver = ver
 
     def __iter__(self) -> Iterator[str]:

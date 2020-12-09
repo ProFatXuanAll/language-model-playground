@@ -144,10 +144,12 @@ def list_ckpts(
     ValueError
         If no checkpoint is available between ``first_ckpt`` to ``last_ckpt``.
     """
-    ckpts = os.listdir(os.path.join(lmp.path.EXP_PATH, exp_name))
-    ckpts = filter(lambda ckpt: re.match(r'model-\d+.pt', ckpt), ckpts)
-    ckpts = map(lambda ckpt: re.match(r'model-(\d+).pt', ckpt).group(1), ckpts)
-    ckpts = list(map(int, ckpts))
+    ckpts = []
+    for ckpt in os.listdir(os.path.join(lmp.path.EXP_PATH, exp_name)):
+        match = re.match(r'model-(\d+).pt', ckpt)
+        if match is None:
+            continue
+        ckpts.append(int(match.group(1)))
 
     if first_ckpt == -1:
         first_ckpt = max(ckpts)

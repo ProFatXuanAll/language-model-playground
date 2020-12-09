@@ -1,7 +1,7 @@
 r"""Vanilla RNN language model."""
 
 import argparse
-from typing import ClassVar, Dict, Optional
+from typing import ClassVar, Dict, List, Optional
 
 import torch
 import torch.nn as nn
@@ -126,7 +126,7 @@ class RNNModel(BaseModel):
         # Output tensor: Batch of sparse rectified token representation.
         # Output shape : `(B, S, H)`.
         # Output dtype : `torch.float32`.
-        pre_hid = [
+        pre_hid: List[nn.Module] = [
             nn.Linear(in_features=d_emb, out_features=d_hid),
             nn.ReLU(),
             nn.Dropout(p=p_hid),
@@ -149,6 +149,7 @@ class RNNModel(BaseModel):
         # Output tensor: Batch of recurrent token hidden states.
         # Output shape : `(B, S, H)`.
         # Output dtype : `torch.float32`.
+        self.hid: nn.Module
         if n_hid_lyr == 1:
             self.hid = nn.RNN(
                 input_size=d_hid,
@@ -173,7 +174,7 @@ class RNNModel(BaseModel):
         # Output tensor: Batch of sparse rectified next token embeddings.
         # Output shape : `(B, S, E)`.
         # Output dtype : `torch.float32`.
-        post_hid = []
+        post_hid: List[nn.Module] = []
         for _ in range(n_post_hid_lyr):
             post_hid.append(nn.Dropout(p=p_hid))
             post_hid.append(nn.Linear(in_features=d_hid, out_features=d_hid))

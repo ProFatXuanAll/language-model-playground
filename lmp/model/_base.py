@@ -28,6 +28,12 @@ class BaseModel(abc.ABC, torch.nn.Module):
     - ``S``: Length of sequence of tokens.
     - ``V``: Vocabulary size.
 
+    Parameters
+    ==========
+    kwargs: Dict, optional
+        Useless parameter.
+        Left intended for subclass parameters extension.
+
     Attributes
     ==========
     file_name: ClassVar[str]
@@ -39,6 +45,9 @@ class BaseModel(abc.ABC, torch.nn.Module):
     """
     file_name: ClassVar[str] = 'model-{}.pt'
     model_name: ClassVar[str] = 'base'
+
+    def __init__(self, **kwargs: Optional[Dict]):
+        super().__init__()
 
     @abc.abstractmethod
     def forward(self, batch_prev_tkids: torch.Tensor) -> torch.Tensor:
@@ -320,14 +329,12 @@ class BaseModel(abc.ABC, torch.nn.Module):
 
         # Load latest checkpoint.
         if ckpt == -1:
-            ckpt_files = filter(
-                lambda ckpt_f: re.match(r'model-\d+.pt', ckpt_f),
-                os.listdir(file_dir),
-            )
-            ckpt_files = map(
-                lambda ckpt_f: re.match(r'model-(\d+).pt', ckpt_f).group(1),
-                ckpt_files,
-            )
+            ckpt_files = []
+            for ckpt_f in os.listdir(file_dir):
+                match = re.match(r'model-(\d+).pt', ckpt_f)
+                if match is None:
+                    continue
+                ckpt_files.append(int(match.group(1)))
             ckpt = max(ckpt_files)
 
         # Format file name with checkpoint step.

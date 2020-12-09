@@ -1,6 +1,6 @@
 r"""RNN language model with residual connection."""
 
-from typing import ClassVar, Dict, Optional
+from typing import ClassVar, Dict, List, Optional
 
 import torch
 import torch.nn as nn
@@ -102,10 +102,12 @@ class ResRNNBlock(nn.Module):
         # Output tensor: Batch of sparse recurrent token hidden states.
         # Output shape : `(B, S, H)`.
         # Output dtype: `torch.float32`.
-        self.dp = nn.ModuleList(
-            [nn.Dropout(p=p_hid) for _ in range(n_hid_lyr - 1)]
-            + [nn.Identity()]
-        )
+        dp: List[nn.Module] = [
+            nn.Dropout(p=p_hid)
+            for _ in range(n_hid_lyr - 1)
+        ]
+        dp.append(nn.Identity())
+        self.dp = nn.ModuleList(dp)
 
     def forward(self, batch_tk_reps: torch.Tensor) -> torch.Tensor:
         r"""Perform forward pass.

@@ -31,7 +31,7 @@ True
 """
 
 
-from typing import Dict, Final, List
+from typing import Dict, Final, List, Type
 
 import torch.nn
 
@@ -49,7 +49,7 @@ from lmp.model._sattn_gru import SAttnGRUBlock, SAttnGRUModel
 from lmp.model._sattn_lstm import SAttnLSTMBlock, SAttnLSTMModel
 from lmp.model._sattn_rnn import SAttnRNNBlock, SAttnRNNModel
 
-ALL_MODELS: Final[List[BaseModel]] = [
+ALL_MODELS: Final[List[Type[BaseModel]]] = [
     GRUModel,
     LSTMModel,
     RNNModel,
@@ -63,8 +63,11 @@ ALL_MODELS: Final[List[BaseModel]] = [
     SAttnLSTMModel,
     SAttnRNNModel,
 ]
-MODEL_OPTS: Final[Dict[str, BaseModel]] = {m.model_name: m for m in ALL_MODELS}
-PRIVA_MODELS: Final[Dict[str, List[torch.nn.Module]]] = {
+MODEL_OPTS: Final[Dict[str, Type[BaseModel]]] = {
+    m.model_name: m
+    for m in ALL_MODELS
+}
+PRIVA_MODELS: Final[Dict[str, List[Type[torch.nn.Module]]]] = {
     ResGRUModel.model_name: [ResGRUBlock],
     ResLSTMModel.model_name: [ResLSTMBlock],
     ResRNNModel.model_name: [ResRNNBlock],
