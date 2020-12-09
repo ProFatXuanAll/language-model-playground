@@ -81,7 +81,7 @@ Installation
 Training Pipline
 ----------------
 
-We now demonstrate a basic language model training pipline.
+We now demonstrate a basic :term:`language model` training pipline.
 
 .. note::
 
@@ -105,12 +105,13 @@ In this example we use :py:class:`lmp.dset.WikiText2Dset` as our dataset.
 2. Choose a Tokenizer
 ~~~~~~~~~~~~~~~~~~~~~
 
-Choose a tokenizer and train tokenizer on dataset we already choose.
+Choose a :term:`tokenizer` and train :term:`tokenizer` on dataset we already
+choose.
 
 In this example we use :py:class:`lmp.tknzr.WsTknzr` since all samples in
 :py:class:`lmp.dset.WikiText2Dset` are whitespace separated.
 
-We use :py:mod:`lmp.script.train_tokenizer` to train tokenizer given
+We use :py:mod:`lmp.script.train_tokenizer` to train :term:`tokenizer` given
 following arguments:
 
 .. code-block:: sh
@@ -124,21 +125,22 @@ following arguments:
         --ver train
 
 We use ``whitespace`` to specify we want to use :py:class:`lmp.tknzr.WsTknzr`
-as our tokenizer, and train our tokenizer on Wikitext-2 dataset using
-``--dset_name wikitext-2`` arguments.
-We use ``--ver train`` since our language model will be trained on training
-version of Wikitext-2, and we simply treat :term:`OOV` in both validation and
-test versions as unknown words.
+as our :term:`tokenizer`, and we train our :term:`tokenizer` on Wikitext-2
+dataset using ``--dset_name wikitext-2`` arguments.
+We use ``--ver train`` since our :term:`language model` will be trained on
+training version of Wikitext-2, and we simply treat :term:`OOV` in both
+validation and test versions as unknown words.
 
-We use ``--max_vocab -1`` to include all tokens in Wikitext-2.
-This results in vocabuary size around ``30000``, which is a little too much,
-thus we also use ``--min_count 10`` to filter out all tokens which frequency
-is lower than ``10``.
-Here we simply assume that all tokens occur less than ``10`` times might be
-typos, name entities, digits, or something else that we believe are not
-useful.
+We use ``--max_vocab -1`` to include all :term:`tokens` in Wikitext-2.
+This results in :term:`vocabulary` size around ``30000``, which is a little bit
+too much.
+Thus we also use ``--min_count 10`` to filter out all :term:`tokens` whose
+frequency are lower than ``10``.
+Here we simply assume that all :term:`tokens` occur less than ``10`` times
+might be typos, name entities, digits, or something else that we believe are
+not useful.
 We also use ``--is_uncased`` to convert all uppercase letters into
-lowercase, this also help to reducing vocabulary size.
+lowercase, this also help to reducing :term:`vocabulary` size.
 (for example, ``You`` and ``you`` are now treated as same words)
 
 All arguments we used are just a mather of choice for pre-processing.
@@ -147,15 +149,15 @@ You can change them to any values you want.
 .. seealso::
 
     :py:mod:`lmp.tknzr`
-        All available tokenizers.
+        All available :term:`tokenizers`.
 
 3. Evaluate Tokenizer
 ~~~~~~~~~~~~~~~~~~~~~
 
-After training tokenizer, you can now use your pre-trained tokenizer to
-tokenize arbitrary text.
+After training :term:`tokenizer`, you can now use your pre-trained
+:term:`tokenizer` to :term:`tokenize` arbitrary text.
 
-For example, you can try to tokenize ``hello world`` with script
+For example, you can try to :term:`tokenize` ``hello world`` with script
 :py:mod:`lmp.script.tokenize`:
 
 .. code-block:: sh
@@ -168,10 +170,12 @@ You should see something like ``['hello', 'world']``.
 
 4. Choose a Language Model
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
-Now we can train our language model with the help of pre-trained tokenizer.
+Now we can train our :term:`language model` with the help of pre-trained
+:term:`tokenizer`.
 
 In this example we use :py:mod:`lmp.model.LSTM` as our training target.
-We use :py:mod:`lmp.script.train_model` to train language model as follow:
+We use :py:mod:`lmp.script.train_model` to train :term:`language model`
+as follow:
 
 .. code-block:: sh
 
@@ -202,10 +206,10 @@ We use :py:mod:`lmp.script.train_model` to train language model as follow:
 :py:mod:`lmp.script.train_model` have similar structure as
 :py:mod:`lmp.script.train_tokenizer`;
 We use ``LSTM`` to specify we want to use :py:class:`lmp.model.LSTMModel` as
-our language model, and train our model on Wikitext-2 dataset using
+our :term:`language model`, and train our model on Wikitext-2 dataset using
 ``--dset_name wikitext-2`` arguments.
 We use ``--ver train`` to specify we want to use training version of
-Wikitext-2 which is also used to train our tokenizer.
+Wikitext-2 which is also used to train our :term:`tokenizer`.
 
 We will train on Wikitext-2 dataset for ``10`` **epochs**, which means we
 will repeatly train on sample dataset for ``10`` times.
@@ -215,24 +219,26 @@ sequentially feed them to model.
 (This is specified in ``--batch_size 32``.).
 We call one such group as a **mini-batch**.
 All samples in mini-batch are randomly gathered in every epoch, and the
-order to feed mini-batches to model are randomly purmute.
+order to feed mini-batches to model are randomly purmuted.
 Thus when we train ``10`` epochs we might have ``10`` different mini-batches
 training order and hundreds of thousands of different mini-batches.
 
-All samples in mini-batch are first pre-processed by our pre-train tokenizer
-(as specified in ``--tknzr_exp_name my_tknzr_exp``) and then fed into model.
-If you think you need a different tokenizer, you can go back to previous step
-to see how you can obtain a pre-trained tokenizer.
+All samples in mini-batch are first pre-processed by our pre-train
+:term:`tokenizer` (as specified in ``--tknzr_exp_name my_tknzr_exp``) and then
+fed into model.
+If you think you need a different :term:`tokenizer`, you can go back to
+previous step to see how you can obtain a pre-trained :term:`tokenizer`.
 
 We will output our model training result and save them as files (more
 precisely, compressed pickle files).
 Save will trigger every ``1000`` updates (as specified in ``--ckpt_step``).
-We call these saved files as **checkpoint**, all they saved are model
+We call these saved files as :term:`checkpoint`, all they saved are model
 parameters.
 Later we will reuse these model parameters to perform further operation such
-as perplexity evaluation or text generation.
+as :term:`perplexity` evaluation or text generation.
 We save these files with name ``model-\d+.pt``, where ``\d+`` means digits.
-(For example we might save at checkpoint ``5000`` as ``model-5000.pt``.)
+(For example we might save at :term:`checkpoint` ``5000`` as
+``model-5000.pt``.)
 
 We also log our model performance during training, i.e., **loss function**
 output.
@@ -249,42 +255,43 @@ http://localhost:6006/ to see your performance logs.
 
 For the rest arguments, we split them into two categories:
 
-- **Optimization** hyperparameters.
+- :term:`Optimization` hyperparameters.
 - **Model architecture** hyperparameters.
 
-For **optimization**, we only provide you with one optimization method, namely
-:py:class:`torch.optim.Adam`.
-We use :py:class:`torch.optim.Adam` to perform gradient descent on language
-model.
-Our optimization target is to minimize token prediction negative
+For :term:`optimization`, we only provide you with one :term:`optimization`
+method, namely :py:class:`torch.optim.Adam`.
+We use :py:class:`torch.optim.Adam` to perform :term:`gradient descent` on
+:term:`language model`.
+Our :term:`optimization` target is to minimize token prediction negative
 log-likelihood, or simply cross-entropy.
 (This is equivalent to maximize log-likelihood, or just likelihood.)
 See :py:class:`torch.nn.CrossEntropyLoss` for loss function.
 Arguments including ``--beta1``, ``--beta2``, ``--eps``, ``--lr`` and ``--wd``
 are directly passed to :py:class:`torch.optim.Adam`.
 
-For **model architecture**, you can simply see the model's constructor to know
-what parameters the model needed.
+For **model architecture**, you can simply checkt the model's constructor to
+see what parameters the model needed.
 Or you can use ``python -m lmp.script.train_model model_name -h`` to see
 parameters on CLI.
 For the meaning of those model architecture hyperparameters, we recommend you
 to see their documents for more details.
 
-Just like training tokenizer, all arguments we used are just a mather of choice
-for training.
+Just like training :term:`tokenizer`, all arguments we used are just a mather
+of choice for training.
 You can change them to any values you want.
 
 .. seealso::
 
     :py:mod:`lmp.model`
-        All available models.
+        All available :term:`language models`.
 
 5. Evaluate Language Model
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
-Its time to check whether our model is successfully trained!
+Its time to check whether our :term:`language model` is successfully trained!
 
-In this example we use Wikitext-2 dataset to perform validation and testing.
-But before that we should check whether our model is underfitting.
+In this example we use Wikitext-2 dataset to perform **validation** and
+**testing**.
+But before that we should check whether our model is **underfitting**.
 
 .. code-block:: sh
 
@@ -294,12 +301,12 @@ But before that we should check whether our model is underfitting.
         --exp_name my_model_exp \
         --ver train
 
-We use training version of WikiText-2 dataset (as specified in ``--ver train``)
-to check our performance.
-The script above will evaluate all checkpoints we have saved starting from
-checkpoint ``0`` all the way to last checkpoint.
-We use **perplexity** as our evaluation metric.
-See :py:meth:`lmp.model.BaseModel.ppl` for perplexity details.
+We use **training** version of WikiText-2 dataset (as specified in
+``--ver train``) to check our performance.
+The script above will evaluate all :term:`checkpoints` we have saved starting
+from :term:`checkpoint` ``0`` all the way to last :term:`checkpoint`.
+We use :term:`perplexity` as our evaluation metric.
+See :py:meth:`lmp.model.BaseModel.ppl` for :term:`perplexity` details.
 
 Again you can use browser to see your evaluation logs by the following script:
 
@@ -311,20 +318,20 @@ After launch the command, you should open your **browser** and type
 http://localhost:6006/ to see your evaluation logs.
 We will not write this script again later on.
 
-If you didn't see the perplexity goes down, this means your model is
-underfitting.
-You should go back to re-train your language model.
+If you didn't see the :term:`perplexity` goes down, this means your model is
+**underfitting**.
+You should go back to re-train your :term:`language model`.
 Try using different batch size, number of epochs, and all sorts of
 hyperparameters combination.
 
-If you see the perplexity goes down, that is good!
-But how low should the perplexity be?
+If you see the :term:`perplexity` goes down, that is good!
+But how low should the :term:`perplexity` be?
 To answer that question, we recommed you to see the paper paired with the
 dataset (in some dataset they might not have papers to reference).
 But overall, lower than ``100`` might be a good indicator for a well-trained
-language model.
+:term:`language model`.
 
-We should now check whether our model is overfitting.
+We should now check whether our model is **overfitting**.
 
 .. code-block:: sh
 
@@ -334,18 +341,18 @@ We should now check whether our model is overfitting.
         --exp_name my_model_exp \
         --ver valid
 
-We use validation version of WikiText-2 dataset (as specified in
+We use **validation** version of WikiText-2 dataset (as specified in
 ``--ver valid``) to check our performance.
 
-If perplexity on validation set does not do well, then we should go back to
-re-train our model, then validate again, then re-train our model again, and so
-on.
-The loop goes on and on until we reach a point where we get good perplexity on
-both training and validation dataset.
-This means we might have a language model which is able to generalize on
-dataset we have never used to train (validation set in this case).
-To further verify our hypothesis, we should now use test version of WikiText-2
-dataset to check our performance.
+If :term:`perplexity` on validation set does not do well, then we should go
+back to re-train our model, then validate again, then re-train our model again,
+and so on.
+The loop goes on and on until we reach a point where we get good
+:term:`perplexity` on both training and validation dataset.
+This means we might have a :term:`language model` which is able to generalize
+on dataset we have never used to train (validation set in this case).
+To further verify our hypothesis, we should now use **test** version of
+WikiText-2 dataset to check our performance.
 
 .. code-block:: sh
 
@@ -357,10 +364,11 @@ dataset to check our performance.
 
 6. Generate Text
 ~~~~~~~~~~~~~~~~
-Finally we can use our well-trained language model to generate text.
+Finally we can use our well-trained :term:`language model` to generate text.
 In this example we use :py:mod:`lmp.script.generate_text` to generate text:
 
 .. code-block:: sh
+
     python -m lmp.script.generate_text top-1 \
         --ckpt 5000 \
         --exp_name my_model_exp \
@@ -368,19 +376,21 @@ In this example we use :py:mod:`lmp.script.generate_text` to generate text:
 
 We use ``top-1`` to specify we want to use :py:class:`lmp.infer.Top1Infer` as
 inference method to generate text.
-We use ``We are`` as condition text and generate text to complete the sentence
-or paragraph.
+We use ``"We are"`` as condition text and generate text to complete the
+sentence or paragraph.
 
-You can use different checkpoint by changing the ``--ckpt 5000`` argument.
-All available checkpoint is under experiment ``exp/my_model_exp``.
-If checkpoint does not exist then it will cause error.
-Also if the models paired tokenizer does not exist then it will cause error as
-well.
+You can use different :term:`checkpoint` by changing the ``--ckpt 5000``
+argument.
+All available :term:`checkpoints` is under :term:`experiment path`
+``exp/my_model_exp``.
+If :term:`checkpoint` does not exist then it will cause error.
+Also if the models paired :term:`tokenizer` does not exist then it will cause
+error as well.
 
 .. seealso::
 
     :py:mod:`lmp.infer`
-        All available inference method.
+        All available inference methods.
 
 Documents
 ---------

@@ -3,6 +3,18 @@ Glossary
 
 .. glossary::
 
+    checkpoint
+    checkpoints
+        In the process of training :term:`language models`, we need to save our
+        training results (model parameters) for later evaluation.
+        We don't want to save our training results only after training.
+        We want to save our training results every certain amount of update
+        times.
+        The :term:`step` number triggering save process is called
+        **checkpoint**.
+        All checkpoints will be saved at your :term:`experiment path` and named
+        with format ``model-\d+.pt``, where ``\d+`` means checkpoint step.
+
     detokenize
     detokenization
         Converts list of tokens back to one and only one text.
@@ -97,6 +109,27 @@ Glossary
     out-of-vocabulary
         Refers to :term:`tokens` which are **not** in :term:`vocabulary`.
 
+    Optimization
+    optimization
+    gradient descent
+        In the context of :term:`neural network` optimization we usually mean
+        to perform **gradient descent** on :term:`neural network`.
+        To perform gradient descent, model need to first perform
+        **forward pass**.
+        During forward pass, model will take a input which we called
+        **tensors** and pass tensors to deeper layers in model for calculation.
+        Every path **tensor** flow throught the model will be recorded and
+        construct a **tensor flowing graph**.
+        The output of forward pass is then used to calculate **loss** on
+        **objective function** (or **loss function**).
+        We can say "we are optimizing our model on objective function by
+        minimizing loss."
+        We can calculate gradient on loss with respect to model output.
+        Then we can use gradient from loss to perform **back-propagation** with
+        the aid of tensor flowing graph.
+        After back-propagation, all parameters in model get their own
+        gradients, then we can do **gradient descent**.
+
     perplexity
         Perplexity is a way to evaluate :term:`language model`.
         Given a text :math:`x` consist of :math:`n` tokens
@@ -121,6 +154,9 @@ Glossary
             &= \exp\bigg(\frac{-1}{n} \sum_{i = 1}^n \log P(x_i|x_1, \dots,
             x_{i - 1})\bigg)
             \end{align*}
+
+    step
+        Refers to number of times a :term:`language model` has been updated.
 
     token
     tokens
