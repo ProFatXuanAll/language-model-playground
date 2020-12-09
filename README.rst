@@ -68,10 +68,17 @@ Installation
 
         pipenv shell
 
-5. Now you can run any script under :py:mod:`lmp.script`!
+5. Now you can run any script under ``lmp.script``!
    For example, you can take a look on chinese poem dataset by running
-   :py:mod:`lmp.script.sample_from_dataset`
+   ``lmp.script.sample_from_dataset``
 
    .. code-block:: shell
 
         python -m lmp.script.sample_from_dataset --dset_name chinese-poem
+
+LICENSE
+-------
+
+Beerware license.
+Anyone used this project must buy
+<ProFatXuanAll https://github.com/ProFatXuanAll> a beer if you meet him.
