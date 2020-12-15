@@ -244,13 +244,31 @@ def main() -> None:
     # Move model to running device.
     model = model.to(device)
 
+    # Remove weight decay on bias and layer-norm.
+    no_decay = ['bias', 'LayerNorm.weight']
+    optim_group_params = [
+        {
+            'params': [
+                param for name, param in model.named_parameters()
+                if not any(nd in name for nd in no_decay)
+            ],
+            'weight_decay': args.wd,
+        },
+        {
+            'params': [
+                param for name, param in model.named_parameters()
+                if any(nd in name for nd in no_decay)
+            ],
+            'weight_decay': 0.0,
+        },
+    ]
+
     # Get new optimizer instance.
     optim = torch.optim.AdamW(
-        model.parameters(),
+        optim_group_params,
         betas=(args.beta1, args.beta2),
         lr=args.lr,
         eps=args.eps,
-        weight_decay=args.wd,
     )
 
     # Get tensorboard logger instance.
@@ -328,7 +346,11 @@ def main() -> None:
                 )
 
                 # Log on tensorboard
-                writer.add_scalar('loss', avg_loss, step)
+                writer.add_scalar(
+                    f'loss/{args.dset_name}/{args.ver}',
+                    avg_loss,
+                    step,
+                )
 
                 # Refresh log performance.
                 pre_avg_loss = avg_loss

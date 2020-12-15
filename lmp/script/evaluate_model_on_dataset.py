@@ -248,7 +248,7 @@ def main() -> None:
             avg_ppl += batch_avg_ppl * len(batch_txt) / len(dset)
 
         # Log average perplexity on dataset to CLI and tensorboard.
-        writer.add_scalar('ppl', avg_ppl, ckpt)
+        writer.add_scalar(f'ppl/{args.dset_name}/{args.ver}', avg_ppl, ckpt)
         print(f'checkpoint {ckpt} ppl: {avg_ppl}')
 
 
