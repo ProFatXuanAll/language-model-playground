@@ -1,6 +1,14 @@
 How To Document Guide
 =====================
 
+.. note::
+
+    You need to install dev tools first by running
+
+    .. code-block:: sh
+
+        pipenv install --dev
+
 Documentation Style Guide
 -------------------------
 

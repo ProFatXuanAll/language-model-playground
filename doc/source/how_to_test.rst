@@ -1,6 +1,14 @@
 How To Test Guide
 =================
 
+.. note::
+
+    You need to install dev tools first by running
+
+    .. code-block:: sh
+
+        pipenv install --dev
+
 Test Style Guide
 ----------------
 
