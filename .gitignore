@@ -106,7 +106,10 @@ venv.bak/
 # editor config
 .vscode
 
-# experiment and logging
+# Experiment data.
+data/
+
+# Experiment outputs and logs.
 exp/
 log/
 
