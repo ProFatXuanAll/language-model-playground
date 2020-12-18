@@ -31,14 +31,6 @@ Environment Prerequest
 
         pip install pipenv
 
-4. Since the project contains big dataset, we use ``git lfs`` to control
-   dataset version.
-   Please install ``git lfs`` first, and execute
-
-   .. code-block:: shell
-
-        git lfs install
-
 .. _PyTorch: https://pytorch.org/
 
 Installation

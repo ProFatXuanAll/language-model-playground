@@ -1,9 +1,48 @@
 r"""Utilities for text pre-processing and post-processing."""
 
+import os
 import re
 import typing
 import unicodedata
 from typing import List, Optional, Sequence
+
+import requests
+
+
+def download(url: str, file_path: str) -> None:
+    r"""Download dataset files.
+
+    All dataset files are hosted on `demo-dataset`_ repository.
+    If dataset files is not on your local repository, then it will
+    be automatically downloaded from `demo-dataset`_ repository.
+    Once dataset files are downloaded, they will not be downloaded again.
+
+    .. _`demo-dataset`: https://github.com/ProFatXuanAll/demo-dataset
+
+    Parameters
+    ==========
+    url: str
+        Dataset file URL.
+    file_path: str
+        Dataset file save path.
+
+    Raises
+    ======
+    FileExistsError
+        If output file directory exists but not a directory, or output file
+        path exists but not a file.
+    """
+    file_dir = os.path.abspath(os.path.join(file_path, os.pardir))
+
+    if not os.path.exists(file_dir):
+        os.makedirs(file_dir)
+    if os.path.exists(file_dir) and os.path.isfile(file_dir):
+        raise FileExistsError(f'{file_dir} is not a directory.')
+    if os.path.exists(file_path) and os.path.isdir(file_path):
+        raise FileExistsError(f'{file_path} is not a file.')
+
+    with requests.get(url) as res, open(file_path, 'wb') as out_file:
+        out_file.write(res.content)
 
 
 def norm(txt: str) -> str:

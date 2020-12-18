@@ -14,15 +14,16 @@ sphinx = "3.3.1"
 sphinx-rtd-theme = "0.5.0"
 
 [packages]
-matplotlib = "3.3.2"
+matplotlib = "3.3.3"
 numpy = "1.19.4"
-pandas = "1.1.4"
+pandas = "1.1.5"
+requests = "2.25.1"
 scipy = "1.5.4"
 seaborn = "0.11.0"
 sklearn = "0.0"
 tensorboard = "2.4.0"
-torch = "1.7.0"
-tqdm = "4.54.0"
+torch = "1.7.1"
+tqdm = "4.54.1"
 
 [requires]
 python_version = "3.8"

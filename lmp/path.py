@@ -6,8 +6,9 @@ PROJECT_ROOT: Final[str]
     Absolute path of the project root directory.
 DATA_PATH: Final[str]
     Absolute path of all the dataset.
-    Some of the dataset size are too big to be tracked on GitHub, thus we need
-    to use ``git lfs`` to track large file storage.
+    Some of the dataset size are too big to be tracked on GitHub, thus we host
+    all of our dataset files on different GitHub repository.
+    See :py:class:`lmp.dset.BaseDset` for more information.
 EXP_PATH: Final[str]
     Absolute path of all experiments.
     Experiment are ignore by `.git`, no experiment results (model checkpoints,

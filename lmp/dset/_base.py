@@ -1,13 +1,23 @@
 r"""Dataset base class."""
 
-
+import os
 from typing import ClassVar, Iterator, List, Optional
 
 import torch.utils.data
 
+import lmp.dset.util
+import lmp.path
+
 
 class BaseDset(torch.utils.data.Dataset):
     r"""Dataset base class.
+
+    All dataset files are hosted on `demo-dataset`_ repository.
+    If dataset files is not on your local repository, then it will
+    be automatically downloaded from `demo-dataset`_ repository.
+    Once dataset files are downloaded, they will not be downloaded again.
+
+    .. _`demo-dataset`: https://github.com/ProFatXuanAll/demo-dataset
 
     Parameters
     ==========
@@ -24,6 +34,9 @@ class BaseDset(torch.utils.data.Dataset):
         Display name for dataset on CLI.
         Used for command line argument parsing.
         Subclass must overwrite ``dset_name`` attribute.
+    file_name: ClassVar[str]
+        Download dataset file name.
+        Used only for downloading dataset files.
     lang: ClassVar[str]
         Language of the dataset.
     spls: Sequence[str]
@@ -33,6 +46,9 @@ class BaseDset(torch.utils.data.Dataset):
     vers: ClassVar[List[str]]
         All available version of the dataset.
         Used to check whether specified version ``ver`` is available.
+    url: ClassVar[str]
+        URL for downloading dataset files.
+        Used only for downloading dataset files.
 
     Raises
     ======
@@ -43,8 +59,10 @@ class BaseDset(torch.utils.data.Dataset):
     """
     df_ver: ClassVar[str] = ''
     dset_name: ClassVar[str] = 'base'
+    file_name: ClassVar[str] = ''
     lang: ClassVar[str] = ''
     vers: ClassVar[List[str]] = []
+    url: ClassVar[str] = ''
 
     def __init__(self, *, ver: Optional[str] = None):
         super().__init__()
@@ -63,6 +81,9 @@ class BaseDset(torch.utils.data.Dataset):
 
         self.spls: List[str] = []
         self.ver = ver
+
+        # Download dataset file if file does not exist.
+        self.download()
 
     def __iter__(self) -> Iterator[str]:
         r"""Iterate through each sample in the dataset.
@@ -105,3 +126,20 @@ class BaseDset(torch.utils.data.Dataset):
             raise TypeError('`idx` must be an instance of `int`.')
 
         return self.spls[idx]
+
+    def download(self) -> None:
+        r"""Download dataset file if not exists.
+
+        Only download dataset file if not exists.
+        Once downloaded will not download again.
+        """
+        file_name = self.__class__.file_name.format(self.ver)
+        file_path = os.path.join(lmp.path.DATA_PATH, file_name)
+
+        # Cancel download if dataset file already existed.
+        if os.path.exists(file_path):
+            return
+
+        # Download dataset file.
+        url = f'{self.__class__.url}/{file_name}'
+        lmp.dset.util.download(url=url, file_path=file_path)

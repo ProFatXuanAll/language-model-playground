@@ -82,10 +82,6 @@ The following list of items are the helps we needed.
 - Unittest on scripts.
 - Documentation translation to traditional Chinese.
   We also need to separate English documents from traditional Chinese.
-- Solution for maintaining dataset.
-  We currently use ``git lfs`` and put dataset in the project.
-  But at certain point we might have to paid for large file storage.
-  We would like to avoid this as much as possible.
 - Require installation script.
   Currently python is undergone throught some major change on their package
   management system.

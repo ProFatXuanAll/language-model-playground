@@ -42,6 +42,9 @@ class WikiText2Dset(BaseDset):
     dset_name: ClassVar[str]
         Dataset name is ``wikitext-2``.
         Used for command line argument parsing.
+    file_name: ClassVar[str]
+        Download dataset file name.
+        Used only for downloading dataset files.
     lang: ClassVar[str]
         Use English as primary language.
     spls: Sequence[str]
@@ -51,6 +54,9 @@ class WikiText2Dset(BaseDset):
     vers: ClassVar[List[str]]
         All available version of the dataset.
         Used to check whether specified version ``ver`` is available.
+    url: ClassVar[str]
+        URL for downloading dataset files.
+        Used only for downloading dataset files.
 
     Raises
     ======
@@ -77,20 +83,26 @@ class WikiText2Dset(BaseDset):
     """
     df_ver: ClassVar[str] = 'train'
     dset_name: ClassVar[str] = 'wikitext-2'
+    file_name: ClassVar[str] = 'wiki.{}.tokens.zip'
     lang: ClassVar[str] = 'en'
     vers: ClassVar[List[str]] = ['test', 'train', 'valid']
+    url: ClassVar[str] = ''.join([
+        'https://github.com/ProFatXuanAll',
+        '/demo-dataset/raw/main/wikitext-2',
+    ])
 
     def __init__(self, *, ver: Optional[str] = None):
         super().__init__(ver=ver)
 
+        file_path = os.path.join(
+            lmp.path.DATA_PATH,
+            self.__class__.file_name.format(self.ver),
+        )
+
         # Read text file inside WikiText-2 zip file.
-        with ZipFile(
-            os.path.join(lmp.path.DATA_PATH, 'wikitext-2-v1.zip'),
-            'r',
-        ) as input_zipfile:
+        with ZipFile(os.path.join(file_path), 'r') as input_zipfile:
             with TextIOWrapper(
-                input_zipfile.open(os.path.join(
-                    'wikitext-2', f'wiki.{self.ver}.tokens'), 'r'),
+                input_zipfile.open(f'wiki.{self.ver}.tokens', 'r'),
                 encoding='utf-8',
             ) as input_text_file:
                 data = input_text_file.read()
