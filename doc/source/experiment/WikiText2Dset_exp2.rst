@@ -1,7 +1,7 @@
 WikiText-2 Dataset
 ==================
 
-Experiment 2: Modified ``d_hid``
+Experiment 2: Modified ``d_emb``
 --------------------------------
 
 Tokenizers
@@ -148,5 +148,7 @@ Conclusions
     - ``d_emb=112`` perform the best on ``90k`` steps steps.
     - ``d_emb=32`` perform the worst on all steps.
 - ``d_emb=32`` is **underfitting**.
-- The interval of ``d_emb`` is not large enough to observe obvious change.
+    - ``d_emb=32`` perform the worst on all sets.
+- ``d_emb=512`` is **overfitting**.
+    - ``d_emb=512`` perform the best on testing sets, but does not do so on other two sets. 
 

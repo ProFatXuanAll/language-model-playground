@@ -140,7 +140,7 @@ Conclusions
 ~~~~~~~~~~~
 
 - Loss does directly reflect on perplexity.
+- ``lr=1e-1`` does not converge.
+- ``lr=1e-2`` does not converge after ``10k`` steps.
 - ``lr=1e-3`` perform the best on all set and loss.
-- ``lr=1e-1`` does not converge on **loss**.
-- ``lr=1e-2`` loss increase after ``10k`` steps.
 
