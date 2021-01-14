@@ -1,6 +1,3 @@
-WikiText-2 Dataset
-==================
-
 Experiment 1: Models Performance Baseline
 -----------------------------------------
 
@@ -211,3 +208,5 @@ Conclusions
     - **LSTM** got the best loss but **GRU** got the best perplexity
 - Using residual connections does help on **RNN**, but not on **GRU** and even worse on **LSTM**.
 - Loss does not go down much after ``50k`` steps.
+
+

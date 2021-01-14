@@ -1,7 +1,4 @@
-WikiText-2 Dataset
-==================
-
-Experiment 2: Modified ``lr``
+Experiment 4: Modified ``lr``
 -----------------------------------------
 
 Tokenizers
@@ -138,9 +135,20 @@ Models Perplexity Performance
 
 Conclusions
 ~~~~~~~~~~~
-
-- Loss does directly reflect on perplexity.
-- ``lr=1e-1`` does not converge.
-- ``lr=1e-2`` does not converge after ``10k`` steps.
-- ``lr=1e-3`` perform the best on all set and loss.
+- Loss performance on **training set**:
+    - ``lr=1e-1`` perform the **worst** after ``10k`` steps.
+    - ``lr=1e-3`` perform the **best** on all steps.
+- Perplexity performance on **training set**:
+    - ``lr=1e-1`` perform the **worst** on all steps.
+    - ``lr=1e-3`` perform the **best** on all steps.
+- Perplexity performance on **validation set**:
+    - ``lr=1e-1`` perform the **worst** on all steps.
+    - ``lr=1e-3`` perform the **best** on all steps.
+- Perplexity performance on **testing set**:
+    - ``lr=1e-1`` perform the **worst** on all steps.
+    - ``lr=1e-3`` perform the **best** on all steps.
+- ``lr=1e-1`` is **underfitting**.
+    - ``lr=1e-1`` does not **converge** on loss.
+    - ``lr=1e-1`` perform the **worst** on all set.
+- ``lr=1e-3`` perform the **best** on all set.
 

@@ -1,7 +1,4 @@
-WikiText-2 Dataset
-==================
-
-Experiment 2: Modified ``d_hid``
+Experiment 3: Modified ``d_hid``
 --------------------------------
 
 Tokenizers
@@ -71,7 +68,7 @@ Models Perplexity Performance
 +----------------------------------------------------------------------+
 | Training Set                                                         |
 +-----------+-----------+-----------+----------+-----------+-----------+
-| ``d_emb`` | step 10k  | step 30k  | step 50k | step 70k  | step 90k  |
+| ``d_hid`` | step 10k  | step 30k  | step 50k | step 70k  | step 90k  |
 +===========+===========+===========+==========+===========+===========+
 | 128       | 4.293     | 3.741     | 3.562    | 3.451     | 3.358     |
 +-----------+-----------+-----------+----------+-----------+-----------+
@@ -91,7 +88,7 @@ Models Perplexity Performance
 +-----------------------------------------------------------------------+
 | Validation Set                                                        |
 +-----------+-----------+-----------+-----------+-----------+-----------+
-| ``d_emb`` | step 10k  | step 30k  | step 50k  | step 70k  | step 90k  |
+| ``d_hid`` | step 10k  | step 30k  | step 50k  | step 70k  | step 90k  |
 +===========+===========+===========+===========+===========+===========+
 | 128       | 4.045     | 3.704     | 3.62      | 3.575     | 3.544     |
 +-----------+-----------+-----------+-----------+-----------+-----------+
@@ -111,7 +108,7 @@ Models Perplexity Performance
 +------------------------------------------------------------------------+
 | Testing Set                                                            |
 +-----------+-----------+-----------+------------+-----------+-----------+
-| ``d_emb`` | step 10k  | step 30k  | step 50k   | step 70k  | step 90k  |
+| ``d_hid`` | step 10k  | step 30k  | step 50k   | step 70k  | step 90k  |
 +===========+===========+===========+============+===========+===========+
 | 128       | 4.028     | 3.709     | 3.617      | 3.57      | 3.533     |
 +-----------+-----------+-----------+------------+-----------+-----------+
@@ -133,18 +130,18 @@ Conclusions
 ~~~~~~~~~~~
 
 - Perplexity performance on **training set**:
-    - ``d_hid=896`` perform the best on all steps.
-    - ``d_hid=128`` perform the worst on all steps.
+    - ``d_hid=896`` perform the **best** on all steps.
+    - ``d_hid=128`` perform the **worst** on all steps.
 - Perplexity performance on **validation set**:
-    - ``d_hid=256`` perform the best on ``30k`` and ``50k`` and ``70k`` and ``90k`` steps.
-    - ``d_hid=128`` perform the worst on ``10k`` steps.
-    - ``d_hid=896`` perform the worst on ``30k`` and ``50k`` and ``70k`` and ``90k`` steps.
+    - ``d_hid=256`` perform the **best** on ``30k`` and ``50k`` and ``70k`` and ``90k`` steps.
+    - ``d_hid=128`` perform the **worst** on ``10k`` steps.
+    - ``d_hid=896`` perform the **worst** on ``30k`` and ``50k`` and ``70k`` and ``90k`` steps.
 - Perplexity performance on **testing set**:
-    - ``d_hid=256`` perform the best on ``30k`` and ``50k`` and ``70k`` and ``90k`` steps.
-    - ``d_hid=128`` perform the worst on ``10k`` steps.
-    - ``d_hid=896`` perform the worst on ``30k`` and ``50k`` and ``70k`` and ``90k`` steps.
+    - ``d_hid=256`` perform the **best** on ``30k`` and ``50k`` and ``70k`` and ``90k`` steps.
+    - ``d_hid=128`` perform the **worst** on ``10k`` steps.
+    - ``d_hid=896`` perform the **worst** on ``30k`` and ``50k`` and ``70k`` and ``90k`` steps.
 - ``d_hid=896`` is **overfitting**.
-    - ``d_hid=896`` perform best on testing set, but perform poor on other two sets.
+    - ``d_hid=896`` perform **best** on **training set**, but perform poor on **validation set** and **testing set**.
 - ``d_hid=128`` is **underfitting**.
-    - ``d_hid=128`` perform poor on all set.
-- ``d_hid=256`` perform the best.
+    - ``d_hid=128`` perform the **worst** on all set.
+- ``d_hid=256`` perform the **best** on **validation set** and **testing set**.

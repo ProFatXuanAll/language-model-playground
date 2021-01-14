@@ -1,6 +1,3 @@
-WikiText-2 Dataset
-==================
-
 Experiment 2: Modified ``d_emb``
 --------------------------------
 
@@ -134,21 +131,21 @@ Conclusions
 ~~~~~~~~~~~
 
 - Perplexity performance on **training set**:
-    - ``d_emb=512`` perform the best on all steps.
-    - ``d_emb=32`` perform the worst on all steps.
+    - ``d_emb=512`` perform the **best** on all steps.
+    - ``d_emb=32`` perform the **worst** on all steps.
 - Perplexity performance on **validation set**:
-    - ``d_emb=512`` perform the best on ``10k`` steps.
-    - ``d_emb=352`` perform the best on ``30k`` and ``50k`` steps.
-    - ``d_emb=272`` perform the best on ``70k`` and ``90k`` steps.
-    - ``d_emb=32`` perform the worst on all steps.
+    - ``d_emb=512`` perform the **best** on ``10k`` steps.
+    - ``d_emb=352`` perform the **best** on ``30k`` and ``50k`` steps.
+    - ``d_emb=272`` perform the **best** on ``70k`` and ``90k`` steps.
+    - ``d_emb=32`` perform the **worst** on all steps.
 - Perplexity performance on **testing set**:
-    - ``d_emb=512`` perform the best on ``10k`` steps.
-    - ``d_emb=352`` perform the best on ``30k`` and ``50k`` steps.
-    - ``d_emb=272`` perform the best on ``70k`` steps steps.
-    - ``d_emb=112`` perform the best on ``90k`` steps steps.
-    - ``d_emb=32`` perform the worst on all steps.
+    - ``d_emb=512`` perform the **best** on ``10k`` steps.
+    - ``d_emb=352`` perform the **best** on ``30k`` and ``50k`` steps.
+    - ``d_emb=272`` perform the **best** on ``70k`` steps steps.
+    - ``d_emb=112`` perform the **best** on ``90k`` steps steps.
+    - ``d_emb=32`` perform the **worst** on all steps.
 - ``d_emb=32`` is **underfitting**.
-    - ``d_emb=32`` perform the worst on all sets.
+    - ``d_emb=32`` perform the **worst** on all sets.
 - ``d_emb=512`` is **overfitting**.
-    - ``d_emb=512`` perform the best on testing sets, but does not do so on other two sets. 
+    - ``d_emb=512`` perform the **best** on **training set**, but not on **validation set** and **testing set**. 
 
