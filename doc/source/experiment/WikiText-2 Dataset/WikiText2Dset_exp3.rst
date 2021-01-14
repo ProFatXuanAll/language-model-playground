@@ -143,5 +143,5 @@ Conclusions
 - ``d_hid=896`` is **overfitting**.
     - ``d_hid=896`` perform **best** on **training set**, but perform poor on **validation set** and **testing set**.
 - ``d_hid=128`` is **underfitting**.
-    - ``d_hid=128`` perform the **worst** on all set.
+    - ``d_hid=128`` perform the **worst** on all sets.
 - ``d_hid=256`` perform the **best** on **validation set** and **testing set**.
