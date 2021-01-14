@@ -145,6 +145,6 @@ Conclusions
     - ``d_hid=896`` perform the worst on ``30k`` and ``50k`` and ``70k`` and ``90k`` steps.
 - ``d_hid=896`` is **overfitting**.
     - ``d_hid=896`` perform best on testing set, but perform poor on other two sets.
-- ``d_hid=128`` **underfitting**.
+- ``d_hid=128`` is **underfitting**.
     - ``d_hid=128`` perform poor on all set.
 - ``d_hid=256`` perform the best.
