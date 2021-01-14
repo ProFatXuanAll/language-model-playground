@@ -150,5 +150,5 @@ Conclusions
 - ``lr=1e-1`` is **underfitting**.
     - ``lr=1e-1`` does not **converge** on loss.
     - ``lr=1e-1`` perform the **worst** on all set.
-- ``lr=1e-3`` perform the **best** on all set.
+- ``lr=1e-3`` perform the **best** on **all set** and **loss**.
 
