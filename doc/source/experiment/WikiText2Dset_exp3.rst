@@ -146,5 +146,5 @@ Conclusions
 - ``d_hid=896`` is **overfitting**.
     - ``d_hid=896`` perform best on testing set, but perform poor on other two sets.
 - ``d_hid=128`` **underfitting**.
-    - ``d_hid=128``perform poor on all set.
+    - ``d_hid=128`` perform poor on all set.
 - ``d_hid=256`` perform the best.
