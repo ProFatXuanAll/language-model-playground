@@ -48,6 +48,7 @@ from lmp.model._rnn import RNNModel
 from lmp.model._sattn_gru import SAttnGRUBlock, SAttnGRUModel
 from lmp.model._sattn_lstm import SAttnLSTMBlock, SAttnLSTMModel
 from lmp.model._sattn_rnn import SAttnRNNBlock, SAttnRNNModel
+from lmp.model._transformer import TransformerModel, LayerNorm, PositionalEncoding
 
 ALL_MODELS: Final[List[Type[BaseModel]]] = [
     GRUModel,
@@ -62,6 +63,7 @@ ALL_MODELS: Final[List[Type[BaseModel]]] = [
     SAttnGRUModel,
     SAttnLSTMModel,
     SAttnRNNModel,
+    TransformerModel,
 ]
 MODEL_OPTS: Final[Dict[str, Type[BaseModel]]] = {
     m.model_name: m
@@ -77,4 +79,6 @@ PRIVA_MODELS: Final[Dict[str, List[Type[torch.nn.Module]]]] = {
     SAttnGRUModel.model_name: [SAttnGRUBlock],
     SAttnLSTMModel.model_name: [SAttnLSTMBlock],
     SAttnRNNModel.model_name: [SAttnRNNBlock],
+    TransformerModel.model_name: [LayerNorm],
+    TransformerModel.model_name: [PositionalEncoding],
 }
