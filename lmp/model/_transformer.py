@@ -1,4 +1,4 @@
-r"""Transformer Decoder Model."""
+r"""Transformer for Language Model."""
 
 import math
 from typing import ClassVar, Dict, List, Optional
