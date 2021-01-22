@@ -1,4 +1,4 @@
-r"""Transformer Decoder Model."""
+r"""Transformer Language Model with Transformer's encoder architecture."""
 
 import math
 from typing import ClassVar, Dict, List, Optional
@@ -15,6 +15,11 @@ class LayerNorm(nn.Module):
     r"""Layer Normalization.
 
     Applies Layer Normalization over a mini-batch of inputs.
+
+    .. math::
+
+            y = \frac{x - \mathrm{E}[x]}{ \sqrt{\mathrm{Var}[x] \
+            + \epsilon}} * \alpha + \beta \\
 
     Parameters
     ==========
@@ -48,13 +53,6 @@ class LayerNorm(nn.Module):
     def forward(self, x):
         r"""Perform forward pass.
 
-        Forward pass algorithm is structured as follow:
-
-        .. math::
-
-            y = \frac{x - \mathrm{E}[x]}{ \sqrt{\mathrm{Var}[x] \
-            + \epsilon}} * \alpha + \beta \\
-
         Parameters
         ==========
         x: torch.Tensor
@@ -75,7 +73,16 @@ class PositionalEncoding(nn.Module):
     r"""Positional Encoding.
 
     In order for the model to make use of the order of the sequence,
-    we add “positional encodings” to the input embeddings.
+    add ``positional encodings`` to the input embeddings.
+
+    .. math::
+
+            \begin{align}
+            \text{PE}_{(\text{pos},\text{2i})} &= \sin\
+             (\frac{\text{pos}}{10000^\frac{\text{2i}}{d_{\text{model}}}}) \\
+            \text{PE}_{(\text{pos},\text{2i+1})} &= \cos\
+             (\frac{\text{pos}}{10000^\frac{\text{2i}}{d_{\text{model}}}}) \\
+            \end{align}
 
     Parameters
     ==========
@@ -113,17 +120,6 @@ class PositionalEncoding(nn.Module):
     def forward(self, x):
         r"""Perform forward pass.
 
-        Forward pass algorithm is structured as follow:
-
-        .. math::
-
-            \begin{align}
-            \text{PE}_{(\text{pos},\text{2i})} &=\
-             \sin(\frac{\text{pos}}{10000^\frac{\text{2i}}{d_{\text{model}}}}) \\
-            \text{PE}_{(\text{pos},\text{2i+1})} &=\
-             \cos(\frac{\text{pos}}{10000^\frac{\text{2i}}{d_{\text{model}}}}) \\
-            \end{align}
-
         Parameters
         ==========
         x: torch.Tensor
@@ -135,8 +131,8 @@ class PositionalEncoding(nn.Module):
             Same shape as input.
 
         """
-        x = x + torch.tensor(self.pe[:, :x.size(1)],
-                             requires_grad=False).to(x.device)
+        pe = self.pe.detach().to(x.device)
+        x = x + pe[:, :x.size(1)]
         return self.dropout(x)
 
 
@@ -196,7 +192,7 @@ class TransformerModel(RNNModel):
     tranformerencoder: torch.nn.TransformerEncoder
         Stack of N encoderlayers.
     model_name: ClassVar[str]
-        Model name is ``Transformer_Torch``.
+        Model name is ``Transformer``.
         Used for command line argument parsing.
     pad_tkid: int
         Padding token id.
@@ -209,9 +205,9 @@ class TransformerModel(RNNModel):
         Rectified MLP which transform token embeddings from embedding
         dimension ``d_emb`` to hidden dimension ``d_hid``.
         Drop rectified units with probability ``p_hid``.
-    norm: ``lmp._transformer_torch.LayerNorm``
+    norm: lmp.model.LayerNorm
         Layer normalization.
-    pe: ``lmp._transformer_torch.PositionalEncoding``
+    pe: lmp.model.PositionalEncoding
         Positional Encoding.
 
     References
@@ -220,7 +216,7 @@ class TransformerModel(RNNModel):
         Llion Jones, Aidan N. Gomez, Lukasz Kaiser, Illia Polosukhin.
         2017. Attention is all you need.
     """
-    model_name: ClassVar[str] = 'Transformer_Torch'
+    model_name: ClassVar[str] = 'Transformer'
 
     def __init__(
             self,
@@ -250,9 +246,29 @@ class TransformerModel(RNNModel):
         )
         self.n_head = n_head
         self.pad_tkid = tknzr.pad_tkid
+
+        # Positional Encoding
+        # Input tensor : Output of `self.pre_hid`.
+        # Input shape  : `(B, S, H)`.
+        # Input dtype  : `torch.float32`.
+        # Output tensor: Batch of sequences with positional encoding.
+        # Output shape : `(B, S, H)`.
+        # Output dtype : `torch.float32`.
         self.pe = PositionalEncoding(d_hid, p_hid, max_seq_len)
+
+        # Layer normalization
         self.norm = LayerNorm(d_hid)
+
+        # A sigle layer of Transformer's encoder.
         self.encoderlayer = nn.TransformerEncoderLayer(d_hid, n_head)
+
+        # Stack of `n_hid_lyr` encoderlayers
+        # Input tensor : Output of `self.pe`.
+        # Input shape  : `(S, B, H)`.
+        # Input dtype  : `torch.float32`.
+        # Output tensor: Batch of recurrent token hidden states.
+        # Output shape : `(S, B, H)`.
+        # Output dtype : `torch.float32`.
         self.tranformerencoder = nn.TransformerEncoder(
             self.encoderlayer, n_hid_lyr, self.norm)
 
@@ -308,7 +324,38 @@ class TransformerModel(RNNModel):
     def forward(self, batch_prev_tkids: torch.Tensor) -> torch.Tensor:
         r"""Perform forward pass.
 
-        Same steps as ``lmp.model.RNNModel`` but use Transformer encoder.
+        Forward pass algorithm is structured as follow:
+
+        #. Input batch of previous token ids.
+           (shape: ``(B, S)``)
+        #. Use batch of previous token ids to perform token embeddings lookup
+           on ``self.emb``.
+           (shape: ``(B, S, E)``)
+        #. Use ``self.emb_dp`` to drop some features in token embeddings.
+           (shape: ``(B, S, E)``)
+        #. Use ``self.pre_hid`` to transform token embeddings from embedding
+           dimension ``E`` to hidden dimension ``H``.
+           (shape: ``(B, S, H)``)
+        #. Use ``self.pe`` to add positional encoding to batch of inputs.
+           (shape: ``(B, S, H)``)
+        #. Use ``torch.transpose`` to transform to shape model need.
+           (shape: ``(S, B, H)``)
+        #. Use ``self.tranformerencoder`` to encode temporal features.
+           (shape: ``(S, B, H)``)
+        #. Use ``torch.transpose`` to transform to shape model need.
+           (shape: ``(B, S, H)``)
+        #. Use ``self.post_hid`` to transform temporal features from hidden
+           dimension ``H`` to embedding dimension ``E``.
+           (shape: ``(B, S, E)``)
+        #. Find the most possible next token id in embedding matrix
+           ``self.emb`` using inner product.
+           This reduce parameters since we share weight on token embedding and
+           output projection.
+           (shape: ``(B, S, V)``)
+        #. Return logits.
+           Used with ``self.pred`` to convert logit into prediction.
+           Used wtih ``self.loss_fn`` to perform optimization.
+           (shape: ``(B, S, V)``)
 
         Parameters
         ==========
@@ -339,17 +386,28 @@ class TransformerModel(RNNModel):
         # Output shape: `(B, S, H)`.
         batch = self.pre_hid(batch)
 
-        # positional encoding
-        batch = self.pe(batch)
-
-        # Encode temporal features.
+        # Add positional encoding for ecah input.
         # Input  shape: `(B, S, H)`.
         # Output shape: `(B, S, H)`.
+        batch = self.pe(batch)
 
+        # Accoriding to the, input, create the mask Transformer model need.
         mask = self.create_mask(batch_prev_tkids)
+
+        # Transform to the shape Transformer model need.
+        # Input  shape: `(B, S, H)`.
+        # Output shape: `(S, B, H)`.
         batch = batch.transpose(0, 1)
+
+        # Encode temporal features.
+        # Input  shape: `(S, B, H)`.
+        # Output shape: `(S, B, H)`.
         batch = self.tranformerencoder(
             batch, mask=mask[0], src_key_padding_mask=mask[1])
+
+        # Transform to the origin shape.
+        # Input  shape: `(S, B, H)`.
+        # Output shape: `(B, S, H)`.
         batch = batch.transpose(0, 1).contiguous()
 
         # Transform from hidden dimension to embedding dimension.
