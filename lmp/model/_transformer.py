@@ -1,5 +1,6 @@
 r"""Transformer Language Model with Transformer's encoder architecture."""
 
+
 import math
 from typing import ClassVar, Dict, List, Optional
 
