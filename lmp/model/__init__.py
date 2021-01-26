@@ -79,6 +79,5 @@ PRIVA_MODELS: Final[Dict[str, List[Type[torch.nn.Module]]]] = {
     SAttnGRUModel.model_name: [SAttnGRUBlock],
     SAttnLSTMModel.model_name: [SAttnLSTMBlock],
     SAttnRNNModel.model_name: [SAttnRNNBlock],
-    TransformerModel.model_name: [LayerNorm],
     TransformerModel.model_name: [PositionalEncoding],
 }
