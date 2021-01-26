@@ -59,12 +59,11 @@ class PositionalEncoding(nn.Module):
         position = torch.arange(0, max_len).unsqueeze(1)
         
         # Compute the positional encodings once in log space.
+        # Shape : `(1, S, H)`
         div_term = torch.exp(torch.arange(0, d_hid, 2) *
                              -(math.log(10000.0) / d_hid))
         self.pe[:, 0::2] = torch.sin(position * div_term)
         self.pe[:, 1::2] = torch.cos(position * div_term)
-
-        # Shape : `(1, S, H)`
         self.pe = self.pe.unsqueeze(0)
 
     def forward(self, src: torch.Tensor)-> torch.Tensor:
