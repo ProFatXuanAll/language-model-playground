@@ -9,7 +9,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from lmp.model._base import BaseModel
 from lmp.model._rnn import RNNModel
 from lmp.tknzr._base import BaseTknzr
 
@@ -48,27 +47,33 @@ class PositionalEncoding(nn.Module):
     pe: torch.nn.FloatTensor
         The values of Positional Encoding.
     """
-
     def __init__(self, d_hid, dropout, max_len):
         super(PositionalEncoding, self).__init__()
         self.dropout = nn.Dropout(p=dropout)
-
-        # Compute the positional encodings once in log space.
+        
+        # Create positional encoding table.
+        # Shape : `(S, H)`
         self.pe = torch.zeros(max_len, d_hid)
+
+        # Position order from `0` to `S - 1`.
         position = torch.arange(0, max_len).unsqueeze(1)
+        
+        # Compute the positional encodings once in log space.
         div_term = torch.exp(torch.arange(0, d_hid, 2) *
                              -(math.log(10000.0) / d_hid))
         self.pe[:, 0::2] = torch.sin(position * div_term)
         self.pe[:, 1::2] = torch.cos(position * div_term)
+
+        # Shape : `(1, S, H)`
         self.pe = self.pe.unsqueeze(0)
 
-    def forward(self, x: torch.Tensor)-> torch.Tensor:
+    def forward(self, src: torch.Tensor)-> torch.Tensor:
         r"""Perform forward pass.
 
         Parameters
         ==========
-        x: torch.Tensor
-            Input sequence with shape ``(*, E)``.
+        src: torch.Tensor
+            Input sequence with shape ``(B, S, E)``.
 
         Returns
         =======
@@ -76,9 +81,12 @@ class PositionalEncoding(nn.Module):
             Same shape as input.
 
         """
-        pe = self.pe.detach().to(x.device)
-        x = x + pe[:, :x.size(1)]
-        return self.dropout(x)
+        # Add positional encoding to each sequences.
+        # Input shape : `(B, S, H)`
+        # Output shape : `(B, S, H)`
+        pe = self.pe.detach().to(src.device)
+        output = src + pe[:, :src.size(1)]
+        return self.dropout(output)
 
 
 class TransformerModel(RNNModel):
@@ -121,6 +129,9 @@ class TransformerModel(RNNModel):
         Must be bigger than or equal to ``1``.
     tknzr: lmp.tknzr.BaseTknzr
         Tokenizer instance with attributes ``pad_tkid`` and ``vocab_size``.
+    n_head: int
+        Head number of multihead attention.
+        ``d_hid`` should be divisible by it.
 
     Attributes
     ==========
@@ -144,8 +155,6 @@ class TransformerModel(RNNModel):
         Rectified MLP which transform token embeddings from embedding
         dimension ``d_emb`` to hidden dimension ``d_hid``.
         Drop rectified units with probability ``p_hid``.
-    n_head: int
-        Head number of multihead attention.
     pe: lmp.model.PositionalEncoding
         Positional Encoding.
     encoderlayer: torch.nn.TransformerEncoderLayer
@@ -187,14 +196,17 @@ class TransformerModel(RNNModel):
             tknzr=tknzr,
             **kwargs,
         )
-        self.n_head = n_head
+
+        if d_hid % n_head != 0:
+            raise ValueError('`d_hid` must be divisible by `n_head`.')
+        
         self.pad_tkid = tknzr.pad_tkid
 
         # Positional Encoding
         # Input tensor : Output of `self.pre_hid`.
         # Input shape  : `(B, S, H)`.
         # Input dtype  : `torch.float32`.
-        # Output tensor: Batch of sequences with positional encoding.
+        # Output tensor: Batch of sequences with Positional Encoding.
         # Output shape : `(B, S, H)`.
         # Output dtype : `torch.float32`.
         self.pe = PositionalEncoding(d_hid, p_hid, max_seq_len)
@@ -258,6 +270,7 @@ class TransformerModel(RNNModel):
         # Output shape: `(B, S)`.
         # Output dtype: `torch.bool`.
         pad_mask = batch_prev_tkids == self.pad_tkid
+        pad_mask = pad_mask.to(batch_prev_tkids.device)
 
         return reg_mask, pad_mask
 
@@ -280,11 +293,11 @@ class TransformerModel(RNNModel):
            (shape: ``(B, S, H)``)
         # . Use ``torch.transpose`` to transform to shape model need.
            (shape: ``(S, B, H)``)
-        # . Use ``self.tranformerencoder`` to encode temporal features.
+        # . Use ``self.tranformerencoder`` to encode features.
            (shape: ``(S, B, H)``)
         # . Use ``torch.transpose`` to transform to shape model need.
            (shape: ``(B, S, H)``)
-        # . Use ``self.post_hid`` to transform temporal features from hidden
+        # . Use ``self.post_hid`` to transform features from hidden
            dimension ``H`` to embedding dimension ``E``.
            (shape: ``(B, S, E)``)
         # . Find the most possible next token id in embedding matrix
@@ -326,24 +339,24 @@ class TransformerModel(RNNModel):
         # Output shape: `(B, S, H)`.
         batch = self.pre_hid(batch)
 
-        # Add positional encoding to ecah input.
+        # Add positional encoding to ecah sequences.
         # Input  shape: `(B, S, H)`.
         # Output shape: `(B, S, H)`.
         batch = self.pe(batch)
 
-        # According to the input, create the mask Transformer model need.
-        mask = self.create_mask(batch_prev_tkids)
+        # Create auto-regressive and padding mask.
+        reg_mask, pad_mask = self.create_mask(batch_prev_tkids)
 
-        # Transform to the shape Transformer model need.
+        # Transform to the accepted size for Transformer encoder.
         # Input  shape: `(B, S, H)`.
         # Output shape: `(S, B, H)`.
         batch = batch.transpose(0, 1)
 
-        # Encode temporal features.
+        # Encode features.
         # Input  shape: `(S, B, H)`.
         # Output shape: `(S, B, H)`.
         batch = self.tranformerencoder(
-            batch, mask=mask[0], src_key_padding_mask=mask[1])
+            batch, mask=reg_mask, src_key_padding_mask=pad_mask)
 
         # Transform to the origin shape.
         # Input  shape: `(S, B, H)`.
@@ -360,7 +373,6 @@ class TransformerModel(RNNModel):
         # Reduce model parameters by sharing embedding matrix with output.
         # Input  shape: `(B, S, E)`.
         # Output shape: `(B, S, V)`.
-
         return batch @ self.emb.weight.transpose(0, 1)
 
     @staticmethod
@@ -437,7 +449,7 @@ class TransformerModel(RNNModel):
         True
         """
         # Load common arguments.
-        BaseModel.train_parser(parser=parser)
+        RNNModel.train_parser(parser=parser)
 
         # Required arguments.
         group = parser.add_argument_group('TransformerModel arguments')
