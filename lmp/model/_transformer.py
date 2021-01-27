@@ -3,11 +3,10 @@ r"""Transformer Language Model with Transformer's encoder architecture."""
 
 import math
 import argparse
-from typing import ClassVar, Dict, List, Optional
+from typing import ClassVar, Dict, Optional
 
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 
 from lmp.model._rnn import RNNModel
 from lmp.tknzr._base import BaseTknzr
@@ -47,17 +46,18 @@ class PositionalEncoding(nn.Module):
     pe: torch.nn.FloatTensor
         The values of Positional Encoding.
     """
+
     def __init__(self, d_hid, dropout, max_len):
         super(PositionalEncoding, self).__init__()
         self.dropout = nn.Dropout(p=dropout)
-        
+
         # Create positional encoding table.
         # Shape : `(S, H)`
         self.pe = torch.zeros(max_len, d_hid)
 
         # Position order from `0` to `S - 1`.
         position = torch.arange(0, max_len).unsqueeze(1)
-        
+
         # Compute the positional encodings once in log space.
         # Shape : `(1, S, H)`
         div_term = torch.exp(torch.arange(0, d_hid, 2) *
@@ -66,7 +66,7 @@ class PositionalEncoding(nn.Module):
         self.pe[:, 1::2] = torch.cos(position * div_term)
         self.pe = self.pe.unsqueeze(0)
 
-    def forward(self, src: torch.Tensor)-> torch.Tensor:
+    def forward(self, src: torch.Tensor) -> torch.Tensor:
         r"""Perform forward pass.
 
         Parameters
@@ -157,7 +157,8 @@ class TransformerModel(RNNModel):
     pe: lmp.model.PositionalEncoding
         Positional Encoding.
     encoderlayer: torch.nn.TransformerEncoderLayer
-        TransformerEncoderLayer is made up of self-attn and feedforward network.
+        TransformerEncoderLayer is made up of MultiHeadAttention layer
+        and Feedforward layer.
     tranformerencoder: torch.nn.TransformerEncoder
         Stack of N encoderlayers.
 
@@ -198,7 +199,7 @@ class TransformerModel(RNNModel):
 
         if d_hid % n_head != 0:
             raise ValueError('`d_hid` must be divisible by `n_head`.')
-        
+
         self.pad_tkid = tknzr.pad_tkid
 
         # Positional Encoding
