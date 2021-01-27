@@ -21,3 +21,4 @@
     SAttnGRUModel.py
     SAttnLSTMModel.py
     SAttnRNNModel.py
+    TransformerModel.py
