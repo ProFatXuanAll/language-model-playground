@@ -279,33 +279,33 @@ class TransformerModel(RNNModel):
 
         Forward pass algorithm is structured as follow:
 
-        # . Input batch of previous token ids.
+        #. Input batch of previous token ids.
            (shape: ``(B, S)``)
-        # . Use batch of previous token ids to perform token embeddings lookup
+        #. Use batch of previous token ids to perform token embeddings lookup
            on ``self.emb``.
            (shape: ``(B, S, E)``)
-        # . Use ``self.emb_dp`` to drop some features in token embeddings.
+        #. Use ``self.emb_dp`` to drop some features in token embeddings.
            (shape: ``(B, S, E)``)
-        # . Use ``self.pre_hid`` to transform token embeddings from embedding
+        #. Use ``self.pre_hid`` to transform token embeddings from embedding
            dimension ``E`` to hidden dimension ``H``.
            (shape: ``(B, S, H)``)
-        # . Use ``self.pe`` to add positional encoding to batch of inputs.
+        #. Use ``self.pe`` to add positional encoding to batch of inputs.
            (shape: ``(B, S, H)``)
-        # . Use ``torch.transpose`` to transform to shape model need.
+        #. Use ``torch.transpose`` to transform to shape model need.
            (shape: ``(S, B, H)``)
-        # . Use ``self.tranformerencoder`` to encode features.
+        #. Use ``self.tranformerencoder`` to encode features.
            (shape: ``(S, B, H)``)
-        # . Use ``torch.transpose`` to transform to shape model need.
+        #. Use ``torch.transpose`` to transform to shape model need.
            (shape: ``(B, S, H)``)
-        # . Use ``self.post_hid`` to transform features from hidden
+        #. Use ``self.post_hid`` to transform features from hidden
            dimension ``H`` to embedding dimension ``E``.
            (shape: ``(B, S, E)``)
-        # . Find the most possible next token id in embedding matrix
+        #. Find the most possible next token id in embedding matrix
            ``self.emb`` using inner product.
            This reduce parameters since we share weight on token embedding and
            output projection.
            (shape: ``(B, S, V)``)
-        # . Return logits.
+        #. Return logits.
            Used with ``self.pred`` to convert logit into prediction.
            Used wtih ``self.loss_fn`` to perform optimization.
            (shape: ``(B, S, V)``)
@@ -445,7 +445,7 @@ class TransformerModel(RNNModel):
         True
         >>> args.wd == 1e-2
         True
-        >>> args.n_head == 1e-2
+        >>> args.n_head == 4
         True
         """
         # Load common arguments.
