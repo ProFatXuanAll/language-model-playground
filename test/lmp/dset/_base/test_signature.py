@@ -3,7 +3,7 @@ r"""Test :py:class:`lmp.dset.BaseDset` signature."""
 import inspect
 from inspect import Parameter, Signature
 from typing import (ClassVar, List, Optional,
-                    get_type_hints)
+                    get_type_hints, Iterator)
 
 from lmp.dset._base import BaseDset
 
@@ -35,10 +35,9 @@ def test_class_attribute():
     assert BaseDset.url == ''
 
 
-def test_instance_method(subclss_dset):
+def test_instance_method():
     r"""Ensure instance methods' signature."""
     assert hasattr(BaseDset, '__init__')
-    assert inspect.ismethod(subclss_dset.__init__)
     assert inspect.signature(BaseDset.__init__) == Signature(
         parameters=[
             Parameter(
@@ -56,7 +55,6 @@ def test_instance_method(subclss_dset):
         return_annotation=Signature.empty,
     )
     assert hasattr(BaseDset, '__iter__')
-    assert inspect.ismethod(subclss_dset.__iter__)
     assert inspect.signature(BaseDset.__iter__) == Signature(
         parameters=[
             Parameter(
@@ -65,10 +63,9 @@ def test_instance_method(subclss_dset):
                 default=Parameter.empty,
             ),
         ],
-        return_annotation=Signature.empty,
+        return_annotation=Iterator[str],
     )
     assert hasattr(BaseDset, '__len__')
-    assert inspect.ismethod(subclss_dset.__len__)
     assert inspect.signature(BaseDset.__len__) == Signature(
         parameters=[
             Parameter(
@@ -80,7 +77,6 @@ def test_instance_method(subclss_dset):
         return_annotation=int,
     )
     assert hasattr(BaseDset, '__getitem__')
-    assert inspect.ismethod(subclss_dset.__getitem__)
     assert inspect.signature(BaseDset.__getitem__) == Signature(
         parameters=[
             Parameter(
@@ -92,12 +88,12 @@ def test_instance_method(subclss_dset):
                 name='idx',
                 kind=Parameter.POSITIONAL_OR_KEYWORD,
                 default=Parameter.empty,
+                annotation=int,
             )
         ],
         return_annotation=str,
     )
     assert hasattr(BaseDset, 'download')
-    assert inspect.ismethod(subclss_dset.download)
     assert inspect.signature(BaseDset.download) == Signature(
         parameters=[
             Parameter(
