@@ -11,14 +11,13 @@ from lmp.dset._base import BaseDset
 def test_class():
     r"""Ensure abstract class signature.
 
-    Subclass only need to implement method tknzr and dtknzr.
+    Subclass only need to implement method __init__.
     """
     assert inspect.isclass(BaseDset)
 
 
 def test_class_attribute():
     r"""Ensure class attributes' signature."""
-    print(get_type_hints(BaseDset))
     assert get_type_hints(BaseDset) == {
         'df_ver': ClassVar[str],
         'dset_name': ClassVar[str],

@@ -89,7 +89,7 @@ def trunc_to_max(
     ...
 
 
-def trunc_to_max(seq, *, max_seq_len=-1):
+def trunc_to_max(seq, *, max_seq_len: Optional[int] = -1):
     r"""Truncate sequence when sequence is longer than allowed.
 
     Truncate trailing sequence to satisfy maximum sequence length constraint.
@@ -158,7 +158,7 @@ def pad_to_max(
     ...
 
 
-def pad_to_max(seq, pad, *, max_seq_len=-1):
+def pad_to_max(seq, pad, *, max_seq_len: Optional[int] = -1):
     r"""Pad sequence when sequence is shorter than required.
 
     Add padding ``pad`` at the end of sequence until satisfying maximum
