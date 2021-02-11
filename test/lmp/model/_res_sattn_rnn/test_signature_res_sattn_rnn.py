@@ -1,0 +1,114 @@
+r"""Test :py:class:`lmp.model._res_sattn_rnn` signature."""
+
+import inspect
+import torch
+from inspect import Parameter, Signature
+from typing import (Optional, Dict)
+
+from lmp.model._res_sattn_rnn import ResSAttnRNNBlock, ResSAttnRNNModel
+from lmp.tknzr._base import BaseTknzr
+
+
+def test_class():
+    r"""Subclass only need to implement method __init__.
+    """
+    assert inspect.isclass(ResSAttnRNNBlock)
+    assert inspect.isclass(ResSAttnRNNModel)
+
+
+def test_class_attribute():
+    r"""Ensure class attributes' signature."""
+    assert isinstance(ResSAttnRNNModel.model_name, str)
+    assert ResSAttnRNNModel.model_name == 'res-sattn-RNN'
+
+
+def test_instance_method():
+    r"""Ensure instance methods' signature."""
+    assert hasattr(ResSAttnRNNBlock, 'forward')
+    assert inspect.signature(ResSAttnRNNBlock.forward) == Signature(
+        parameters=[
+            Parameter(
+                name='self',
+                kind=Parameter.POSITIONAL_OR_KEYWORD,
+                default=Parameter.empty,
+            ),
+            Parameter(
+                name='batch_tk_mask',
+                kind=Parameter.POSITIONAL_OR_KEYWORD,
+                annotation=torch.Tensor,
+                default=Parameter.empty,
+            ),
+            Parameter(
+                name='batch_tk_reps',
+                kind=Parameter.POSITIONAL_OR_KEYWORD,
+                annotation=torch.Tensor,
+                default=Parameter.empty,
+            ),
+        ],
+        return_annotation=torch.Tensor,
+    )
+
+    assert hasattr(ResSAttnRNNModel, '__init__')
+    assert inspect.signature(ResSAttnRNNModel.__init__) == Signature(
+        parameters=[
+            Parameter(
+                name='self',
+                kind=Parameter.POSITIONAL_OR_KEYWORD,
+                default=Parameter.empty,
+            ),
+            Parameter(
+                name='d_emb',
+                kind=Parameter.KEYWORD_ONLY,
+                annotation=int,
+                default=Parameter.empty,
+            ),
+            Parameter(
+                name='d_hid',
+                kind=Parameter.KEYWORD_ONLY,
+                annotation=int,
+                default=Parameter.empty,
+            ),
+            Parameter(
+                name='n_hid_lyr',
+                kind=Parameter.KEYWORD_ONLY,
+                annotation=int,
+                default=Parameter.empty,
+            ),
+            Parameter(
+                name='n_post_hid_lyr',
+                kind=Parameter.KEYWORD_ONLY,
+                annotation=int,
+                default=Parameter.empty,
+            ),
+            Parameter(
+                name='n_pre_hid_lyr',
+                kind=Parameter.KEYWORD_ONLY,
+                annotation=int,
+                default=Parameter.empty,
+            ),
+            Parameter(
+                name='p_emb',
+                kind=Parameter.KEYWORD_ONLY,
+                annotation=float,
+                default=Parameter.empty,
+            ),
+            Parameter(
+                name='p_hid',
+                kind=Parameter.KEYWORD_ONLY,
+                annotation=float,
+                default=Parameter.empty,
+            ),
+            Parameter(
+                name='tknzr',
+                kind=Parameter.KEYWORD_ONLY,
+                annotation=BaseTknzr,
+                default=Parameter.empty,
+            ),
+            Parameter(
+                name='kwargs',
+                kind=Parameter.VAR_KEYWORD,
+                annotation=Optional[Dict],
+            ),
+        ],
+        return_annotation=Signature.empty,
+    )
