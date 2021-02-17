@@ -13,24 +13,44 @@ from lmp.tknzr import BaseTknzr
 class TopPInfer(BaseInfer):
     r"""Top ``P`` inference method.
 
-    Use indice with the top ``P`` highest probability that cumulative
-    probability is lower than ``P`` as possible next token id, then randomly
-    choose ``1`` index out of ``P`` as next token id prediction.
-    Top-p sampling, also called nucleus sampling is similar to top-k sampling
-    where k changes at every step to cover ``P`` probability mass.
-    It is a non-greedy algorithm since the best prediction is not always
-    choosen, but it provide dynamic of generation result (because of
-    randomness, obviously).
+    Top-p sampling, also called nucleus sampling, is similar to top-k sampling
+    but ``K`` changes during each inference step.
+    Next token probabilities are provided by models, sorted in descending
+    order and cumulated.
+    Then ``K`` is set to the number of token ids which cumulative probability
+    are lower than ``P``.
+    Just like top-k sampling, top-p sampling is also a non-greedy algorithm.
 
-    For comment throughout this class and its subclasses, we use ``P`` to
-    denote the number of candidate token ids with highest probabilities that
-    cumulative probability is lower than ``P``.
+    For comment throughout this class, we use ``K`` to denote the number of
+    token ids which cumulative probability are lower than ``P`` during the
+    process of text generation.
+
+    Parameters
+    ==========
+    kwargs: Dict, optional
+        Useless parameter.
+        Left intended for subclass parameters extension.
+    max_seq_len: str
+        Generated sequence of tokens maximum sequence length constraint.
+        Must satisfy ``0 <= max_seq_len <= BaseInfer.hard_max_seq_len``.
+        If constraint is violated, then replace ``max_seq_len`` with
+        ``BaseInfer.hard_max_seq_len``.
+    p: float
+        Cumulative probability threshold.
+        Must satisfy ``0.0 < p <= 1.0``.
 
     Attributes
     ==========
     infer_name: ClassVar[str]
         Inference method name is ``top-p``.
         Used for command line argument parsing.
+    p: float
+        Cumulative probability threshold.
+
+    See Also
+    ========
+    lmp.infer.TopKInfer
+        Top ``K`` inference method.
     """
     infer_name: ClassVar[str] = 'top-p'
 
@@ -70,13 +90,13 @@ class TopPInfer(BaseInfer):
                (shape: ``(1, V)``)
             #. Sort the probability distribution in descending order.
                (shape: ``(1, V)``)
-            #. Get the top ``P`` highest probability distribution with
+            #. Get the top ``K`` highest probability distribution with
                cumulative probability lower than ``P`` and their respective
                indices.
-               (shape: ``(1, P)``)
-            #. Use top ``P`` highest probability to construct multinomial
+               (shape: ``(1, K)``)
+            #. Use top ``K`` highest probability to construct multinomial
                distribution.
-            #. Sample ``1`` index from top ``P`` indices tensor using
+            #. Sample ``1`` index from top ``K`` indices tensor using
                previously constructed multinomial distribution.
                Use sampled index as next token id prediction result.
                (shape: ``(1, 1)``)
@@ -159,71 +179,63 @@ class TopPInfer(BaseInfer):
             batch_next_tkid_probs = batch_next_tkids_probs[:, -1]
 
             # Sort the probability distribution in descending order.
-            # `batch_topp_tkid_probs` shape  : `(1, V)`.
-            # `batch_topp_tkid_probs` dtype  : `torch.float32`.
-            # `batch_topp_tkid` tensor       : The top K next token id.
-            # `batch_topp_tkid` shape        : `(1, V)`.
-            # `batch_topp_tkid` dtype        : `torch.int64`.
+            # `batch_topk_tkid_probs` tensor : The last next token id
+            #                                  probability distribution in
+            #                                  descending order.
+            # `batch_topk_tkid_probs` shape  : `(1, V)`.
+            # `batch_topk_tkid_probs` dtype  : `torch.float32`.
+            # `batch_topk_tkid` tensor       : Indice before sorting.
+            # `batch_topk_tkid` shape        : `(1, V)`.
+            # `batch_topk_tkid` dtype        : `torch.int64`.
             (
-                batch_topp_tkid_probs,
-                batch_topp_tkid,
+                batch_topk_tkid_probs,
+                batch_topk_tkid,
             ) = batch_next_tkid_probs.sort(
                 dim=-1,
                 descending=True
             )
 
-            # Calculate cumulative distribution and retrieve indices with
-            # cumulative probability lower than `P`.
-            # Input tensor                   : The last next token id
-            #                                  probability distribution.
-            # Input shape                    : `(1, V)`.
-            # Input dtype                    : `torch.float32`.
-            # `batch_topp_tkid_probs` tensor : The next token id probability
-            #                                  distribution.
-            # `batch_topp_tkid_probs` shape  : `(1, P)`.
-            # `batch_topp_tkid_probs` dtype  : `torch.float32`.
-            # `batch_topp_tkid` tensor       : The top P next token id.
-            # `batch_topp_tkid` shape        : `(1, P)`.
-            # `batch_topp_tkid` dtype        : `torch.int64`.
-            topp_length = (batch_topp_tkid_probs.cumsum(
-                dim=-1)[0] < self.p).sum().item()
+            # Calculate cumulative probability distribution and retrieve
+            # indices which cumulative probability are lower than `P`.
+            k = (batch_topk_tkid_probs.cumsum(dim=-1) < self.p).sum().item()
 
-            # If `P` is higher than the highest probability, `topp_length` will
-            # be `0`. In the above situation, `topp_length` will be assigned
-            # `1`.
-            if topp_length == 0:
-                topp_length = 1
+            # Sometimes the highest probability is larger than `P` (which means
+            # model is highly confident on predicting next token id) thus
+            # results in `k == 0`.
+            # In that case we only choose the token id with the highest
+            # probability by setting `k = 1`.
+            if k == 0:
+                k = 1
 
-            # Only retain the top `P` highest probability distribution with
-            # cumulative probability lower than `P` and the corresponding
-            # index.
-            batch_topp_tkid_probs = batch_topp_tkid_probs[..., :topp_length]
-            batch_topp_tkid = batch_topp_tkid[..., :topp_length]
+            # Only retain token ids which cumulative probability are lower than
+            # `P`.
+            # `k` is ranging from `1` to `V` (depending on the value of `P`).
+            batch_topk_tkid_probs = batch_topk_tkid_probs[..., :k]
+            batch_topk_tkid = batch_topk_tkid[..., :k]
 
-            # Sample index from multinomial distribution of the top `P` highest
-            # probabilities with cumulative probability lower than `P` as the
-            # last next token id prediction result.
-            # Input tensor          : The top `P` next token id probability
+            # Use the top K highest probabilities to construct multinomial
+            # distribution, then sample index from multinomial distribution as
+            # the last next token id prediction result.
+            # Input tensor          : The top K next token id probability
             #                         distribution.
-            # Input shape           : `(1, P)`.
+            # Input shape           : `(1, K)`.
             # Input dtype           : `torch.float32`.
-            # Candidate index tensor: Sampled index of the top `P` next token
-            #                         id.
+            # Candidate index tensor: Sampled index of the top K next token id.
             #                         Sampled index is not a token id but is
-            #                         an index of top `P` next token id tensor.
+            #                         an index of top K next token id tensor.
             # Candidate index shape : `(1, 1)`.
             # Candidate index dtype : `torch.int64`.
-            # Next token id tensor  : Sampled token id from top `P`.
+            # Next token id tensor  : Sampled token id from top K.
             #                         Use sampled index to get sampled token
-            #                         id from top `P` next token id tensor.
+            #                         id from top K next token id tensor.
             # Next token id shape   : `(1, 1)`.
             # Next token id dtype   : `torch.int64`.
             batch_next_tkid_cand_idx = torch.multinomial(
-                batch_topp_tkid_probs,
+                batch_topk_tkid_probs,
                 num_samples=1,
             )
             batch_next_tkid = torch.gather(
-                batch_topp_tkid,
+                batch_topk_tkid,
                 -1,
                 batch_next_tkid_cand_idx,
             )
@@ -275,14 +287,14 @@ class TopPInfer(BaseInfer):
         >>> args = parser.parse_args([
         ...     '--ckpt', '5000',
         ...     '--exp_name', 'my_exp',
-        ...     '--P, '.9',
+        ...     '--p, '0.9',
         ...     '--txt', 'Hello world',
         ... ])
         >>> args.ckpt == 5000
         True
         >>> args.exp_name == 'my_exp'
         True
-        >>> args.p == .9
+        >>> args.p == 0.9
         True
         >>> args.txt == 'Hello world'
         True
@@ -296,7 +308,10 @@ class TopPInfer(BaseInfer):
         group = parser.add_argument_group('inference method arguments')
         group.add_argument(
             '--p',
-            help='Sample from token ids with top p probabilities mass.',
+            help=(
+                'Sample token ids which cumulative probabilities are lower '
+                'than p.'
+            ),
             required=True,
             type=float,
         )

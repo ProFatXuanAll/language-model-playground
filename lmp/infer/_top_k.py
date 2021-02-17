@@ -20,15 +20,36 @@ class TopKInfer(BaseInfer):
     choosen, but it provide dynamic of generation result (because of
     randomness, obviously).
 
-    For comment throughout this class and its subclasses, we use ``K`` to
-    denote the number of candidate token ids with highest probabilities then
-    the rest during the process of text generation.
+    For comment throughout this class, we use ``K`` to denote the number of
+    token ids which probabilities are higher then the rest ``V - K`` token ids
+    during the process of text generation.
+
+    Parameters
+    ==========
+    k: int
+        Number of token ids to sample from.
+        Must satisfy ``k > 0``.
+    kwargs: Dict, optional
+        Useless parameter.
+        Left intended for subclass parameters extension.
+    max_seq_len: str
+        Generated sequence of tokens maximum sequence length constraint.
+        Must satisfy ``0 <= max_seq_len <= BaseInfer.hard_max_seq_len``.
+        If constraint is violated, then replace ``max_seq_len`` with
+        ``BaseInfer.hard_max_seq_len``.
 
     Attributes
     ==========
     infer_name: ClassVar[str]
         Inference method name is ``top-k``.
         Used for command line argument parsing.
+    k: int
+        Number of token ids to sample from.
+
+    See Also
+    ========
+    lmp.infer.Top1Infer
+        Top 1 inference method.
     """
     infer_name: ClassVar[str] = 'top-k'
 
@@ -269,7 +290,7 @@ class TopKInfer(BaseInfer):
         group = parser.add_argument_group('inference method arguments')
         group.add_argument(
             '--k',
-            help='Sample from token ids with top k highest probabilities.',
+            help='Sample token ids which probabilities are the top k highest.',
             required=True,
             type=int,
         )
