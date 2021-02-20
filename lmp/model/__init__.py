@@ -48,7 +48,7 @@ from lmp.model._rnn import RNNModel
 from lmp.model._sattn_gru import SAttnGRUBlock, SAttnGRUModel
 from lmp.model._sattn_lstm import SAttnLSTMBlock, SAttnLSTMModel
 from lmp.model._sattn_rnn import SAttnRNNBlock, SAttnRNNModel
-from lmp.model._transformer import TransformerModel, PositionalEncoding
+from lmp.model._transformer import PositionalEncoding, TransformerModel
 
 ALL_MODELS: Final[List[Type[BaseModel]]] = [
     GRUModel,

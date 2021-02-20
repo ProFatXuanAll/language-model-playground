@@ -1,67 +1,70 @@
-r"""Transformer Language Model with Transformer's encoder architecture."""
+r"""Transformer Language Model with nn.TranformerEncoderlayer."""
 
 
-import math
 import argparse
+import math
 from typing import ClassVar, Dict, Optional
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
-from lmp.model._rnn import RNNModel
+from lmp.model._base import BaseModel
 from lmp.tknzr._base import BaseTknzr
 
 
 class PositionalEncoding(nn.Module):
     r"""Positional Encoding.
 
-    In order for the model to make use of the order of the sequence,
-    add ``positional encodings`` to the input embeddings.
+    In order for Transformer model to make use of postional information of
+    input sequence, we usually add positional encodings to the input
+    embeddings.
 
     .. math::
 
-            \begin{align}
-            \text{PE}_{(\text{pos},\text{2i})} &= \sin\
-             (\frac{\text{pos}}{10000^\frac{\text{2i}}{d_{\text{model}}}}) \\
-            \text{PE}_{(\text{pos},\text{2i+1})} &= \cos\
-             (\frac{\text{pos}}{10000^\frac{\text{2i}}{d_{\text{model}}}}) \\
-            \end{align}
+        \begin{align}
+        \text{PE}_{(\text{pos},\text{2i})} &= \sin\
+            (\frac{\text{pos}}{10000^\frac{\text{2i}}{d_{\text{emb}}}}) \\
+        \text{PE}_{(\text{pos},\text{2i+1})} &= \cos\
+            (\frac{\text{pos}}{10000^\frac{\text{2i}}{d_{\text{emb}}}}) \\
+        \end{align}
 
     Parameters
     ==========
-    d_hid: int
-        Hidden dimension for MLP and Transformer.
+    d_emb: int
+        embden dimension for MLP and Transformer.
         Must be bigger than or equal to ``1``.
     dropout: float
         Dropout probability.
         Must satisfy ``0.0 <= dropout <= 1.0``.
-    max_len: int
+    max_seq_len: int
         Max length of the input sequence.
         Must be bigger than or equal to ``1``.
 
     Attributes
     ==========
     dropout: torch.nn.Dropout
-        Positional Encoding dropout.
-    pe: torch.nn.FloatTensor
+        Dropout after Positional Encoding.
+    pe: torch.Tensor
         The values of Positional Encoding.
     """
 
-    def __init__(self, d_hid, dropout, max_len):
+    def __init__(self, d_emb: int, dropout: float, max_seq_len: int):
         super(PositionalEncoding, self).__init__()
         self.dropout = nn.Dropout(p=dropout)
 
         # Create positional encoding table.
         # Shape : `(S, H)`
-        self.pe = torch.zeros(max_len, d_hid)
+        self.pe = torch.zeros(max_seq_len, d_emb)
 
         # Position order from `0` to `S - 1`.
-        position = torch.arange(0, max_len).unsqueeze(1)
+        # Shape: `(S, 1)`
+        position = torch.arange(0, max_seq_len).unsqueeze(1)
 
         # Compute the positional encodings once in log space.
         # Shape : `(1, S, H)`
-        div_term = torch.exp(torch.arange(0, d_hid, 2) *
-                             -(math.log(10000.0) / d_hid))
+        div_term = torch.exp(torch.arange(0, d_emb, 2) *
+                             -(math.log(10000.0) / d_emb))
         self.pe[:, 0::2] = torch.sin(position * div_term)
         self.pe[:, 1::2] = torch.cos(position * div_term)
         self.pe = self.pe.unsqueeze(0)
@@ -88,49 +91,39 @@ class PositionalEncoding(nn.Module):
         return self.dropout(output)
 
 
-class TransformerModel(RNNModel):
+class TransformerModel(BaseModel):
     r"""Transformer language model.
 
-    Use tranformer's encoder to implement language model.
+    Use Tranformer's encoder with masks to implement language model.
 
     Parameters
     ==========
+    n_head: int
+        Head number of multihead attention.
+        ``d_emb`` should be divisible by it.
     d_emb: int
         Token embedding dimension.
         Must be bigger than or equal to ``1``.
-    d_hid: int
-        Hidden dimension for MLP and self attention RNN.
+    d_ff: int
+        Feed forward layer dimension.
         Must be bigger than or equal to ``1``.
-    kwargs: Dict, optional
-        Useless parameter.
-        Left intended for subclass parameters extension.
     n_hid_lyr: int
-        Number of self attention RNN layers.
-        Must be bigger than or equal to ``1``.
-    n_post_hid_lyr: int
-        Number of MLP layers ``+1`` after self attention RNN layer.
-        ``+1`` since we need at least one MLP layer to transform dimension.
-        (If you want 2 layers, then you need to set ``n_post_hid_lyr = 1``.)
-        Must be bigger than or equal to ``1``.
-    n_pre_hid_lyr: int
-        Number of MLP layers ``+1`` before self attention RNN layer.
-        ``+1`` since we need at least one MLP layer to transform dimension.
-        (If you want 2 layers, then you need to set ``n_pre_hid_lyr = 1``.)
+        Number of Tranformer's encoder layers.
         Must be bigger than or equal to ``1``.
     p_emb: float
         Dropout probability for token embeddings.
         Must satisfy ``0.0 <= p_emb <= 1.0``.
     p_hid: float
-        Dropout probability for every hidden representations.
-        Must satisfy ``0.0 <= p_hid <= 1.0``.
+        Dropout probability for each Transformerlayer.
+        Must satisfy ``0.0 <= p_emb <= 1.0``.
     max_seq_len: int
         Max length of the input sequence.
         Must be bigger than or equal to ``1``.
     tknzr: lmp.tknzr.BaseTknzr
         Tokenizer instance with attributes ``pad_tkid`` and ``vocab_size``.
-    n_head: int
-        Head number of multihead attention.
-        ``d_hid`` should be divisible by it.
+    kwargs: Dict, optional
+        Useless parameter.
+        Left intended for subclass parameters extension.
 
     Attributes
     ==========
@@ -146,19 +139,11 @@ class TransformerModel(RNNModel):
     pad_tkid: int
         Padding token id.
         Used to create attention mask on padding tokens.
-    post_hid: torch.nn.Sequential
-        Rectified MLP which transform temporal features from hidden dimension
-        ``d_hid`` to embedding dimension ``d_emb``.
-        Drop rectified units with probability ``p_hid``.
-    pre_hid: torch.nn.Sequential
-        Rectified MLP which transform token embeddings from embedding
-        dimension ``d_emb`` to hidden dimension ``d_hid``.
-        Drop rectified units with probability ``p_hid``.
     pe: lmp.model.PositionalEncoding
         Positional Encoding.
     encoderlayer: torch.nn.TransformerEncoderLayer
-        TransformerEncoderLayer is made up of MultiHeadAttention layer
-        and Feedforward layer.
+        TransformerEncoderLayer is made up of ``MultiHeadAttention`` layer
+        and ``Feedforward`` layer.
     tranformerencoder: torch.nn.TransformerEncoder
         Stack of N encoderlayers.
 
@@ -175,51 +160,70 @@ class TransformerModel(RNNModel):
             *,
             n_head: int,
             d_emb: int,
-            d_hid: int,
+            d_ff: int,
             n_hid_lyr: int,
-            n_post_hid_lyr: int,
-            n_pre_hid_lyr: int,
             p_emb: float,
             p_hid: float,
             max_seq_len: int,
             tknzr: BaseTknzr,
             **kwargs: Optional[Dict],
     ):
-        super().__init__(
-            d_emb=d_emb,
-            d_hid=d_hid,
-            n_hid_lyr=n_hid_lyr,
-            n_post_hid_lyr=n_post_hid_lyr,
-            n_pre_hid_lyr=n_pre_hid_lyr,
-            p_emb=p_emb,
-            p_hid=p_hid,
-            tknzr=tknzr,
-            **kwargs,
-        )
+        super().__init__()
 
-        if d_hid % n_head != 0:
-            raise ValueError('`d_hid` must be divisible by `n_head`.')
+        if not isinstance(n_head, int):
+            raise TypeError('`n_head` must be an instance of `int`')
+        if not isinstance(max_seq_len, int):
+            raise TypeError('`max_seq_len` must be an instance of `int`')
+        if d_emb % n_head != 0:
+            raise ValueError('`d_emb` must be divisible by `n_head`.')
 
         self.pad_tkid = tknzr.pad_tkid
 
+        # Token embedding layer.
+        # Use token ids to lookup token embeddings.
+        # Input tensor : Batch of token ids.
+        # Input shape  : `(B, S)`.
+        # Input dtype  : `torch.int64`.
+        # Output tensor: Batch of token embeddings.
+        # Output shape : `(B, S, E)`.
+        # Output dtype : `torch.float32`.
+        self.emb = nn.Embedding(
+            num_embeddings=tknzr.vocab_size,
+            embedding_dim=d_emb,
+            padding_idx=self.pad_tkid,
+        )
+
+        # Token embedding dropout layer.
+        # Drop embedding features with probability `p_emb`.
+        # Input tensor : Output of `self.emb`.
+        # Input shape  : `(B, S, E)`.
+        # Input dtype  : `torch.float32`.
+        # Output tensor: Batch of sparse token embeddings.
+        # Output shape : `(B, S, E)`.
+        # Output dtype : `torch.float32`.
+        self.emb_dp = nn.Dropout(p=p_emb)
+
         # Positional Encoding
         # Input tensor : Output of `self.pre_hid`.
-        # Input shape  : `(B, S, H)`.
+        # Input shape  : `(B, S, E)`.
         # Input dtype  : `torch.float32`.
         # Output tensor: Batch of sequences with Positional Encoding.
-        # Output shape : `(B, S, H)`.
+        # Output shape : `(B, S, E)`.
         # Output dtype : `torch.float32`.
-        self.pe = PositionalEncoding(d_hid, p_hid, max_seq_len)
+        self.pe = PositionalEncoding(d_emb, p_emb, max_seq_len)
 
-        # A sigle layer architecture of Transformer encoder.
-        self.encoderlayer = nn.TransformerEncoderLayer(d_hid, n_head)
+        # A sigle layer architecture of Transformer encoder,
+        # Including a `MutiheadAttention`, `FeedForward`, `LayerNorm`
+        #  with dropouts.
+        self.encoderlayer = nn.TransformerEncoderLayer(
+            d_emb, n_head, dropout=p_hid, dim_feedforward=d_ff)
 
         # Stack of `n_hid_lyr` encoder layers.
         # Input tensor : Output of `self.pe`.
-        # Input shape  : `(S, B, H)`.
+        # Input shape  : `(S, B, E)`.
         # Input dtype  : `torch.float32`.
         # Output tensor: Batch of Transformer encoder output.
-        # Output shape : `(S, B, H)`.
+        # Output shape : `(S, B, E)`.
         # Output dtype : `torch.float32`.
         self.tranformerencoder = nn.TransformerEncoder(
             self.encoderlayer, n_hid_lyr)
@@ -229,12 +233,12 @@ class TransformerModel(RNNModel):
 
         Self attention masks are created as follow:
 
-        # . Create auto-regressive self attention masks (mask everything above
+        #. Create auto-regressive self attention masks (mask everything above
            diagnoal).
            This is needed since at each time step current input can only see
            previous inputs and itself.
            (shape: ``(S, S)``)
-        # . Create padding self attention masks (mask every padding token id
+        #. Create padding self attention masks (mask every padding token id
            positions).
            This is needed since paddings are meaningless.
            (shape: ``(B, S)``)
@@ -286,19 +290,13 @@ class TransformerModel(RNNModel):
            (shape: ``(B, S, E)``)
         #. Use ``self.emb_dp`` to drop some features in token embeddings.
            (shape: ``(B, S, E)``)
-        #. Use ``self.pre_hid`` to transform token embeddings from embedding
-           dimension ``E`` to hidden dimension ``H``.
-           (shape: ``(B, S, H)``)
         #. Use ``self.pe`` to add positional encoding to batch of inputs.
-           (shape: ``(B, S, H)``)
+           (shape: ``(B, S, E)``)
         #. Use ``torch.transpose`` to transform to shape model need.
-           (shape: ``(S, B, H)``)
+           (shape: ``(S, B, E)``)
         #. Use ``self.tranformerencoder`` to encode features.
-           (shape: ``(S, B, H)``)
+           (shape: ``(S, B, E)``)
         #. Use ``torch.transpose`` to transform to shape model need.
-           (shape: ``(B, S, H)``)
-        #. Use ``self.post_hid`` to transform features from hidden
-           dimension ``H`` to embedding dimension ``E``.
            (shape: ``(B, S, E)``)
         #. Find the most possible next token id in embedding matrix
            ``self.emb`` using inner product.
@@ -334,39 +332,29 @@ class TransformerModel(RNNModel):
         # Output shape: `(B, S, E)`.
         batch = self.emb_dp(batch)
 
-        # Transform from embedding dimension to hidden dimension.
-        # Input  shape: `(B, S, E)`.
-        # Output shape: `(B, S, H)`.
-        batch = self.pre_hid(batch)
-
         # Add positional encoding to ecah sequences.
-        # Input  shape: `(B, S, H)`.
-        # Output shape: `(B, S, H)`.
+        # Input  shape: `(B, S, E)`.
+        # Output shape: `(B, S, E)`.
         batch = self.pe(batch)
 
         # Create auto-regressive and padding mask.
         reg_mask, pad_mask = self.create_mask(batch_prev_tkids)
 
         # Transform to the accepted size for Transformer encoder.
-        # Input  shape: `(B, S, H)`.
-        # Output shape: `(S, B, H)`.
+        # Input  shape: `(B, S, E)`.
+        # Output shape: `(S, B, E)`.
         batch = batch.transpose(0, 1)
 
         # Encode features.
-        # Input  shape: `(S, B, H)`.
-        # Output shape: `(S, B, H)`.
+        # Input  shape: `(S, B, E)`.
+        # Output shape: `(S, B, E)`.
         batch = self.tranformerencoder(
             batch, mask=reg_mask, src_key_padding_mask=pad_mask)
 
         # Transform to the origin shape.
-        # Input  shape: `(S, B, H)`.
-        # Output shape: `(B, S, H)`.
-        batch = batch.transpose(0, 1).contiguous()
-
-        # Transform from hidden dimension to embedding dimension.
-        # Input  shape: `(B, S, H)`.
+        # Input  shape: `(S, B, E)`.
         # Output shape: `(B, S, E)`.
-        batch = self.post_hid(batch)
+        batch = batch.transpose(0, 1).contiguous()
 
         # Transform from embedding dimension to vocabulary dimension by
         # multiplying transpose of embedding matrix.
@@ -374,6 +362,100 @@ class TransformerModel(RNNModel):
         # Input  shape: `(B, S, E)`.
         # Output shape: `(B, S, V)`.
         return batch @ self.emb.weight.transpose(0, 1)
+
+    def loss_fn(
+            self,
+            batch_next_tkids: torch.Tensor,
+            batch_prev_tkids: torch.Tensor,
+    ) -> torch.Tensor:
+        r"""Calculate language model training loss.
+
+        Use forward pass to get logits and then use cross-entropy to calculate
+        next token prediction loss.
+        Use teacher forcing to implement this method.
+
+        Parameters
+        ==========
+        batch_next_tkids: torch.Tensor
+            Prediction targets.
+            Batch of next token ids encoded by
+            :py:class:`lmp.tknzr.BaseTknzr` subclass instance.
+            ``batch_next_tkids`` has same shape and ``dtype`` as
+            ``batch_prev_tkids``.
+        batch_prev_tkids: torch.Tensor
+            Batch of previous token ids encoded by
+            :py:class:`lmp.tknzr.BaseTknzr` subclass instance.
+            ``batch_prev_tkids`` has shape ``(B, S)`` and
+            ``dtype == torch.int64``.
+
+        Returns
+        =======
+        torch.Tensor
+            Average next token prediction loss.
+            Returned tensor has shape ``(1)`` and ``dtype == torch.float32``.
+        """
+        # Forward pass.
+        # Input  shape: `(B, S)`.
+        # Output shape: `(B, S, V)`.
+        logits = self(batch_prev_tkids)
+
+        # Reshape logits to calculate loss.
+        # Input  shape: `(B, S, V)`.
+        # Output shape: `(BxS, V)`.
+        logits = logits.reshape(-1, self.emb.num_embeddings)
+
+        # Reshape target to calculate loss.
+        # Input  shape: `(B, S)`.
+        # Output shape: `(BxS)`.
+        batch_next_tkids = batch_next_tkids.reshape(-1)
+
+        # Loss function of next token prediction.
+        # All logits are used since we use teacher forcing to optimize.
+        # Logits tensor: Batch of next token prediction logits.
+        # Logits shape : `(BxS, V)`.
+        # Logits dtype : `torch.float32`.
+        # Target tensor: Batch of next token prediction target.
+        # Target shape : `(BxS)`.
+        # Target dtype : `torch.int64`.
+        # Output tensor: Average next tokens prediction loss.
+        # Output shape : `(1)`.
+        # Output dtype : `torch.float32`.
+        return F.cross_entropy(logits, batch_next_tkids)
+
+    def pred(self, batch_prev_tkids: torch.Tensor) -> torch.Tensor:
+        r"""Next token prediction.
+
+        Use forward pass ouput logits to choose the most possible token id
+        from vocabulary as next token.
+
+        Parameters
+        ==========
+        batch_prev_tkids: torch.Tensor
+            Batch of previous token ids encoded by
+            :py:class:`lmp.tknzr.BaseTknzr` subclass instance.
+            ``batch_prev_tkids`` has shape ``(B, S)`` and
+            ``dtype == torch.int64``.
+
+        Returns
+        =======
+        torch.Tensor
+            Softmax predicition for next token.
+            Return tensor has shape ``(B, S, V)`` and
+            ``dtype == torch.float32``.
+        """
+        # Forward pass.
+        # Input  shape: `(B, S)`.
+        # Output shape: `(B, S, V)`.
+        logits = self(batch_prev_tkids)
+
+        # Convert logits to probabilities using softmax.
+        # Input tensor : Batch of next token prediction logits.
+        # Input shape  : `(B, S, V)`.
+        # Input dtype  : `torch.float32`.
+        # Output tensor: Batch of next token prediction probabilities.
+        # Output shape : `(B, S, V)`.
+        # Output dtype : `torch.float32`.
+        return F.softmax(logits, dim=-1)
 
     @staticmethod
     def train_parser(parser: argparse.ArgumentParser) -> None:
@@ -412,49 +494,63 @@ class TransformerModel(RNNModel):
         ...     '--ver', 'train',
         ...     '--wd', '1e-2',
         ...     '--n_head', '4',
+        ...     '--d_emb', '100',
+        ...     '--d_ff', '2048',
+        ...     '--n_hid_lyr', '2',
+        ...     '--p_emb', '0.1',
+        ...     '--p_hid', '0.1',
         ... ])
-        >>> args.batch_size == 32
-        True
-        >>> args.beta1 == 0.9
-        True
-        >>> args.beta2 == 0.99
-        True
-        >>> args.ckpt_step == 1000
-        True
-        >>> args.dset_name == 'wikitext-2'
-        True
-        >>> args.eps == 1e-8
-        True
-        >>> args.exp_name == 'my_exp'
-        True
-        >>> args.log_step == 200
-        True
-        >>> args.lr == 1e-4
-        True
-        >>> args.max_norm == 1
-        True
-        >>> args.max_seq_len == -1
-        True
-        >>> args.n_epoch == 10
-        True
-        >>> args.seed == 42
-        True
-        >>> args.tknzr_exp_name == 'my_tknzr_exp'
-        True
-        >>> args.ver == 'train'
-        True
-        >>> args.wd == 1e-2
-        True
         >>> args.n_head == 4
+        True
+        >>> args.d_emb == 100
+        True
+        >>> args.d_ff == 2048
+        True
+        >>> args.n_hid_lyr == 2
+        True
+        >>> args.p_emb == 0.1
+        True
+        >>> args.p_hid == 0.1
         True
         """
         # Load common arguments.
-        RNNModel.train_parser(parser=parser)
+        BaseModel.train_parser(parser=parser)
 
         # Required arguments.
         group = parser.add_argument_group('TransformerModel arguments')
         group.add_argument(
             '--n_head',
             help='number of Transformer heads.',
+            required=True,
             type=int,
+        )
+        group.add_argument(
+            '--d_emb',
+            help='Token embedding dimension.',
+            required=True,
+            type=int,
+        )
+        group.add_argument(
+            '--d_ff',
+            help='Feed forward layer dimension.',
+            required=True,
+            type=int,
+        )
+        group.add_argument(
+            '--n_hid_lyr',
+            help='Number of Tranformer layers.',
+            required=True,
+            type=int,
+        )
+        group.add_argument(
+            '--p_emb',
+            help='Dropout probability for token embeddings.',
+            required=True,
+            type=float,
+        )
+        group.add_argument(
+            '--p_hid',
+            help='Dropout probability for each Transformerlayer.',
+            required=True,
+            type=float,
         )
