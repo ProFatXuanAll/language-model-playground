@@ -47,14 +47,27 @@ class PositionalEncoding(nn.Module):
         Dropout after Positional Encoding.
     pe: torch.Tensor
         The values of Positional Encoding.
+
+    References
+    ==========
+        Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit,
+        Llion Jones, Aidan N. Gomez, Lukasz Kaiser, Illia Polosukhin.
+        2017. Attention is all you need.
     """
 
-    def __init__(self, d_emb: int, dropout: float, max_seq_len: int):
-        super(PositionalEncoding, self).__init__()
-        self.dropout = nn.Dropout(p=dropout)
+    def __init__(
+        self,
+        *,
+        d_emb: int,
+        p_hid: float,
+        max_seq_len: int,
+        **kwargs: Optional[Dict],
+    ):
+        super().__init__()
+        self.dropout = nn.Dropout(p=p_hid)
 
         # Create positional encoding table.
-        # Shape : `(S, H)`
+        # Shape : `(S, E)`
         self.pe = torch.zeros(max_seq_len, d_emb)
 
         # Position order from `0` to `S - 1`.
@@ -62,7 +75,7 @@ class PositionalEncoding(nn.Module):
         position = torch.arange(0, max_seq_len).unsqueeze(1)
 
         # Compute the positional encodings once in log space.
-        # Shape : `(1, S, H)`
+        # Shape : `(1, S, E)`
         div_term = torch.exp(torch.arange(0, d_emb, 2) *
                              -(math.log(10000.0) / d_emb))
         self.pe[:, 0::2] = torch.sin(position * div_term)
@@ -84,11 +97,136 @@ class PositionalEncoding(nn.Module):
 
         """
         # Add positional encoding to each sequences.
-        # Input shape : `(B, S, H)`
-        # Output shape : `(B, S, H)`
+        # Input shape : `(B, S, E)`
+        # Output shape : `(B, S, E)`
         pe = self.pe.detach().to(src.device)
         output = src + pe[:, :src.size(1)]
         return self.dropout(output)
+
+
+class TransformerBlock(nn.Module):
+    r"""Transformer Encoder.
+
+    An attention mechanism to draw global dependencies between
+    input and output.
+
+    Parameters
+    ==========
+    n_head: int
+        Head number of multihead attention.
+        ``d_emb`` should be divisible by it.
+    d_emb: int
+        Token embedding dimension.
+        Must be bigger than or equal to ``1``.
+    d_ff: int
+        Feed forward layer dimension.
+        Must be bigger than or equal to ``1``.
+    n_hid_lyr: int
+        Number of Tranformer's encoder layers.
+        Must be bigger than or equal to ``1``.
+    p_hid: float
+        Dropout probability for each Transformerlayer.
+        Must satisfy ``0.0 <= p_emb <= 1.0``.
+
+    Attributes
+    ==========
+    encoderlayer: torch.nn.TransformerEncoderLayer
+        A sigle layer architecture of Transformer encoder,
+        TransformerEncoderLayer is made up of a ``MultiHeadAttention`` layer
+        and a ``Feedforward`` layer with ``LayerNorm``.
+    tranformerencoder: torch.nn.TransformerEncoder
+        Stack of `n_hid_lyr` encoder layers.
+
+    References
+    ==========
+        Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit,
+        Llion Jones, Aidan N. Gomez, Lukasz Kaiser, Illia Polosukhin.
+        2017. Attention is all you need.
+    """
+
+    def __init__(
+        self,
+        *,
+        d_emb: int,
+        n_head: int,
+        p_hid: float,
+        d_ff: int,
+        n_hid_lyr: int,
+        **kwargs: Optional[Dict],
+    ):
+        super().__init__()
+
+        # A sigle layer architecture of Transformer encoder,
+        # TransformerEncoderLayer is made up of a ``MultiHeadAttention`` layer
+        # and a ``Feedforward`` layer with ``LayerNorm``s.
+        self.encoderlayer = nn.TransformerEncoderLayer(
+            d_emb, n_head, dropout=p_hid, dim_feedforward=d_ff)
+
+        # Stack of `n_hid_lyr` encoder layers.
+        # Input tensor : Output of `self.pe`.
+        # Input shape  : `(S, B, E)`.
+        # Input dtype  : `torch.float32`.
+        # Output tensor: Batch of Transformer encoder output.
+        # Output shape : `(S, B, E)`.
+        # Output dtype : `torch.float32`.
+        self.tranformerencoder = nn.TransformerEncoder(
+            self.encoderlayer, n_hid_lyr)
+
+    def forward(
+        self,
+        batch_tk_reps: torch.Tensor,
+        reg_mask: torch.Tensor,
+        pad_mask: torch.Tensor
+    ) -> torch.Tensor:
+        r"""Perform forward pass.
+
+        Forward pass algorithm is structured as follow:
+
+        #. Use ``torch.transpose`` to transform to shape model need.
+           (shape: ``(S, B, E)``)
+        #. Use ``self.tranformerencoder`` to encode features.
+           (shape: ``(S, B, E)``)
+        #. Use ``torch.transpose`` to transform to shape model need.
+           (shape: ``(B, S, E)``)
+        #. Return final output.
+           (shape: ``(B, S, E)``)
+
+        Parameters
+        ==========
+        batch_tk_reps: torch.Tensor
+            Batch of previous token embedding representation.
+            ``batch_tk_reps`` has shape ``(B, S, E)`` and
+            ``dtype == torch.float32``.
+        reg_mask: torch.Tensor
+            Auto-regressive self attention masks with shape ``(S, S)`` and
+            ``dtype == torch.bool``.
+        pad_mask: torch.Tensor
+            Padding self attention masks with shape ``(B, S)`` and
+            ``dtype == torch.bool``.
+
+        Returns
+        =======
+        torch.Tensor
+            Transformer encoder features with shape ``(B, S, E)`` and
+            ``dtype == torch.float32``.
+        """
+        # Transform to the accepted size for Transformer encoder.
+        # Input  shape: `(B, S, E)`.
+        # Output shape: `(S, B, E)`.
+        output = batch_tk_reps.transpose(0, 1)
+
+        # Encode features.
+        # Input  shape: `(S, B, E)`.
+        # Output shape: `(S, B, E)`.
+        output = self.tranformerencoder(
+            output, mask=reg_mask, src_key_padding_mask=pad_mask)
+
+        # Transform to the origin shape.
+        # Input  shape: `(S, B, E)`.
+        # Output shape: `(B, S, E)`.
+        output = output.transpose(0, 1).contiguous()
+
+        return output
 
 
 class TransformerModel(BaseModel):
@@ -141,11 +279,9 @@ class TransformerModel(BaseModel):
         Used to create attention mask on padding tokens.
     pe: lmp.model.PositionalEncoding
         Positional Encoding.
-    encoderlayer: torch.nn.TransformerEncoderLayer
-        TransformerEncoderLayer is made up of ``MultiHeadAttention`` layer
-        and ``Feedforward`` layer.
-    tranformerencoder: torch.nn.TransformerEncoder
-        Stack of N encoderlayers.
+    hid: lmp.model.TransformerBlock
+        An attention mechanism of Transformer to draw global dependencies
+        between input and output.
 
     References
     ==========
@@ -210,23 +346,30 @@ class TransformerModel(BaseModel):
         # Output tensor: Batch of sequences with Positional Encoding.
         # Output shape : `(B, S, E)`.
         # Output dtype : `torch.float32`.
-        self.pe = PositionalEncoding(d_emb, p_emb, max_seq_len)
+        self.pe = PositionalEncoding(
+            d_emb=d_emb,
+            p_hid=p_hid,
+            max_seq_len=max_seq_len,
+            **kwargs,
+        )
 
-        # A sigle layer architecture of Transformer encoder,
-        # Including a `MutiheadAttention`, `FeedForward`, `LayerNorm`
-        #  with dropouts.
-        self.encoderlayer = nn.TransformerEncoderLayer(
-            d_emb, n_head, dropout=p_hid, dim_feedforward=d_ff)
-
-        # Stack of `n_hid_lyr` encoder layers.
+        # Transformer encoder model.
+        # An attention mechanism of Transformer to draw global dependencies
+        # between input and output.
         # Input tensor : Output of `self.pe`.
-        # Input shape  : `(S, B, E)`.
+        # Input shape  : `(B, S, E)`.
         # Input dtype  : `torch.float32`.
         # Output tensor: Batch of Transformer encoder output.
-        # Output shape : `(S, B, E)`.
+        # Output shape : `(B, S, E)`.
         # Output dtype : `torch.float32`.
-        self.tranformerencoder = nn.TransformerEncoder(
-            self.encoderlayer, n_hid_lyr)
+        self.hid = TransformerBlock(
+            d_emb=d_emb,
+            n_head=n_head,
+            p_hid=p_hid,
+            d_ff=d_ff,
+            n_hid_lyr=n_hid_lyr,
+            **kwargs,
+        )
 
     def create_mask(self, batch_prev_tkids: torch.Tensor) -> torch.Tensor:
         r"""Create self attention masks for ``batch_prev_tkids``.
@@ -290,13 +433,9 @@ class TransformerModel(BaseModel):
            (shape: ``(B, S, E)``)
         #. Use ``self.emb_dp`` to drop some features in token embeddings.
            (shape: ``(B, S, E)``)
-        #. Use ``self.pe`` to add positional encoding to batch of inputs.
+        #. Use ``self.pe`` to add positional information to batch of inputs.
            (shape: ``(B, S, E)``)
-        #. Use ``torch.transpose`` to transform to shape model need.
-           (shape: ``(S, B, E)``)
-        #. Use ``self.tranformerencoder`` to encode features.
-           (shape: ``(S, B, E)``)
-        #. Use ``torch.transpose`` to transform to shape model need.
+        #. Use ``self.hid`` to encode temporal features.
            (shape: ``(B, S, E)``)
         #. Find the most possible next token id in embedding matrix
            ``self.emb`` using inner product.
@@ -340,21 +479,10 @@ class TransformerModel(BaseModel):
         # Create auto-regressive and padding mask.
         reg_mask, pad_mask = self.create_mask(batch_prev_tkids)
 
-        # Transform to the accepted size for Transformer encoder.
-        # Input  shape: `(B, S, E)`.
-        # Output shape: `(S, B, E)`.
-        batch = batch.transpose(0, 1)
-
         # Encode features.
-        # Input  shape: `(S, B, E)`.
-        # Output shape: `(S, B, E)`.
-        batch = self.tranformerencoder(
-            batch, mask=reg_mask, src_key_padding_mask=pad_mask)
-
-        # Transform to the origin shape.
-        # Input  shape: `(S, B, E)`.
+        # Input  shape: `(B, S, E)`.
         # Output shape: `(B, S, E)`.
-        batch = batch.transpose(0, 1).contiguous()
+        batch = self.hid(batch, reg_mask=reg_mask, pad_mask=pad_mask)
 
         # Transform from embedding dimension to vocabulary dimension by
         # multiplying transpose of embedding matrix.
