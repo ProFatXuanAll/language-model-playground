@@ -7,6 +7,7 @@ from typing import (ClassVar, get_type_hints)
 from lmp.infer._top_1 import Top1Infer
 from lmp.model._base import BaseModel
 from lmp.tknzr._base import BaseTknzr
+from lmp.infer._base import BaseInfer
 
 
 def test_class():
@@ -56,3 +57,18 @@ def test_instance_method():
         ],
         return_annotation=str,
     )
+
+
+def test_subclass_method():
+    r'''Ensure inherent methods are same as baseclass.'''
+    assert inspect.signature(
+        BaseInfer.__init__) == inspect.signature(
+        Top1Infer.__init__)
+
+    assert inspect.signature(
+        BaseInfer.gen) == inspect.signature(
+        Top1Infer.gen)
+
+    assert inspect.signature(
+        BaseInfer.infer_parser) == inspect.signature(
+        Top1Infer.infer_parser)
