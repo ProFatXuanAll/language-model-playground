@@ -59,7 +59,7 @@ def test_instance_method():
     )
 
 
-def test_subclass_method():
+def test_inherent_method():
     r'''Ensure inherent methods are same as baseclass.'''
     assert inspect.signature(
         BaseInfer.__init__) == inspect.signature(

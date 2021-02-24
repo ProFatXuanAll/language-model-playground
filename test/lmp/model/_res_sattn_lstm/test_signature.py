@@ -6,6 +6,7 @@ from typing import (Optional, Dict)
 
 from lmp.model._res_sattn_lstm import ResSAttnLSTMBlock, ResSAttnLSTMModel
 from lmp.tknzr._base import BaseTknzr
+from lmp.model._base import BaseModel
 
 
 def test_class():
@@ -122,3 +123,28 @@ def test_instance_method():
         ],
         return_annotation=Signature.empty,
     )
+
+
+def test_inherent_method():
+    r'''Ensure inherent methods are same as baseclass.'''
+    assert inspect.signature(
+        BaseModel.forward) == inspect.signature(
+        ResSAttnLSTMModel.forward)
+
+    assert inspect.signature(BaseModel.loss_fn) == inspect.signature(
+        ResSAttnLSTMModel.loss_fn)
+
+    assert inspect.signature(BaseModel.pred) == inspect.signature(
+        ResSAttnLSTMModel.pred)
+
+    assert inspect.signature(BaseModel.ppl) == inspect.signature(
+        ResSAttnLSTMModel.ppl)
+
+    assert inspect.signature(BaseModel.save) == inspect.signature(
+        ResSAttnLSTMModel.save)
+
+    assert inspect.signature(BaseModel.load) == inspect.signature(
+        ResSAttnLSTMModel.load)
+
+    assert inspect.signature(BaseModel.train_parser) == inspect.signature(
+        ResSAttnLSTMModel.train_parser)
