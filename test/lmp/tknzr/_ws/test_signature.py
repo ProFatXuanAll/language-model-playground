@@ -5,6 +5,7 @@ from inspect import Parameter, Signature
 from typing import (List, Sequence)
 
 from lmp.tknzr._ws import WsTknzr
+from lmp.tknzr._base import BaseTknzr
 
 
 def test_class():
@@ -58,3 +59,54 @@ def test_instance_method():
         ],
         return_annotation=str,
     )
+
+
+def test_inherent_method():
+    r'''Ensure inherent methods are same as baseclass.'''
+    assert inspect.signature(
+        BaseTknzr.__init__) == inspect.signature(
+        WsTknzr.__init__)
+
+    assert inspect.signature(
+        BaseTknzr.save) == inspect.signature(
+        WsTknzr.save)
+
+    assert inspect.signature(
+        BaseTknzr.load) == inspect.signature(
+        WsTknzr.load)
+
+    assert inspect.signature(
+        BaseTknzr.norm) == inspect.signature(
+        WsTknzr.norm)
+
+    assert inspect.signature(
+        BaseTknzr.tknz) == inspect.signature(
+        WsTknzr.tknz)
+
+    assert inspect.signature(
+        BaseTknzr.dtknz) == inspect.signature(
+        WsTknzr.dtknz)
+
+    assert inspect.signature(
+        BaseTknzr.enc) == inspect.signature(
+        WsTknzr.enc)
+
+    assert inspect.signature(
+        BaseTknzr.dec) == inspect.signature(
+        WsTknzr.dec)
+
+    assert inspect.signature(
+        BaseTknzr.batch_enc) == inspect.signature(
+        WsTknzr.batch_enc)
+
+    assert inspect.signature(
+        BaseTknzr.batch_dec) == inspect.signature(
+        WsTknzr.batch_dec)
+
+    assert inspect.signature(
+        BaseTknzr.build_vocab) == inspect.signature(
+        WsTknzr.build_vocab)
+
+    assert inspect.signature(
+        BaseTknzr.train_parser) == inspect.signature(
+        WsTknzr.train_parser)
