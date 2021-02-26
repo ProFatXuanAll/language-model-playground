@@ -57,18 +57,11 @@ Before You Commit
    .. code-block:: sh
 
         autopep8 -i -r -a -a -a lmp test
+        isort test
         flake8 lmp test
 
    Fix any error/warning messages showed on CLI.
    If you find some rule is not possible to be fix, please **open issue**.
-
-#. Run the following script to sort imports alphabetically, 
-   and automatically separated into sections and by type.
-
-   .. code-block:: sh
-
-        isort test
-
         
 #. Run tests and get test coverage report.
    Make sure your code do not break existing code.

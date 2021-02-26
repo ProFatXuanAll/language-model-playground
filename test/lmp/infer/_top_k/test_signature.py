@@ -2,36 +2,30 @@ r"""Test :py:class:`lmp.infer.Top1Infer` signature."""
 
 import inspect
 from inspect import Parameter, Signature
-from typing import ClassVar, get_type_hints
+from typing import Dict, Optional, get_type_hints
 
 from lmp.infer._base import BaseInfer
 from lmp.infer._top_k import TopKInfer
-from lmp.model._base import BaseModel
-from lmp.tknzr._base import BaseTknzr
 
 
 def test_class():
-    r"""Ensure abstract class signature.
-
-    Subclass only need to implement method gen.
-    """
+    r"""Ensure class signature."""
     assert inspect.isclass(TopKInfer)
+    assert not inspect.isabstract(TopKInfer)
+    assert issubclass(TopKInfer, BaseInfer)
 
 
 def test_class_attribute():
     r"""Ensure class attributes' signature."""
     print(get_type_hints(TopKInfer))
-    assert get_type_hints(TopKInfer) == {
-        'hard_max_seq_len': ClassVar[int],
-        'infer_name': ClassVar[str],
-    }
+    assert get_type_hints(TopKInfer) == get_type_hints(BaseInfer)
+    assert TopKInfer.hard_max_seq_len == 512
     assert TopKInfer.infer_name == 'top-k'
 
 
 def test_instance_method():
     r"""Ensure instance methods' signature."""
-    assert hasattr(TopKInfer, 'gen')
-    assert inspect.signature(TopKInfer.gen) == Signature(
+    assert inspect.signature(TopKInfer.__init__) == Signature(
         parameters=[
             Parameter(
                 name='self',
@@ -39,31 +33,33 @@ def test_instance_method():
                 default=Parameter.empty,
             ),
             Parameter(
-                name='model',
+                name='k',
                 kind=Parameter.POSITIONAL_OR_KEYWORD,
                 default=Parameter.empty,
-                annotation=BaseModel,
+                annotation=int,
             ),
             Parameter(
-                name='tknzr',
+                name='max_seq_len',
                 kind=Parameter.POSITIONAL_OR_KEYWORD,
-                annotation=BaseTknzr,
+                default=Parameter.empty,
+                annotation=int,
             ),
             Parameter(
-                name='txt',
-                kind=Parameter.POSITIONAL_OR_KEYWORD,
-                annotation=str,
+                name='kwargs',
+                kind=Parameter.VAR_KEYWORD,
+                annotation=Optional[Dict],
             ),
         ],
-        return_annotation=str,
+        return_annotation=Signature.empty,
     )
 
 
 def test_inherent_method():
-    r'''Ensure inherent methods' signature are same as base class.'''
+    r'''Ensure inherent methods' signature are the same as base class.'''
     assert (
         inspect.signature(BaseInfer.gen)
-        == inspect.signature(TopKInfer.gen)
+        ==
+        inspect.signature(TopKInfer.gen)
     )
 
     assert (

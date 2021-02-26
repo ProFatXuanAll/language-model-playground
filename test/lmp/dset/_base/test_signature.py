@@ -8,11 +8,9 @@ from lmp.dset._base import BaseDset
 
 
 def test_class():
-    r"""Ensure abstract class signature.
-
-    Subclass only need to implement method __init__.
-    """
+    r"""Ensure class signature."""
     assert inspect.isclass(BaseDset)
+    assert not inspect.isabstract(BaseDset)
 
 
 def test_class_attribute():

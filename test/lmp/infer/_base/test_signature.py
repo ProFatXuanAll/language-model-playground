@@ -9,10 +9,7 @@ from lmp.infer._base import BaseInfer
 
 
 def test_class():
-    r"""Ensure abstract class signature.
-
-    Subclass only need to implement method z and dtknzr.
-    """
+    r"""Ensure abstract class signature."""
     assert inspect.isclass(BaseInfer)
     assert inspect.isabstract(BaseInfer)
 
@@ -31,7 +28,6 @@ def test_class_attribute():
 def test_instance_method():
     r"""Ensure instance methods' signature."""
     assert hasattr(BaseInfer, '__init__')
-    # assert inspect.ismethod(BaseInfer.__init__)
     assert inspect.signature(BaseInfer.__init__) == Signature(
         parameters=[
             Parameter(
