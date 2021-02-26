@@ -2,8 +2,7 @@ r"""Test :py:class:`lmp.dset.ChPoemDset` signature."""
 
 import inspect
 from inspect import Parameter, Signature
-from typing import (ClassVar, List, Optional,
-                    get_type_hints)
+from typing import ClassVar, List, Optional, get_type_hints
 
 from lmp.dset._base import BaseDset
 from lmp.dset._ch_poem import ChPoemDset
@@ -64,23 +63,29 @@ def test_instance_method():
 
 
 def test_inherent_method():
-    r'''Ensure inherent methods are same as baseclass.'''
-    assert inspect.signature(
-        BaseDset.__init__) == inspect.signature(
-        ChPoemDset.__init__)
+    r'''Ensure inherent methods' signature are same as base class.'''
+    assert (
+        inspect.signature(BaseDset.__init__)
+        ==
+        inspect.signature(ChPoemDset.__init__)
+    )
 
-    assert inspect.signature(
-        BaseDset.__iter__) == inspect.signature(
-        ChPoemDset.__iter__)
+    assert (
+        inspect.signature(BaseDset.__iter__)
+        == inspect.signature(ChPoemDset.__iter__)
+    )
 
-    assert inspect.signature(
-        BaseDset.__len__) == inspect.signature(
-        ChPoemDset.__len__)
+    assert (
+        inspect.signature(BaseDset.__len__)
+        == inspect.signature(ChPoemDset.__len__)
+    )
 
-    assert inspect.signature(
-        BaseDset.__getitem__) == inspect.signature(
-        ChPoemDset.__getitem__)
+    assert (
+        inspect.signature(BaseDset.__getitem__)
+        == inspect.signature(ChPoemDset.__getitem__)
+    )
 
-    assert inspect.signature(
-        BaseDset.download) == inspect.signature(
-        ChPoemDset.download)
+    assert (
+        inspect.signature(BaseDset.download)
+        == inspect.signature(ChPoemDset.download)
+    )

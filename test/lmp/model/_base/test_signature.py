@@ -3,7 +3,8 @@ r"""Test :py:class:`lmp.model.BaseModel` signature."""
 import argparse
 import inspect
 from inspect import Parameter, Signature
-from typing import (Dict, Optional)
+from typing import Dict, Optional
+
 import torch
 
 from lmp.model._base import BaseModel

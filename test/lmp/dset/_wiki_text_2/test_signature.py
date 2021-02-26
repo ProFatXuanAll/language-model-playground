@@ -2,8 +2,7 @@ r"""Test :py:class:`lmp.dset.WikiText2Dset` signature."""
 
 import inspect
 from inspect import Parameter, Signature
-from typing import (ClassVar, List, Optional,
-                    get_type_hints)
+from typing import ClassVar, List, Optional, get_type_hints
 
 from lmp.dset._base import BaseDset
 from lmp.dset._wiki_text_2 import WikiText2Dset
@@ -60,14 +59,18 @@ def test_instance_method():
 
 
 def test_inherent_method():
-    r'''Ensure inherent methods are same as baseclass.'''
-    assert inspect.signature(
-        BaseDset.__init__) == inspect.signature(
-        WikiText2Dset.__init__)
+    r'''Ensure inherent methods' signature are same as base class.'''
+    assert (
+        inspect.signature(BaseDset.__init__)
+        ==
+        inspect.signature(WikiText2Dset.__init__)
+    )
 
-    assert inspect.signature(
-        BaseDset.__iter__) == inspect.signature(
-        WikiText2Dset.__iter__)
+    assert (
+        inspect.signature(BaseDset.__iter__)
+        ==
+        inspect.signature(WikiText2Dset.__iter__)
+    )
 
     assert inspect.signature(
         BaseDset.__len__) == inspect.signature(

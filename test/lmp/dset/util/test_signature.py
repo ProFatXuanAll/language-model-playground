@@ -2,25 +2,14 @@ r"""Test :py:class:`lmp.dset.ChPoemDset` signature."""
 
 import inspect
 from inspect import Parameter, Signature
-from typing import (Optional)
+from typing import Optional
 
-from lmp.dset.util import download, norm, trunc_to_max, pad_to_max
+from lmp.dset.util import download, norm, pad_to_max, trunc_to_max
 
 
-def test_func():
-    r"""Ensure abstract func signature.
-
-    Subfunction only need to implement function \
-    download norm, trunc_to_max, pad_to_max.
-    """
+def test_function():
+    r"""Ensure function's signature."""
     assert inspect.isfunction(download)
-    assert inspect.isfunction(norm)
-    assert inspect.isfunction(trunc_to_max)
-    assert inspect.isfunction(pad_to_max)
-
-
-def test_instance_method():
-    r"""Ensure util instance function's signature."""
     assert inspect.signature(download) == Signature(
         parameters=[
             Parameter(
@@ -39,6 +28,7 @@ def test_instance_method():
         return_annotation=None,
     )
 
+    assert inspect.isfunction(norm)
     assert inspect.signature(norm) == Signature(
         parameters=[
             Parameter(
@@ -50,10 +40,7 @@ def test_instance_method():
         ],
         return_annotation=str,
     )
-
-
-def test_abstract_method():
-    r"""Ensure util abstract function's signature."""
+    assert inspect.isfunction(trunc_to_max)
     assert inspect.signature(trunc_to_max) == Signature(
         parameters=[
             Parameter(
@@ -70,6 +57,7 @@ def test_abstract_method():
         ],
     )
 
+    assert inspect.isfunction(pad_to_max)
     assert inspect.signature(pad_to_max) == Signature(
         parameters=[
             Parameter(

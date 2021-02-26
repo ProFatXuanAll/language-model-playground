@@ -2,8 +2,7 @@ r"""Test :py:class:`lmp.dset.BaseDset` signature."""
 
 import inspect
 from inspect import Parameter, Signature
-from typing import (ClassVar, List, Optional,
-                    get_type_hints, Iterator)
+from typing import ClassVar, Iterator, List, Optional, get_type_hints
 
 from lmp.dset._base import BaseDset
 

@@ -2,12 +2,12 @@ r"""Test :py:class:`lmp.infer.Top1Infer` signature."""
 
 import inspect
 from inspect import Parameter, Signature
-from typing import (ClassVar, get_type_hints)
+from typing import ClassVar, get_type_hints
 
+from lmp.infer._base import BaseInfer
 from lmp.infer._top_k import TopKInfer
 from lmp.model._base import BaseModel
 from lmp.tknzr._base import BaseTknzr
-from lmp.infer._base import BaseInfer
 
 
 def test_class():
@@ -60,11 +60,14 @@ def test_instance_method():
 
 
 def test_inherent_method():
-    r'''Ensure inherent methods are same as baseclass.'''
-    assert inspect.signature(
-        BaseInfer.gen) == inspect.signature(
-        TopKInfer.gen)
+    r'''Ensure inherent methods' signature are same as base class.'''
+    assert (
+        inspect.signature(BaseInfer.gen)
+        == inspect.signature(TopKInfer.gen)
+    )
 
-    assert inspect.signature(
-        BaseInfer.infer_parser) == inspect.signature(
-        TopKInfer.infer_parser)
+    assert (
+        inspect.signature(BaseInfer.infer_parser)
+        ==
+        inspect.signature(TopKInfer.infer_parser)
+    )

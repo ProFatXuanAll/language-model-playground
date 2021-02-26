@@ -2,11 +2,11 @@ r"""Test :py:class:`lmp.model._res_lstm` signature."""
 
 import inspect
 from inspect import Parameter, Signature
-from typing import (Optional, Dict)
+from typing import Dict, Optional
 
+from lmp.model._base import BaseModel
 from lmp.model._res_lstm import ResLSTMBlock, ResLSTMModel
 from lmp.tknzr._base import BaseTknzr
-from lmp.model._base import BaseModel
 
 
 def test_class():
@@ -126,25 +126,45 @@ def test_instance_method():
 
 
 def test_inherent_method():
-    r'''Ensure inherent methods are same as baseclass.'''
-    assert inspect.signature(
-        BaseModel.forward) == inspect.signature(
-        ResLSTMModel.forward)
+    r'''Ensure inherent methods' signature are same as base class.'''
+    assert (
+        inspect.signature(BaseModel.forward)
+        ==
+        inspect.signature(ResLSTMModel.forward)
+    )
 
-    assert inspect.signature(BaseModel.loss_fn) == inspect.signature(
-        ResLSTMModel.loss_fn)
+    assert (
+        inspect.signature(BaseModel.loss_fn)
+        ==
+        inspect.signature(ResLSTMModel.loss_fn)
+    )
 
-    assert inspect.signature(BaseModel.pred) == inspect.signature(
-        ResLSTMModel.pred)
+    assert (
+        inspect.signature(BaseModel.pred)
+        ==
+        inspect.signature(ResLSTMModel.pred)
+    )
 
-    assert inspect.signature(BaseModel.ppl) == inspect.signature(
-        ResLSTMModel.ppl)
+    assert (
+        inspect.signature(BaseModel.ppl)
+        ==
+        inspect.signature(ResLSTMModel.ppl)
+    )
 
-    assert inspect.signature(BaseModel.save) == inspect.signature(
-        ResLSTMModel.save)
+    assert (
+        inspect.signature(BaseModel.save)
+        ==
+        inspect.signature(ResLSTMModel.save)
+    )
 
-    assert inspect.signature(BaseModel.load) == inspect.signature(
-        ResLSTMModel.load)
+    assert (
+        inspect.signature(BaseModel.load)
+        ==
+        inspect.signature(ResLSTMModel.load)
+    )
 
-    assert inspect.signature(BaseModel.train_parser) == inspect.signature(
-        ResLSTMModel.train_parser)
+    assert (
+        inspect.signature(BaseModel.train_parser)
+        ==
+        inspect.signature(ResLSTMModel.train_parser)
+    )
