@@ -32,7 +32,7 @@ class PositionalEncoding(nn.Module):
     Parameters
     ==========
     d_emb: int
-        embden dimension for MLP and Transformer.
+        Embedding dimension for MLP and Transformer.
         Must be bigger than or equal to ``1``.
     dropout: float
         Dropout probability.
@@ -112,15 +112,15 @@ class TransformerBlock(nn.Module):
 
     Parameters
     ==========
-    n_head: int
-        Head number of multihead attention.
-        ``d_emb`` should be divisible by it.
     d_emb: int
         Token embedding dimension.
         Must be bigger than or equal to ``1``.
     d_ff: int
         Feed forward layer dimension.
         Must be bigger than or equal to ``1``.
+    n_head: int
+        Head number of multihead attention.
+        ``d_emb`` should be divisible by it.
     n_hid_lyr: int
         Number of Tranformer's encoder layers.
         Must be bigger than or equal to ``1``.
@@ -148,17 +148,17 @@ class TransformerBlock(nn.Module):
         self,
         *,
         d_emb: int,
-        n_head: int,
-        p_hid: float,
         d_ff: int,
+        n_head: int,
         n_hid_lyr: int,
+        p_hid: float,
         **kwargs: Optional[Dict],
     ):
         super().__init__()
 
         # A sigle layer architecture of Transformer encoder,
-        # TransformerEncoderLayer is made up of a ``MultiHeadAttention`` layer
-        # and a ``Feedforward`` layer with ``LayerNorm``s.
+        # TransformerEncoderLayer is made up of a MultiHeadAttention layer
+        # and a Feedforward layer with LayerNorms.
         self.encoderlayer = nn.TransformerEncoderLayer(
             d_emb, n_head, dropout=p_hid, dim_feedforward=d_ff)
 
@@ -236,15 +236,18 @@ class TransformerModel(BaseModel):
 
     Parameters
     ==========
-    n_head: int
-        Head number of multihead attention.
-        ``d_emb`` should be divisible by it.
     d_emb: int
         Token embedding dimension.
         Must be bigger than or equal to ``1``.
     d_ff: int
         Feed forward layer dimension.
         Must be bigger than or equal to ``1``.
+    max_seq_len: int
+        Max length of the input sequence.
+        Must be bigger than or equal to ``1``.
+    n_head: int
+        Head number of multihead attention.
+        ``d_emb`` should be divisible by it.
     n_hid_lyr: int
         Number of Tranformer's encoder layers.
         Must be bigger than or equal to ``1``.
@@ -254,9 +257,6 @@ class TransformerModel(BaseModel):
     p_hid: float
         Dropout probability for each Transformerlayer.
         Must satisfy ``0.0 <= p_emb <= 1.0``.
-    max_seq_len: int
-        Max length of the input sequence.
-        Must be bigger than or equal to ``1``.
     tknzr: lmp.tknzr.BaseTknzr
         Tokenizer instance with attributes ``pad_tkid`` and ``vocab_size``.
     kwargs: Dict, optional
@@ -294,22 +294,32 @@ class TransformerModel(BaseModel):
     def __init__(
             self,
             *,
-            n_head: int,
             d_emb: int,
             d_ff: int,
+            max_seq_len: int,
+            n_head: int,
             n_hid_lyr: int,
             p_emb: float,
             p_hid: float,
-            max_seq_len: int,
             tknzr: BaseTknzr,
             **kwargs: Optional[Dict],
     ):
         super().__init__()
 
+        if not isinstance(d_emb, int):
+            raise TypeError('`d_emb` must be an instance of `int`')
+        if not isinstance(d_ff, int):
+            raise TypeError('`d_ff` must be an instance of `int`')
         if not isinstance(n_head, int):
             raise TypeError('`n_head` must be an instance of `int`')
         if not isinstance(max_seq_len, int):
             raise TypeError('`max_seq_len` must be an instance of `int`')
+        if not isinstance(n_hid_lyr, int):
+            raise TypeError('`n_hid_lyr` must be an instance of `int`')
+        if not isinstance(p_emb, float):
+            raise TypeError('`p_emb` must be an instance of `float`')
+        if not isinstance(p_hid, float):
+            raise TypeError('`p_hid` must be an instance of `float`')
         if d_emb % n_head != 0:
             raise ValueError('`d_emb` must be divisible by `n_head`.')
 
@@ -553,7 +563,7 @@ class TransformerModel(BaseModel):
     def pred(self, batch_prev_tkids: torch.Tensor) -> torch.Tensor:
         r"""Next token prediction.
 
-        Use forward pass ouput logits to choose the most possible token id
+        Use forward pass output logits to choose the most possible token id
         from vocabulary as next token.
 
         Parameters
