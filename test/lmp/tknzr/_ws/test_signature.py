@@ -9,12 +9,10 @@ from lmp.tknzr._ws import WsTknzr
 
 
 def test_class():
-    r"""Ensure abstract class signature.
-
-    Subclass only need to implement method tknzr and dtknzr.
-    """
+    r"""Ensure class signature."""
     assert inspect.isclass(WsTknzr)
     assert not inspect.isabstract(WsTknzr)
+    assert issubclass(WsTknzr, BaseTknzr)
 
 
 def test_class_attribute():
