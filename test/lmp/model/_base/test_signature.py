@@ -11,10 +11,7 @@ from lmp.model._base import BaseModel
 
 
 def test_class():
-    r"""Ensure abstract class signature.
-
-    Subclass only need to implement method forward, loss_fn and pred.
-    """
+    r"""Ensure abstract class signature."""
     assert inspect.isclass(BaseModel)
     assert inspect.isabstract(BaseModel)
 

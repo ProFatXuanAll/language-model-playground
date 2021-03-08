@@ -10,9 +10,10 @@ from lmp.tknzr._base import BaseTknzr
 
 
 def test_class():
-    r"""Subclass only need to implement method __init__.
-    """
+    r"""Ensure class signature."""
     assert inspect.isclass(GRUModel)
+    assert not inspect.isabstract(GRUModel)
+    assert issubclass(GRUModel, BaseModel)
 
 
 def test_class_attribute():

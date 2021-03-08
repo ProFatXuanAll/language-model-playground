@@ -8,14 +8,18 @@ import torch
 
 from lmp.model._base import BaseModel
 from lmp.model._res_rnn import ResRNNBlock, ResRNNModel
+from lmp.model._rnn import RNNModel
 from lmp.tknzr._base import BaseTknzr
 
 
 def test_class():
-    r"""Subclass only need to implement method __init__.
-    """
-    assert inspect.isclass(ResRNNBlock)
+    r"""Ensure class signature."""
     assert inspect.isclass(ResRNNModel)
+    assert not inspect.isabstract(ResRNNModel)
+    assert issubclass(ResRNNModel, RNNModel)
+    assert inspect.isclass(ResRNNBlock)
+    assert not inspect.isabstract(ResRNNBlock)
+    assert issubclass(ResRNNBlock, torch.nn.Module)
 
 
 def test_class_attribute():

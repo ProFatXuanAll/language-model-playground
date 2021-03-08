@@ -14,6 +14,7 @@ def test_class():
     Subclass only need to implement method tknzr and dtknzr.
     """
     assert inspect.isclass(CharTknzr)
+    assert not inspect.isabstract(CharTknzr)
 
 
 def test_class_attribute():

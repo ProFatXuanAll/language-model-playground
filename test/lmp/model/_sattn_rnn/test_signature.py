@@ -5,17 +5,22 @@ from inspect import Parameter, Signature
 from typing import Dict, Optional
 
 import torch
+import torch.nn as nn
 
 from lmp.model._base import BaseModel
+from lmp.model._rnn import RNNModel
 from lmp.model._sattn_rnn import SAttnRNNBlock, SAttnRNNModel
 from lmp.tknzr._base import BaseTknzr
 
 
 def test_class():
-    r"""Subclass only need to implement method __init__.
-    """
+    r"""Ensure class signature."""
     assert inspect.isclass(SAttnRNNBlock)
+    assert not inspect.isabstract(SAttnRNNBlock)
+    assert issubclass(SAttnRNNBlock, nn.Module)
     assert inspect.isclass(SAttnRNNModel)
+    assert not inspect.isabstract(SAttnRNNModel)
+    assert issubclass(SAttnRNNModel, RNNModel)
 
 
 def test_class_attribute():

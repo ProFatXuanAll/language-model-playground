@@ -6,14 +6,20 @@ from typing import Dict, Optional
 
 from lmp.model._base import BaseModel
 from lmp.model._res_sattn_gru import ResSAttnGRUBlock, ResSAttnGRUModel
+from lmp.model._res_sattn_rnn import ResSAttnRNNBlock, ResSAttnRNNModel
+from lmp.model._sattn_rnn import SAttnRNNBlock
 from lmp.tknzr._base import BaseTknzr
 
 
 def test_class():
-    r"""Subclass only need to implement method __init__.
-    """
+    r"""Ensure class signature."""
     assert inspect.isclass(ResSAttnGRUBlock)
+    assert not inspect.isabstract(ResSAttnGRUBlock)
+    assert issubclass(ResSAttnGRUBlock, ResSAttnRNNBlock)
+    assert issubclass(ResSAttnGRUBlock, SAttnRNNBlock)
     assert inspect.isclass(ResSAttnGRUModel)
+    assert not inspect.isabstract(ResSAttnGRUModel)
+    assert issubclass(ResSAttnGRUModel, ResSAttnRNNModel)
 
 
 def test_class_attribute():

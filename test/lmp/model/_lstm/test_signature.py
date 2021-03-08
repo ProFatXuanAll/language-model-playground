@@ -10,9 +10,10 @@ from lmp.tknzr._base import BaseTknzr
 
 
 def test_class():
-    r"""Subclass only need to implement method __init__.
-    """
+    r"""Ensure class signature."""
     assert inspect.isclass(LSTMModel)
+    assert not inspect.isabstract(LSTMModel)
+    assert issubclass(LSTMModel, BaseModel)
 
 
 def test_class_attribute():

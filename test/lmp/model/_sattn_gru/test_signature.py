@@ -5,15 +5,19 @@ from inspect import Parameter, Signature
 from typing import Dict, Optional
 
 from lmp.model._base import BaseModel
-from lmp.model._sattn_gru import SAttnGRUBlock, SAttnGRUModel
+from lmp.model._sattn_gru import (SAttnGRUBlock, SAttnGRUModel, SAttnRNNBlock,
+                                  SAttnRNNModel)
 from lmp.tknzr._base import BaseTknzr
 
 
 def test_class():
-    r"""Subclass only need to implement method __init__.
-    """
+    r"""Ensure class signature."""
     assert inspect.isclass(SAttnGRUBlock)
+    assert not inspect.isabstract(SAttnGRUBlock)
+    assert issubclass(SAttnGRUBlock, SAttnRNNBlock)
     assert inspect.isclass(SAttnGRUModel)
+    assert not inspect.isabstract(SAttnGRUModel)
+    assert issubclass(SAttnGRUModel, SAttnRNNModel)
 
 
 def test_class_attribute():
