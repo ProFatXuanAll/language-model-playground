@@ -12,16 +12,20 @@ from lmp.model._base import BaseModel
 def subclss_model_clss() -> Type[BaseModel]:
     r"""Simple ``BaseModel`` subclass."""
     class SubclssModel(BaseModel):
-        r"""Only implement ``tknz`` and ``dtknz``."""
+        r"""Only implement ``forward`` and ``loss_fn`` and ``pred``."""
 
         def forward(self, batch_prev_tkids: torch.Tensor) -> torch.Tensor:
-            return ''.join(batch_prev_tkids)
+            return torch.zeros(
+                batch_prev_tkids.size(0),
+                batch_prev_tkids.size(1),
+                100
+            )
 
         def loss_fn(
                 self,
                 batch_next_tkids: torch.Tensor,
                 batch_prev_tkids: torch.Tensor,) -> torch.Tensor:
-            return ''.join(batch_prev_tkids)
+            return torch.zeros(1)
 
         def pred(self, batch_prev_tkids: torch.Tensor) -> torch.Tensor:
             return ''.join(batch_prev_tkids)

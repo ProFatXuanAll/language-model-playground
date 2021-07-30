@@ -99,6 +99,12 @@ def test_inherent_method():
     )
 
     assert (
+        inspect.signature(BaseModel.load)
+        ==
+        inspect.signature(LSTMModel.load)
+    )
+
+    assert (
         inspect.signature(BaseModel.loss_fn)
         ==
         inspect.signature(LSTMModel.loss_fn)
@@ -120,12 +126,6 @@ def test_inherent_method():
         inspect.signature(BaseModel.save)
         ==
         inspect.signature(LSTMModel.save)
-    )
-
-    assert (
-        inspect.signature(BaseModel.load)
-        ==
-        inspect.signature(LSTMModel.load)
     )
 
     assert (

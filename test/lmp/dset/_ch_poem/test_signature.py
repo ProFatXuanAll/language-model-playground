@@ -35,6 +35,12 @@ def test_class_attribute():
 def test_inherent_method():
     r'''Ensure inherent methods' signature are the same as base class.'''
     assert (
+        inspect.signature(BaseDset.download)
+        ==
+        inspect.signature(ChPoemDset.download)
+    )
+
+    assert (
         inspect.signature(BaseDset.__getitem__)
         ==
         inspect.signature(ChPoemDset.__getitem__)
@@ -56,10 +62,4 @@ def test_inherent_method():
         inspect.signature(BaseDset.__len__)
         ==
         inspect.signature(ChPoemDset.__len__)
-    )
-
-    assert (
-        inspect.signature(BaseDset.download)
-        ==
-        inspect.signature(ChPoemDset.download)
     )

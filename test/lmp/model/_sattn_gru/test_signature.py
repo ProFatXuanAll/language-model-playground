@@ -134,6 +134,13 @@ def test_inherent_method():
         ==
         inspect.signature(SAttnGRUModel.forward)
     )
+
+    assert (
+        inspect.signature(BaseModel.load)
+        ==
+        inspect.signature(SAttnGRUModel.load)
+    )
+
     assert (
         inspect.signature(BaseModel.loss_fn)
         ==
@@ -156,12 +163,6 @@ def test_inherent_method():
         inspect.signature(BaseModel.save)
         ==
         inspect.signature(SAttnGRUModel.save)
-    )
-
-    assert (
-        inspect.signature(BaseModel.load)
-        ==
-        inspect.signature(SAttnGRUModel.load)
     )
 
     assert (

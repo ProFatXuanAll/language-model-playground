@@ -19,7 +19,7 @@ def test_class_attribute():
     r"""Ensure class attributes' signature."""
     print(get_type_hints(TopKInfer))
     assert get_type_hints(TopKInfer) == get_type_hints(BaseInfer)
-    assert TopKInfer.hard_max_seq_len == 512
+    assert TopKInfer.hard_max_seq_len == BaseInfer.hard_max_seq_len
     assert TopKInfer.infer_name == 'top-k'
 
 

@@ -31,6 +31,12 @@ def test_class_attribute():
 def test_inherent_method():
     r'''Ensure inherent methods' signature are the same as base class.'''
     assert (
+        inspect.signature(BaseDset.download)
+        ==
+        inspect.signature(WikiText2Dset.download)
+    )
+
+    assert (
         inspect.signature(BaseDset.__getitem__)
         ==
         inspect.signature(WikiText2Dset.__getitem__)
@@ -52,10 +58,4 @@ def test_inherent_method():
         inspect.signature(BaseDset.__len__)
         ==
         inspect.signature(WikiText2Dset.__len__)
-    )
-
-    assert (
-        inspect.signature(BaseDset.download)
-        ==
-        inspect.signature(WikiText2Dset.download)
     )

@@ -127,6 +127,13 @@ def test_inherent_method():
         ==
         inspect.signature(ResSAttnRNNModel.forward)
     )
+
+    assert (
+        inspect.signature(BaseModel.load)
+        ==
+        inspect.signature(ResSAttnRNNModel.load)
+    )
+
     assert (
         inspect.signature(BaseModel.loss_fn)
         ==
@@ -149,11 +156,6 @@ def test_inherent_method():
         inspect.signature(BaseModel.save)
         ==
         inspect.signature(ResSAttnRNNModel.save)
-    )
-    assert (
-        inspect.signature(BaseModel.load)
-        ==
-        inspect.signature(ResSAttnRNNModel.load)
     )
 
     assert (
