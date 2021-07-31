@@ -22,9 +22,10 @@ def subclss_model_clss() -> Type[BaseModel]:
             )
 
         def loss_fn(
-                self,
-                batch_next_tkids: torch.Tensor,
-                batch_prev_tkids: torch.Tensor,) -> torch.Tensor:
+            self,
+            batch_next_tkids: torch.Tensor,
+            batch_prev_tkids: torch.Tensor,
+        ) -> torch.Tensor:
             return torch.zeros(1)
 
         def pred(self, batch_prev_tkids: torch.Tensor) -> torch.Tensor:

@@ -2,7 +2,6 @@ r"""Test :py:class:`lmp.dset.ChPoemDset` signature."""
 
 import inspect
 from inspect import Parameter, Signature
-from typing import Optional
 
 from lmp.dset.util import download, norm, pad_to_max, trunc_to_max
 
@@ -40,6 +39,7 @@ def test_function():
         ],
         return_annotation=str,
     )
+
     assert inspect.isfunction(trunc_to_max)
     assert inspect.signature(trunc_to_max) == Signature(
         parameters=[
@@ -52,7 +52,6 @@ def test_function():
                 name='max_seq_len',
                 kind=Parameter.KEYWORD_ONLY,
                 default=-1,
-                annotation=Optional[int],
             ),
         ],
     )
@@ -74,7 +73,6 @@ def test_function():
                 name='max_seq_len',
                 kind=Parameter.KEYWORD_ONLY,
                 default=-1,
-                annotation=Optional[int],
             ),
         ],
     )

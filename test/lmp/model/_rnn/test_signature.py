@@ -1,6 +1,5 @@
 r"""Test :py:class:`lmp.model._rnn` signature."""
 
-import argparse
 import inspect
 from inspect import Parameter, Signature
 from typing import Dict, Optional
@@ -23,6 +22,7 @@ def test_class_attribute():
     r"""Ensure class attributes' signature."""
     assert isinstance(RNNModel.model_name, str)
     assert RNNModel.model_name == 'RNN'
+    assert RNNModel.file_name == 'model-{}.pt'
 
 
 def test_instance_method():
@@ -156,17 +156,10 @@ def test_static_method():
     r"""Ensure static methods' signature."""
     assert hasattr(RNNModel, 'train_parser')
     assert inspect.isfunction(RNNModel.train_parser)
-    assert inspect.signature(RNNModel.train_parser) == Signature(
-        parameters=[
-            Parameter(
-                name='parser',
-                kind=Parameter.POSITIONAL_OR_KEYWORD,
-                default=Parameter.empty,
-                annotation=argparse.ArgumentParser,
-            ),
-        ],
-        return_annotation=None,
-    )
+    assert (inspect.signature(RNNModel.train_parser)
+            ==
+            inspect.signature(BaseModel.train_parser)
+            )
 
 
 def test_inherent_method():

@@ -4,7 +4,6 @@ import inspect
 from inspect import Parameter, Signature
 from typing import Dict, Optional
 
-from lmp.model._base import BaseModel
 from lmp.model._res_gru import ResGRUBlock, ResGRUModel
 from lmp.model._res_rnn import ResRNNBlock, ResRNNModel
 from lmp.tknzr._base import BaseTknzr
@@ -24,6 +23,7 @@ def test_class_attribute():
     r"""Ensure class attributes' signature."""
     assert isinstance(ResGRUModel.model_name, str)
     assert ResGRUModel.model_name == 'res-GRU'
+    assert ResGRUModel.file_name == 'model-{}.pt'
 
 
 def test_instance_method():
@@ -132,42 +132,42 @@ def test_instance_method():
 def test_inherent_method():
     r'''Ensure inherent methods' signature are same as base class.'''
     assert (
-        inspect.signature(BaseModel.forward)
+        inspect.signature(ResRNNModel.forward)
         ==
         inspect.signature(ResGRUModel.forward)
     )
 
     assert (
-        inspect.signature(BaseModel.load)
+        inspect.signature(ResRNNModel.load)
         ==
         inspect.signature(ResGRUModel.load)
     )
 
     assert (
-        inspect.signature(BaseModel.loss_fn)
+        inspect.signature(ResRNNModel.loss_fn)
         ==
         inspect.signature(ResGRUModel.loss_fn)
     )
 
     assert (
-        inspect.signature(BaseModel.pred)
+        inspect.signature(ResRNNModel.pred)
         ==
         inspect.signature(ResGRUModel.pred)
     )
     assert (
-        inspect.signature(BaseModel.ppl)
+        inspect.signature(ResRNNModel.ppl)
         ==
         inspect.signature(ResGRUModel.ppl)
     )
 
     assert (
-        inspect.signature(BaseModel.save)
+        inspect.signature(ResRNNModel.save)
         ==
         inspect.signature(ResGRUModel.save)
     )
 
     assert (
-        inspect.signature(BaseModel.train_parser)
+        inspect.signature(ResRNNModel.train_parser)
         ==
         inspect.signature(ResGRUModel.train_parser)
     )

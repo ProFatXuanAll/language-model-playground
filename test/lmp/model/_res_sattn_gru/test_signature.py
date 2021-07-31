@@ -4,7 +4,6 @@ import inspect
 from inspect import Parameter, Signature
 from typing import Dict, Optional
 
-from lmp.model._base import BaseModel
 from lmp.model._res_sattn_gru import ResSAttnGRUBlock, ResSAttnGRUModel
 from lmp.model._res_sattn_rnn import ResSAttnRNNBlock, ResSAttnRNNModel
 from lmp.model._sattn_rnn import SAttnRNNBlock
@@ -26,6 +25,7 @@ def test_class_attribute():
     r"""Ensure class attributes' signature."""
     assert isinstance(ResSAttnGRUModel.model_name, str)
     assert ResSAttnGRUModel.model_name == 'res-sattn-GRU'
+    assert ResSAttnGRUModel.file_name == 'model-{}.pt'
 
 
 def test_instance_method():
@@ -134,43 +134,43 @@ def test_instance_method():
 def test_inherent_method():
     r'''Ensure inherent methods' signature are same as base class.'''
     assert (
-        inspect.signature(BaseModel.forward)
+        inspect.signature(ResSAttnRNNModel.forward)
         ==
         inspect.signature(ResSAttnGRUModel.forward)
     )
 
     assert (
-        inspect.signature(BaseModel.load)
+        inspect.signature(ResSAttnRNNModel.load)
         ==
         inspect.signature(ResSAttnGRUModel.load)
     )
 
     assert (
-        inspect.signature(BaseModel.loss_fn)
+        inspect.signature(ResSAttnRNNModel.loss_fn)
         ==
         inspect.signature(ResSAttnGRUModel.loss_fn)
     )
 
     assert (
-        inspect.signature(BaseModel.pred)
+        inspect.signature(ResSAttnRNNModel.pred)
         ==
         inspect.signature(ResSAttnGRUModel.pred)
     )
 
     assert (
-        inspect.signature(BaseModel.ppl)
+        inspect.signature(ResSAttnRNNModel.ppl)
         ==
         inspect.signature(ResSAttnGRUModel.ppl)
     )
 
     assert (
-        inspect.signature(BaseModel.save)
+        inspect.signature(ResSAttnRNNModel.save)
         ==
         inspect.signature(ResSAttnGRUModel.save)
     )
 
     assert (
-        inspect.signature(BaseModel.train_parser)
+        inspect.signature(ResSAttnRNNModel.train_parser)
         ==
         inspect.signature(ResSAttnGRUModel.train_parser)
     )

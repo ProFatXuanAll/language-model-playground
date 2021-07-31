@@ -4,7 +4,6 @@ import inspect
 from inspect import Parameter, Signature
 from typing import Dict, Optional
 
-from lmp.model._base import BaseModel
 from lmp.model._res_sattn_lstm import ResSAttnLSTMBlock, ResSAttnLSTMModel
 from lmp.model._res_sattn_rnn import ResSAttnRNNBlock, ResSAttnRNNModel
 from lmp.model._sattn_rnn import SAttnRNNBlock
@@ -26,6 +25,7 @@ def test_class_attribute():
     r"""Ensure class attributes' signature."""
     assert isinstance(ResSAttnLSTMModel.model_name, str)
     assert ResSAttnLSTMModel.model_name == 'res-sattn-LSTM'
+    assert ResSAttnLSTMModel.file_name == 'model-{}.pt'
 
 
 def test_instance_method():
@@ -134,43 +134,43 @@ def test_instance_method():
 def test_inherent_method():
     r'''Ensure inherent methods' signature are same as base class.'''
     assert (
-        inspect.signature(BaseModel.forward)
+        inspect.signature(ResSAttnRNNModel.forward)
         ==
         inspect.signature(ResSAttnLSTMModel.forward)
     )
 
     assert (
-        inspect.signature(BaseModel.load)
+        inspect.signature(ResSAttnRNNModel.load)
         ==
         inspect.signature(ResSAttnLSTMModel.load)
     )
 
     assert (
-        inspect.signature(BaseModel.loss_fn)
+        inspect.signature(ResSAttnRNNModel.loss_fn)
         ==
         inspect.signature(ResSAttnLSTMModel.loss_fn)
     )
 
     assert (
-        inspect.signature(BaseModel.pred)
+        inspect.signature(ResSAttnRNNModel.pred)
         ==
         inspect.signature(ResSAttnLSTMModel.pred)
     )
 
     assert (
-        inspect.signature(BaseModel.ppl)
+        inspect.signature(ResSAttnRNNModel.ppl)
         ==
         inspect.signature(ResSAttnLSTMModel.ppl)
     )
 
     assert (
-        inspect.signature(BaseModel.save)
+        inspect.signature(ResSAttnRNNModel.save)
         ==
         inspect.signature(ResSAttnLSTMModel.save)
     )
 
     assert (
-        inspect.signature(BaseModel.train_parser)
+        inspect.signature(ResSAttnRNNModel.train_parser)
         ==
         inspect.signature(ResSAttnLSTMModel.train_parser)
     )

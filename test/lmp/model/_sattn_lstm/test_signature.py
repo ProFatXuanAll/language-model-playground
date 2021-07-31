@@ -4,7 +4,6 @@ import inspect
 from inspect import Parameter, Signature
 from typing import Dict, Optional
 
-from lmp.model._base import BaseModel
 from lmp.model._sattn_lstm import SAttnLSTMBlock, SAttnLSTMModel
 from lmp.model._sattn_rnn import SAttnRNNBlock, SAttnRNNModel
 from lmp.tknzr._base import BaseTknzr
@@ -24,6 +23,7 @@ def test_class_attribute():
     r"""Ensure class attributes' signature."""
     assert isinstance(SAttnLSTMModel.model_name, str)
     assert SAttnLSTMModel.model_name == 'sattn-LSTM'
+    assert SAttnLSTMModel.file_name == 'model-{}.pt'
 
 
 def test_instance_method():
@@ -130,43 +130,43 @@ def test_instance_method():
 def test_inherent_method():
     r'''Ensure inherent methods' signature are same as base class.'''
     assert (
-        inspect.signature(BaseModel.forward)
+        inspect.signature(SAttnRNNModel.forward)
         ==
         inspect.signature(SAttnLSTMModel.forward)
     )
 
     assert (
-        inspect.signature(BaseModel.load)
+        inspect.signature(SAttnRNNModel.load)
         ==
         inspect.signature(SAttnLSTMModel.load)
     )
 
     assert (
-        inspect.signature(BaseModel.loss_fn)
+        inspect.signature(SAttnRNNModel.loss_fn)
         ==
         inspect.signature(SAttnLSTMModel.loss_fn)
     )
 
     assert (
-        inspect.signature(BaseModel.pred)
+        inspect.signature(SAttnRNNModel.pred)
         ==
         inspect.signature(SAttnLSTMModel.pred)
     )
 
     assert (
-        inspect.signature(BaseModel.ppl)
+        inspect.signature(SAttnRNNModel.ppl)
         ==
         inspect.signature(SAttnLSTMModel.ppl)
     )
 
     assert (
-        inspect.signature(BaseModel.save)
+        inspect.signature(SAttnRNNModel.save)
         ==
         inspect.signature(SAttnLSTMModel.save)
     )
 
     assert (
-        inspect.signature(BaseModel.train_parser)
+        inspect.signature(SAttnRNNModel.train_parser)
         ==
         inspect.signature(SAttnLSTMModel.train_parser)
     )

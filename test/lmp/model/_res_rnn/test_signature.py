@@ -26,6 +26,7 @@ def test_class_attribute():
     r"""Ensure class attributes' signature."""
     assert isinstance(ResRNNModel.model_name, str)
     assert ResRNNModel.model_name == 'res-RNN'
+    assert ResRNNModel.file_name == 'model-{}.pt'
 
 
 def test_instance_method():

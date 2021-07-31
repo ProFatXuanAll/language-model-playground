@@ -4,7 +4,6 @@ import inspect
 from inspect import Parameter, Signature
 from typing import Dict, Optional
 
-from lmp.model._base import BaseModel
 from lmp.model._sattn_gru import (SAttnGRUBlock, SAttnGRUModel, SAttnRNNBlock,
                                   SAttnRNNModel)
 from lmp.tknzr._base import BaseTknzr
@@ -24,6 +23,7 @@ def test_class_attribute():
     r"""Ensure class attributes' signature."""
     assert isinstance(SAttnGRUModel.model_name, str)
     assert SAttnGRUModel.model_name == 'sattn-GRU'
+    assert SAttnGRUModel.file_name == 'model-{}.pt'
 
 
 def test_instance_method():
@@ -130,43 +130,43 @@ def test_instance_method():
 def test_inherent_method():
     r'''Ensure inherent methods' signature are same as base class.'''
     assert (
-        inspect.signature(BaseModel.forward)
+        inspect.signature(SAttnRNNModel.forward)
         ==
         inspect.signature(SAttnGRUModel.forward)
     )
 
     assert (
-        inspect.signature(BaseModel.load)
+        inspect.signature(SAttnRNNModel.load)
         ==
         inspect.signature(SAttnGRUModel.load)
     )
 
     assert (
-        inspect.signature(BaseModel.loss_fn)
+        inspect.signature(SAttnRNNModel.loss_fn)
         ==
         inspect.signature(SAttnGRUModel.loss_fn)
     )
 
     assert (
-        inspect.signature(BaseModel.pred)
+        inspect.signature(SAttnRNNModel.pred)
         ==
         inspect.signature(SAttnGRUModel.pred)
     )
 
     assert (
-        inspect.signature(BaseModel.ppl)
+        inspect.signature(SAttnRNNModel.ppl)
         ==
         inspect.signature(SAttnGRUModel.ppl)
     )
 
     assert (
-        inspect.signature(BaseModel.save)
+        inspect.signature(SAttnRNNModel.save)
         ==
         inspect.signature(SAttnGRUModel.save)
     )
 
     assert (
-        inspect.signature(BaseModel.train_parser)
+        inspect.signature(SAttnRNNModel.train_parser)
         ==
         inspect.signature(SAttnGRUModel.train_parser)
     )

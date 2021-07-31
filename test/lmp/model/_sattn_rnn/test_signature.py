@@ -7,7 +7,6 @@ from typing import Dict, Optional
 import torch
 import torch.nn as nn
 
-from lmp.model._base import BaseModel
 from lmp.model._rnn import RNNModel
 from lmp.model._sattn_rnn import SAttnRNNBlock, SAttnRNNModel
 from lmp.tknzr._base import BaseTknzr
@@ -27,6 +26,7 @@ def test_class_attribute():
     r"""Ensure class attributes' signature."""
     assert isinstance(SAttnRNNModel.model_name, str)
     assert SAttnRNNModel.model_name == 'sattn-RNN'
+    assert SAttnRNNModel.file_name == 'model-{}.pt'
 
 
 def test_instance_method():
@@ -194,43 +194,43 @@ def test_instance_method():
 def test_inherent_method():
     r'''Ensure inherent methods' signature are same as base class.'''
     assert (
-        inspect.signature(BaseModel.forward)
+        inspect.signature(RNNModel.forward)
         ==
         inspect.signature(SAttnRNNModel.forward)
     )
 
     assert (
-        inspect.signature(BaseModel.load)
+        inspect.signature(RNNModel.load)
         ==
         inspect.signature(SAttnRNNModel.load)
     )
 
     assert (
-        inspect.signature(BaseModel.loss_fn)
+        inspect.signature(RNNModel.loss_fn)
         ==
         inspect.signature(SAttnRNNModel.loss_fn)
     )
 
     assert (
-        inspect.signature(BaseModel.pred)
+        inspect.signature(RNNModel.pred)
         ==
         inspect.signature(SAttnRNNModel.pred)
     )
 
     assert (
-        inspect.signature(BaseModel.ppl)
+        inspect.signature(RNNModel.ppl)
         ==
         inspect.signature(SAttnRNNModel.ppl)
     )
 
     assert (
-        inspect.signature(BaseModel.save)
+        inspect.signature(RNNModel.save)
         ==
         inspect.signature(SAttnRNNModel.save)
     )
 
     assert (
-        inspect.signature(BaseModel.train_parser)
+        inspect.signature(RNNModel.train_parser)
         ==
         inspect.signature(SAttnRNNModel.train_parser)
     )
