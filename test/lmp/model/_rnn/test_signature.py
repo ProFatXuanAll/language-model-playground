@@ -22,7 +22,7 @@ def test_class_attribute():
     r"""Ensure class attributes' signature."""
     assert isinstance(RNNModel.model_name, str)
     assert RNNModel.model_name == 'RNN'
-    assert RNNModel.file_name == 'model-{}.pt'
+    assert RNNModel.file_name == BaseModel.file_name
 
 
 def test_instance_method():
@@ -91,117 +91,37 @@ def test_instance_method():
         ],
     )
 
-    assert hasattr(RNNModel, 'forward')
-    assert inspect.signature(RNNModel.forward) == Signature(
-        parameters=[
-            Parameter(
-                name='self',
-                kind=Parameter.POSITIONAL_OR_KEYWORD,
-                default=Parameter.empty,
-            ),
-            Parameter(
-                name='batch_prev_tkids',
-                kind=Parameter.POSITIONAL_OR_KEYWORD,
-                annotation=torch.Tensor,
-                default=Parameter.empty,
-            ),
-        ],
-        return_annotation=torch.Tensor,
-    )
-
-    assert hasattr(RNNModel, 'loss_fn')
-    assert inspect.signature(RNNModel.loss_fn) == Signature(
-        parameters=[
-            Parameter(
-                name='self',
-                kind=Parameter.POSITIONAL_OR_KEYWORD,
-                default=Parameter.empty,
-            ),
-            Parameter(
-                name='batch_next_tkids',
-                kind=Parameter.POSITIONAL_OR_KEYWORD,
-                annotation=torch.Tensor,
-                default=Parameter.empty,
-            ),
-            Parameter(
-                name='batch_prev_tkids',
-                kind=Parameter.POSITIONAL_OR_KEYWORD,
-                annotation=torch.Tensor,
-                default=Parameter.empty,
-            ),
-        ],
-        return_annotation=torch.Tensor,
-    )
-
-    assert hasattr(RNNModel, 'pred')
-    assert inspect.signature(RNNModel.pred) == Signature(
-        parameters=[
-            Parameter(
-                name='self',
-                kind=Parameter.POSITIONAL_OR_KEYWORD,
-                default=Parameter.empty,
-            ),
-            Parameter(
-                name='batch_prev_tkids',
-                kind=Parameter.POSITIONAL_OR_KEYWORD,
-                annotation=torch.Tensor,
-                default=Parameter.empty,
-            ),
-        ],
-        return_annotation=torch.Tensor,
-    )
-
-
-def test_static_method():
-    r"""Ensure static methods' signature."""
-    assert hasattr(RNNModel, 'train_parser')
-    assert inspect.isfunction(RNNModel.train_parser)
-    assert (inspect.signature(RNNModel.train_parser)
-            ==
-            inspect.signature(BaseModel.train_parser)
-            )
-
 
 def test_inherent_method():
     r'''Ensure inherent methods' signature are same as base class.'''
     assert (
-        inspect.signature(BaseModel.forward)
-        ==
         inspect.signature(RNNModel.forward)
-    )
-
-    assert (
-        inspect.signature(BaseModel.load)
         ==
+        inspect.signature(BaseModel.forward)
+    )
+    assert (
         inspect.signature(RNNModel.load)
-    )
-
-    assert (
-        inspect.signature(BaseModel.loss_fn)
         ==
+        inspect.signature(BaseModel.load)
+    )
+    assert (
         inspect.signature(RNNModel.loss_fn)
-    )
-
-    assert (
-        inspect.signature(BaseModel.pred)
         ==
+        inspect.signature(BaseModel.loss_fn)
+    )
+    assert (
         inspect.signature(RNNModel.pred)
-    )
-
-    assert (
-        inspect.signature(BaseModel.ppl)
         ==
+        inspect.signature(BaseModel.pred)
+    )
+    assert (
         inspect.signature(RNNModel.ppl)
-    )
-
-    assert (
-        inspect.signature(BaseModel.save)
         ==
-        inspect.signature(RNNModel.save)
+        inspect.signature(BaseModel.ppl)
     )
-
+    assert RNNModel.save == BaseModel.save
     assert (
-        inspect.signature(BaseModel.train_parser)
-        ==
         inspect.signature(RNNModel.train_parser)
+        ==
+        inspect.signature(BaseModel.train_parser)
     )

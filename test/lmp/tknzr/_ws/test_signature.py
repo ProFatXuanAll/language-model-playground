@@ -17,119 +17,46 @@ def test_class():
 
 def test_class_attribute():
     r"""Ensure class attributes' signature."""
+    assert WsTknzr.bos_tk == BaseTknzr.bos_tk
+    assert WsTknzr.bos_tkid == BaseTknzr.bos_tkid
+    assert WsTknzr.eos_tk == BaseTknzr.eos_tk
+    assert WsTknzr.eos_tkid == BaseTknzr.eos_tkid
+    assert WsTknzr.file_name == BaseTknzr.file_name
+    assert WsTknzr.pad_tk == BaseTknzr.pad_tk
+    assert WsTknzr.pad_tkid == BaseTknzr.pad_tkid
     assert isinstance(WsTknzr.tknzr_name, str)
     assert WsTknzr.tknzr_name == 'whitespace'
-
-
-def test_instance_method():
-    r"""Ensure instance methods' signature."""
-    assert hasattr(WsTknzr, 'tknz')
-    assert inspect.signature(WsTknzr.tknz) == Signature(
-        parameters=[
-            Parameter(
-                name='self',
-                kind=Parameter.POSITIONAL_OR_KEYWORD,
-                default=Parameter.empty,
-            ),
-            Parameter(
-                name='txt',
-                kind=Parameter.POSITIONAL_OR_KEYWORD,
-                default=Parameter.empty,
-                annotation=str,
-            ),
-        ],
-        return_annotation=List[str],
-    )
-
-    assert hasattr(WsTknzr, 'dtknz')
-    assert inspect.signature(WsTknzr.dtknz) == Signature(
-        parameters=[
-            Parameter(
-                name='self',
-                kind=Parameter.POSITIONAL_OR_KEYWORD,
-                default=Parameter.empty,
-            ),
-            Parameter(
-                name='tks',
-                kind=Parameter.POSITIONAL_OR_KEYWORD,
-                default=Parameter.empty,
-                annotation=Sequence[str],
-            ),
-        ],
-        return_annotation=str,
-    )
+    assert WsTknzr.unk_tk == BaseTknzr.unk_tk
+    assert WsTknzr.unk_tkid == BaseTknzr.unk_tkid
 
 
 def test_inherent_method():
     r'''Ensure inherent methods are same as baseclass.'''
     assert (
-        inspect.signature(BaseTknzr.__init__)
-        ==
         inspect.signature(WsTknzr.__init__)
-    )
-
-    assert (
-        inspect.signature(BaseTknzr.save)
         ==
-        inspect.signature(WsTknzr.save)
+        inspect.signature(BaseTknzr.__init__)
     )
-
+    assert WsTknzr.save == BaseTknzr.save
     assert (
-        inspect.signature(BaseTknzr.load)
-        ==
         inspect.signature(WsTknzr.load)
-    )
-
-    assert (
-        inspect.signature(BaseTknzr.norm)
         ==
-        inspect.signature(WsTknzr.norm)
+        inspect.signature(BaseTknzr.load)
     )
-
+    assert WsTknzr.norm == BaseTknzr.norm
     assert (
-        inspect.signature(BaseTknzr.tknz)
-        ==
         inspect.signature(WsTknzr.tknz)
-    )
-
-    assert (
-        inspect.signature(BaseTknzr.dtknz)
         ==
+        inspect.signature(BaseTknzr.tknz)
+    )
+    assert (
         inspect.signature(WsTknzr.dtknz)
-    )
-
-    assert (
-        inspect.signature(BaseTknzr.enc)
         ==
-        inspect.signature(WsTknzr.enc)
+        inspect.signature(BaseTknzr.dtknz)
     )
-
-    assert (
-        inspect.signature(BaseTknzr.dec)
-        ==
-        inspect.signature(WsTknzr.dec)
-    )
-
-    assert (
-        inspect.signature(BaseTknzr.batch_enc)
-        ==
-        inspect.signature(WsTknzr.batch_enc)
-    )
-
-    assert (
-        inspect.signature(BaseTknzr.batch_dec)
-        ==
-        inspect.signature(WsTknzr.batch_dec)
-    )
-
-    assert (
-        inspect.signature(BaseTknzr.build_vocab)
-        ==
-        inspect.signature(WsTknzr.build_vocab)
-    )
-
-    assert (
-        inspect.signature(BaseTknzr.train_parser)
-        ==
-        inspect.signature(WsTknzr.train_parser)
-    )
+    assert WsTknzr.enc == BaseTknzr.enc
+    assert WsTknzr.dec == BaseTknzr.dec
+    assert WsTknzr.batch_enc == BaseTknzr.batch_enc
+    assert WsTknzr.batch_dec == BaseTknzr.batch_dec
+    assert WsTknzr.build_vocab == BaseTknzr.build_vocab
+    assert WsTknzr.train_parser == BaseTknzr.train_parser

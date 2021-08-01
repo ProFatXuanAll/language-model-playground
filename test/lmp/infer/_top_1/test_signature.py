@@ -25,19 +25,13 @@ def test_class_attribute():
 def test_inherent_method():
     r'''Ensure inherent methods' signature are the same as base class.'''
     assert (
-        inspect.signature(BaseInfer.gen)
-        ==
-        inspect.signature(Top1Infer.gen)
-    )
-
-    assert (
-        inspect.signature(BaseInfer.__init__)
-        ==
         inspect.signature(Top1Infer.__init__)
-    )
-
-    assert (
-        inspect.signature(BaseInfer.infer_parser)
         ==
-        inspect.signature(Top1Infer.infer_parser)
+        inspect.signature(BaseInfer.__init__)
     )
+    assert (
+        inspect.signature(Top1Infer.gen)
+        ==
+        inspect.signature(BaseInfer.gen)
+    )
+    assert Top1Infer.infer_parser == BaseInfer.infer_parser

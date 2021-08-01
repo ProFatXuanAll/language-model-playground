@@ -29,7 +29,15 @@ def max_vocab(request) -> int:
 
 @pytest.fixture(params=[
     None,
-    {'[bos]': 0, '[eos]': 1, '[pad]': 2, '[unk]': 3, 'a': 4, 'b': 5, 'c': 6},
+    {
+        '[bos]': 0,
+        '[eos]': 1,
+        '[pad]': 2,
+        '[unk]': 3,
+        'a': 4,
+        'b': 5,
+        'c': 6,
+    },
 ])
 def tk2id(request) -> Union[None, Dict[str, int]]:
     r"""Tokenizer instance attribute ``tk2id``."""

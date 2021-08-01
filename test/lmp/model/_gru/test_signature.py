@@ -17,58 +17,24 @@ def test_class_attribute():
     r"""Ensure class attributes' signature."""
     assert isinstance(GRUModel.model_name, str)
     assert GRUModel.model_name == 'GRU'
-    assert GRUModel.file_name == 'model-{}.pt'
-
-
-def test_instance_method():
-    r"""Ensure instance methods' signature."""
-    assert hasattr(GRUModel, '__init__')
-    assert inspect.signature(
-        GRUModel.__init__) == inspect.signature(
-        RNNModel.__init__
-    )
+    assert GRUModel.file_name == RNNModel.file_name
 
 
 def test_inherent_method():
     r'''Ensure inherent methods' signature are same as base class.'''
     assert (
-        inspect.signature(RNNModel.forward)
+        inspect.signature(GRUModel.__init__)
         ==
-        inspect.signature(GRUModel.forward)
+        inspect.signature(RNNModel.__init__)
     )
-
+    assert GRUModel.forward == RNNModel.forward
     assert (
-        inspect.signature(RNNModel.load)
-        ==
         inspect.signature(GRUModel.load)
-    )
-
-    assert (
-        inspect.signature(RNNModel.loss_fn)
         ==
-        inspect.signature(GRUModel.loss_fn)
+        inspect.signature(RNNModel.load)
     )
-
-    assert (
-        inspect.signature(RNNModel.pred)
-        ==
-        inspect.signature(GRUModel.pred)
-    )
-
-    assert (
-        inspect.signature(RNNModel.ppl)
-        ==
-        inspect.signature(GRUModel.ppl)
-    )
-
-    assert (
-        inspect.signature(RNNModel.save)
-        ==
-        inspect.signature(GRUModel.save)
-    )
-
-    assert (
-        inspect.signature(RNNModel.train_parser)
-        ==
-        inspect.signature(GRUModel.train_parser)
-    )
+    assert GRUModel.loss_fn == RNNModel.loss_fn
+    assert GRUModel.pred == RNNModel.pred
+    assert GRUModel.ppl == RNNModel.ppl
+    assert GRUModel.save == RNNModel.save
+    assert GRUModel.train_parser == RNNModel.train_parser

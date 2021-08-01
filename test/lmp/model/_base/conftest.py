@@ -4,6 +4,7 @@ from typing import Type
 
 import pytest
 import torch
+import torch.nn.functional as F
 
 from lmp.model._base import BaseModel
 
@@ -15,10 +16,10 @@ def subclss_model_clss() -> Type[BaseModel]:
         r"""Only implement ``forward`` and ``loss_fn`` and ``pred``."""
 
         def forward(self, batch_prev_tkids: torch.Tensor) -> torch.Tensor:
-            return torch.zeros(
+            return torch.ones(
                 batch_prev_tkids.size(0),
                 batch_prev_tkids.size(1),
-                100
+                batch_prev_tkids.max() + 1,
             )
 
         def loss_fn(
@@ -26,10 +27,10 @@ def subclss_model_clss() -> Type[BaseModel]:
             batch_next_tkids: torch.Tensor,
             batch_prev_tkids: torch.Tensor,
         ) -> torch.Tensor:
-            return torch.zeros(1)
+            return torch.ones(1)
 
         def pred(self, batch_prev_tkids: torch.Tensor) -> torch.Tensor:
-            return ''.join(batch_prev_tkids)
+            return F.softmax(self(batch_prev_tkids), dim=-1)
 
     return SubclssModel
 
