@@ -17,7 +17,7 @@ from lmp.tknzr._char import CharTknzr
     ]
 )
 def test_tknz(test_input, expected):
-    r"""Perform tokenization on text."""
+    r"""Text must be tokenize to characters"""
 
     tknzr = CharTknzr(is_uncased=False, max_vocab=10, min_count=2)
     assert tknzr.tknz(test_input) == expected
@@ -37,7 +37,7 @@ def test_tknz(test_input, expected):
     ]
 )
 def test_dtknz(test_input, expected):
-    r"""Token must be joined to text."""
+    r"""Token must be joined by characters."""
 
     tknzr = CharTknzr(is_uncased=False, max_vocab=10, min_count=2)
     assert tknzr.dtknz(test_input) == expected
