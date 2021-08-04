@@ -14,7 +14,7 @@ def subclss_tknzr_clss() -> Type[BaseTknzr]:
         r"""Only implement ``tknz`` and ``dtknz``."""
 
         def tknz(self, txt: str) -> List[str]:
-            return [txt]
+            return txt.split(' ')
 
         def dtknz(self, tks: List[str]) -> str:
             return ''.join(tks)
