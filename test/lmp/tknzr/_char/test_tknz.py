@@ -8,6 +8,38 @@ from lmp.tknzr._char import CharTknzr
     [
         ('', []),
         (' ', []),
+        ('abc', ['a', 'b', 'c']),
+        ('Abc', ['a', 'b', 'c']),
+    ]
+)
+def test_cased(test_input, expected):
+    r"""Transform the token from Capital case to lower case"""
+
+    tknzr = CharTknzr(is_uncased=True, max_vocab=10, min_count=1)
+    assert tknzr.tknz(test_input) == expected
+
+
+@pytest.mark.parametrize(
+    "test_input,expected",
+    [
+        ('', []),
+        (' ', []),
+        ('abc', ['a', 'b', 'c']),
+        ('Abc', ['A', 'b', 'c']),
+    ]
+)
+def test_uncased(test_input, expected):
+    r"""Ignore the transformation from Capital case to lower case"""
+
+    tknzr = CharTknzr(is_uncased=False, max_vocab=10, min_count=1)
+    assert tknzr.tknz(test_input) == expected
+
+
+@pytest.mark.parametrize(
+    "test_input,expected",
+    [
+        ('', []),
+        (' ', []),
         ('123', ['1', '2', '3']),
         ('123  ', ['1', '2', '3']),
         (' 123', ['1', '2', '3']),
