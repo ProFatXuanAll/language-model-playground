@@ -37,11 +37,12 @@ def test_enc(test_input, expected):
         '哈': 9,
     }
 
-    tknz = CharTknzr(is_uncased=True,
-                     max_vocab=10,
-                     min_count=1,
-                     tk2id=tk2id,
-                     )
+    tknz = CharTknzr(
+                is_uncased=True,
+                max_vocab=-1,
+                min_count=1,
+                tk2id=tk2id,
+            )
 
     assert tknz.enc(test_input) == expected
 
@@ -71,11 +72,12 @@ def test_dec(test_input, expected):
         '哈': 9,
     }
 
-    tknz = CharTknzr(is_uncased=True,
-                     max_vocab=10,
-                     min_count=1,
-                     tk2id=tk2id,
-                     )
+    tknz = CharTknzr(
+                is_uncased=True,
+                max_vocab=-1,
+                min_count=1,
+                tk2id=tk2id,
+            )
 
     assert tknz.dec(test_input) == expected
 
@@ -108,11 +110,12 @@ def test_batch_enc(test_input, expected):
         '哈': 9,
     }
 
-    tknz = CharTknzr(is_uncased=True,
-                     max_vocab=10,
-                     min_count=1,
-                     tk2id=tk2id,
-                     )
+    tknz = CharTknzr(
+                is_uncased=True,
+                max_vocab=-1,
+                min_count=1,
+                tk2id=tk2id,
+            )
 
     assert tknz.batch_enc(test_input) == expected
 
@@ -142,10 +145,11 @@ def test_batch_dec(test_input, expected):
         '哈': 9,
     }
 
-    tknz = CharTknzr(is_uncased=True,
-                     max_vocab=10,
-                     min_count=1,
-                     tk2id=tk2id,
-                     )
+    tknz = CharTknzr(
+                is_uncased=True,
+                max_vocab=-1,
+                min_count=1,
+                tk2id=tk2id,
+            )
 
     assert tknz.batch_dec(test_input) == expected

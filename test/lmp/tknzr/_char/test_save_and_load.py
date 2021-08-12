@@ -21,7 +21,7 @@ def test_config_file_exist(
 
     tknzr = CharTknzr(
         is_uncased=True,
-        max_vocab=6,
+        max_vocab=-1,
         min_count=1,
     )
 
@@ -38,7 +38,7 @@ def test_config_file_format(
 
     tknzr = CharTknzr(
         is_uncased=True,
-        max_vocab=6,
+        max_vocab=-1,
         min_count=1,
     )
 
@@ -57,7 +57,7 @@ def test_load_result(
 
     tknzr = CharTknzr(
         is_uncased=True,
-        max_vocab=6,
+        max_vocab=-1,
         min_count=1,
     )
 

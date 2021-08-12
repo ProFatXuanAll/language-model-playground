@@ -1,7 +1,7 @@
 r"""Test build_vocab operation for tokenizer configuration.
 
 Test target:
-- :py:meth:`lmp.tknzr.WsTknzr.build_vocab`.
+- :py:meth:`lmp.tknzr.CharTknzr.build_vocab`.
 """
 import pytest
 
@@ -9,143 +9,211 @@ from lmp.tknzr._ws import WsTknzr
 
 
 @pytest.mark.parametrize(
-    "test_input,expected",
+    "parameters,test_input,expected",
     [
-        ('', {'[bos]': 0, '[eos]': 1, '[pad]': 2, '[unk]': 3}),
-        (' ', {'[bos]': 0, '[eos]': 1, '[pad]': 2, '[unk]': 3}),
-        ('a a b c', {
-            '[bos]': 0, '[eos]': 1, '[pad]': 2, '[unk]': 3,
-            'a': 4, 'b': 5, 'c': 6,
-        }),
-        ('a b c', {
-            '[bos]': 0, '[eos]': 1, '[pad]': 2, '[unk]': 3,
-            'a': 4, 'b': 5, 'c': 6,
-        }),
+        # Test empty vocabulary in gerneral case
+        (
+            (
+                True,
+                -1,
+                1,
+                None,
+            ),
+            (),
+            {
+                '[bos]': 0,
+                '[eos]': 1,
+                '[pad]': 2,
+                '[unk]': 3,
+            }
+        ),
+        # Test Chinese characters in gerneral case
+        (
+            (
+                True,
+                -1,
+                1,
+                None,
+            ),
+            ('哈 囉 世 界'),
+            {
+                '[bos]': 0,
+                '[eos]': 1,
+                '[pad]': 2,
+                '[unk]': 3,
+                '哈': 4,
+                '囉': 5,
+                '世': 6,
+                '界': 7,
+            }
+        ),
+        # Test frequency in genral case
+        (
+            (
+                True,
+                -1,
+                1,
+                None,
+            ),
+            (
+                'cc b a',
+                'cc b',
+                'cc',
+            ),
+            {
+                '[bos]': 0,
+                '[eos]': 1,
+                '[pad]': 2,
+                '[unk]': 3,
+                'cc': 4,
+                'b': 5,
+                'a': 6,
+            }
+        ),
+        # Test multiple whitespace in general case
+        (
+            (
+                True,
+                -1,
+                1,
+                None,
+            ),
+            (' a b  c '),
+            {
+                '[bos]': 0,
+                '[eos]': 1,
+                '[pad]': 2,
+                '[unk]': 3,
+                'a': 4,
+                'b': 5,
+                'c': 6,
+            }
+        ),
+        # Test tk2id in general case
+        (
+            (
+                True,
+                -1,
+                1,
+                {
+                    'a': 4,
+                    'b': 5,
+                    'c': 6,
+                },
+            ),
+            ('a b c'),
+            {
+                'a': 4,
+                'b': 5,
+                'c': 6,
+            }
+        ),
+        # Test cased in general case
+        (
+            (
+                True,
+                -1,
+                1,
+                None,
+            ),
+            (
+                'a b c',
+                'A B',
+                'A'
+            ),
+            {
+                '[bos]': 0,
+                '[eos]': 1,
+                '[pad]': 2,
+                '[unk]': 3,
+                'a': 4,
+                'b': 5,
+                'c': 6,
+            }
+        ),
+        # Test uncased
+        (
+            (
+                False,
+                -1,
+                1,
+                None,
+            ),
+            (
+                'a b c',
+                'A B',
+                'A'
+            ),
+            {
+                '[bos]': 0,
+                '[eos]': 1,
+                '[pad]': 2,
+                '[unk]': 3,
+                'A': 4,
+                'a': 5,
+                'b': 6,
+                'c': 7,
+                'B': 8,
+            }
+        ),
+        # Test min count
+        (
+            (
+                True,
+                -1,
+                2,
+                None,
+            ),
+            (
+                'a b c',
+                'a b',
+                'a',
+            ),
+            {
+                '[bos]': 0,
+                '[eos]': 1,
+                '[pad]': 2,
+                '[unk]': 3,
+                'a': 4,
+                'b': 5,
+            }
+        ),
+        # Test max vocab
+        (
+            (
+                True,
+                5,
+                -1,
+                None,
+            ),
+            (
+                'a b c',
+                'a b',
+                'a',
+            ),
+            {
+                '[bos]': 0,
+                '[eos]': 1,
+                '[pad]': 2,
+                '[unk]': 3,
+                'a': 4,
+            }
+        ),
     ]
 )
-def test_min_count_1(test_input, expected):
+def test_build_vocab(parameters, test_input, expected):
     r"""tk2id must save the dictionary in represent of token to id
 
     If the CharTknzr initialize tk2id's value with None, it will add basic
     token([bos], [eos]...). If a token's frequency is lower than
-    ``self.min_count``, then that token will not be included in the vocabulary.
+    ``min_count``, then that token will not be included in the vocabulary.
     """
 
     tknzr = WsTknzr(
-        is_uncased=True,
-        max_vocab=10,
-        min_count=1,
-    )
-
-    tknzr.build_vocab(test_input)
-
-    assert tknzr.tk2id == expected
-
-
-@pytest.mark.parametrize(
-    "test_input,expected",
-    [
-        ('', {'[bos]': 0, '[eos]': 1, '[pad]': 2, '[unk]': 3}),
-        (' ', {'[bos]': 0, '[eos]': 1, '[pad]': 2, '[unk]': 3}),
-        ('a a b c', {'[bos]': 0, '[eos]': 1, '[pad]': 2, '[unk]': 3, 'a': 4}),
-        ('a b c', {'[bos]': 0, '[eos]': 1, '[pad]': 2, '[unk]': 3}),
-    ]
-)
-def test_min_count_2(test_input, expected):
-    r"""tk2id must save the dictionary in represent of token to id
-
-    If the CharTknzr initialize tk2id's value with None, it will add basic
-    token([bos], [eos]...). If a token's frequency is lower than
-    ``self.min_count``, then that token will not be included in the vocabulary.
-    """
-
-    tknzr = WsTknzr(
-        is_uncased=True,
-        max_vocab=10,
-        min_count=2,
-    )
-
-    tknzr.build_vocab(test_input)
-
-    assert tknzr.tk2id == expected
-
-
-@pytest.mark.parametrize(
-    "test_input,expected",
-    [
-        ('1 2 3', {
-            '[bos]': 0, '[eos]': 1, '[pad]': 2, '[unk]': 3,
-            '1': 4, '2': 5, '3': 6
-        }),
-        ('a b c', {
-            '[bos]': 0, '[eos]': 1, '[pad]': 2, '[unk]': 3,
-            'a': 4, 'b': 5, 'c': 6
-        }),
-        ('哈 囉 世 界', {
-            '[bos]': 0, '[eos]': 1, '[pad]': 2, '[unk]': 3,
-            '哈': 4, '囉': 5, '世': 6, '界': 7
-        }),
-    ]
-)
-def test_max_vocab_neg1(test_input, expected):
-    r"""Add as many tokens as possible to tk2id when max_vocab is -1"""
-
-    tknzr = WsTknzr(
-        is_uncased=True,
-        max_vocab=-1,
-        min_count=1,
-    )
-
-    tknzr.build_vocab(test_input)
-
-    assert tknzr.tk2id == expected
-
-
-@pytest.mark.parametrize(
-    "test_input,expected",
-    [
-        ('1 2 3', {'[bos]': 0, '[eos]': 1, '[pad]': 2, '[unk]': 3}),
-        ('a b c', {'[bos]': 0, '[eos]': 1, '[pad]': 2, '[unk]': 3}),
-        ('哈 囉 世 界', {'[bos]': 0, '[eos]': 1, '[pad]': 2, '[unk]': 3}),
-    ]
-)
-def test_max_vocab_pos1(test_input, expected):
-    r"""The vocabulary size must smaller 1"""
-
-    tknzr = WsTknzr(
-        is_uncased=True,
-        max_vocab=1,
-        min_count=1,
-    )
-
-    tknzr.build_vocab(test_input)
-
-    assert tknzr.tk2id == expected
-
-
-@pytest.mark.parametrize(
-    "test_input,expected",
-    [
-        ('1 2 3', {
-            '[bos]': 0, '[eos]': 1, '[pad]': 2, '[unk]': 3,
-            '1': 4, '2': 5}),
-        ('a b c', {
-            '[bos]': 0, '[eos]': 1, '[pad]': 2, '[unk]': 3,
-            'a': 4, 'b': 5
-        }),
-        ('哈 囉 世 界', {
-            '[bos]': 0, '[eos]': 1, '[pad]': 2, '[unk]': 3,
-                        '哈': 4, '囉': 5
-        }),
-    ]
-)
-def test_max_vocab_pos3(test_input, expected):
-    r"""The vocabulary size must smaller 3"""
-
-    tknzr = WsTknzr(
-        is_uncased=True,
-        max_vocab=6,
-        min_count=1,
+        is_uncased=parameters[0],
+        max_vocab=parameters[1],
+        min_count=parameters[2],
+        tk2id=parameters[3],
     )
 
     tknzr.build_vocab(test_input)

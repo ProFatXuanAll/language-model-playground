@@ -36,7 +36,7 @@ def test_enc(test_input, expected):
 
     tknzr = WsTknzr(
         is_uncased=True,
-        max_vocab=10,
+        max_vocab=-1,
         min_count=1,
         tk2id=tk2id,
     )
@@ -71,7 +71,7 @@ def test_dec(test_input, expected):
 
     tknzr = WsTknzr(
         is_uncased=True,
-        max_vocab=10,
+        max_vocab=-1,
         min_count=1,
         tk2id=tk2id,
     )
@@ -106,7 +106,7 @@ def test_batch_enc(test_input, expected):
 
     tknzr = WsTknzr(
         is_uncased=True,
-        max_vocab=10,
+        max_vocab=-1,
         min_count=1,
         tk2id=tk2id,
     )
@@ -141,7 +141,7 @@ def test_batch_dec(test_input, expected):
 
     tknzr = WsTknzr(
         is_uncased=True,
-        max_vocab=10,
+        max_vocab=-1,
         min_count=1,
         tk2id=tk2id,
     )

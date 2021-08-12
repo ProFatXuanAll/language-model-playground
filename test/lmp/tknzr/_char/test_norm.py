@@ -16,7 +16,7 @@ def test_nfkc(non_nfkc_txt: Dict[str, str]):
 
     tknzr = CharTknzr(
         is_uncased=True,
-        max_vocab=6,
+        max_vocab=-1,
         min_count=1,
     )
 
@@ -28,7 +28,7 @@ def test_collapse_whitespace(cws_txt: Dict[str, str]):
 
     tknzr = CharTknzr(
         is_uncased=True,
-        max_vocab=6,
+        max_vocab=-1,
         min_count=1,
     )
 
@@ -40,7 +40,7 @@ def test_strip_whitespace(htws_txt: Dict[str, str]):
 
     tknzr = CharTknzr(
         is_uncased=True,
-        max_vocab=6,
+        max_vocab=-1,
         min_count=1,
     )
 
@@ -59,7 +59,7 @@ def test_lower_case(test_cased, case_txt: Dict[str, str]):
 
     tknzr = CharTknzr(
         is_uncased=test_cased,
-        max_vocab=6,
+        max_vocab=-1,
         min_count=1,
     )
 
