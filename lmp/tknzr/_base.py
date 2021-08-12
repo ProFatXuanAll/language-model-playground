@@ -114,6 +114,16 @@ class BaseTknzr(abc.ABC):
         if not isinstance(is_uncased, bool):
             raise TypeError('`is_uncased` must be an instance of `bool`.')
 
+        if not isinstance(max_vocab, int):
+            raise TypeError('`max_vocab` must be an instance of `int`.')
+
+        if not isinstance(min_count, int):
+            raise TypeError('`min_count` must be an instance of `int`.')
+
+        if tk2id is not None:
+            if not isinstance(tk2id, dict):
+                raise TypeError('`tk2id` must be an instance of `dict`.')
+
         self.is_uncased = is_uncased
         self.max_vocab = max_vocab
         self.min_count = min_count
