@@ -3,7 +3,7 @@ r"""Test :py:class:`lmp.tknzr.BaseTknzr` signature."""
 import argparse
 import inspect
 from inspect import Parameter, Signature
-from typing import (ClassVar, Dict, List, Optional, Sequence, Union,
+from typing import (ClassVar, Dict, List, Optional, Sequence,
                     get_type_hints)
 
 from lmp.tknzr._base import BaseTknzr
@@ -61,10 +61,9 @@ def test_class_method():
     )
 
 
-def test_instance_method(subclss_tknzr):
+def test_instance_method():
     r"""Ensure instance methods' signature."""
     assert hasattr(BaseTknzr, '__init__')
-    assert inspect.ismethod(subclss_tknzr.__init__)
     assert inspect.signature(BaseTknzr.__init__) == Signature(
         parameters=[
             Parameter(
@@ -105,7 +104,6 @@ def test_instance_method(subclss_tknzr):
         return_annotation=Signature.empty,
     )
     assert hasattr(BaseTknzr, 'batch_enc')
-    assert inspect.ismethod(subclss_tknzr.batch_enc)
     assert inspect.signature(BaseTknzr.batch_enc) == Signature(
         parameters=[
             Parameter(
@@ -129,7 +127,6 @@ def test_instance_method(subclss_tknzr):
         return_annotation=List[List[int]],
     )
     assert hasattr(BaseTknzr, 'batch_dec')
-    assert inspect.ismethod(subclss_tknzr.batch_dec)
     assert inspect.signature(BaseTknzr.batch_dec) == Signature(
         parameters=[
             Parameter(
@@ -154,7 +151,6 @@ def test_instance_method(subclss_tknzr):
     )
 
     assert hasattr(BaseTknzr, 'build_vocab')
-    assert inspect.ismethod(subclss_tknzr.build_vocab)
     assert inspect.signature(BaseTknzr.build_vocab) == Signature(
         parameters=[
             Parameter(
@@ -173,7 +169,6 @@ def test_instance_method(subclss_tknzr):
     )
 
     assert hasattr(BaseTknzr, 'dec')
-    assert inspect.ismethod(subclss_tknzr.dec)
     assert inspect.signature(BaseTknzr.dec) == Signature(
         parameters=[
             Parameter(
@@ -198,7 +193,6 @@ def test_instance_method(subclss_tknzr):
     )
 
     assert hasattr(BaseTknzr, 'dtknz')
-    assert inspect.ismethod(subclss_tknzr.dtknz)
     assert inspect.signature(BaseTknzr.dtknz) == Signature(
         parameters=[
             Parameter(
@@ -217,7 +211,6 @@ def test_instance_method(subclss_tknzr):
     )
 
     assert hasattr(BaseTknzr, 'enc')
-    assert inspect.ismethod(subclss_tknzr.enc)
     assert inspect.signature(BaseTknzr.enc) == Signature(
         parameters=[
             Parameter(
@@ -242,7 +235,6 @@ def test_instance_method(subclss_tknzr):
     )
 
     assert hasattr(BaseTknzr, 'norm')
-    assert inspect.ismethod(subclss_tknzr.norm)
     assert inspect.signature(BaseTknzr.norm) == Signature(
         parameters=[
             Parameter(
@@ -261,7 +253,6 @@ def test_instance_method(subclss_tknzr):
     )
 
     assert hasattr(BaseTknzr, 'save')
-    assert inspect.ismethod(subclss_tknzr.save)
     assert inspect.signature(BaseTknzr.save) == Signature(
         parameters=[
             Parameter(
@@ -279,7 +270,6 @@ def test_instance_method(subclss_tknzr):
         return_annotation=None,
     )
     assert hasattr(BaseTknzr, 'tknz')
-    assert inspect.ismethod(subclss_tknzr.tknz)
     assert inspect.signature(BaseTknzr.tknz) == Signature(
         parameters=[
             Parameter(
@@ -302,35 +292,6 @@ def test_abstract_method():
     r"""Ensure abstract method's signature."""
     assert 'dtknz' in BaseTknzr.__abstractmethods__
     assert 'tknz' in BaseTknzr.__abstractmethods__
-
-
-def test_instance_attribute(
-        is_uncased: bool,
-        max_vocab: int,
-        min_count: int,
-        subclss_tknzr: BaseTknzr,
-        tk2id: Union[None, Dict[str, int]],
-):
-    r"""Ensure instance attributes' signature."""
-    assert subclss_tknzr.is_uncased == is_uncased
-    assert subclss_tknzr.max_vocab == max_vocab
-    assert subclss_tknzr.min_count == min_count
-    if tk2id is not None:
-        assert subclss_tknzr.tk2id == tk2id
-        assert subclss_tknzr.id2tk == {v: k for k, v in tk2id.items()}
-    else:
-        assert subclss_tknzr.id2tk == {
-            BaseTknzr.bos_tkid: BaseTknzr.bos_tk,
-            BaseTknzr.eos_tkid: BaseTknzr.eos_tk,
-            BaseTknzr.pad_tkid: BaseTknzr.pad_tk,
-            BaseTknzr.unk_tkid: BaseTknzr.unk_tk,
-        }
-        assert subclss_tknzr.tk2id == {
-            BaseTknzr.bos_tk: BaseTknzr.bos_tkid,
-            BaseTknzr.eos_tk: BaseTknzr.eos_tkid,
-            BaseTknzr.pad_tk: BaseTknzr.pad_tkid,
-            BaseTknzr.unk_tk: BaseTknzr.unk_tkid,
-        }
 
 
 def test_static_method():
