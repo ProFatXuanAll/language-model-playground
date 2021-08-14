@@ -138,10 +138,22 @@ def test_batch_enc(tk2id, test_input, expected):
 @pytest.mark.parametrize(
     "test_input,expected",
     [
-        ([[]], ['']),
-        ([[7, 8, 3], [4, 5, 6]], ['12[unk]', 'abc']),
-        ([[9, 3, 3, 3]], ['哈[unk][unk][unk]']),
-        ([[0, 1, 2, 3]], ['[bos][eos][pad][unk]']),
+        (
+            [[]],
+            ['']
+        ),
+        (
+            [[7, 8, 3], [4, 5, 6]],
+            ['12[unk]', 'abc']
+        ),
+        (
+            [[9, 3, 3, 3]],
+            ['哈[unk][unk][unk]']
+        ),
+        (
+            [[0, 1, 2, 3]],
+            ['[bos][eos][pad][unk]']
+        ),
     ]
 )
 def test_batch_dec(tk2id, test_input, expected):

@@ -40,18 +40,73 @@ def test_config_file_format(
 
 
 @pytest.mark.usefixtures('file_path')
+@pytest.mark.parametrize(
+    "parameters",
+    [
+        # Test tk2id is None
+        {
+            'is_uncased': False,
+            'max_vocab': -1,
+            'min_count': 1,
+            'tk2id': None,
+        },
+        # Test tk2id is not empty
+        {
+            'is_uncased': False,
+            'max_vocab': -1,
+            'min_count': 1,
+            'tk2id':
+                {
+                    '[bos]': 0,
+                    '[eos]': 1,
+                    '[pad]': 2,
+                    '[unk]': 3,
+                    'cc': 4,
+                    'd': 5,
+                    'b': 6,
+                    'a': 7,
+                },
+        },
+        # Test chinese characters in save and load
+        (
+            {
+                'is_uncased': True,
+                'max_vocab': -1,
+                'min_count': 1,
+                'tk2id':
+                    {
+                        '[bos]': 0,
+                        '[eos]': 1,
+                        '[pad]': 2,
+                        '[unk]': 3,
+                        '哈': 4,
+                        '囉': 5,
+                        '世': 6,
+                        '界': 7,
+                    },
+            }
+        ),
+    ]
+)
 def test_load_result(
-        ws_tknzr: WsTknzr,
+        parameters: dict,
         exp_name: str,
 ):
-    r"""Ensure configuration consistency between save and load."""
+    r"""Ensure configuration consistency between save and load.
 
-    ws_tknzr.save(exp_name)
+    Input differenct parameters to construct WsTknzr, and test
+    the WsTknzr attribute.
+    """
 
-    load_tknzr = ws_tknzr.load(exp_name)
+    tknzr = WsTknzr(
+        is_uncased=parameters['is_uncased'],
+        max_vocab=parameters['max_vocab'],
+        min_count=parameters['min_count'],
+        tk2id=parameters['tk2id'],
+    )
 
-    assert ws_tknzr.is_uncased == load_tknzr.is_uncased
-    assert ws_tknzr.id2tk == load_tknzr.id2tk
-    assert ws_tknzr.max_vocab == load_tknzr.max_vocab
-    assert ws_tknzr.min_count == load_tknzr.min_count
-    assert ws_tknzr.tk2id == load_tknzr.tk2id
+    tknzr.save(exp_name)
+
+    load_tknzr = tknzr.load(exp_name)
+
+    assert tknzr.__dict__ == load_tknzr.__dict__
