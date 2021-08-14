@@ -14,35 +14,25 @@ from lmp.tknzr._char import CharTknzr
 
 
 def test_config_file_exist(
+        char_tknzr: CharTknzr,
         exp_name: str,
         file_path: str,
 ):
     r"""Save configuration as file."""
 
-    tknzr = CharTknzr(
-        is_uncased=True,
-        max_vocab=-1,
-        min_count=1,
-    )
-
-    tknzr.save(exp_name)
+    char_tknzr.save(exp_name)
 
     assert os.path.exists(file_path)
 
 
 def test_config_file_format(
+        char_tknzr: CharTknzr,
         exp_name: str,
         file_path: str,
 ):
     r"""Save configuration must be JSON format."""
 
-    tknzr = CharTknzr(
-        is_uncased=True,
-        max_vocab=-1,
-        min_count=1,
-    )
-
-    tknzr.save(exp_name)
+    char_tknzr.save(exp_name)
 
     with open(file_path, 'r', encoding='utf-8') as input_file:
         # Raise error if not valid JSON.
@@ -51,22 +41,17 @@ def test_config_file_format(
 
 @pytest.mark.usefixtures('file_path')
 def test_load_result(
+        char_tknzr: CharTknzr,
         exp_name: str,
 ):
     r"""Ensure configuration consistency between save and load."""
 
-    tknzr = CharTknzr(
-        is_uncased=True,
-        max_vocab=-1,
-        min_count=1,
-    )
+    char_tknzr.save(exp_name)
 
-    tknzr.save(exp_name)
+    load_tknzr = char_tknzr.load(exp_name)
 
-    load_tknzr = tknzr.load(exp_name)
-
-    assert tknzr.is_uncased == load_tknzr.is_uncased
-    assert tknzr.id2tk == load_tknzr.id2tk
-    assert tknzr.max_vocab == load_tknzr.max_vocab
-    assert tknzr.min_count == load_tknzr.min_count
-    assert tknzr.tk2id == load_tknzr.tk2id
+    assert char_tknzr.is_uncased == load_tknzr.is_uncased
+    assert char_tknzr.id2tk == load_tknzr.id2tk
+    assert char_tknzr.max_vocab == load_tknzr.max_vocab
+    assert char_tknzr.min_count == load_tknzr.min_count
+    assert char_tknzr.tk2id == load_tknzr.tk2id

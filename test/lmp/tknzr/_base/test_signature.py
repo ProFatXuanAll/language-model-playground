@@ -64,6 +64,7 @@ def test_class_method():
 def test_instance_method():
     r"""Ensure instance methods' signature."""
     assert hasattr(BaseTknzr, '__init__')
+    assert inspect.isfunction(BaseTknzr.__init__)
     assert inspect.signature(BaseTknzr.__init__) == Signature(
         parameters=[
             Parameter(
@@ -104,6 +105,7 @@ def test_instance_method():
         return_annotation=Signature.empty,
     )
     assert hasattr(BaseTknzr, 'batch_enc')
+    assert inspect.isfunction(BaseTknzr.batch_enc)
     assert inspect.signature(BaseTknzr.batch_enc) == Signature(
         parameters=[
             Parameter(
@@ -127,6 +129,7 @@ def test_instance_method():
         return_annotation=List[List[int]],
     )
     assert hasattr(BaseTknzr, 'batch_dec')
+    assert inspect.isfunction(BaseTknzr.batch_dec)
     assert inspect.signature(BaseTknzr.batch_dec) == Signature(
         parameters=[
             Parameter(
@@ -151,6 +154,7 @@ def test_instance_method():
     )
 
     assert hasattr(BaseTknzr, 'build_vocab')
+    assert inspect.isfunction(BaseTknzr.build_vocab)
     assert inspect.signature(BaseTknzr.build_vocab) == Signature(
         parameters=[
             Parameter(
@@ -169,6 +173,7 @@ def test_instance_method():
     )
 
     assert hasattr(BaseTknzr, 'dec')
+    assert inspect.isfunction(BaseTknzr.dec)
     assert inspect.signature(BaseTknzr.dec) == Signature(
         parameters=[
             Parameter(
@@ -193,6 +198,7 @@ def test_instance_method():
     )
 
     assert hasattr(BaseTknzr, 'dtknz')
+    assert inspect.isfunction(BaseTknzr.dtknz)
     assert inspect.signature(BaseTknzr.dtknz) == Signature(
         parameters=[
             Parameter(
@@ -211,6 +217,7 @@ def test_instance_method():
     )
 
     assert hasattr(BaseTknzr, 'enc')
+    assert inspect.isfunction(BaseTknzr.enc)
     assert inspect.signature(BaseTknzr.enc) == Signature(
         parameters=[
             Parameter(
@@ -235,6 +242,7 @@ def test_instance_method():
     )
 
     assert hasattr(BaseTknzr, 'norm')
+    assert inspect.isfunction(BaseTknzr.norm)
     assert inspect.signature(BaseTknzr.norm) == Signature(
         parameters=[
             Parameter(
@@ -253,6 +261,7 @@ def test_instance_method():
     )
 
     assert hasattr(BaseTknzr, 'save')
+    assert inspect.isfunction(BaseTknzr.save)
     assert inspect.signature(BaseTknzr.save) == Signature(
         parameters=[
             Parameter(
@@ -269,7 +278,9 @@ def test_instance_method():
         ],
         return_annotation=None,
     )
+
     assert hasattr(BaseTknzr, 'tknz')
+    assert inspect.isfunction(BaseTknzr.tknz)
     assert inspect.signature(BaseTknzr.tknz) == Signature(
         parameters=[
             Parameter(

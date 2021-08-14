@@ -1,7 +1,7 @@
-r"""Test build_vocab operation for tokenizer configuration.
+r"""Test the construction of vocabulary
 
 Test target:
-- :py:meth:`lmp.tknzr.CharTknzr.build_vocab`.
+- :py:meth:`lmp.tknzr._ws.WsTknzr`.
 """
 import pytest
 
@@ -11,14 +11,17 @@ from lmp.tknzr._ws import WsTknzr
 @pytest.mark.parametrize(
     "parameters,test_input,expected",
     [
-        # Test empty vocabulary in gerneral case
+        # Test empty input sequence of text
+        #
+        # Expect only special tokens, when input empty text and assign
+        # None for tk2id.
         (
-            (
-                True,
-                -1,
-                1,
-                None,
-            ),
+            {
+                'is_uncased': True,
+                'max_vocab': -1,
+                'min_count': 1,
+                'tk2id': None,
+            },
             (),
             {
                 '[bos]': 0,
@@ -27,14 +30,17 @@ from lmp.tknzr._ws import WsTknzr
                 '[unk]': 3,
             }
         ),
-        # Test Chinese characters in gerneral case
+        # Test Chinese characters input
+        #
+        # Expect the chinese characters and special tokens, when input Chinese
+        # characters and tk2id with None.
         (
-            (
-                True,
-                -1,
-                1,
-                None,
-            ),
+            {
+                'is_uncased': True,
+                'max_vocab': -1,
+                'min_count': 1,
+                'tk2id': None,
+            },
             ('哈 囉 世 界'),
             {
                 '[bos]': 0,
@@ -47,18 +53,21 @@ from lmp.tknzr._ws import WsTknzr
                 '界': 7,
             }
         ),
-        # Test frequency in genral case
+        # Test frequency
+        #
+        # Expect the higher frequency the smaller id, if they have same
+        # frequency, then compare the sequence of token.
         (
+            {
+                'is_uncased': True,
+                'max_vocab': -1,
+                'min_count': 1,
+                'tk2id': None,
+            },
             (
-                True,
-                -1,
-                1,
-                None,
-            ),
-            (
-                'cc b a',
-                'cc b',
-                'cc',
+                'cc d b a',
+                'cc d b',
+                'cc d',
             ),
             {
                 '[bos]': 0,
@@ -66,18 +75,21 @@ from lmp.tknzr._ws import WsTknzr
                 '[pad]': 2,
                 '[unk]': 3,
                 'cc': 4,
-                'b': 5,
-                'a': 6,
+                'd': 5,
+                'b': 6,
+                'a': 7,
             }
         ),
-        # Test multiple whitespace in general case
+        # Test whitespace
+        #
+        # Expect the multiple whitespace must not influence the output.
         (
-            (
-                True,
-                -1,
-                1,
-                None,
-            ),
+            {
+                'is_uncased': True,
+                'max_vocab': -1,
+                'min_count': 1,
+                'tk2id': None,
+            },
             (' a b  c '),
             {
                 '[bos]': 0,
@@ -89,33 +101,17 @@ from lmp.tknzr._ws import WsTknzr
                 'c': 6,
             }
         ),
-        # Test tk2id in general case
+        # Test cased
+        #
+        # Expect the character must be transformed from capital to lower case,
+        # when the `is_uncased` is true.
         (
-            (
-                True,
-                -1,
-                1,
-                {
-                    'a': 4,
-                    'b': 5,
-                    'c': 6,
-                },
-            ),
-            ('a b c'),
             {
-                'a': 4,
-                'b': 5,
-                'c': 6,
-            }
-        ),
-        # Test cased in general case
-        (
-            (
-                True,
-                -1,
-                1,
-                None,
-            ),
+                'is_uncased': True,
+                'max_vocab': -1,
+                'min_count': 1,
+                'tk2id': None,
+            },
             (
                 'a b c',
                 'A B',
@@ -132,13 +128,16 @@ from lmp.tknzr._ws import WsTknzr
             }
         ),
         # Test uncased
+        #
+        # Expect the character must not be transformed from capital
+        # to lower case, when the `is_uncased` is false.
         (
-            (
-                False,
-                -1,
-                1,
-                None,
-            ),
+            {
+                'is_uncased': False,
+                'max_vocab': -1,
+                'min_count': 1,
+                'tk2id': None,
+            },
             (
                 'a b c',
                 'A B',
@@ -156,14 +155,17 @@ from lmp.tknzr._ws import WsTknzr
                 'B': 8,
             }
         ),
-        # Test min count
+        # Test ``min_count``
+        #
+        # Expect only add the token whose frequency is larger
+        # than ``min_count``.
         (
-            (
-                True,
-                -1,
-                2,
-                None,
-            ),
+            {
+                'is_uncased': True,
+                'max_vocab': -1,
+                'min_count': 2,
+                'tk2id': None,
+            },
             (
                 'a b c',
                 'a b',
@@ -178,14 +180,18 @@ from lmp.tknzr._ws import WsTknzr
                 'b': 5,
             }
         ),
-        # Test max vocab
+        # Test ``max_vocab``
+        #
+        # Expect add the tokens until vocabulary's size is equal
+        # to ``max_vocab``. If ``max_vocab`` is -1, then add all
+        # token to vocabulary.
         (
-            (
-                True,
-                5,
-                -1,
-                None,
-            ),
+            {
+                'is_uncased': True,
+                'max_vocab': 5,
+                'min_count': 1,
+                'tk2id': None,
+            },
             (
                 'a b c',
                 'a b',
@@ -202,18 +208,16 @@ from lmp.tknzr._ws import WsTknzr
     ]
 )
 def test_build_vocab(parameters, test_input, expected):
-    r"""tk2id must save the dictionary in represent of token to id
+    r"""Test tk2id
 
-    If the CharTknzr initialize tk2id's value with None, it will add basic
-    token([bos], [eos]...). If a token's frequency is lower than
-    ``min_count``, then that token will not be included in the vocabulary.
+    Expect tk2id must save the correct vocabulary and ids.
     """
 
     tknzr = WsTknzr(
-        is_uncased=parameters[0],
-        max_vocab=parameters[1],
-        min_count=parameters[2],
-        tk2id=parameters[3],
+        is_uncased=parameters['is_uncased'],
+        max_vocab=parameters['max_vocab'],
+        min_count=parameters['min_count'],
+        tk2id=parameters['tk2id'],
     )
 
     tknzr.build_vocab(test_input)
