@@ -48,6 +48,8 @@ class ChPoemDset(BaseDset):
     file_name: ClassVar[str]
         Download dataset file name.
         Used only for downloading dataset files.
+    file_path: ClassVar[str]
+        Location of Download dataset.
     lang: ClassVar[str]
         Use Chinese as primary language.
     spls: Sequence[str]
@@ -82,6 +84,7 @@ class ChPoemDset(BaseDset):
     df_ver: ClassVar[str] = '唐'
     dset_name: ClassVar[str] = 'chinese-poem'
     file_name: ClassVar[str] = '{}.csv.zip'
+    file_path: ClassVar[str] = ''
     lang: ClassVar[str] = 'zh'
     vers: ClassVar[List[str]] = [
         '元', '元末明初', '先秦', '南北朝', '唐', '唐末宋初', '宋', '宋末元初', '宋末金初', '明',
@@ -113,3 +116,4 @@ class ChPoemDset(BaseDset):
         spls = df['內容'].apply(str).apply(lmp.dset.util.norm).tolist()
 
         self.spls = spls
+        self.file_path = file_path

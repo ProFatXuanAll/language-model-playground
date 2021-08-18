@@ -45,6 +45,8 @@ class WikiText2Dset(BaseDset):
     file_name: ClassVar[str]
         Download dataset file name.
         Used only for downloading dataset files.
+    file_path: ClassVar[str]
+        Location of Download dataset.
     lang: ClassVar[str]
         Use English as primary language.
     spls: Sequence[str]
@@ -84,6 +86,7 @@ class WikiText2Dset(BaseDset):
     df_ver: ClassVar[str] = 'train'
     dset_name: ClassVar[str] = 'wikitext-2'
     file_name: ClassVar[str] = 'wiki.{}.tokens.zip'
+    file_path: ClassVar[str] = ''
     lang: ClassVar[str] = 'en'
     vers: ClassVar[List[str]] = ['test', 'train', 'valid']
     url: ClassVar[str] = ''.join([
@@ -123,3 +126,4 @@ class WikiText2Dset(BaseDset):
         spls = map(lambda spl: unk_pttn.sub('[unk]', spl), spls)
 
         self.spls = list(spls)
+        self.file_path = file_path
