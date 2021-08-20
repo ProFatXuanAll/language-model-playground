@@ -1,3 +1,8 @@
+r"""Test the model's generation
+
+Test target:
+- :py:meth:`lmp.infer._top_p.TopPInfer.gen`.
+"""
 import pytest
 
 from lmp.infer._top_p import TopPInfer
@@ -6,6 +11,17 @@ from lmp.infer._top_p import TopPInfer
 @pytest.mark.parametrize(
     "parameters,test_input,expected",
     [
+        (
+            # Test normal generation
+            #
+            # Expect only output h when max_vocab_size is 1. Output length must be 5 when 
+            # input max_seq_len is 6, since there is one length for bos.
+            {
+                'max_seq_len': 6,
+            },
+            "hhhhh",
+            "hhhhh",
+        ),
         (
             # Test max_seq_len
             #
@@ -29,7 +45,7 @@ from lmp.infer._top_p import TopPInfer
         ),
     ]
 )
-def test_gen(tknzr, model, parameters, test_input, expected):
+def test_gen(tknzr, model, parameters, test_input, expected, reset_pad_tkid):
     r"""Test :py:meth:lmp.infer._top_p.TopPInfer.gen"""
 
     infer = TopPInfer(p=0.5, max_seq_len=parameters['max_seq_len'])
