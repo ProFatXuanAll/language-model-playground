@@ -20,7 +20,6 @@ def test_class_attribute():
     assert WikiText2Dset.df_ver == 'train'
     assert WikiText2Dset.dset_name == 'wikitext-2'
     assert WikiText2Dset.file_name == 'wiki.{}.tokens.zip'
-    assert WikiText2Dset.file_path == ''
     assert WikiText2Dset.lang == 'en'
     assert WikiText2Dset.vers == ['test', 'train', 'valid']
     assert WikiText2Dset.url == ''.join([

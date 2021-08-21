@@ -37,8 +37,6 @@ class BaseDset(torch.utils.data.Dataset):
     file_name: ClassVar[str]
         Download dataset file name.
         Used only for downloading dataset files.
-    file_path: ClassVar[str]
-        Location of Download dataset.
     lang: ClassVar[str]
         Language of the dataset.
     spls: Sequence[str]
@@ -62,7 +60,6 @@ class BaseDset(torch.utils.data.Dataset):
     df_ver: ClassVar[str] = ''
     dset_name: ClassVar[str] = 'base'
     file_name: ClassVar[str] = ''
-    file_path: ClassVar[str] = ''
     lang: ClassVar[str] = ''
     vers: ClassVar[List[str]] = []
     url: ClassVar[str] = ''

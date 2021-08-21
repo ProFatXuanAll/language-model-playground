@@ -7,14 +7,13 @@ import os
 
 from lmp.dset._ch_poem import ChPoemDset
 from lmp import path
-from test.lmp.dset._ch_poem.conftest import cleandir
 
 
-def test_dset_file_exist(dset_ver):
+def test_dset_file_exist(dset_ver, download_dset, cleandir):
     r"""Dataset must be downloaded to right places"""
 
-    ch_dset = ChPoemDset()
-    assert os.path.exists(path.DATA_PATH)
-    assert os.path.exists(ch_dset.file_path)
+    file_path = os.path.join(path.DATA_PATH, download_dset.file_name.format(dset_ver))
 
-    cleandir(dset_ver)
+    assert os.path.exists(path.DATA_PATH)
+    assert os.path.exists(file_path)
+

@@ -19,7 +19,6 @@ def test_class_attribute():
         'df_ver': ClassVar[str],
         'dset_name': ClassVar[str],
         'file_name': ClassVar[str],
-        'file_path': ClassVar[str],
         'lang': ClassVar[str],
         'vers': ClassVar[List[str]],
         'url': ClassVar[str],
@@ -27,7 +26,6 @@ def test_class_attribute():
     assert BaseDset.df_ver == ''
     assert BaseDset.dset_name == 'base'
     assert BaseDset.file_name == ''
-    assert BaseDset.file_path == ''
     assert BaseDset.lang == ''
     assert BaseDset.vers == []
     assert BaseDset.url == ''
