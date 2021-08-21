@@ -125,10 +125,10 @@ class BaseTknzr(abc.ABC):
                 raise TypeError('`tk2id` must be an instance of `dict`.')
 
         if max_vocab < -1:
-            raise ValueError('`max_vocab` must larger than -1')
+            raise ValueError('`max_vocab` must be larger than or equal to `-1`')
 
         if min_count < 1:
-            raise ValueError('`min_count` must larger than 0')
+            raise ValueError('`min_count` must be larger than `0`')
 
         self.is_uncased = is_uncased
         self.max_vocab = max_vocab
