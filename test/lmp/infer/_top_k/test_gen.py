@@ -14,8 +14,9 @@ from lmp.infer._top_k import TopKInfer
         (
             # Test normal generation
             #
-            # Expect only output h when max_vocab_size is 1. Output length must be 5 when 
-            # input max_seq_len is 6, since there is one length for bos.
+            # Expect only output h when max_vocab_size is 1.
+            # Output length must be 5 when input `max_seq_len` is 6, since
+            # there is one length for bos.
             {
                 'max_seq_len': 6,
             },

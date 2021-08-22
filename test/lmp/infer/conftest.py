@@ -9,7 +9,7 @@ from lmp.model._rnn import RNNModel
 def tknzr():
     r"""Simple CharTknzr instance"""
 
-    # dec will remove special token, and max_vocab_size must 
+    # dec will remove special token, and max_vocab_size must
     # bigger than pad_id so assign -1 as special tokens
     CharTknzr.pad_tkid = -1
 
@@ -36,7 +36,7 @@ def model(tknzr):
         p_hid=0.5,
         tknzr=tknzr,
     )
-    return model 
+    return model
 
 
 @pytest.fixture
@@ -44,7 +44,5 @@ def reset_pad_tkid(request):
 
     def reset():
         CharTknzr.pad_tkid = 2
-    
+
     request.addfinalizer(reset)
-
-

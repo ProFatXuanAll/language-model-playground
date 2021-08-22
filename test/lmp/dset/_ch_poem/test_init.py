@@ -3,7 +3,6 @@ r"""Test the construction of ChPoemDset
 Test target:
 - :py:meth:`lmp.tknzr._ch_poem.ChPoemDset.init`.
 """
-from lmp.dset._ch_poem import ChPoemDset
 
 
 def test_spls(download_dset, lastcleandir):

@@ -4,7 +4,6 @@ Test target:
 - :py:meth:`lmp.dset._wiki_text_2.ChPoemDset.len`.
 - :py:meth:`lmp.dset._wiki_text_2.ChPoemDset.getitem`.
 """
-from lmp.dset._wiki_text_2 import WikiText2Dset
 
 
 def test_len_(download_dset, lastcleandir):

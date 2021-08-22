@@ -10,39 +10,65 @@ from lmp.tknzr._char import CharTknzr
 
 
 @pytest.mark.parametrize(
-    "test_input,expected",
+    "parameters",
     [
+        # Test input number
+        #
+        # Expect add bos in front of the output and add eos at the end of
+        # output and transform tokens to ids.
         (
-            '123',
-            [0, 7, 8, 3, 1],
+            {
+                "max_seq_len": -1,
+                "test_input": '123',
+                "expected": [0, 7, 8, 3, 1],
+            }
         ),
+        # Test input english characters
+        #
+        # Expect add bos in front of the output and add eos at the end of
+        # output and transform tokens to ids.
         (
-            'abc',
-            [0, 4, 5, 6, 1],
+            {
+                "max_seq_len": -1,
+                "test_input": 'abc',
+                "expected": [0, 4, 5, 6, 1],
+            }
         ),
+        # Test input chinsese words
+        #
+        # Expect add bos in front of the output and add eos at the end of
+        # output, and output `3` when encounter unknown characters.
         (
-            '哈囉世界',
-            [0, 9, 3, 3, 3, 1],
+            {
+                "max_seq_len": -1,
+                "test_input": '哈囉世界',
+                "expected": [0, 9, 3, 3, 3, 1],
+            }
         ),
+        # Test `max_seq_len` is larger than test_input length
+        #
+        # Expect add pad_tk at the end of input sequence until test_input
+        # length is `max_seq_len`
         (
-            '[bos]',
-            [0, 3, 5, 3, 3, 3, 1],
+            {
+                "max_seq_len": 7,
+                "test_input": 'abc',
+                "expected": [0, 4, 5, 6, 1, 2, 2],
+            }
         ),
+        # Test `max_seq_len` is smaller than test_input length
+        #
+        # Expect truncate the test_input length to `max_seq_len`.
         (
-            '[eos]',
-            [0, 3, 3, 3, 3, 3, 1],
-        ),
-        (
-            '[pad]',
-            [0, 3, 3, 4, 3, 3, 1],
-        ),
-        (
-            '[unk]',
-            [0, 3, 3, 3, 3, 3, 1],
-        ),
+            {
+                "max_seq_len": 7,
+                "test_input": 'abcabcabc',
+                "expected": [0, 4, 5, 6, 4, 5, 6],
+            }
+        )
     ]
 )
-def test_enc(tk2id, test_input, expected):
+def test_enc(tk2id, parameters):
     r"""Token must be encoding to ids"""
 
     tknz = CharTknzr(
@@ -52,31 +78,52 @@ def test_enc(tk2id, test_input, expected):
         tk2id=tk2id,
     )
 
-    assert tknz.enc(test_input) == expected
+    assert (
+        tknz.enc(parameters['test_input'],
+                 max_seq_len=parameters['max_seq_len'])
+        ==
+        parameters['expected']
+    )
 
 
 @pytest.mark.parametrize(
-    "test_input,expected",
+    "parameters",
     [
+        # Test output special tokens
+        #
+        # Expect input id `3` and output special tokens.
         (
-            [7, 8, 3],
-            '12[unk]',
+
+            {
+                "rm_sp_tks": False,
+                "test_input": [3, 2, 1, 0],
+                "expected": '[unk][pad][eos][bos]',
+            }
         ),
+        # Test decode characters
+        #
+        # Expect output tokens transfered from ids.
         (
-            [4, 5, 6],
-            'abc',
+            {
+                "rm_sp_tks": False,
+                "test_input": [4, 5, 6],
+                "expected": 'abc',
+            }
         ),
+        # Test remove special tokens
+        #
+        # Expect remove all special tokens except unknown tokens.
         (
-            [9, 3, 3, 3],
-            '哈[unk][unk][unk]',
-        ),
-        (
-            [0, 1, 2, 3],
-            '[bos][eos][pad][unk]',
+
+            {
+                "rm_sp_tks": True,
+                "test_input": [3, 2, 1, 0],
+                "expected": '[unk]',
+            }
         ),
     ]
 )
-def test_dec(tk2id, test_input, expected):
+def test_dec(tk2id, parameters):
     r"""Ids must be docoding to tokens"""
 
     tknz = CharTknzr(
@@ -86,43 +133,65 @@ def test_dec(tk2id, test_input, expected):
         tk2id=tk2id,
     )
 
-    assert tknz.dec(test_input) == expected
+    assert (
+        tknz.dec(parameters['test_input'], rm_sp_tks=parameters['rm_sp_tks'])
+        ==
+        parameters['expected']
+    )
 
 
 @pytest.mark.parametrize(
-    "test_input,expected",
+    "parameters",
     [
+        # Test empty sequence
+        #
+        # Expect bos in front of list and eos at the end of list.
         (
-            [''],
-            [[0, 1]],
+            {
+                "max_seq_len": -1,
+                "test_input": [''],
+                "expected": [[0, 1]],
+            }
         ),
+        # Test input list of sequence
+        #
+        # Expect output ids transfered from tokens, and output same
+        # length sequence in the list.
         (
-            ['123', 'abc'],
-            [[0, 7, 8, 3, 1], [0, 4, 5, 6, 1]],
+            {
+                "max_seq_len": -1,
+                "test_input": ['123', 'abc', '哈囉世界'],
+                "expected": [
+                    [0, 7, 8, 3, 1, 2],
+                    [0, 4, 5, 6, 1, 2],
+                    [0, 9, 3, 3, 3, 1],
+                ],
+            }
         ),
+        # Test `max_seq_len` is larger than sequence length
+        #
+        # Expect add pad_tk at the end of sequence, test_input will first
+        # add bos and eos token.
         (
-            ['哈囉世界'],
-            [[0, 9, 3, 3, 3, 1]],
+            {
+                "max_seq_len": 6,
+                "test_input": ['abc', '123'],
+                "expected": [[0, 4, 5, 6, 1, 2], [0, 7, 8, 3, 1, 2]],
+            }
         ),
+        # Test `max_seq_len` is smaller than sequence length
+        #
+        # Expect truncate the sequnce to `max_seq_len` in list.
         (
-            ['[bos]'],
-            [[0, 3, 5, 3, 3, 3, 1]],
-        ),
-        (
-            ['[eos]'],
-            [[0, 3, 3, 3, 3, 3, 1]],
-        ),
-        (
-            ['[pad]'],
-            [[0, 3, 3, 4, 3, 3, 1]],
-        ),
-        (
-            ['[unk]'],
-            [[0, 3, 3, 3, 3, 3, 1]],
-        ),
+            {
+                "max_seq_len": 3,
+                "test_input": ['abcabc', '123123'],
+                "expected": [[0, 4, 5], [0, 7, 8]],
+            }
+        )
     ]
 )
-def test_batch_enc(tk2id, test_input, expected):
+def test_batch_enc(tk2id, parameters):
     r"""Turn text batch to token batch"""
 
     tknz = CharTknzr(
@@ -132,31 +201,62 @@ def test_batch_enc(tk2id, test_input, expected):
         tk2id=tk2id,
     )
 
-    assert tknz.batch_enc(test_input) == expected
+    assert (
+        tknz.batch_enc(
+            parameters['test_input'],
+            max_seq_len=parameters['max_seq_len']
+        )
+        ==
+        parameters['expected']
+    )
 
 
 @pytest.mark.parametrize(
-    "test_input,expected",
+    "parameters",
     [
+        # Test empty input sequence
+        #
+        # Expect output empty sequence.
         (
-            [[]],
-            ['']
+            {
+                "rm_sp_tks": False,
+                "test_input": [[]],
+                "expected": [''],
+            }
         ),
+        # Test ids to tokens
+        #
+        # Expect output tokens transferred from ids.
         (
-            [[7, 8, 3], [4, 5, 6]],
-            ['12[unk]', 'abc']
+            {
+                "rm_sp_tks": False,
+                "test_input": [[7, 8], [4, 5, 6], [9, 3, 3, 3]],
+                "expected": ['12', 'abc', '哈[unk][unk][unk]'],
+            }
         ),
+        # Test special tokens
+        #
+        # Test output special tokens.
         (
-            [[9, 3, 3, 3]],
-            ['哈[unk][unk][unk]']
+            {
+                "rm_sp_tks": False,
+                "test_input": [[0, 1, 2, 3]],
+                "expected": ['[bos][eos][pad][unk]'],
+            }
         ),
+        # Test remove special tokens
+        #
+        # Expect remove special tokens except unknown tokens.
         (
-            [[0, 1, 2, 3]],
-            ['[bos][eos][pad][unk]']
+            {
+                "rm_sp_tks": True,
+                "test_input": [[0, 1, 2, 3]],
+                "expected": ['[unk]'],
+            }
         ),
     ]
 )
-def test_batch_dec(tk2id, test_input, expected):
+def test_batch_dec(tk2id, parameters):
     r"""Turn token batch to text batch"""
 
     tknz = CharTknzr(
@@ -166,4 +266,11 @@ def test_batch_dec(tk2id, test_input, expected):
         tk2id=tk2id,
     )
 
-    assert tknz.batch_dec(test_input) == expected
+    assert (
+        tknz.batch_dec(
+            parameters['test_input'],
+            rm_sp_tks=parameters['rm_sp_tks']
+        )
+        ==
+        parameters['expected']
+    )
