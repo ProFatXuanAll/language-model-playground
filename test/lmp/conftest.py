@@ -22,6 +22,15 @@ def exp_name() -> str:
 
 
 @pytest.fixture(params=[
+    0,
+    1000,
+])
+def ckpt(request) -> int:
+    r"""Experiment checkpoint for test"""
+    return request.param
+
+
+@pytest.fixture(params=[
     {'input': '０', 'output': '0'},  # Full-width to half-width.
     {'input': 'é', 'output': 'é'},  # NFKD to NFKC.
 ])

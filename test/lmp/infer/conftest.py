@@ -8,9 +8,8 @@ from lmp.model._rnn import RNNModel
 @pytest.fixture
 def tknzr():
     r"""Simple CharTknzr instance"""
-
-    # dec will remove special token, and max_vocab_size must
-    # bigger than pad_id so assign -1 as special tokens
+    # max_vocab size must be bigger than pad_id
+    # so assign -1 as special tokens
     CharTknzr.pad_tkid = -1
 
     return CharTknzr(
