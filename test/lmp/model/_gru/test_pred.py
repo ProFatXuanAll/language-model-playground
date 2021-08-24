@@ -25,7 +25,7 @@ import pytest
     ]
 )
 def test_pred(parameters, model):
-    r"""Test :py:meth:lmp.model._rnn.RNNModel.forward"""
+    r"""Test :py:meth:lmp.model._gru.GRUModel.forward"""
     pred = model.pred(parameters["test_input"])
 
     assert pred.shape == parameters["expected"].shape

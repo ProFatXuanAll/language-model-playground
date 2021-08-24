@@ -25,7 +25,7 @@ import pytest
     ]
 )
 def test_foward(parameters, model):
-    r"""Test :py:meth:lmp.model._rnn.RNNModel.forward"""
+    r"""Test :py:meth:lmp.model._lstm.LSTMModel.forward"""
     forward = model.forward(parameters["test_input"])
 
     assert forward.shape == parameters["expected"].shape
