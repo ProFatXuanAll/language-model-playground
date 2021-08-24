@@ -65,7 +65,8 @@ def lastcleandir(request):
             if os.path.exists(file_path):
                 os.remove(file_path)
 
-        if os.path.exists(path.DATA_PATH):
+        if os.path.exists(path.DATA_PATH) and \
+                len(os.listdir(path.DATA_PATH)) == 0:
             os.removedirs(path.DATA_PATH)
 
     request.addfinalizer(remove)

@@ -42,6 +42,7 @@ def model(tknzr):
         tknzr=tknzr,
     )
 
+
 @pytest.fixture
 def cleandir(request, ckpt: int, exp_name: str) -> str:
     r"""Clean model parameters output file and directories."""
