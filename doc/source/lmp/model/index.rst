@@ -6,7 +6,7 @@
 
 .. toctree::
     :maxdepth: 1
-    :caption: Model Classes:
+    :caption: All available models:
 
     BaseModel.py
     GRUModel.py

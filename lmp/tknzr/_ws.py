@@ -28,7 +28,7 @@ class WsTknzr(BaseTknzr):
         Otherwise initialize lookup table with special tokens only.
     kwargs: Dict, optional
         Useless parameter.
-        Left intended for subclass parameters extension.
+        Intently left for subclass parameters extension.
 
     Attributes
     ==========
@@ -39,7 +39,7 @@ class WsTknzr(BaseTknzr):
     Raises
     ======
     TypeError
-        When parameters are not confront their respective type annotation.
+        When parameters do not obey their type annotations.
 
     See Also
     ========
@@ -60,8 +60,8 @@ class WsTknzr(BaseTknzr):
     def tknz(self, txt: str) -> List[str]:
         r"""Perform whitespace :term:`tokenization` on text.
 
-        Text will first be normalized and then be tokenized using whitespace
-        as separation.
+        Text will first be normalized by :py:meth:`lmp.tknzr.BaseTknz.norm`,
+        then be tokenized by whitespaces.
 
         Parameters
         ==========
@@ -71,8 +71,8 @@ class WsTknzr(BaseTknzr):
         Returns
         =======
         List[str]
-            List of normalized tokens tokenized from text.
-            No whitespace will be preserved after tokenization.
+            List of normalized whitespace-separated tokens.
+            No whitespaces will be preserved after tokenization.
 
         See Also
         ========
@@ -99,9 +99,10 @@ class WsTknzr(BaseTknzr):
         return tks
 
     def dtknz(self, tks: Sequence[str]) -> str:
-        r"""Convert :term:`tokens` back to one and only one text.
+        r"""Convert :term:`tokens` back to text.
 
-        Tokens are simply joined with single whitespace and then normalized.
+        Tokens will be joined with one whitespace.
+        Returned text is normalized by :py:meth:`lmp.tknzr.BaseTknz.norm`.
 
         Parameters
         ==========

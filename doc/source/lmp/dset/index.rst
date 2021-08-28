@@ -6,7 +6,7 @@
 
 .. toctree::
     :maxdepth: 1
-    :caption: Dataset Classes and Utilities:
+    :caption: All available dataset and utilities:
 
     BaseDset.py
     ChPoemDset.py

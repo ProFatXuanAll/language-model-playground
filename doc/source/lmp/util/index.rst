@@ -6,7 +6,7 @@
 
 .. toctree::
     :maxdepth: 1
-    :caption: Available utilities:
+    :caption: All available utilities:
 
     cfg.py
     dset.py

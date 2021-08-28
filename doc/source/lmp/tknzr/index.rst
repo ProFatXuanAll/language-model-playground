@@ -6,7 +6,7 @@
 
 .. toctree::
     :maxdepth: 1
-    :caption: Tokenizer Classes:
+    :caption: All available tokenizers:
 
     BaseTknzr.py
     CharTknzr.py

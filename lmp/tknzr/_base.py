@@ -16,80 +16,109 @@ import lmp.path
 class BaseTknzr(abc.ABC):
     r""":term:`Tokenizer` abstract base class.
 
-    Provide basic functionality for text processing, save and load processing
-    configuration.
-    All tokenizers must inherit :py:class:`lmp.tknzr.BaseTknzr`.
+    Implement basic functionalities for text processing, including text
+    normalization, saving and loading text processing configuration.
+
+    :py:class:`lmp.tknzr.BaseTknzr` is designed to be the base class of all
+    tokenizers, thus both tokenization (:py:meth:`lmp.tknzr.BaseTknzr.tknz`)
+    and detokenization (:py:meth:`lmp.tknzr.BaseTknzr.dtknz`) functions are
+    left unimplemented.
+    Directly or indirectly calling tokenization related functions will raise
+    :py:exc:`NotImplementedError`.
+    To use tokenization related functionalities, one must used subclasses of
+    :py:class:`lmp.tknzr.BaseTknzr` instead (such as
+    :py:class:`lmp.tknzr.CharTknzr` or :py:class:`lmp.tknzr.WsTknzr`).
+    All subclasses are available under :py:mod:`lmp.tknzr`.
 
     Parameters
     ==========
     is_uncased: bool
         Convert text into lowercase if set to ``True``.
+        See :py:meth:`lmp.tknzr.BaseTknzr.norm`.
     max_vocab: int
-        Maximum vocabulary size.
+        Tokenizer's maximum vocabulary size.
         Set to ``-1`` to include as many tokens as possible in vocabulary.
+        Must be larger than or equal to ``-1``.
+        See :py:meth:`lmp.tknzr.BaseTknzr.build_vocab`.
     min_count: int
         Minimum token frequency for each token to be included in tokenizer's
         vocabulary.
+        Must be larger than ``0``.
+        See :py:meth:`lmp.tknzr.BaseTknzr.build_vocab`.
     tk2id: Dict[str, int], optional
-        Token (a string) to id (an integer) lookup table.
-        If ``tk2id is not None``, then initialize lookup table with ``tk2id``.
+        Token to id lookup table.
+        If ``tk2id`` is given, then initialize token to id lookup table with
+        ``tk2id``.
         Otherwise initialize lookup table with special tokens only.
+        Keys in ``tk2id`` must be ``str``, and values in ``tk2id`` must be
+        non-negative integers.
+        See :py:meth:`lmp.tknzr.BaseTknzr.build_vocab`.
     kwargs: Dict, optional
         Useless parameter.
-        Left intended for subclass parameters extension.
+        Intently left for subclass parameters extension.
 
     Attributes
     ==========
     bos_tk: ClassVar[str]
-        Token which represents the begining of a text.
-        Text will be prepended with ``self.__class__.bos_tk`` when encoded by
-        ``self.enc()``.
+        Special token which represents the begining of a text.
+        Text will be prepended with :py:attr:`lmp.tknzr.BaseTknzr.bos_tk` when
+        encoded by :py:attr:`lmp.tknzr.BaseTknzr.enc`.
     bos_tkid: ClassVar[int]
-        Token id of ``self.__class__.bos_tk``.
+        Special token id of :py:attr:`lmp.tknzr.BaseTknzr.bos_tk`.
     eos_tk: ClassVar[str]
-        Token which represents the end of a text.
-        Text will be appended with ``self.__class__.eos_tk`` when encoded by
-        ``self.enc()``.
+        Special token which represents the end of a text.
+        Text will be appended with :py:attr:`lmp.tknzr.BaseTknzr.eos_tk` when
+        encoded by :py:attr:`lmp.tknzr.BaseTknzr.enc`.
     eos_tkid: ClassVar[int]
-        Token id of ``self.__class__.eos_tk``.
+        Special token id of :py:attr:`lmp.tknzr.BaseTknzr.eos_tk`.
     file_name: ClassVar[str]
-        Tokenizer's configuration output file name.
+        Tokenizer's configuration file name.
     id2tk: Dict[int, str]
-        Id (an integer) to token (a string) lookup table.
+        Id (a non-negative integer) to token (a string) lookup table.
     is_uncased: bool
-        When performing ``self.norm()``, convert text into lowercase if
-        ``self.is_uncased == True``.
+        When performing :py:meth:`lmp.tknzr.BaseTknzr.norm`, convert text into
+        lowercase if :py:attr:`lmp.tknzr.BaseTknzr.is_uncased` is ``True``.
     max_vocab: int
-        Maximum vocabulary size.
+        Tokenizer's maximum vocabulary size.
         Set to ``-1`` to include as many tokens as possible in vocabulary.
     min_count: int
         Minimum token frequency for each token to be included in tokenizer's
         vocabulary.
     pad_tk: ClassVar[str]
-        Token which represents paddings of a text.
-        Text may be appended with ``self.__class__.pad_tk`` when encoded by
-        ``self.enc()``.
+        Special token which represents paddings of a text.
+        Text may be appended with padding tokens
+        :py:attr:`lmp.tknzr.BaseTknzr.pad_tk` when encoded by
+        :py:attr:`lmp.tknzr.BaseTknzr.enc`.
     pad_tkid: ClassVar[int]
-        Token id of ``self.__class__.pad_tk``.
+        Special token id of :py:attr:`lmp.tknzr.BaseTknzr.pad_tk`.
     tk2id: Dict[str, int]
-        Token (a string) to id (an integer) lookup table.
+        Token (a string) to id (a non-negative integer) lookup table.
     tknzr_name: ClassVar[str]
         Display name for tokenizer on CLI.
         Used for command line argument parsing.
-        Subclass must overwrite ``tknzr_name`` attribute.
+        Subclass must overwrite ``tknzr_name`` class attribute.
     unk_tk: ClassVar[str]
-        Token which represents unknown tokens in a text.
-        Tokens in text may be replaced with ``self.__class__.unk_tk`` when
-        encoded by ``self.enc()``.
+        Special token which represents unknown tokens in a text.
+        Tokens in text may be replaced with
+        :py:attr:`lmp.tknzr.BaseTknzr.unk_tk` when encoded by
+        :py:attr:`lmp.tknzr.BaseTknzr.enc`.
     unk_tkid: ClassVar[int]
-        Token id of ``self.__class__.unk_tk``.
+        Special token id of :py:attr:`lmp.tknzr.BaseTknzr.unk_tk`.
         Token ids in a sequence may be replaced with
-        ``self.__class__.unk_tkid`` when decoded by ``self.dec()``.
+        :py:attr:`lmp.tknzr.BaseTknzr.unk_tkid` when decoded by
+        :py:attr:`lmp.tknzr.BaseTknzr.dec`.
 
     Raises
     ======
     TypeError
-        When parameters are not confront their respective type annotation.
+        When parameters do not obey their type annotations.
+    ValueError
+        When parameters do not obey their value contraints.
+
+    See Also
+    ========
+    lmp.tknzr
+        All available tokenizers.
     """
     bos_tk: ClassVar[str] = '[bos]'
     bos_tkid: ClassVar[int] = 0
@@ -111,36 +140,76 @@ class BaseTknzr(abc.ABC):
             tk2id: Optional[Dict[str, int]] = None,
             **kwargs: Optional[Dict],
     ):
+        #######################################################################
+        # Required parameters section.
+        #######################################################################
+
+        # ---------------------------------------------------------------------
+        # Checking parameter `is_uncased`.
         if not isinstance(is_uncased, bool):
             raise TypeError('`is_uncased` must be an instance of `bool`.')
 
+        self.is_uncased = is_uncased
+        # Finish checking parameter `is_uncased`.
+        # ---------------------------------------------------------------------
+
+        # ---------------------------------------------------------------------
+        # Checking parameter `max_vocab`.
         if not isinstance(max_vocab, int):
             raise TypeError('`max_vocab` must be an instance of `int`.')
 
+        if max_vocab < -1:
+            raise ValueError(
+                '`max_vocab` must be larger than or equal to `-1`.'
+            )
+
+        self.max_vocab = max_vocab
+        # Finish checking parameter `max_vocab`.
+        # ---------------------------------------------------------------------
+
+        # ---------------------------------------------------------------------
+        # Checking parameter `min_count`.
         if not isinstance(min_count, int):
             raise TypeError('`min_count` must be an instance of `int`.')
 
+        if min_count < 1:
+            raise ValueError('`min_count` must be larger than `0`.')
+
+        self.min_count = min_count
+        # Finish checking parameter `min_count`.
+        # ---------------------------------------------------------------------
+
+        #######################################################################
+        # Optional parameters section.
+        #######################################################################
+
+        # ---------------------------------------------------------------------
+        # Checking parameter `tk2id`.
+        self.tk2id: Dict[str, int] = {}
+        self.id2tk: Dict[int, str] = {}
+
+        # Only perform checking when `tk2id` is given.
         if tk2id is not None:
             if not isinstance(tk2id, dict):
                 raise TypeError('`tk2id` must be an instance of `dict`.')
+            for k, v in tk2id.items():
+                if not isinstance(k, str):
+                    raise TypeError(
+                        'All keys in `tk2id` must be instances of `str`.'
+                    )
+                if not isinstance(v, int):
+                    raise TypeError(
+                        'All values in `tk2id` must be instances of `int`.'
+                    )
+                if v < 0:
+                    raise ValueError(
+                        'All values in `tk2id` must be non-negative integers.'
+                    )
 
-        if max_vocab < -1:
-            raise ValueError(
-                '`max_vocab` must be larger than or equal to `-1`')
-
-        if min_count < 1:
-            raise ValueError('`min_count` must be larger than `0`')
-
-        self.is_uncased = is_uncased
-        self.max_vocab = max_vocab
-        self.min_count = min_count
-
-        # Load pre-trained vocabulary.
-        self.tk2id: Dict[str, int] = {}
-        self.id2tk: Dict[int, str] = {}
-        if tk2id is not None:
+            # Load pre-trained vocabulary.
             self.tk2id = tk2id
             self.id2tk = {v: k for k, v in tk2id.items()}
+
         # Initialize vocabulary with special tokens.
         else:
             for tk, tkid in [
@@ -151,14 +220,16 @@ class BaseTknzr(abc.ABC):
             ]:
                 self.tk2id[tk] = tkid
                 self.id2tk[tkid] = tk
+        # Finish checking parameter `tk2id`.
+        # ---------------------------------------------------------------------
 
     def save(self, exp_name: str) -> None:
         r"""Save :term:`tokenizer` configuration in JSON format.
 
-        Save the trained tokenizer's configuration into JSON format and named
-        it with ``self.__class__.file_name``.
-        This method will create experiment path first if experiment path does
-        not exist.
+        Save trained tokenizer's configuration into JSON format and named it as
+        :py:attr:`lmp.tknzr.BaseTknzr.file_name`.
+        This method will create a directory for each tokenizer training
+        experiment if that directory is not created before.
 
         Parameters
         ==========
@@ -175,6 +246,7 @@ class BaseTknzr(abc.ABC):
         See Also
         ========
         lmp.tknzr.BaseTknzr.load
+            Load pre-trained tokenizers from JSON.
 
         Examples
         ========
@@ -211,14 +283,14 @@ class BaseTknzr(abc.ABC):
     def load(cls, exp_name: str):
         r"""Load :term:`tokenizer` configuration from JSON file.
 
-        Load pre-trained tokenizer using saved configuration.
+        Load pre-trained tokenizer using previously saved configuration.
         This class method only work if pre-trained tokenizer exists under
         :term:`experiment` ``exp_name``.
 
         Parameters
         ==========
         exp_name: str
-            Name of the existing experiment.
+            Name of existing experiment.
 
         Raises
         ======
@@ -234,6 +306,7 @@ class BaseTknzr(abc.ABC):
         See Also
         ========
         lmp.tknzr.BaseTknzr.save
+            Save trained tokenizer into JSON format.
 
         Examples
         ========
@@ -267,9 +340,10 @@ class BaseTknzr(abc.ABC):
     def norm(self, txt: str) -> str:
         r"""Perform normalization on text.
 
-        text will first be normalized using :py:func:`lmp.dset.util.norm`.
-        If ``self.is_uncased == True``, then output text will be converted into
-        lowercase.
+        Text will first be normalized using :py:func:`lmp.dset.util.norm`, then
+        perform case conversion.
+        If :py:attr:`lmp.tknzr.BaseTknzr.is_uncased` is ``True``, then output
+        text will be converted into lowercase.
 
         Parameters
         ==========
@@ -301,7 +375,8 @@ class BaseTknzr(abc.ABC):
     def tknz(self, txt: str) -> List[str]:
         r"""Perform :term:`tokenization` on text.
 
-        Text will first be normalized and then be tokenized.
+        Text will first be normalized by :py:meth:`lmp.tknzr.BaseTknz.norm`,
+        then be tokenized into list of tokens.
 
         Parameters
         ==========
@@ -316,7 +391,7 @@ class BaseTknzr(abc.ABC):
         Raises
         ======
         NotImplementedError
-            When subclass do not implement tokenization.
+            When subclasses do not implement tokenization.
 
         See Also
         ========
@@ -330,9 +405,10 @@ class BaseTknzr(abc.ABC):
 
     @abc.abstractmethod
     def dtknz(self, tks: Sequence[str]) -> str:
-        r"""Convert :term:`tokens` back to one and only one text.
+        r"""Convert :term:`tokens` back to text.
 
-        Tokens will be normalized and then be detokenized.
+        Tokens will be detokenized and normalized by
+        :py:meth:`lmp.tknzr.BaseTknz.norm`.
         The order of detokenization and normalization does not matter.
 
         Parameters
@@ -343,12 +419,12 @@ class BaseTknzr(abc.ABC):
         Returns
         =======
         str
-            Normalized text detokenized from tokens.
+            Normalized text which is detokenized from tokens.
 
         Raises
         ======
         NotImplementedError
-            When subclass do not implement detokenization.
+            When subclasses do not implement detokenization.
 
         See Also
         ========
@@ -363,35 +439,40 @@ class BaseTknzr(abc.ABC):
     def enc(self, txt: str, *, max_seq_len: Optional[int] = -1) -> List[int]:
         r"""Encode text into sequence of :term:`token id`\s.
 
-        Text will first be tokenized using ``self.tknz()``,
-        then format as follow::
+        Text will first be tokenized into sequence to tokens, then formatted
+        as follow::
 
             [bos] tk_1 tk_2 [unk] tk_4 ... tk_n [eos] [pad] ... [pad]
 
-        1. ``[bos]`` denote "begin of sentence", ``[eos]`` denote
-           "end of sentence", ``[pad]`` denote "padding of sentence" and
-           ``[unk]`` denote "unknown tokens".
+        1. Meaning of special tokens: ``[bos]`` denote "begin of sentence",
+           ``[eos]`` denote "end of sentence", ``[pad]`` denote "padding of
+           sentence" and ``[unk]`` denote "unknown tokens".
 
-        2. Both ``[bos]`` and ``[eos]`` will be added.
+        2. Both special tokens ``[bos]`` and ``[eos]`` will be added to
+           sequence of tokens.
 
-        3. If added tokens sequence is longer than ``max_seq_len``, then it
-           will be truncate to has length ``max_seq_len``.
-        4. If added tokens sequence is shorter than ``max_seq_len``, then
-           ``[pad]`` will be added util tokens sequence has length
+        3. If sequence is longer than ``max_seq_len`` after adding ``[bos]``
+           and ``[eos]``, then sequence will be truncated with length equals to
            ``max_seq_len``.
+
+        4. If sequence is shorter than ``max_seq_len`` after adding ``[bos]``
+           and ``[eos]``, then ``[pad]`` will be added util sequence has length
+           ``max_seq_len``.
+
         5. If some tokens in sequence are :term:`OOV`, then they will be
            replaced with ``[unk]``.
-        6. All tokens will be converted to token ids and returned.
+
+        6. All tokens in sequence are converted into token ids and returned.
 
         Parameters
         ==========
         txt: str
             Text to be encoded.
         max_seq_len: int, optional
-            Truncate and pad token ids sequence to maximum sequence length.
-            If ``max_seq_len == -1``, then token ids sequence will neither
-            be truncated nor be padded.
-            Defaults to ``-1``
+            Truncate or pad sequence to maximum sequence length.
+            If ``max_seq_len == -1``, then sequence will neither be truncated
+            nor be padded.
+            Defaults to ``-1``.
 
         Returns
         =======
@@ -410,6 +491,7 @@ class BaseTknzr(abc.ABC):
 
         # Convert tokens into token ids.
         for tk in self.tknz(txt):
+            # Perform token id lookup.
             try:
                 tkids.append(self.tk2id[tk])
             # Convert unknown tokens into `[unk]` token id.
@@ -435,15 +517,15 @@ class BaseTknzr(abc.ABC):
     ) -> str:
         r"""Decode sequence of :term:`token id`\s back to text.
 
-        Sequence of token ids will first be converted to sequence tokens, and
-        then be detokenized using ``self.dtknz()``.
+        Sequence of token ids will first be converted into sequence of tokens,
+        then be detokenized back to text.
 
-        Special tokens (``[bos]``, ``[eos]``, ``[pad]``) will be removed if
+        Special tokens other than ``[unk]`` will be removed if
         ``rm_sp_tks == True``.
         Unknown tokens ``[unk]`` will not be removed even if
         ``rm_sp_tks == True``.
         If some token ids in sequence are not in tokenizer's inverse lookup
-        vocabulary, then they will be converted into ``[unk]`` token.
+        table, then they will be converted into ``[unk]`` token.
 
         Parameters
         ==========
@@ -497,8 +579,9 @@ class BaseTknzr(abc.ABC):
     ) -> List[List[int]]:
         r"""Encode batch of text into batch of sequences of token ids.
 
-        Each text in ``batch_txt`` will be encoded with ``self.enc()``.
-        All encoded sequence of token ids will have same length.
+        Each text in ``batch_txt`` will be encoded with
+        :py:meth:`lmp.tknzr.BaseTknzr.enc`.
+        All encoded sequence of token ids will have the same length.
 
         If ``max_seq_len == -1``, then ``max_seq_len`` will be set to the
         longest encoded sequence in ``batch_txt``.
@@ -508,11 +591,11 @@ class BaseTknzr(abc.ABC):
         batch_txt: Sequence[str],
             Batch of text to be encoded.
         max_seq_len: int, optional
-            Truncate and pad each token ids sequence to maximum sequence
-            length.
+            Truncate and pad each token ids sequence in the batch to maximum
+            sequence length.
             If ``max_seq_len == -1``, then ``max_seq_len`` will be set to the
             longest encoded sequence in ``batch_txt``.
-            Defaults to ``-1``
+            Defaults to ``-1``.
 
         Returns
         =======
@@ -585,21 +668,22 @@ class BaseTknzr(abc.ABC):
     def build_vocab(self, batch_txt: Sequence[str]) -> None:
         r"""Build :term:`vocabulary` for tokenizer.
 
-        Build :term:`vocabulary` based on :token:term frequency.
+        Build vocabulary based on :term:`token` frequency.
         Each text in ``batch_text`` will first be normalized then tokenized.
         We then count each token's frequency and build vocabulary based on
         token's frequency.
-        Vocabulary is sorted by :term:`token` frenquency in descending
-        order.
+        Vocabulary is sorted by token frenquency in descending order.
 
-        If a token is going to add to vocabulary, then its token id will be the
-        largest token id + 1.
-        If a token's frequency is lower than ``self.min_count``, then that
-        token will not be included in the vocabulary.
-        If a token is already vocabulary, then it will not be included in
-        vocabulary again.
-        If the size of the vocabulary already ``>= self.max_vocab``, then
-        no new tokens will be added.
+        If a token is going to be added to vocabulary, then its token id will
+        be assign to the largest token id + 1.
+        If a token's frequency is lower than
+        :py:attr:`lmp.tknzr.BaseTknzr.min_count`, then that token will not be
+        added to vocabulary.
+        If a token is already in vocabulary, then it will not be added again to
+        vocabulary.
+        If the size of vocabulary is already larger than
+        :py:attr:`lmp.tknzr.BaseTknzr.max_vocab`, then no new tokens will be
+        added to vocabulary.
 
         Parameters
         ==========
@@ -661,7 +745,7 @@ class BaseTknzr(abc.ABC):
 
     @staticmethod
     def train_parser(parser: argparse.ArgumentParser) -> None:
-        r"""Training tokenizer CLI arguments parser.
+        r"""Training :term:`tokenizer` CLI arguments parser.
 
         Parameters
         ==========

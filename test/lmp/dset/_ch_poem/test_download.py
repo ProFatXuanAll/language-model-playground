@@ -1,18 +1,26 @@
-r"""Test the downloaded file
+r"""Test the ability to download dataset files.
 
 Test target:
-- :py:meth:`lmp.tknzr._ch_poem.ChPoemDset.download`.
+- :py:meth:`lmp.dset.ChPoemDset.download`.
 """
+
 import os
 
-from lmp import path
+import lmp.path
+from lmp.dset import ChPoemDset
 
 
-def test_dset_file_exist(dset_ver, download_dset, cleandir):
-    r"""Dataset must be downloaded to right places"""
+def test_download():
+    r"""Dataset must be able to download."""
 
-    file_path = os.path.join(path.DATA_PATH,
-                             download_dset.file_name.format(dset_ver))
+    for ver in ChPoemDset.vers:
+        # Download specified version.
+        ChPoemDset(ver=ver).download()
 
-    assert os.path.exists(path.DATA_PATH)
-    assert os.path.exists(file_path)
+        # Check file existence.
+        file_path = os.path.join(
+            lmp.path.DATA_PATH,
+            ChPoemDset.file_name.format(ver),
+        )
+
+        assert os.path.exists(file_path)

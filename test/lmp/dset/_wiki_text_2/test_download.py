@@ -1,17 +1,26 @@
-r"""Test the downloaded file
+r"""Test the ability to download dataset files.
 
 Test target:
-- :py:meth:`lmp.tknzr._wiki_text_2.WikiText2Dset.download`.
+- :py:meth:`lmp.dset.WikiText2Dset.download`.
 """
+
 import os
 
-from lmp import path
+import lmp.path
+from lmp.dset import WikiText2Dset
 
 
-def test_dset_file_exist(dset_ver, download_dset, cleandir):
-    r"""Dataset must be downloaded to right places"""
-    file_path = os.path.join(path.DATA_PATH,
-                             download_dset.file_name.format(dset_ver))
+def test_download():
+    r"""Dataset must be able to download."""
 
-    assert os.path.exists(path.DATA_PATH)
-    assert os.path.exists(file_path)
+    for ver in WikiText2Dset.vers:
+        # Download specified version.
+        WikiText2Dset(ver=ver).download()
+
+        # Check file existence.
+        file_path = os.path.join(
+            lmp.path.DATA_PATH,
+            WikiText2Dset.file_name.format(ver),
+        )
+
+        assert os.path.exists(file_path)

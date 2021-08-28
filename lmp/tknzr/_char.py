@@ -27,7 +27,7 @@ class CharTknzr(BaseTknzr):
         Otherwise initialize lookup table with special tokens only.
     kwargs: Dict, optional
         Useless parameter.
-        Left intended for subclass parameters extension.
+        Intently left for subclass parameters extension.
 
     Attributes
     ==========
@@ -38,7 +38,7 @@ class CharTknzr(BaseTknzr):
     Raises
     ======
     TypeError
-        When parameters are not confront their respective type annotation.
+        When parameters do not obey their type annotations.
 
     See Also
     ========
@@ -59,7 +59,8 @@ class CharTknzr(BaseTknzr):
     def tknz(self, txt: str) -> List[str]:
         r"""Perform character :term:`tokenization` on text.
 
-        Text will first be normalized and then be tokenized.
+        Text will first be normalized by :py:meth:`lmp.tknzr.BaseTknz.norm`,
+        then be tokenized into list of characters.
 
         Parameters
         ==========
@@ -69,7 +70,7 @@ class CharTknzr(BaseTknzr):
         Returns
         =======
         List[str]
-            List of normalized character tokens tokenized from text.
+            List of normalized characters.
 
         See Also
         ========
@@ -89,9 +90,10 @@ class CharTknzr(BaseTknzr):
         return list(self.norm(txt))
 
     def dtknz(self, tks: Sequence[str]) -> str:
-        r"""Convert :term:`tokens` back to one and only one text.
+        r"""Convert :term:`tokens` back to text.
 
-        Tokens are simply joined without whitespace and then normalized.
+        Tokens will be joined without whitespaces.
+        Returned text is normalized by :py:meth:`lmp.tknzr.BaseTknz.norm`.
 
         Parameters
         ==========
@@ -101,8 +103,8 @@ class CharTknzr(BaseTknzr):
         Returns
         =======
         str
-            Normalized text without additional whitespaces other than ones
-            come from tokens.
+            Normalized text without additional whitespaces other than the ones
+            came with tokens.
 
         See Also
         ========

@@ -82,3 +82,6 @@ html_static_path = ['_static']
 
 # Add source suffix.
 source_suffix = ['.rst', '.md']
+
+# Do not append parentheses to functions.
+add_function_parentheses = False

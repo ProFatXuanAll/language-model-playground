@@ -47,12 +47,12 @@ class WikiText2Dset(BaseDset):
         Used only for downloading dataset files.
     lang: ClassVar[str]
         Use English as primary language.
-    spls: Sequence[str]
+    spls: List[str]
         All samples in the dataset.
     ver: str
         Version of the dataset.
     vers: ClassVar[List[str]]
-        All available version of the dataset.
+        All available versions of the dataset.
         Used to check whether specified version ``ver`` is available.
     url: ClassVar[str]
         URL for downloading dataset files.

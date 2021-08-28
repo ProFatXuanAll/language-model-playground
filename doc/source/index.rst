@@ -6,7 +6,7 @@
 Welcome to Language Model Playground's documentation!
 =====================================================
 
-**Language model playground** is a tutorial of "How to implement
+**Language model playground** is a tutorial about "How to implement
 :term:`neural network` based :term:`language models`".
 We use Pytorch_ to implement :term:`language models`.
 

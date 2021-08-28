@@ -18,7 +18,7 @@ LANG_SET: Final[Set[str]]
 
 Examples
 ========
-Check ``'wikitext-2'`` is in available dataset class.
+Check ``'wikitext-2'`` is in available dataset classes.
 
 >>> from lmp.dset import DSET_OPTS
 >>> 'wikitext-2' in DSET_OPTS

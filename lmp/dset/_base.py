@@ -13,8 +13,9 @@ class BaseDset(torch.utils.data.Dataset):
     r"""Dataset base class.
 
     All dataset files are hosted on `demo-dataset`_ repository.
-    If dataset files is not on your local repository, then it will
-    be automatically downloaded from `demo-dataset`_ repository.
+    If any dataset files is not on your local machine, then
+    :py:class:`lmp.dset.BaseDset` will automatically download dataset files
+    from `demo-dataset`_ repository.
     Once dataset files are downloaded, they will not be downloaded again.
 
     .. _`demo-dataset`: https://github.com/ProFatXuanAll/demo-dataset
@@ -39,12 +40,12 @@ class BaseDset(torch.utils.data.Dataset):
         Used only for downloading dataset files.
     lang: ClassVar[str]
         Language of the dataset.
-    spls: Sequence[str]
+    spls: List[str]
         All samples in the dataset.
     ver: str
         Version of the dataset.
     vers: ClassVar[List[str]]
-        All available version of the dataset.
+        All available versions of the dataset.
         Used to check whether specified version ``ver`` is available.
     url: ClassVar[str]
         URL for downloading dataset files.
@@ -131,7 +132,7 @@ class BaseDset(torch.utils.data.Dataset):
         r"""Download dataset file if not exists.
 
         Only download dataset file if not exists.
-        Once downloaded will not download again.
+        Once dataset is downloaded it will not be downloaded again.
         """
         file_name = self.__class__.file_name.format(self.ver)
         file_path = os.path.join(lmp.path.DATA_PATH, file_name)
