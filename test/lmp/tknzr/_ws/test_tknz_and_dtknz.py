@@ -1,22 +1,41 @@
-r"""Test the function of tokenization
+r"""Test tokenization and detokenization.
 
 Test target:
-- :py:meth:`lmp.tknzr._ws.WsTknzr.tknz`.
-- :py:meth:`lmp.tknzr._ws.WsTknzr.dtknz`.
+- :py:meth:`lmp.tknzr.WsTknzr.dtknz`.
+- :py:meth:`lmp.tknzr.WsTknzr.tknz`.
 """
+
+from typing import List
 
 import pytest
 
-from lmp.tknzr._ws import WsTknzr
+import lmp.dset.util
+from lmp.tknzr import WsTknzr
 
 
 @pytest.mark.parametrize(
-    "parameters,test_input,expected",
+    'parameters,test_input,expected',
     [
-        # Test cased
+        # Test subject:
+        # Input empty string.
         #
-        # Expect the character must be transformed from capital to lower case,
-        # when the `is_uncased` is true.
+        # Expectation:
+        # Return empty list.
+        (
+            {
+                'is_uncased': True,
+                'max_vocab': -1,
+                'min_count': 1,
+                'tk2id': None,
+            },
+            '',
+            [],
+        ),
+        # Test subject:
+        # Perform case normalization on output tokens.
+        #
+        # Expectation:
+        # Split text based on whitespaces.
         (
             {
                 'is_uncased': True,
@@ -27,10 +46,11 @@ from lmp.tknzr._ws import WsTknzr
             'A B c',
             ['a', 'b', 'c'],
         ),
-        # Test uncased
+        # Test subject:
+        # Reserve case.
         #
-        # Expect the character must not be transformed from capital
-        # to lower case, when the `is_uncased` is false.
+        # Expectation:
+        # Split text based on whitespaces while reserving case.
         (
             {
                 'is_uncased': False,
@@ -39,39 +59,13 @@ from lmp.tknzr._ws import WsTknzr
                 'tk2id': None,
             },
             'A B c',
-            ['A', 'B', 'c']
+            ['A', 'B', 'c'],
         ),
-        (
-            # Test whitespace
-            #
-            # Expect whitespace must be tokenenized, when they whitespace is
-            # in the middle of string.
-            {
-                'is_uncased': True,
-                'max_vocab': -1,
-                'min_count': 1,
-                'tk2id': None,
-            },
-            '1 2 3 4',
-            ['1', '2', '3', '4']
-        ),
-        (
-            # Test whitespace
-            #
-            # Expect whitespace must not be tokenized, when they whitespace is
-            # in the front of string.
-            {
-                'is_uncased': True,
-                'max_vocab': -1,
-                'min_count': 1,
-                'tk2id': None,
-            },
-            ' 1 2 3 4 ',
-            ['1', '2', '3', '4']
-        ),
-        # Test Chinese characters input
+        # Test subject:
+        # Stripping whitespaces.
         #
-        # Expect the chinese characters be tokenized
+        # Expectation:
+        # Whitespaces are stripped from both ends.
         (
             {
                 'is_uncased': True,
@@ -79,13 +73,43 @@ from lmp.tknzr._ws import WsTknzr
                 'min_count': 1,
                 'tk2id': None,
             },
-            '哈囉 世界',
-            ['哈囉', '世界'],
+            '  a b c ',
+            ['a', 'b', 'c'],
+        ),
+        # Test subject:
+        # Collapse whitespaces.
+        #
+        # Expectation:
+        # Treat consecutive whitespaces as single whitespace.
+        (
+            {
+                'is_uncased': True,
+                'max_vocab': -1,
+                'min_count': 1,
+                'tk2id': None,
+            },
+            'a  b   c',
+            ['a', 'b', 'c'],
+        ),
+        # Test subject:
+        # NFKC normalization.
+        #
+        # Expectation:
+        # Perform NFKC normalization on output tokens.
+        (
+            {
+                'is_uncased': True,
+                'max_vocab': -1,
+                'min_count': 1,
+                'tk2id': None,
+            },
+            '０ é',
+            [lmp.dset.util.norm('０'), lmp.dset.util.norm('é')],
         ),
     ]
 )
-def test_tknz(parameters, test_input, expected):
-    r"""Text must be tokenize to characters"""
+def test_tknz(parameters, test_input: str, expected: List[str]):
+    r"""Tokenize text based on whitespaces."""
 
     tknzr = WsTknzr(
         is_uncased=parameters['is_uncased'],
@@ -96,11 +120,13 @@ def test_tknz(parameters, test_input, expected):
 
 
 @pytest.mark.parametrize(
-    "parameters,test_input,expected",
+    'parameters,test_input,expected',
     [
-        # Test empty input text
+        # Test subject:
+        # Input empty list.
         #
-        # Expect empty output
+        # Expectation:
+        # Return empty string.
         (
             {
                 'is_uncased': True,
@@ -111,10 +137,11 @@ def test_tknz(parameters, test_input, expected):
             [],
             '',
         ),
-        # Test whitespace
+        # Test subject:
+        # Perform case normalization on output text.
         #
-        # Expect whitespace must not be detokenenized, when they whitespace is
-        # in the middle of string.
+        # Expectation:
+        # Return text in lowercase.
         (
             {
                 'is_uncased': True,
@@ -122,26 +149,29 @@ def test_tknz(parameters, test_input, expected):
                 'min_count': 1,
                 'tk2id': None,
             },
-            ['1', '2', ' ', '3'],
-            '1 2 3',
+            ['A', 'B', 'c'],
+            'a b c',
         ),
-        # Test whitespace
+        # Test subject:
+        # Reserve case.
         #
-        # Expect whitespace must not be detokenized, when they whitespace is
-        # in the front of string.
+        # Expectation:
+        # Return text in original case.
         (
             {
-                'is_uncased': True,
+                'is_uncased': False,
                 'max_vocab': -1,
                 'min_count': 1,
                 'tk2id': None,
             },
-            [' ', '1', '2', '3', ' '],
-            '1 2 3',
+            ['A', 'B', 'c'],
+            'A B c',
         ),
-        # Test Chinese characters input
+        # Test subject:
+        # Stripping whitespaces.
         #
-        # Expect the chinese characters be detokenized
+        # Expectation:
+        # Whitespaces characters are stripped from both ends.
         (
             {
                 'is_uncased': True,
@@ -149,13 +179,43 @@ def test_tknz(parameters, test_input, expected):
                 'min_count': 1,
                 'tk2id': None,
             },
-            ['哈', '囉', ' ', '世', '界'],
-            '哈 囉 世 界',
-        )
+            [' ', 'a', 'b', 'c', ' ', ' '],
+            'a b c',
+        ),
+        # Test subject:
+        # Collapse whitespace tokens.
+        #
+        # Expectation:
+        # Consecutive whitespace tokens are treated as single whitespace.
+        (
+            {
+                'is_uncased': True,
+                'max_vocab': -1,
+                'min_count': 1,
+                'tk2id': None,
+            },
+            ['a', ' ', 'b', ' ', ' ', 'c'],
+            'a b c',
+        ),
+        # Test subject:
+        # NFKC normalization.
+        #
+        # Expectation:
+        # Perform NFKC normalization on output tokens.
+        (
+            {
+                'is_uncased': True,
+                'max_vocab': -1,
+                'min_count': 1,
+                'tk2id': None,
+            },
+            ['０', 'é'],
+            lmp.dset.util.norm('０ é'),
+        ),
     ]
 )
-def test_dtknz(parameters, test_input, expected):
-    r"""Token must be joined by characters."""
+def test_dtknz(parameters, test_input: List[str], expected: str):
+    r"""Detokenize characters back to text."""
 
     tknzr = WsTknzr(
         is_uncased=parameters['is_uncased'],

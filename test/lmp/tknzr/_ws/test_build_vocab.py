@@ -1,20 +1,25 @@
-r"""Test the construction of vocabulary
+r"""Test the construction of whitespace tokenizer's vocabulary.
 
 Test target:
-- :py:meth:`lmp.tknzr._ws.WsTknzr`.
+- :py:meth:`lmp.tknzr.WsTknzr.build_vocab`.
 """
+
+from typing import Dict, Sequence
+
 import pytest
 
-from lmp.tknzr._ws import WsTknzr
+import lmp.dset.util
+from lmp.tknzr import WsTknzr
 
 
 @pytest.mark.parametrize(
-    "parameters,test_input,expected",
+    'parameters,test_input,expected',
     [
-        # Test empty input sequence of text
+        # Test subject:
+        # Input empty batch of text.
         #
-        # Expect only special tokens, when input empty text and assign
-        # None for tk2id.
+        # Expectation:
+        # Only special tokens were added to vocabulary.
         (
             {
                 'is_uncased': True,
@@ -30,10 +35,11 @@ from lmp.tknzr._ws import WsTknzr
                 '[unk]': 3,
             }
         ),
-        # Test Chinese characters input
+        # Test subject:
+        # Unlimited vocabulary size.
         #
-        # Expect the chinese characters and special tokens, when input Chinese
-        # characters and tk2id with None.
+        # Expectation:
+        # Adding all tokens into vocabulary when `max_vocab == -1`.
         (
             {
                 'is_uncased': True,
@@ -41,7 +47,11 @@ from lmp.tknzr._ws import WsTknzr
                 'min_count': 1,
                 'tk2id': None,
             },
-            ('哈 囉 世 界'),
+            (
+                '哈 囉',
+                '世 界',
+                'a b c d',
+            ),
             {
                 '[bos]': 0,
                 '[eos]': 1,
@@ -51,12 +61,19 @@ from lmp.tknzr._ws import WsTknzr
                 '囉': 5,
                 '世': 6,
                 '界': 7,
+                'a': 8,
+                'b': 9,
+                'c': 10,
+                'd': 11,
             }
         ),
-        # Test frequency
+        # Test subject:
+        # Token frequencies affect the order of construction of vocabulary.
         #
-        # Expect the higher frequency the smaller id, if they have same
-        # frequency, then compare the sequence of token.
+        # Expectation:
+        # The higher of the token frequency, the smaller of the token id.
+        # If tokens have the same frequencies, then tokens are added to
+        # vocabulary in the order of appearance in `batch_txt`.
         (
             {
                 'is_uncased': True,
@@ -68,6 +85,7 @@ from lmp.tknzr._ws import WsTknzr
                 'cc d b a',
                 'cc d b',
                 'cc d',
+                'eee eee eee',
             ),
             {
                 '[bos]': 0,
@@ -76,89 +94,17 @@ from lmp.tknzr._ws import WsTknzr
                 '[unk]': 3,
                 'cc': 4,
                 'd': 5,
-                'b': 6,
-                'a': 7,
+                'eee': 6,
+                'b': 7,
+                'a': 8,
             }
         ),
-        # Test whitespace
+        # Test subject:
+        # Filter tokens by `min_count`.
         #
-        # Expect the multiple whitespace must not influence the output.
-        (
-            {
-                'is_uncased': True,
-                'max_vocab': -1,
-                'min_count': 1,
-                'tk2id': None,
-            },
-            (' a b  c '),
-            {
-                '[bos]': 0,
-                '[eos]': 1,
-                '[pad]': 2,
-                '[unk]': 3,
-                'a': 4,
-                'b': 5,
-                'c': 6,
-            }
-        ),
-        # Test cased
-        #
-        # Expect the character must be transformed from capital to lower case,
-        # when the `is_uncased` is true.
-        (
-            {
-                'is_uncased': True,
-                'max_vocab': -1,
-                'min_count': 1,
-                'tk2id': None,
-            },
-            (
-                'a b c',
-                'A B',
-                'A'
-            ),
-            {
-                '[bos]': 0,
-                '[eos]': 1,
-                '[pad]': 2,
-                '[unk]': 3,
-                'a': 4,
-                'b': 5,
-                'c': 6,
-            }
-        ),
-        # Test uncased
-        #
-        # Expect the character must not be transformed from capital
-        # to lower case, when the `is_uncased` is false.
-        (
-            {
-                'is_uncased': False,
-                'max_vocab': -1,
-                'min_count': 1,
-                'tk2id': None,
-            },
-            (
-                'a b c',
-                'A B',
-                'A'
-            ),
-            {
-                '[bos]': 0,
-                '[eos]': 1,
-                '[pad]': 2,
-                '[unk]': 3,
-                'A': 4,
-                'a': 5,
-                'b': 6,
-                'c': 7,
-                'B': 8,
-            }
-        ),
-        # Test ``min_count``
-        #
-        # Expect only add the token whose frequency is larger
-        # than ``min_count``.
+        # Expectation:
+        # Only add tokens, whose frequencies are larger than or equal to
+        # `min_count`, into vocabulary.
         (
             {
                 'is_uncased': True,
@@ -180,11 +126,11 @@ from lmp.tknzr._ws import WsTknzr
                 'b': 5,
             }
         ),
-        # Test ``max_vocab``
+        # Test subject:
+        # Maximum vocabulary size.
         #
-        # Expect add the tokens until vocabulary's size is equal
-        # to ``max_vocab``. If ``max_vocab`` is -1, then add all
-        # token to vocabulary.
+        # Expectation:
+        # Keep adding tokens until vocabulary's size is equal to `max_vocab`.
         (
             {
                 'is_uncased': True,
@@ -205,13 +151,172 @@ from lmp.tknzr._ws import WsTknzr
                 'a': 4,
             }
         ),
+        # Test subject:
+        # Build vocabulary with normalized text.
+        #
+        # Expectation:
+        # Vocabulary must be normalized.
+        (
+            {
+                'is_uncased': False,
+                'max_vocab': -1,
+                'min_count': 1,
+                'tk2id': None,
+            },
+            (
+                '０',
+                '０ é',
+            ),
+            {
+                '[bos]': 0,
+                '[eos]': 1,
+                '[pad]': 2,
+                '[unk]': 3,
+                lmp.dset.util.norm('０'): 4,
+                lmp.dset.util.norm('é'): 5,
+            },
+        ),
+        # Test subject:
+        # Differentiate upper cases and lower cases.
+        #
+        # Expectation:
+        # Treat cases differently when `is_uncased == False`
+        (
+            {
+                'is_uncased': False,
+                'max_vocab': -1,
+                'min_count': 1,
+                'tk2id': None,
+            },
+            (
+                'A B C',
+                'a b c',
+            ),
+            {
+                '[bos]': 0,
+                '[eos]': 1,
+                '[pad]': 2,
+                '[unk]': 3,
+                'A': 4,
+                'B': 5,
+                'C': 6,
+                'a': 7,
+                'b': 8,
+                'c': 9,
+            }
+        ),
+        # Test subject:
+        # Extend vocabulary.
+        #
+        # Expectation:
+        # Build vocabulary based on existed vocabulary.
+        (
+            {
+                'is_uncased': True,
+                'max_vocab': -1,
+                'min_count': 1,
+                'tk2id': {
+                    '[bos]': 0,
+                    '[eos]': 1,
+                    '[pad]': 2,
+                    '[unk]': 3,
+                    'a': 4,
+                    'b': 5,
+                    'c': 6,
+                },
+            },
+            (
+                'd e f',
+                'd e',
+                'd',
+            ),
+            {
+                '[bos]': 0,
+                '[eos]': 1,
+                '[pad]': 2,
+                '[unk]': 3,
+                'a': 4,
+                'b': 5,
+                'c': 6,
+                'd': 7,
+                'e': 8,
+                'f': 9,
+            },
+        ),
+        # Test sucject:
+        # Treat multiple whitespaces as single whitespace.
+        #
+        # Expectation:
+        # All whitespaces are used for tokens separation.
+        (
+            {
+                'is_uncased': True,
+                'max_vocab': -1,
+                'min_count': 1,
+                'tk2id': None,
+            },
+            (
+                'a  b c',
+                'd e   f',
+                'g   h   i',
+            ),
+            {
+                '[bos]': 0,
+                '[eos]': 1,
+                '[pad]': 2,
+                '[unk]': 3,
+                'a': 4,
+                'b': 5,
+                'c': 6,
+                'd': 7,
+                'e': 8,
+                'f': 9,
+                'g': 10,
+                'h': 11,
+                'i': 12,
+            }
+        ),
+        # Test sucject:
+        # Remove redudant whitespaces.
+        #
+        # Expectation:
+        # Whitespaces at the start or the end of sentences are discarded.
+        (
+            {
+                'is_uncased': True,
+                'max_vocab': -1,
+                'min_count': 1,
+                'tk2id': None,
+            },
+            (
+                ' a b c',
+                'd e f ',
+                '  g h i   ',
+            ),
+            {
+                '[bos]': 0,
+                '[eos]': 1,
+                '[pad]': 2,
+                '[unk]': 3,
+                'a': 4,
+                'b': 5,
+                'c': 6,
+                'd': 7,
+                'e': 8,
+                'f': 9,
+                'g': 10,
+                'h': 11,
+                'i': 12,
+            }
+        ),
     ]
 )
-def test_build_vocab(parameters, test_input, expected):
-    r"""Test tk2id
-
-    Expect tk2id must save the correct vocabulary and ids.
-    """
+def test_build_vocab(
+    parameters,
+    test_input: Sequence[str],
+    expected: Dict[str, int],
+):
+    r"""Correctly build vocabulary under the constraint of given parameters."""
 
     tknzr = WsTknzr(
         is_uncased=parameters['is_uncased'],

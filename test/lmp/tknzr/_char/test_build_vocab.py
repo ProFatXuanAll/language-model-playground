@@ -1,20 +1,25 @@
-r"""Test the construction of vocabulary
+r"""Test the construction of character tokenizer's vocabulary.
 
 Test target:
-- :py:meth:`lmp.tknzr._ch.CharTknzr.build_vocab`.
+- :py:meth:`lmp.tknzr.CharTknzr.build_vocab`.
 """
+
+from typing import Dict, Sequence
+
 import pytest
 
-from lmp.tknzr._char import CharTknzr
+import lmp.dset.util
+from lmp.tknzr import CharTknzr
 
 
 @pytest.mark.parametrize(
-    "parameters,test_input,expected",
+    'parameters,test_input,expected',
     [
-        # Test empty input sequence of text
+        # Test subject:
+        # Input empty batch of text.
         #
-        # Expect only special tokens, when input empty text and assign
-        # None for tk2id.
+        # Expectation:
+        # Only special tokens were added to vocabulary.
         (
 
             {
@@ -25,16 +30,17 @@ from lmp.tknzr._char import CharTknzr
             },
             (),
             {
-                '[bos]': 0,
-                '[eos]': 1,
-                '[pad]': 2,
-                '[unk]': 3,
+                CharTknzr.bos_tk: CharTknzr.bos_tkid,
+                CharTknzr.eos_tk: CharTknzr.eos_tkid,
+                CharTknzr.pad_tk: CharTknzr.pad_tkid,
+                CharTknzr.unk_tk: CharTknzr.unk_tkid,
             }
         ),
-        # Test Chinese characters input
+        # Test subject:
+        # Unlimited vocabulary size.
         #
-        # Expect the chinese characters and special tokens, when input Chinese
-        # characters and tk2id with None.
+        # Expectation:
+        # Adding all tokens into vocabulary when `max_vocab == -1`.
         (
             {
                 'is_uncased': True,
@@ -42,22 +48,33 @@ from lmp.tknzr._char import CharTknzr
                 'min_count': 1,
                 'tk2id': None,
             },
-            ('哈囉世界'),
+            (
+                '哈囉',
+                '世界',
+                'abcd',
+            ),
             {
-                '[bos]': 0,
-                '[eos]': 1,
-                '[pad]': 2,
-                '[unk]': 3,
+                CharTknzr.bos_tk: CharTknzr.bos_tkid,
+                CharTknzr.eos_tk: CharTknzr.eos_tkid,
+                CharTknzr.pad_tk: CharTknzr.pad_tkid,
+                CharTknzr.unk_tk: CharTknzr.unk_tkid,
                 '哈': 4,
                 '囉': 5,
                 '世': 6,
                 '界': 7,
+                'a': 8,
+                'b': 9,
+                'c': 10,
+                'd': 11,
             }
         ),
-        # Test frequency
+        # Test subject:
+        # Token frequencies affect the order of construction of vocabulary.
         #
-        # Expect the higher frequency the smaller id, if they have same
-        # frequency, then compare the sequence of token.
+        # Expectation:
+        # The higher of the token frequency, the smaller of the token id.
+        # If tokens have the same frequencies, then tokens are added to
+        # vocabulary in the order of appearance in `batch_txt`.
         (
             {
                 'is_uncased': True,
@@ -72,10 +89,10 @@ from lmp.tknzr._char import CharTknzr
                 'eee'
             ),
             {
-                '[bos]': 0,
-                '[eos]': 1,
-                '[pad]': 2,
-                '[unk]': 3,
+                CharTknzr.bos_tk: CharTknzr.bos_tkid,
+                CharTknzr.eos_tk: CharTknzr.eos_tkid,
+                CharTknzr.pad_tk: CharTknzr.pad_tkid,
+                CharTknzr.unk_tk: CharTknzr.unk_tkid,
                 'd': 4,
                 'c': 5,
                 'e': 6,
@@ -83,31 +100,12 @@ from lmp.tknzr._char import CharTknzr
                 'a': 8,
             }
         ),
-        # Test whitespace
+        # Test subject:
+        # Filter tokens by `min_count`.
         #
-        # Expect the whitespace must not be added to vocabulary.
-        (
-            {
-                'is_uncased': True,
-                'max_vocab': -1,
-                'min_count': 1,
-                'tk2id': None,
-            },
-            ('a b c'),
-            {
-                '[bos]': 0,
-                '[eos]': 1,
-                '[pad]': 2,
-                '[unk]': 3,
-                'a': 4,
-                'b': 5,
-                'c': 6,
-            }
-        ),
-        # Test ``min_count``
-        #
-        # Expect only add the token whose frequency is larger than
-        # ``min_count``.
+        # Expectation:
+        # Only add tokens, whose frequencies are larger than or equal to
+        # `min_count`, into vocabulary.
         (
             {
                 'is_uncased': True,
@@ -121,19 +119,19 @@ from lmp.tknzr._char import CharTknzr
                 'a',
             ),
             {
-                '[bos]': 0,
-                '[eos]': 1,
-                '[pad]': 2,
-                '[unk]': 3,
+                CharTknzr.bos_tk: CharTknzr.bos_tkid,
+                CharTknzr.eos_tk: CharTknzr.eos_tkid,
+                CharTknzr.pad_tk: CharTknzr.pad_tkid,
+                CharTknzr.unk_tk: CharTknzr.unk_tkid,
                 'a': 4,
                 'b': 5,
             },
         ),
-        # Test ``max_vocab``
+        # Test subject:
+        # Maximum vocabulary size.
         #
-        # Expect add the tokens until vocabulary's size is equal
-        # to ``max_vocat``. If ``max_vocab`` is -1, then add all
-        # token to vocabulary.
+        # Expectation:
+        # Keep adding tokens until vocabulary's size is equal to `max_vocab`.
         (
             {
                 'is_uncased': True,
@@ -147,20 +145,113 @@ from lmp.tknzr._char import CharTknzr
                 'a',
             ),
             {
-                '[bos]': 0,
-                '[eos]': 1,
-                '[pad]': 2,
-                '[unk]': 3,
+                CharTknzr.bos_tk: CharTknzr.bos_tkid,
+                CharTknzr.eos_tk: CharTknzr.eos_tkid,
+                CharTknzr.pad_tk: CharTknzr.pad_tkid,
+                CharTknzr.unk_tk: CharTknzr.unk_tkid,
                 'a': 4,
+            },
+        ),
+        # Test subject:
+        # Build vocabulary with normalized text.
+        #
+        # Expectation:
+        # Vocabulary must be normalized.
+        (
+            {
+                'is_uncased': False,
+                'max_vocab': -1,
+                'min_count': 1,
+                'tk2id': None,
+            },
+            (
+                '０',
+                '０é',
+            ),
+            {
+                CharTknzr.bos_tk: CharTknzr.bos_tkid,
+                CharTknzr.eos_tk: CharTknzr.eos_tkid,
+                CharTknzr.pad_tk: CharTknzr.pad_tkid,
+                CharTknzr.unk_tk: CharTknzr.unk_tkid,
+                lmp.dset.util.norm('０'): 4,
+                lmp.dset.util.norm('é'): 5,
+            },
+        ),
+        # Test subject:
+        # Differentiate upper cases and lower cases.
+        #
+        # Expectation:
+        # Treat cases differently when `is_uncased == False`
+        (
+            {
+                'is_uncased': False,
+                'max_vocab': -1,
+                'min_count': 1,
+                'tk2id': None,
+            },
+            (
+                'ABC',
+                'abc',
+            ),
+            {
+                CharTknzr.bos_tk: CharTknzr.bos_tkid,
+                CharTknzr.eos_tk: CharTknzr.eos_tkid,
+                CharTknzr.pad_tk: CharTknzr.pad_tkid,
+                CharTknzr.unk_tk: CharTknzr.unk_tkid,
+                'A': 4,
+                'B': 5,
+                'C': 6,
+                'a': 7,
+                'b': 8,
+                'c': 9,
+            },
+        ),
+        # Test subject:
+        # Extend vocabulary.
+        #
+        # Expectation:
+        # Build vocabulary based on existed vocabulary.
+        (
+            {
+                'is_uncased': True,
+                'max_vocab': -1,
+                'min_count': 1,
+                'tk2id': {
+                    CharTknzr.bos_tk: CharTknzr.bos_tkid,
+                    CharTknzr.eos_tk: CharTknzr.eos_tkid,
+                    CharTknzr.pad_tk: CharTknzr.pad_tkid,
+                    CharTknzr.unk_tk: CharTknzr.unk_tkid,
+                    'a': 4,
+                    'b': 5,
+                    'c': 6,
+                },
+            },
+            (
+                'def',
+                'de',
+                'd',
+            ),
+            {
+                CharTknzr.bos_tk: CharTknzr.bos_tkid,
+                CharTknzr.eos_tk: CharTknzr.eos_tkid,
+                CharTknzr.pad_tk: CharTknzr.pad_tkid,
+                CharTknzr.unk_tk: CharTknzr.unk_tkid,
+                'a': 4,
+                'b': 5,
+                'c': 6,
+                'd': 7,
+                'e': 8,
+                'f': 9,
             },
         ),
     ]
 )
-def test_build_vocab(parameters, test_input, expected):
-    r"""Test tk2id
-
-    Expect tk2id must save the correct vocabulary and ids.
-    """
+def test_build_vocab(
+    parameters,
+    test_input: Sequence[str],
+    expected: Dict[str, int],
+):
+    r"""Correctly build vocabulary under the constraint of given parameters."""
 
     tknzr = CharTknzr(
         is_uncased=parameters['is_uncased'],

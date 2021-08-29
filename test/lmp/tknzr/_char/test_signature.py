@@ -2,8 +2,7 @@ r"""Test :py:class:`lmp.tknzr.CharTknzr` signature."""
 
 import inspect
 
-from lmp.tknzr._base import BaseTknzr
-from lmp.tknzr._char import CharTknzr
+from lmp.tknzr import BaseTknzr, CharTknzr
 
 
 def test_class():

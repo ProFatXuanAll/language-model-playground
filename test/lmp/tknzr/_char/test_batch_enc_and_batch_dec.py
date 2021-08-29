@@ -1,8 +1,8 @@
 r"""Test token encoding and decoding.
 
 Test target:
-- :py:meth:`lmp.tknzr.CharTknzr.dec`.
-- :py:meth:`lmp.tknzr.CharTknzr.enc`.
+- :py:meth:`lmp.tknzr.CharTknzr.batch_dec`.
+- :py:meth:`lmp.tknzr.CharTknzr.batch_enc`.
 """
 
 from typing import List
@@ -19,7 +19,7 @@ from lmp.tknzr import CharTknzr
         # Empty input.
         #
         # Expectation:
-        # Return only `[bos]` and `[eos]`.
+        # Return empty list.
         (
             {
                 'is_uncased': True,
@@ -33,16 +33,16 @@ from lmp.tknzr import CharTknzr
                     CharTknzr.unk_tk: CharTknzr.unk_tkid,
                 },
             },
-            '',
-            [CharTknzr.bos_tkid, CharTknzr.eos_tkid],
+            [],
+            [],
         ),
         # Test subject:
         # Encoding format.
         #
         # Expectation:
-        # Add `[bos]` token at the front and `[eos]` at the end of token
-        # sequence.
-        # Output token ids instead of tokens.
+        # Add `[bos]` token at the front and `[eos]` at the end of all token
+        # sequences.
+        # Output list of token ids.
         (
             {
                 'is_uncased': True,
@@ -59,8 +59,14 @@ from lmp.tknzr import CharTknzr
                     'c': 6,
                 },
             },
-            'abc',
-            [CharTknzr.bos_tkid, 4, 5, 6, CharTknzr.eos_tkid],
+            [
+                'abc',
+                'cba',
+            ],
+            [
+                [CharTknzr.bos_tkid, 4, 5, 6, CharTknzr.eos_tkid],
+                [CharTknzr.bos_tkid, 6, 5, 4, CharTknzr.eos_tkid],
+            ],
         ),
         # Test subject:
         # Case sensitive.
@@ -82,14 +88,65 @@ from lmp.tknzr import CharTknzr
                     'A': 5,
                 },
             },
-            'aAa',
-            [CharTknzr.bos_tkid, 4, 5, 4, CharTknzr.eos_tkid],
+            [
+                'aAa',
+                'AaA',
+            ],
+            [
+                [CharTknzr.bos_tkid, 4, 5, 4, CharTknzr.eos_tkid],
+                [CharTknzr.bos_tkid, 5, 4, 5, CharTknzr.eos_tkid],
+            ],
         ),
         # Test subject:
-        # Truncate sequence when sequence length is larger than `max_seq_len`.
+        # Automatically calculate `max_seq_len`.
         #
         # Expectation:
-        # Output sequence length equals to `max_seq_len`.
+        # Pad to maximum length in the input batch.
+        (
+            {
+                'is_uncased': True,
+                'max_seq_len': -1,
+                'max_vocab': -1,
+                'min_count': 1,
+                'tk2id': {
+                    CharTknzr.bos_tk: CharTknzr.bos_tkid,
+                    CharTknzr.eos_tk: CharTknzr.eos_tkid,
+                    CharTknzr.pad_tk: CharTknzr.pad_tkid,
+                    CharTknzr.unk_tk: CharTknzr.unk_tkid,
+                    'a': 4,
+                },
+            },
+            [
+                'a',
+                'aa',
+                'aaa',
+            ],
+            [
+                [
+                    CharTknzr.bos_tkid,
+                    4,
+                    CharTknzr.eos_tkid,
+                    CharTknzr.pad_tkid,
+                    CharTknzr.pad_tkid,
+                ],
+                [
+                    CharTknzr.bos_tkid,
+                    4, 4,
+                    CharTknzr.eos_tkid,
+                    CharTknzr.pad_tkid,
+                ],
+                [
+                    CharTknzr.bos_tkid,
+                    4, 4, 4,
+                    CharTknzr.eos_tkid
+                ],
+            ],
+        ),
+        # Test subject:
+        # Truncate and pad sequences to specified length.
+        #
+        # Expectation:
+        # All output sequences' length equal to `max_seq_len`.
         (
             {
                 'is_uncased': True,
@@ -104,34 +161,27 @@ from lmp.tknzr import CharTknzr
                     'a': 4,
                 },
             },
-            'aaa',
-            [CharTknzr.bos_tkid, 4, 4, 4],
-        ),
-        # Test subject:
-        # Pad sequence when sequence length is less than `max_seq_len`.
-        #
-        # Expectation:
-        # Output sequence length equals to `max_seq_len`.
-        (
-            {
-                'is_uncased': True,
-                'max_seq_len': 6,
-                'max_vocab': -1,
-                'min_count': 1,
-                'tk2id': {
-                    CharTknzr.bos_tk: CharTknzr.bos_tkid,
-                    CharTknzr.eos_tk: CharTknzr.eos_tkid,
-                    CharTknzr.pad_tk: CharTknzr.pad_tkid,
-                    CharTknzr.unk_tk: CharTknzr.unk_tkid,
-                    'a': 4,
-                },
-            },
-            'aaa',
             [
-                CharTknzr.bos_tkid,
-                4, 4, 4,
-                CharTknzr.eos_tkid,
-                CharTknzr.pad_tkid,
+                'a',
+                'aa',
+                'aaa',
+            ],
+            [
+                [
+                    CharTknzr.bos_tkid,
+                    4,
+                    CharTknzr.eos_tkid,
+                    CharTknzr.pad_tkid,
+                ],
+                [
+                    CharTknzr.bos_tkid,
+                    4, 4,
+                    CharTknzr.eos_tkid,
+                ],
+                [
+                    CharTknzr.bos_tkid,
+                    4, 4, 4,
+                ],
             ],
         ),
         # Test subject:
@@ -153,20 +203,37 @@ from lmp.tknzr import CharTknzr
                     'a': 4,
                 },
             },
-            'abab',
             [
-                CharTknzr.bos_tkid,
-                4,
-                CharTknzr.unk_tkid,
-                4,
-                CharTknzr.unk_tkid,
-                CharTknzr.eos_tkid,
+                'abab',
+                'baba',
+            ],
+            [
+                [
+                    CharTknzr.bos_tkid,
+                    4,
+                    CharTknzr.unk_tkid,
+                    4,
+                    CharTknzr.unk_tkid,
+                    CharTknzr.eos_tkid,
+                ],
+                [
+                    CharTknzr.bos_tkid,
+                    CharTknzr.unk_tkid,
+                    4,
+                    CharTknzr.unk_tkid,
+                    4,
+                    CharTknzr.eos_tkid,
+                ],
             ],
         ),
     ],
 )
-def test_enc(parameters, test_input: str, expected: List[int]):
-    r"""Encode text to token ids."""
+def test_batch_enc(
+    parameters,
+    test_input: List[str],
+    expected: List[List[int]],
+):
+    r"""Encode batch of text to batch of token ids."""
 
     tknzr = CharTknzr(
         is_uncased=parameters['is_uncased'],
@@ -175,12 +242,13 @@ def test_enc(parameters, test_input: str, expected: List[int]):
         tk2id=parameters['tk2id'],
     )
 
-    out = tknzr.enc(test_input, max_seq_len=parameters['max_seq_len'])
+    outs = tknzr.batch_enc(test_input, max_seq_len=parameters['max_seq_len'])
 
-    assert out == expected
+    assert outs == expected
 
     if parameters['max_seq_len'] != -1:
-        assert len(out) == parameters['max_seq_len']
+        for out in outs:
+            assert len(out) == parameters['max_seq_len']
 
 
 @pytest.mark.parametrize(
@@ -190,7 +258,7 @@ def test_enc(parameters, test_input: str, expected: List[int]):
         # Empty input.
         #
         # Expectation:
-        # Return empty string.
+        # Return empty list.
         (
             {
                 'is_uncased': True,
@@ -205,13 +273,13 @@ def test_enc(parameters, test_input: str, expected: List[int]):
                 },
             },
             [],
-            '',
+            [],
         ),
         # Test subject:
         # Decoding format.
         #
         # Expectation:
-        # Output text with special tokens.
+        # Output batch of text with special tokens.
         (
             {
                 'is_uncased': True,
@@ -227,18 +295,35 @@ def test_enc(parameters, test_input: str, expected: List[int]):
                 },
             },
             [
-                CharTknzr.bos_tkid,
-                4,
-                CharTknzr.unk_tkid,
-                CharTknzr.eos_tkid,
-                CharTknzr.pad_tkid,
+                [
+                    CharTknzr.bos_tkid,
+                    4,
+                    CharTknzr.unk_tkid,
+                    CharTknzr.eos_tkid,
+                    CharTknzr.pad_tkid,
+                ],
+                [
+                    CharTknzr.bos_tkid,
+                    CharTknzr.unk_tkid,
+                    4,
+                    CharTknzr.eos_tkid,
+                    CharTknzr.pad_tkid,
+                ],
             ],
-            '{}a{}{}{}'.format(
-                CharTknzr.bos_tk,
-                CharTknzr.unk_tk,
-                CharTknzr.eos_tk,
-                CharTknzr.pad_tk,
-            ),
+            [
+                '{}a{}{}{}'.format(
+                    CharTknzr.bos_tk,
+                    CharTknzr.unk_tk,
+                    CharTknzr.eos_tk,
+                    CharTknzr.pad_tk,
+                ),
+                '{}{}a{}{}'.format(
+                    CharTknzr.bos_tk,
+                    CharTknzr.unk_tk,
+                    CharTknzr.eos_tk,
+                    CharTknzr.pad_tk,
+                ),
+            ],
         ),
         # Test subject:
         # Remove special tokens but not unknown tokens.
@@ -260,13 +345,25 @@ def test_enc(parameters, test_input: str, expected: List[int]):
                 },
             },
             [
-                CharTknzr.bos_tkid,
-                4,
-                CharTknzr.unk_tkid,
-                CharTknzr.eos_tkid,
-                CharTknzr.pad_tkid,
+                [
+                    CharTknzr.bos_tkid,
+                    4,
+                    CharTknzr.unk_tkid,
+                    CharTknzr.eos_tkid,
+                    CharTknzr.pad_tkid,
+                ],
+                [
+                    CharTknzr.bos_tkid,
+                    CharTknzr.unk_tkid,
+                    4,
+                    CharTknzr.eos_tkid,
+                    CharTknzr.pad_tkid,
+                ],
             ],
-            f'a{CharTknzr.unk_tk}',
+            [
+                f'a{CharTknzr.unk_tk}',
+                f'{CharTknzr.unk_tk}a',
+            ],
         ),
         # Test subject:
         # Encounter unknown token ids.
@@ -288,17 +385,32 @@ def test_enc(parameters, test_input: str, expected: List[int]):
                 },
             },
             [
-                CharTknzr.bos_tkid,
-                4,
-                5,
-                CharTknzr.eos_tkid,
+                [
+                    CharTknzr.bos_tkid,
+                    4,
+                    5,
+                    CharTknzr.eos_tkid,
+                ],
+                [
+                    CharTknzr.bos_tkid,
+                    5,
+                    4,
+                    CharTknzr.eos_tkid,
+                ],
             ],
-            f'a{CharTknzr.unk_tk}',
+            [
+                f'a{CharTknzr.unk_tk}',
+                f'{CharTknzr.unk_tk}a',
+            ],
         ),
     ],
 )
-def test_dec(parameters, test_input: List[int], expected: str):
-    r"""Decode token ids to text."""
+def test_batch_dec(
+    parameters,
+    test_input: List[List[int]],
+    expected: List[str],
+):
+    r"""Decode batch of token ids to batch of text."""
 
     tknzr = CharTknzr(
         is_uncased=parameters['is_uncased'],
@@ -308,7 +420,7 @@ def test_dec(parameters, test_input: List[int], expected: str):
     )
 
     assert (
-        tknzr.dec(test_input, rm_sp_tks=parameters['rm_sp_tks'])
+        tknzr.batch_dec(test_input, rm_sp_tks=parameters['rm_sp_tks'])
         ==
         expected
     )

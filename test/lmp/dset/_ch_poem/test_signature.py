@@ -3,8 +3,7 @@ r"""Test :py:class:`lmp.dset.ChPoemDset` signature."""
 import inspect
 from typing import get_type_hints
 
-from lmp.dset._base import BaseDset
-from lmp.dset._ch_poem import ChPoemDset
+from lmp.dset import BaseDset, ChPoemDset
 
 
 def test_class():

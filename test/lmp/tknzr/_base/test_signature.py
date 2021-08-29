@@ -3,8 +3,7 @@ r"""Test :py:class:`lmp.tknzr.BaseTknzr` signature."""
 import argparse
 import inspect
 from inspect import Parameter, Signature
-from typing import (ClassVar, Dict, List, Optional, Sequence,
-                    get_type_hints)
+from typing import ClassVar, Dict, List, Optional, Sequence, get_type_hints
 
 from lmp.tknzr._base import BaseTknzr
 

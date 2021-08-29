@@ -5,11 +5,12 @@ Test target:
 """
 
 import pytest
+
 from lmp.dset import WikiText2Dset
 
 
 def test_ver():
-    r"""``ver`` parameter must be included in :py:attr:`lmp.dset.WikiText2Dset.vers`."""
+    r"""``ver`` must be included in :py:attr:`lmp.dset.WikiText2Dset.vers`."""
 
     # Test case: Type mismatched.
     wrong_typed_inputs = [

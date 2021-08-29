@@ -611,6 +611,10 @@ class BaseTknzr(abc.ABC):
         """
         batch_tkids = [self.enc(txt, max_seq_len=-1) for txt in batch_txt]
 
+        # Return empty list when input empty batch.
+        if not batch_tkids:
+            return []
+
         # If `max_seq_len == -1`, then `max_seq_len` is the longest sequence
         # length in the batch.
         if max_seq_len == -1:

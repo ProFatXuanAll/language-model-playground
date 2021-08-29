@@ -1,36 +1,25 @@
-r"""Setup fixture for testing :py:mod:`lmp.tknzr.WsTknzr`."""
+r"""Setup fixtures for testing :py:class:`lmp.tknzr.WsTknzr`."""
 
 import pytest
 
-from lmp.tknzr._ws import WsTknzr
+from lmp.tknzr import WsTknzr
 
 
 @pytest.fixture
-def ws_tknzr():
-    r"""Simple WsTknzr instance"""
+def ws_tknzr() -> WsTknzr:
+    r"""Common setup of whitespace tokenizer."""
 
     return WsTknzr(
         is_uncased=True,
         max_vocab=-1,
         min_count=1,
+        tk2id={
+            WsTknzr.bos_tk: WsTknzr.bos_tkid,
+            WsTknzr.eos_tk: WsTknzr.eos_tkid,
+            WsTknzr.pad_tk: WsTknzr.pad_tkid,
+            WsTknzr.unk_tk: WsTknzr.unk_tkid,
+            'a': 4,
+            'b': 5,
+            'c': 6,
+        },
     )
-
-
-@pytest.fixture
-def tk2id():
-    r"""Simple tk2id"""
-
-    tk2id = {
-        '[bos]': 0,
-        '[eos]': 1,
-        '[pad]': 2,
-        '[unk]': 3,
-        'a': 4,
-        'b': 5,
-        'c': 6,
-        '1': 7,
-        '2': 8,
-        '哈': 9,
-    }
-
-    return tk2id

@@ -3,8 +3,7 @@ r"""Test :py:class:`lmp.dset.WikiText2Dset` signature."""
 import inspect
 from typing import get_type_hints
 
-from lmp.dset._base import BaseDset
-from lmp.dset._wiki_text_2 import WikiText2Dset
+from lmp.dset import BaseDset, WikiText2Dset
 
 
 def test_class():

@@ -1,8 +1,8 @@
 r"""Test token encoding and decoding.
 
 Test target:
-- :py:meth:`lmp.tknzr.WsTknzr.dec`.
-- :py:meth:`lmp.tknzr.WsTknzr.enc`.
+- :py:meth:`lmp.tknzr.WsTknzr.batch_dec`.
+- :py:meth:`lmp.tknzr.WsTknzr.batch_enc`.
 """
 
 from typing import List
@@ -19,7 +19,7 @@ from lmp.tknzr import WsTknzr
         # Empty input.
         #
         # Expectation:
-        # Return only `[bos]` and `[eos]`.
+        # Return empty list.
         (
             {
                 'is_uncased': True,
@@ -33,16 +33,16 @@ from lmp.tknzr import WsTknzr
                     WsTknzr.unk_tk: WsTknzr.unk_tkid,
                 },
             },
-            '',
-            [WsTknzr.bos_tkid, WsTknzr.eos_tkid],
+            [],
+            [],
         ),
         # Test subject:
         # Encoding format.
         #
         # Expectation:
-        # Add `[bos]` token at the front and `[eos]` at the end of token
-        # sequence.
-        # Output token ids instead of tokens.
+        # Add `[bos]` token at the front and `[eos]` at the end of all token
+        # sequences.
+        # Output list of token ids.
         (
             {
                 'is_uncased': True,
@@ -59,8 +59,14 @@ from lmp.tknzr import WsTknzr
                     'c': 6,
                 },
             },
-            'a b c',
-            [WsTknzr.bos_tkid, 4, 5, 6, WsTknzr.eos_tkid],
+            [
+                'a b c',
+                'c b a',
+            ],
+            [
+                [WsTknzr.bos_tkid, 4, 5, 6, WsTknzr.eos_tkid],
+                [WsTknzr.bos_tkid, 6, 5, 4, WsTknzr.eos_tkid],
+            ],
         ),
         # Test subject:
         # Case sensitive.
@@ -82,14 +88,65 @@ from lmp.tknzr import WsTknzr
                     'A': 5,
                 },
             },
-            'a A a',
-            [WsTknzr.bos_tkid, 4, 5, 4, WsTknzr.eos_tkid],
+            [
+                'a A a',
+                'A a A',
+            ],
+            [
+                [WsTknzr.bos_tkid, 4, 5, 4, WsTknzr.eos_tkid],
+                [WsTknzr.bos_tkid, 5, 4, 5, WsTknzr.eos_tkid],
+            ],
         ),
         # Test subject:
-        # Truncate sequence when sequence length is larger than `max_seq_len`.
+        # Automatically calculate `max_seq_len`.
         #
         # Expectation:
-        # Output sequence length equals to `max_seq_len`.
+        # Pad to maximum length in the input batch.
+        (
+            {
+                'is_uncased': True,
+                'max_seq_len': -1,
+                'max_vocab': -1,
+                'min_count': 1,
+                'tk2id': {
+                    WsTknzr.bos_tk: WsTknzr.bos_tkid,
+                    WsTknzr.eos_tk: WsTknzr.eos_tkid,
+                    WsTknzr.pad_tk: WsTknzr.pad_tkid,
+                    WsTknzr.unk_tk: WsTknzr.unk_tkid,
+                    'a': 4,
+                },
+            },
+            [
+                'a',
+                'a a',
+                'a a a',
+            ],
+            [
+                [
+                    WsTknzr.bos_tkid,
+                    4,
+                    WsTknzr.eos_tkid,
+                    WsTknzr.pad_tkid,
+                    WsTknzr.pad_tkid,
+                ],
+                [
+                    WsTknzr.bos_tkid,
+                    4, 4,
+                    WsTknzr.eos_tkid,
+                    WsTknzr.pad_tkid,
+                ],
+                [
+                    WsTknzr.bos_tkid,
+                    4, 4, 4,
+                    WsTknzr.eos_tkid
+                ],
+            ],
+        ),
+        # Test subject:
+        # Truncate and pad sequences to specified length.
+        #
+        # Expectation:
+        # All output sequences' length equal to `max_seq_len`.
         (
             {
                 'is_uncased': True,
@@ -104,34 +161,27 @@ from lmp.tknzr import WsTknzr
                     'a': 4,
                 },
             },
-            'a a a',
-            [WsTknzr.bos_tkid, 4, 4, 4],
-        ),
-        # Test subject:
-        # Pad sequence when sequence length is less than `max_seq_len`.
-        #
-        # Expectation:
-        # Output sequence length equals to `max_seq_len`.
-        (
-            {
-                'is_uncased': True,
-                'max_seq_len': 6,
-                'max_vocab': -1,
-                'min_count': 1,
-                'tk2id': {
-                    WsTknzr.bos_tk: WsTknzr.bos_tkid,
-                    WsTknzr.eos_tk: WsTknzr.eos_tkid,
-                    WsTknzr.pad_tk: WsTknzr.pad_tkid,
-                    WsTknzr.unk_tk: WsTknzr.unk_tkid,
-                    'a': 4,
-                },
-            },
-            'a a a',
             [
-                WsTknzr.bos_tkid,
-                4, 4, 4,
-                WsTknzr.eos_tkid,
-                WsTknzr.pad_tkid,
+                'a',
+                'a a',
+                'a a a',
+            ],
+            [
+                [
+                    WsTknzr.bos_tkid,
+                    4,
+                    WsTknzr.eos_tkid,
+                    WsTknzr.pad_tkid,
+                ],
+                [
+                    WsTknzr.bos_tkid,
+                    4, 4,
+                    WsTknzr.eos_tkid,
+                ],
+                [
+                    WsTknzr.bos_tkid,
+                    4, 4, 4,
+                ],
             ],
         ),
         # Test subject:
@@ -153,20 +203,37 @@ from lmp.tknzr import WsTknzr
                     'a': 4,
                 },
             },
-            'a b a b',
             [
-                WsTknzr.bos_tkid,
-                4,
-                WsTknzr.unk_tkid,
-                4,
-                WsTknzr.unk_tkid,
-                WsTknzr.eos_tkid,
+                'a b a b',
+                'b a b a',
+            ],
+            [
+                [
+                    WsTknzr.bos_tkid,
+                    4,
+                    WsTknzr.unk_tkid,
+                    4,
+                    WsTknzr.unk_tkid,
+                    WsTknzr.eos_tkid,
+                ],
+                [
+                    WsTknzr.bos_tkid,
+                    WsTknzr.unk_tkid,
+                    4,
+                    WsTknzr.unk_tkid,
+                    4,
+                    WsTknzr.eos_tkid,
+                ],
             ],
         ),
     ],
 )
-def test_enc(parameters, test_input: str, expected: List[int]):
-    r"""Encode text to token ids."""
+def test_batch_enc(
+    parameters,
+    test_input: List[str],
+    expected: List[List[int]],
+):
+    r"""Encode batch of text to batch of token ids."""
 
     tknzr = WsTknzr(
         is_uncased=parameters['is_uncased'],
@@ -175,12 +242,13 @@ def test_enc(parameters, test_input: str, expected: List[int]):
         tk2id=parameters['tk2id'],
     )
 
-    out = tknzr.enc(test_input, max_seq_len=parameters['max_seq_len'])
+    outs = tknzr.batch_enc(test_input, max_seq_len=parameters['max_seq_len'])
 
-    assert out == expected
+    assert outs == expected
 
     if parameters['max_seq_len'] != -1:
-        assert len(out) == parameters['max_seq_len']
+        for out in outs:
+            assert len(out) == parameters['max_seq_len']
 
 
 @pytest.mark.parametrize(
@@ -190,7 +258,7 @@ def test_enc(parameters, test_input: str, expected: List[int]):
         # Empty input.
         #
         # Expectation:
-        # Return empty string.
+        # Return empty list.
         (
             {
                 'is_uncased': True,
@@ -205,13 +273,13 @@ def test_enc(parameters, test_input: str, expected: List[int]):
                 },
             },
             [],
-            '',
+            [],
         ),
         # Test subject:
         # Decoding format.
         #
         # Expectation:
-        # Output text with special tokens.
+        # Output batch of text with special tokens.
         (
             {
                 'is_uncased': True,
@@ -227,18 +295,35 @@ def test_enc(parameters, test_input: str, expected: List[int]):
                 },
             },
             [
-                WsTknzr.bos_tkid,
-                4,
-                WsTknzr.unk_tkid,
-                WsTknzr.eos_tkid,
-                WsTknzr.pad_tkid,
+                [
+                    WsTknzr.bos_tkid,
+                    4,
+                    WsTknzr.unk_tkid,
+                    WsTknzr.eos_tkid,
+                    WsTknzr.pad_tkid,
+                ],
+                [
+                    WsTknzr.bos_tkid,
+                    WsTknzr.unk_tkid,
+                    4,
+                    WsTknzr.eos_tkid,
+                    WsTknzr.pad_tkid,
+                ],
             ],
-            '{} a {} {} {}'.format(
-                WsTknzr.bos_tk,
-                WsTknzr.unk_tk,
-                WsTknzr.eos_tk,
-                WsTknzr.pad_tk,
-            ),
+            [
+                '{} a {} {} {}'.format(
+                    WsTknzr.bos_tk,
+                    WsTknzr.unk_tk,
+                    WsTknzr.eos_tk,
+                    WsTknzr.pad_tk,
+                ),
+                '{} {} a {} {}'.format(
+                    WsTknzr.bos_tk,
+                    WsTknzr.unk_tk,
+                    WsTknzr.eos_tk,
+                    WsTknzr.pad_tk,
+                ),
+            ],
         ),
         # Test subject:
         # Remove special tokens but not unknown tokens.
@@ -260,13 +345,25 @@ def test_enc(parameters, test_input: str, expected: List[int]):
                 },
             },
             [
-                WsTknzr.bos_tkid,
-                4,
-                WsTknzr.unk_tkid,
-                WsTknzr.eos_tkid,
-                WsTknzr.pad_tkid,
+                [
+                    WsTknzr.bos_tkid,
+                    4,
+                    WsTknzr.unk_tkid,
+                    WsTknzr.eos_tkid,
+                    WsTknzr.pad_tkid,
+                ],
+                [
+                    WsTknzr.bos_tkid,
+                    WsTknzr.unk_tkid,
+                    4,
+                    WsTknzr.eos_tkid,
+                    WsTknzr.pad_tkid,
+                ],
             ],
-            f'a {WsTknzr.unk_tk}',
+            [
+                f'a {WsTknzr.unk_tk}',
+                f'{WsTknzr.unk_tk} a',
+            ],
         ),
         # Test subject:
         # Encounter unknown token ids.
@@ -288,17 +385,32 @@ def test_enc(parameters, test_input: str, expected: List[int]):
                 },
             },
             [
-                WsTknzr.bos_tkid,
-                4,
-                5,
-                WsTknzr.eos_tkid,
+                [
+                    WsTknzr.bos_tkid,
+                    4,
+                    5,
+                    WsTknzr.eos_tkid,
+                ],
+                [
+                    WsTknzr.bos_tkid,
+                    5,
+                    4,
+                    WsTknzr.eos_tkid,
+                ],
             ],
-            f'a {WsTknzr.unk_tk}',
+            [
+                f'a {WsTknzr.unk_tk}',
+                f'{WsTknzr.unk_tk} a',
+            ],
         ),
     ],
 )
-def test_dec(parameters, test_input: List[int], expected: str):
-    r"""Decode token ids to text."""
+def test_batch_dec(
+    parameters,
+    test_input: List[List[int]],
+    expected: List[str],
+):
+    r"""Decode batch of token ids to batch of text."""
 
     tknzr = WsTknzr(
         is_uncased=parameters['is_uncased'],
@@ -308,7 +420,7 @@ def test_dec(parameters, test_input: List[int], expected: str):
     )
 
     assert (
-        tknzr.dec(test_input, rm_sp_tks=parameters['rm_sp_tks'])
+        tknzr.batch_dec(test_input, rm_sp_tks=parameters['rm_sp_tks'])
         ==
         expected
     )

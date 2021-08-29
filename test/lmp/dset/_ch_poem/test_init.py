@@ -5,11 +5,12 @@ Test target:
 """
 
 import pytest
+
 from lmp.dset import ChPoemDset
 
 
 def test_ver():
-    r"""``ver`` parameter must be included in :py:attr:`lmp.dset.ChPoemDset.vers`."""
+    r"""``ver`` must be included in :py:attr:`lmp.dset.ChPoemDset.vers`."""
 
     # Test case: Type mismatched.
     wrong_typed_inputs = [

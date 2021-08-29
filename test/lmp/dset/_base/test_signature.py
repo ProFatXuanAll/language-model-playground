@@ -4,7 +4,7 @@ import inspect
 from inspect import Parameter, Signature
 from typing import ClassVar, Iterator, List, Optional, get_type_hints
 
-from lmp.dset._base import BaseDset
+from lmp.dset import BaseDset
 
 
 def test_class():
