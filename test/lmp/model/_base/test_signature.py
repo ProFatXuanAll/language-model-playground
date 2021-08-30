@@ -7,12 +7,13 @@ from typing import Dict, Optional
 
 import torch
 
-from lmp.model._base import BaseModel
+from lmp.model import BaseModel
 
 
 def test_class():
     r"""Ensure abstract class signature."""
     assert inspect.isclass(BaseModel)
+    assert issubclass(BaseModel, torch.nn.Module)
     assert inspect.isabstract(BaseModel)
 
 
@@ -52,10 +53,10 @@ def test_class_method():
     )
 
 
-def test_instance_method(subclss_model):
+def test_instance_method():
     r"""Ensure instance methods' signature."""
     assert hasattr(BaseModel, '__init__')
-    assert inspect.ismethod(subclss_model.__init__)
+    assert inspect.isfunction(BaseModel.__init__)
     assert inspect.signature(BaseModel.__init__) == Signature(
         parameters=[
             Parameter(
@@ -72,7 +73,7 @@ def test_instance_method(subclss_model):
         return_annotation=Signature.empty,
     )
     assert hasattr(BaseModel, 'ppl')
-    assert inspect.ismethod(subclss_model.ppl)
+    assert inspect.isfunction(BaseModel.ppl)
     assert inspect.signature(BaseModel.ppl) == Signature(
         parameters=[
             Parameter(
@@ -95,7 +96,7 @@ def test_instance_method(subclss_model):
         return_annotation=float,
     )
     assert hasattr(BaseModel, 'save')
-    assert inspect.ismethod(subclss_model.save)
+    assert inspect.isfunction(BaseModel.save)
     assert inspect.signature(BaseModel.save) == Signature(
         parameters=[
             Parameter(

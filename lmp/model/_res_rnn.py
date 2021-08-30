@@ -48,7 +48,7 @@ class ResRNNBlock(nn.Module):
         Must be bigger than or equal to ``1``.
     kwargs: Dict, optional
         Useless parameter.
-        Left intended for subclass parameters extension.
+        Intently left for subclass parameters extension.
     n_hid_lyr: int
         Number of residual connected RNN layers.
         Must be bigger than or equal to ``1``.
@@ -182,7 +182,7 @@ class ResRNNModel(RNNModel):
         Must be bigger than or equal to ``1``.
     kwargs: Dict, optional
         Useless parameter.
-        Left intended for subclass parameters extension.
+        Intently left for subclass parameters extension.
     n_hid_lyr: int
         Number of residual connected RNN layers.
         Must be bigger than or equal to ``1``.

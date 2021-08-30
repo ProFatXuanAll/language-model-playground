@@ -1,4 +1,4 @@
-r"""Test :py:class:`lmp.model._gru` signature."""
+r"""Test :py:class:`lmp.model` signature."""
 
 import inspect
 from inspect import Parameter, Signature

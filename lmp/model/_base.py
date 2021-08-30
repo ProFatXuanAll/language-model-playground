@@ -32,7 +32,7 @@ class BaseModel(abc.ABC, torch.nn.Module):
     ==========
     kwargs: Dict, optional
         Useless parameter.
-        Left intended for subclass parameters extension.
+        Intently left for subclass parameters extension.
 
     Attributes
     ==========
@@ -219,8 +219,8 @@ class BaseModel(abc.ABC, torch.nn.Module):
 
         Save the trained model parameters into zip compressed pickle file and
         named it with ``self.__class__.file_name``.
-        This method will create experiment path first if experiment path does
-        not exist.
+        This method will create a directory for each model training experiment
+        if that directory is not created before.
 
         Parameters
         ==========

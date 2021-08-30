@@ -1,4 +1,4 @@
-r"""Setup fixture for testing :py:mod:`lmp`."""
+r"""Setup fixtures for testing :py:mod:`lmp`."""
 
 import uuid
 from typing import Dict
@@ -8,7 +8,7 @@ import pytest
 
 @pytest.fixture
 def exp_name() -> str:
-    r"""Experiment name for test.
+    r"""Test experiment name.
 
     Experiment name is used to save experiment result, such as tokenizer
     configuration, model checkpoint and logging.
@@ -19,15 +19,6 @@ def exp_name() -> str:
         Experiment name with the format ``test-uuid``.
     """
     return 'test-' + str(uuid.uuid4())
-
-
-@pytest.fixture(params=[
-    0,
-    1000,
-])
-def ckpt(request) -> int:
-    r"""Experiment checkpoint for test"""
-    return request.param
 
 
 @pytest.fixture(params=[

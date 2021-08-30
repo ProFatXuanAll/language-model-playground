@@ -27,7 +27,7 @@ class RNNModel(BaseModel):
         Must be bigger than or equal to ``1``.
     kwargs: Dict, optional
         Useless parameter.
-        Left intended for subclass parameters extension.
+        Intently left for subclass parameters extension.
     n_hid_lyr: int
         Number of RNN layers.
         Must be bigger than or equal to ``1``.

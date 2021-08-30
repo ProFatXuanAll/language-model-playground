@@ -1,9 +1,8 @@
-r"""Test :py:class:`lmp.model._gru` signature."""
+r"""Test :py:class:`lmp.model` signature."""
 
 import inspect
 
-from lmp.model._rnn import RNNModel
-from lmp.model._gru import GRUModel
+from lmp.model import GRUModel, RNNModel
 
 
 def test_class():

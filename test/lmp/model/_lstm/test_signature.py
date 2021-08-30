@@ -1,9 +1,8 @@
-r"""Test :py:class:`lmp.model._lstm` signature."""
+r"""Test :py:class:`lmp.model` signature."""
 
 import inspect
 
-from lmp.model._rnn import RNNModel
-from lmp.model._lstm import LSTMModel
+from lmp.model import LSTMModel, RNNModel
 
 
 def test_class():

@@ -1,36 +1,14 @@
-r"""Setup fixture for testing :py:mod:`lmp.model._lstm.LSTMModel`."""
-import os
-from lmp import path
+r"""Setup fixtures for testing :py:class:`lmp.model.LSTMModel`."""
 
 import pytest
+import torch
 
-from lmp.tknzr._char import CharTknzr
-from lmp.model._lstm import LSTMModel
-
-
-@pytest.fixture
-def tknzr():
-    r"""Simple CharTknzr instance"""
-    return CharTknzr(
-        is_uncased=True,
-        max_vocab=-1,
-        min_count=1,
-        tk2id={
-            '[bos]': 0,
-            '[eos]': 1,
-            '[pad]': 2,
-            '[unk]': 3,
-            'h': 4,
-            'e': 5,
-            'l': 6,
-            'o': 7,
-        }
-    )
+from lmp.model import LSTMModel
 
 
 @pytest.fixture
-def model(tknzr):
-    r"""Simple LSTMModel instance"""
+def lstm_model(tknzr) -> LSTMModel:
+    r"""Example LSTMModel instance."""
     return LSTMModel(
         d_emb=1,
         d_hid=1,
@@ -44,17 +22,31 @@ def model(tknzr):
 
 
 @pytest.fixture
-def cleandir(request, ckpt: int, exp_name: str) -> str:
-    r"""Clean model parameters output file and directories."""
-    abs_dir_path = os.path.join(path.EXP_PATH, exp_name)
-    abs_file_path = os.path.join(
-        abs_dir_path, LSTMModel.file_name.format(ckpt)
+def batch_prev_tkids(lstm_model: LSTMModel) -> torch.Tensor:
+    r"""Example input batch of token ids."""
+    # Shape: (2, 3).
+    return torch.randint(
+        low=0,
+        high=lstm_model.emb.num_embeddings,
+        size=(2, 3),
     )
 
-    def remove():
-        if os.path.exists(abs_file_path):
-            os.remove(abs_file_path)
-        if os.path.exists(abs_dir_path):
-            os.removedirs(abs_dir_path)
 
-    request.addfinalizer(remove)
+@pytest.fixture
+def batch_next_tkids(
+    lstm_model: LSTMModel,
+    batch_prev_tkids: torch.Tensor,
+) -> torch.Tensor:
+    r"""Example target batch of token ids."""
+    # Same shape as `batch_prev_tkids`.
+    return torch.cat(
+        [
+            batch_prev_tkids[..., :-1],
+            torch.randint(
+                low=0,
+                high=lstm_model.emb.num_embeddings,
+                size=(batch_prev_tkids.shape[0], 1),
+            ),
+        ],
+        dim=1,
+    )

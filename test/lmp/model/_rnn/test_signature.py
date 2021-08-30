@@ -1,12 +1,11 @@
-r"""Test :py:class:`lmp.model._rnn` signature."""
+r"""Test :py:class:`lmp.model` signature."""
 
 import inspect
 from inspect import Parameter, Signature
 from typing import Dict, Optional
 
-from lmp.model._base import BaseModel
-from lmp.model._rnn import RNNModel
-from lmp.tknzr._base import BaseTknzr
+from lmp.model import BaseModel, RNNModel
+from lmp.tknzr import BaseTknzr
 
 
 def test_class():

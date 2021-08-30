@@ -1,32 +1,59 @@
-r"""Test the rnn model's prediction
+r"""Test prediction of RNN language model.
 
 Test target:
-- :py:meth:`lmp.model._rnn.RNNModel.pred`.
+- :py:meth:`lmp.model.RNNModel.pred`.
 """
+
 import torch
 
-import pytest
+from lmp.model import RNNModel
 
 
-@pytest.mark.parametrize(
-    "parameters",
-    [
-        # Test model prediction
-        #
-        # Expect input `(B, S)` and output `(B, S, V)` which have same type.
-        {
-            "test_input":
-                torch.tensor([
-                    [0, 2, 4, 6],
-                    [1, 3, 5, 7]],
-                ),
-            "expected": torch.zeros(2, 4, 8),
-        },
-    ]
-)
-def test_pred(parameters, model):
-    r"""Test :py:meth:lmp.model._rnn.RNNModel.forward"""
-    pred = model.pred(parameters["test_input"])
+def test_input_shape_and_dtype(
+    rnn_model: RNNModel,
+    batch_prev_tkids: torch.Tensor,
+):
+    r"""Input must be long tensor."""
 
-    assert pred.shape == parameters["expected"].shape
-    assert pred.dtype == parameters["expected"].dtype
+    try:
+        rnn_model = rnn_model.eval()
+        rnn_model.pred(batch_prev_tkids)
+    except Exception:
+        assert False
+
+
+def test_return_shape_and_dtype(
+    rnn_model: RNNModel,
+    batch_prev_tkids: torch.Tensor,
+):
+    r"""Return float tensor with correct shape."""
+    rnn_model = rnn_model.eval()
+    out = rnn_model.pred(batch_prev_tkids)
+
+    # Output float tensor.
+    assert out.dtype == torch.float
+
+    # Input shape: (B, S).
+    # Output shape: (B, S, V).
+    assert out.shape == (
+        batch_prev_tkids.shape[0],
+        batch_prev_tkids.shape[1],
+        rnn_model.emb.num_embeddings,
+    )
+
+
+def test_value_range(
+    rnn_model: RNNModel,
+    batch_prev_tkids: torch.Tensor,
+):
+    r"""Return values are probabilities."""
+    rnn_model = rnn_model.eval()
+    out = rnn_model.pred(batch_prev_tkids)
+
+    # Probabilities are values within range [0, 1].
+    assert torch.all(0 <= out).item()
+    assert torch.all(out <= 1).item()
+
+    # Sum of the probabilities equals to 1.
+    accum_out = out.sum(dim=-1)
+    assert torch.allclose(accum_out, torch.ones_like(accum_out))

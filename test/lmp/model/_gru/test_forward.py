@@ -1,32 +1,59 @@
-r"""Test the rnn model's forward
+r"""Test forward pass of GRU language model.
 
 Test target:
-- :py:meth:`lmp.model._gru.GRUModel.forward`.
+- :py:meth:`lmp.model.GRUModel.forward`.
 """
+
 import torch
 
-import pytest
+from lmp.model import GRUModel
 
 
-@pytest.mark.parametrize(
-    "parameters",
-    [
-        # Test model forward
-        #
-        # Expect input `(B, S)` and output `(B, S, V)` with same type.
-        {
-            "test_input":
-                torch.tensor([
-                    [0, 2, 4, 6],
-                    [1, 3, 5, 7]],
-                ),
-            "expected": torch.zeros(2, 4, 8),
-        },
-    ]
-)
-def test_foward(parameters, model):
-    r"""Test :py:meth:lmp.model._gru.GRUModel.forward"""
-    forward = model.forward(parameters["test_input"])
+def test_input_shape_and_dtype(
+    gru_model: GRUModel,
+    batch_prev_tkids: torch.Tensor,
+):
+    r"""Input must be long tensor."""
 
-    assert forward.shape == parameters["expected"].shape
-    assert forward.dtype == parameters["expected"].dtype
+    try:
+        gru_model = gru_model.eval()
+        gru_model(batch_prev_tkids)
+    except Exception:
+        assert False
+
+
+def test_return_shape_and_dtype(
+    gru_model: GRUModel,
+    batch_prev_tkids: torch.Tensor,
+):
+    r"""Return float tensor with correct shape."""
+    gru_model = gru_model.eval()
+    out = gru_model(batch_prev_tkids)
+
+    # Output float tensor.
+    assert out.dtype == torch.float
+
+    # Input shape: (B, S).
+    # Output shape: (B, S, V).
+    assert out.shape == (
+        batch_prev_tkids.shape[0],
+        batch_prev_tkids.shape[1],
+        gru_model.emb.num_embeddings,
+    )
+
+
+def test_forward_path(
+    gru_model: GRUModel,
+    batch_prev_tkids: torch.Tensor,
+):
+    r"""Parameters used during forward must have gradients."""
+    # Make sure model has no gradients.
+    gru_model = gru_model.train()
+    gru_model.zero_grad()
+
+    gru_model(batch_prev_tkids).sum().backward()
+
+    assert hasattr(gru_model.emb.weight.grad, 'grad')
+    assert hasattr(gru_model.pre_hid[0].weight.grad, 'grad')
+    assert hasattr(gru_model.hid.weight_ih_l0.grad, 'grad')
+    assert hasattr(gru_model.post_hid[-1].weight.grad, 'grad')

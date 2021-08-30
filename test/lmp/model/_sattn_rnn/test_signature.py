@@ -7,9 +7,8 @@ from typing import Dict, Optional
 import torch
 import torch.nn as nn
 
-from lmp.model._rnn import RNNModel
-from lmp.model._sattn_rnn import SAttnRNNBlock, SAttnRNNModel
-from lmp.tknzr._base import BaseTknzr
+from lmp.model import RNNModel, SAttnRNNBlock, SAttnRNNModel
+from lmp.tknzr import BaseTknzr
 
 
 def test_class():

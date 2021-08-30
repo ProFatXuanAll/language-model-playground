@@ -1,4 +1,4 @@
-r"""Setup fixture for testing :py:mod:`lmp.model.BaseModel`."""
+r"""Setup fixtures for testing :py:mod:`lmp.model.BaseModel`."""
 
 from typing import Type
 
@@ -6,7 +6,7 @@ import pytest
 import torch
 import torch.nn.functional as F
 
-from lmp.model._base import BaseModel
+from lmp.model import BaseModel
 
 
 @pytest.fixture

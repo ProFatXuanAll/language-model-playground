@@ -7,7 +7,7 @@ Test target:
 import pytest
 import torch
 
-from lmp.model._base import BaseModel
+from lmp.model import BaseModel
 
 
 @pytest.fixture

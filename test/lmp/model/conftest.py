@@ -1,15 +1,44 @@
-r"""Setup fixture for testing :py:mod:`lmp.model`."""
+r"""Setup fixtures for testing :py:mod:`lmp.model`."""
 
 import os
 
 import pytest
 
 import lmp.path
-from lmp.model._base import BaseModel
+from lmp.model import BaseModel
+from lmp.tknzr import BaseTknzr, CharTknzr
+
+
+@pytest.fixture(params=[
+    0,
+    1000,
+])
+def ckpt(request) -> int:
+    r"""Test experiment checkpoint."""
+    return request.param
 
 
 @pytest.fixture
-def cleandir(request, ckpt: int, exp_name: str) -> str:
+def tknzr() -> BaseTknzr:
+    r"""Example tokenizer instance."""
+    return CharTknzr(
+        is_uncased=True,
+        max_vocab=-1,
+        min_count=1,
+        tk2id={
+            '[bos]': 0,
+            '[eos]': 1,
+            '[pad]': 2,
+            '[unk]': 3,
+            'a': 4,
+            'b': 5,
+            'c': 6,
+        }
+    )
+
+
+@pytest.fixture
+def clean_model(request, ckpt: int, exp_name: str) -> str:
     r"""Clean model parameters output file and directories."""
     abs_dir_path = os.path.join(lmp.path.EXP_PATH, exp_name)
     abs_file_path = os.path.join(
@@ -20,7 +49,7 @@ def cleandir(request, ckpt: int, exp_name: str) -> str:
         if os.path.exists(abs_file_path):
             os.remove(abs_file_path)
 
-    if os.path.exists(abs_dir_path):
-        os.removedirs(abs_dir_path)
+        if os.path.exists(abs_dir_path):
+            os.removedirs(abs_dir_path)
 
     request.addfinalizer(remove)
