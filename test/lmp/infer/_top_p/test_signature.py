@@ -4,8 +4,7 @@ import inspect
 from inspect import Parameter, Signature
 from typing import Dict, Optional, get_type_hints
 
-from lmp.infer._base import BaseInfer
-from lmp.infer._top_p import TopPInfer
+from lmp.infer import BaseInfer, TopPInfer
 
 
 def test_class():

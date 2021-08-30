@@ -26,7 +26,7 @@ class BaseInfer(abc.ABC):
     ==========
     kwargs: Dict, optional
         Useless parameter.
-        Left intended for subclass parameters extension.
+        Intently left for subclass parameters extension.
     max_seq_len: str
         Generated sequence of tokens maximum sequence length constraint.
         Must satisfy ``0 <= max_seq_len <= BaseInfer.hard_max_seq_len``.

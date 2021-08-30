@@ -3,8 +3,7 @@ r"""Test :py:class:`lmp.infer.Top1Infer` signature."""
 import inspect
 from typing import get_type_hints
 
-from lmp.infer._base import BaseInfer
-from lmp.infer._top_1 import Top1Infer
+from lmp.infer import BaseInfer, Top1Infer
 
 
 def test_class():

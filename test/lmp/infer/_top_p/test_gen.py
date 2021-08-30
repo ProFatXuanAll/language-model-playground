@@ -1,60 +1,33 @@
-r"""Test the model's generation
+r"""Test top-p generation with dummy model.
 
 Test target:
-- :py:meth:`lmp.infer._top_p.TopPInfer.gen`.
+- :py:meth:`lmp.infer.TopPInfer.gen`.
 """
-import pytest
 
-from lmp.infer._top_p import TopPInfer
+from lmp.infer import TopPInfer
+from lmp.model import BaseModel
+from lmp.tknzr import BaseTknzr
 
 
-@pytest.mark.parametrize(
-    "parameters,test_input,expected",
-    [
-        (
-            # Test normal generation
-            #
-            # Expect only output h when max_vocab_size is 1. Output
-            # length must be 5 when input max_seq_len is 6, since
-            # there is one length for bos.
-            {
-                'max_seq_len': 6,
-            },
-            "hhhhh",
-            "hhhhh",
-        ),
-        (
-            # Test max_seq_len
-            #
-            # Expect redundant input text shoud be remove when max_seq_len
-            # is larger than input length
-            {
-                'max_seq_len': 2,
-            },
-            "hel",
-            "h",
-        ),
-        (
-            # Test all unkown input
-            #
-            # Expected all unkown when input chinese characters
-            {
-                'max_seq_len': 5,
-            },
-            "你好世界",
-            "[unk]" * 4,
-        ),
-    ]
-)
-def test_gen(tknzr, model, parameters, test_input, expected, reset_pad_tkid):
-    r"""Test :py:meth:lmp.infer._top_p.TopPInfer.gen"""
+def test_gen(model: BaseModel, tknzr: BaseTknzr):
+    max_seq_len = 10
+    p = 1.0
 
-    infer = TopPInfer(p=0.5, max_seq_len=parameters['max_seq_len'])
+    infer = TopPInfer(p=p, max_seq_len=max_seq_len)
 
-    gen = infer.gen(
+    largest_tkid = max(tknzr.id2tk.keys())
+    largest_tk = tknzr.id2tk[largest_tkid]
+
+    # Dummy model will always generate largest token id as prediction result.
+    # Thus we expect top-p inference method to output `max_seq_len - 1` tokens,
+    # and all of which are `largest_tk`.
+    # Minus 1 is required since tokenizer will prepend `[bos]` at front.
+    expected = largest_tk * (max_seq_len - 1)
+
+    out = infer.gen(
         model=model,
         tknzr=tknzr,
-        txt=test_input,
+        txt=largest_tk,
     )
 
-    assert gen == expected
+    assert out == expected

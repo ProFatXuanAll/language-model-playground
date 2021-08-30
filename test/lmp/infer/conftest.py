@@ -1,47 +1,74 @@
-r"""Setup fixture for testing :py:mod:`lmp.infer.`."""
-import pytest
+r"""Setup fixtures for testing :py:mod:`lmp.infer.`."""
 
-from lmp.tknzr._char import CharTknzr
-from lmp.model._rnn import RNNModel
+import pytest
+import torch
+
+from lmp.model import BaseModel, RNNModel
+from lmp.tknzr import BaseTknzr, CharTknzr
 
 
 @pytest.fixture
-def tknzr():
-    r"""Simple CharTknzr instance"""
-    # max_vocab size must be bigger than pad_id
-    # so assign -1 as special tokens
-    CharTknzr.pad_tkid = -1
+def tknzr() -> BaseTknzr:
+    r"""Example tokenizer instance."""
 
     return CharTknzr(
         is_uncased=True,
-        max_vocab=1,
+        max_vocab=-1,
         min_count=1,
         tk2id={
-            'h': 5,
-        }
+            CharTknzr.bos_tk: CharTknzr.bos_tkid,
+            CharTknzr.eos_tk: CharTknzr.eos_tkid,
+            CharTknzr.pad_tk: CharTknzr.pad_tkid,
+            CharTknzr.unk_tk: CharTknzr.unk_tkid,
+            'a': 4,
+            'b': 5,
+            'c': 6,
+        },
     )
 
 
 @pytest.fixture
-def model(tknzr):
-    r"""Simple RNNModel instance"""
-    model = RNNModel(
+def model(tknzr: BaseTknzr) -> BaseModel:
+    r"""Example language model instance."""
+
+    class ExampleModel(RNNModel):
+        r"""Dummy model.
+
+        Only used in inference testing.
+        Designed to always predict token with largest token id in tokenizer's
+        vocabulary.
+        Thus only implement :py:meth:`lmp.model.BaseModel.pred` method.
+        """
+
+        def pred(self, batch_prev_tkids: torch.Tensor) -> torch.Tensor:
+            r"""Predict largest token id in tokenizer's vocabulary."""
+            batch_size = batch_prev_tkids.shape[0]
+            seq_len = batch_prev_tkids.shape[1]
+
+            # Output shape: (B, S, V).
+            out = []
+
+            for _ in range(batch_size):
+                seq_tmp = []
+                for _ in range(seq_len):
+                    vocab_tmp = []
+                    for _ in range(tknzr.vocab_size - 1):
+                        vocab_tmp.append(0.0)
+
+                    # Always predict largest token id in tokenizer's vocabuary.
+                    vocab_tmp.append(1.0)
+                    seq_tmp.append(vocab_tmp)
+                out.append(seq_tmp)
+
+            return torch.Tensor(out)
+
+    return ExampleModel(
         d_emb=1,
         d_hid=1,
         n_hid_lyr=1,
-        n_pre_hid_lyr=1,
         n_post_hid_lyr=1,
-        p_emb=0.5,
-        p_hid=0.5,
+        n_pre_hid_lyr=1,
+        p_emb=0.0,
+        p_hid=0.0,
         tknzr=tknzr,
     )
-    return model
-
-
-@pytest.fixture
-def reset_pad_tkid(request):
-
-    def reset():
-        CharTknzr.pad_tkid = 2
-
-    request.addfinalizer(reset)
