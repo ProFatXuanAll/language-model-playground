@@ -1,5 +1,4 @@
 r"""Setup fixtures for testing :py:class:`lmp.model.RNNModel`."""
-
 import pytest
 import torch
 
@@ -7,16 +6,25 @@ from lmp.model import RNNModel
 
 
 @pytest.fixture
-def rnn_model(tknzr) -> RNNModel:
+def rnn_model(
+        tknzr,
+        d_emb,
+        d_hid,
+        n_hid_lyr,
+        n_pre_hid_lyr,
+        n_post_hid_lyr,
+        p_emb,
+        p_hid,
+) -> RNNModel:
     r"""Example RNNModel instance."""
     return RNNModel(
-        d_emb=1,
-        d_hid=1,
-        n_hid_lyr=1,
-        n_pre_hid_lyr=1,
-        n_post_hid_lyr=1,
-        p_emb=0.5,
-        p_hid=0.5,
+        d_emb=d_emb,
+        d_hid=d_hid,
+        n_hid_lyr=n_hid_lyr,
+        n_pre_hid_lyr=n_pre_hid_lyr,
+        n_post_hid_lyr=n_post_hid_lyr,
+        p_emb=p_emb,
+        p_hid=p_hid,
         tknzr=tknzr,
     )
 

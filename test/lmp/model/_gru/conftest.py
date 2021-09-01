@@ -7,16 +7,25 @@ from lmp.model import GRUModel
 
 
 @pytest.fixture
-def gru_model(tknzr) -> GRUModel:
+def gru_model(
+        tknzr,
+        d_emb,
+        d_hid,
+        n_hid_lyr,
+        n_pre_hid_lyr,
+        n_post_hid_lyr,
+        p_emb,
+        p_hid,
+) -> GRUModel:
     r"""Example GRUModel instance."""
     return GRUModel(
-        d_emb=1,
-        d_hid=1,
-        n_hid_lyr=1,
-        n_pre_hid_lyr=1,
-        n_post_hid_lyr=1,
-        p_emb=0.5,
-        p_hid=0.5,
+        d_emb=d_emb,
+        d_hid=d_hid,
+        n_hid_lyr=n_hid_lyr,
+        n_pre_hid_lyr=n_pre_hid_lyr,
+        n_post_hid_lyr=n_post_hid_lyr,
+        p_emb=p_emb,
+        p_hid=p_hid,
         tknzr=tknzr,
     )
 

@@ -10,6 +10,64 @@ from lmp.tknzr import BaseTknzr, CharTknzr
 
 
 @pytest.fixture(params=[
+    1,
+    2,
+])
+def d_emb(request) -> int:
+    return request.param
+
+
+@pytest.fixture(params=[
+    1,
+    2,
+])
+def d_hid(request) -> int:
+    return request.param
+
+
+@pytest.fixture(params=[
+    1,
+    2,
+])
+def n_hid_lyr(request) -> int:
+    return request.param
+
+
+@pytest.fixture(params=[
+    1,
+    2,
+])
+def n_pre_hid_lyr(request) -> int:
+    return request.param
+
+
+@pytest.fixture(params=[
+    1,
+    2,
+])
+def n_post_hid_lyr(request) -> int:
+    return request.param
+
+
+@pytest.fixture(params=[
+    0,
+    0.5,
+    1.0,
+])
+def p_emb(request) -> float:
+    return request.param
+
+
+@pytest.fixture(params=[
+    0,
+    0.5,
+    1.0,
+])
+def p_hid(request) -> float:
+    return request.param
+
+
+@pytest.fixture(params=[
     0,
     1000,
 ])
