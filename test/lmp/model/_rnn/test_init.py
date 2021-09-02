@@ -42,9 +42,9 @@ def test_pre_hid(rnn_model, d_emb, p_hid, d_hid, n_pre_hid_lyr):
 
     for i in range(0, n_pre_hid_lyr, 3):
         # Check the pre hidden layer parameters
-        assert rnn_model.pre_hid[i+3].in_features == d_hid
-        assert rnn_model.pre_hid[i+3].out_features == d_hid
-        assert rnn_model.pre_hid[i+5].p == p_hid
+        assert rnn_model.pre_hid[i + 3].in_features == d_hid
+        assert rnn_model.pre_hid[i + 3].out_features == d_hid
+        assert rnn_model.pre_hid[i + 5].p == p_hid
 
 
 def test_hid(rnn_model, n_hid_lyr, d_hid, p_hid):
@@ -75,11 +75,11 @@ def test_post_hid(rnn_model, d_emb, p_hid, d_hid, n_pre_hid_lyr):
     for i in range(0, n_pre_hid_lyr, 3):
         # Check the post hidden layer parameters
         assert rnn_model.post_hid[i].p == p_hid
-        assert rnn_model.post_hid[i+1].in_features == d_hid
-        assert rnn_model.post_hid[i+1].out_features == d_hid
+        assert rnn_model.post_hid[i + 1].in_features == d_hid
+        assert rnn_model.post_hid[i + 1].out_features == d_hid
 
         # Check the post_hid layer type
-        assert isinstance(rnn_model.post_hid[i+2], nn.ReLU)
+        assert isinstance(rnn_model.post_hid[i + 2], nn.ReLU)
 
     # Check the post hidden last two layer parameters
     assert rnn_model.post_hid[-1].in_features == d_hid
