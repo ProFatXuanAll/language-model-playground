@@ -77,15 +77,6 @@ def test_k():
             '`k` must satisfy `k > 0`.' in str(excinfo.value)
         )
 
-    # Test case: `k` is positive
-    for good_k in [1, 2, 3]:
-        infer = TopKInfer(
-            k=good_k,
-            max_seq_len=0,
-        )
-
-        assert infer.k == good_k
-
     # Test case: Type mismatched.
     wrong_typed_inputs = [
         0.1, '', (), [], {}, set(), None, ..., NotImplemented,
