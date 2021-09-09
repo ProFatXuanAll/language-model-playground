@@ -48,7 +48,7 @@ def test_pre_hid(lstm_model, d_emb, p_hid, d_hid, n_pre_hid_lyr):
 
 
 def test_hid(lstm_model, n_hid_lyr, d_hid, p_hid):
-    r"""``hid`` must be an instance of `nn.RNN` and ``hid`` must
+    r"""``hid`` must be an instance of `nn.LSTM` and ``hid`` must
     construct the right shape."""
     # Check the type of hidden layer
     assert isinstance(lstm_model.hid, nn.LSTM)

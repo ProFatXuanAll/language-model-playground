@@ -5,7 +5,7 @@ import inspect
 from inspect import Parameter, Signature
 from typing import ClassVar, Dict, Optional, get_type_hints
 
-from lmp.infer._base import BaseInfer
+from lmp.infer import BaseInfer
 
 
 def test_class():

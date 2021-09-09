@@ -6,7 +6,7 @@ from typing import Dict
 import pytest
 
 import lmp.path
-from lmp.tknzr._base import BaseTknzr
+from lmp.tknzr import BaseTknzr
 
 
 @pytest.fixture(params=[

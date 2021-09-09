@@ -5,7 +5,7 @@ import inspect
 from inspect import Parameter, Signature
 from typing import ClassVar, Dict, List, Optional, Sequence, get_type_hints
 
-from lmp.tknzr._base import BaseTknzr
+from lmp.tknzr import BaseTknzr
 
 
 def test_class():
