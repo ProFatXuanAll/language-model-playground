@@ -57,11 +57,12 @@ class BaseInfer(abc.ABC):
         if not isinstance(max_seq_len, int):
             raise TypeError('`max_seq_len` must be an instance of `int`.')
 
-        # Set `self.max_seq_len` to `self.__class__.hard_max_seq_len` if
-        # violate maximum sequence length constraint.
+        # `self.max_seq_len` must in the range from zero to `self.max_seq_len.`
         if not (0 <= max_seq_len <= self.__class__.hard_max_seq_len):
-            self.max_seq_len = self.__class__.hard_max_seq_len
-        # Use `max_seq_len` normally.
+            raise ValueError(
+                '`self.max_seq_len` must be less than or equal to '
+                + '`self.hard_max_seq_len` and more than or equal to zero.'
+            )
         else:
             self.max_seq_len = max_seq_len
 

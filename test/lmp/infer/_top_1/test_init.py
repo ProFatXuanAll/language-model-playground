@@ -11,19 +11,18 @@ from lmp.infer._top_1 import Top1Infer
 def test_max_seq_len():
     r"""``max_seq_len`` must be limited in the range from zero to
     ``hard_max_seq``, and ``max_seq_len`` must be an instance of int."""
-    # Test case: `max_seq_len` is negative
-    for wrong_max_seq_len in [-1, -2, -3]:
-        infer = Top1Infer(
-            max_seq_len=wrong_max_seq_len,
-        )
-        assert infer.max_seq_len == infer.hard_max_seq_len
+    # Test case: Wrong value input
+    for wrong_max_seq_len in [-1, -2, -3, 1000, 2000]:
+        with pytest.raises(ValueError) as excinfo:
+            infer = Top1Infer(
+                max_seq_len=wrong_max_seq_len,
+            )
 
-    # Test case: `max_seq_len` is more than `hard_max_len`
-    for wrong_max_seq_len in [1000, 2000]:
-        infer = Top1Infer(
-            max_seq_len=wrong_max_seq_len,
+        assert (
+            '`self.max_seq_len` must be less than or equal to '
+            + '`self.hard_max_seq_len` and more than or equal to zero.'
+            in str(excinfo.value)
         )
-        assert infer.max_seq_len == infer.hard_max_seq_len
 
     # Test case: `max_seq_len` is less than or equal to `hard_max_seq_len` and
     # is more than zero.
