@@ -50,7 +50,7 @@ def n_post_hid_lyr(request) -> int:
 
 
 @pytest.fixture(params=[
-    0,
+    0.0,
     0.5,
     1.0,
 ])
@@ -59,7 +59,7 @@ def p_emb(request) -> float:
 
 
 @pytest.fixture(params=[
-    0,
+    0.0,
     0.5,
     1.0,
 ])

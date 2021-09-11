@@ -3,7 +3,370 @@ r"""Test the constructor of :py:class:`lmp.model._rnn.RNNModel`.
 Test target:
 - :py:meth:`lmp.model._rnn.RNNModel.__init__`.
 """
+import pytest
+
 import torch.nn as nn
+
+from lmp.model._rnn import RNNModel
+
+
+def test_d_emb(tknzr):
+    r"""``d_emb`` must be an instance of `int` and must be bigger than
+    or equal to ``1``.
+    """
+    # Test case: Type mismatched.
+    wrong_typed_inputs = [
+        0.1, '', (), [], {}, set(), None, ..., NotImplemented,
+    ]
+
+    for bad_d_emb in wrong_typed_inputs:
+        with pytest.raises(TypeError) as excinfo:
+            RNNModel(
+                d_emb=bad_d_emb,
+                d_hid=1,
+                n_hid_lyr=1,
+                n_pre_hid_lyr=1,
+                n_post_hid_lyr=1,
+                p_emb=0.0,
+                p_hid=0.0,
+                tknzr=tknzr,
+            )
+
+        assert (
+            '`d_emb` must be an instance of `int`.'
+            in str(excinfo.value)
+        )
+
+    # Test case: Wrong input value.
+    wrong_value_inputs = [
+        0, -1, -2,
+    ]
+
+    for bad_d_emb in wrong_value_inputs:
+        with pytest.raises(ValueError) as excinfo:
+            RNNModel(
+                d_emb=bad_d_emb,
+                d_hid=1,
+                n_hid_lyr=1,
+                n_pre_hid_lyr=1,
+                n_post_hid_lyr=1,
+                p_emb=0.0,
+                p_hid=0.0,
+                tknzr=tknzr,
+            )
+
+        assert (
+            '`d_emb` must be bigger than or equal to ``1``.'
+            in str(excinfo.value)
+        )
+
+
+def test_d_hid(tknzr):
+    r"""``d_hid`` must be an instance of `int` and must be bigger than
+    or equal to ``1``.
+    """
+    # Test case: Type mismatched.
+    wrong_typed_inputs = [
+        0.1, '', (), [], {}, set(), None, ..., NotImplemented,
+    ]
+
+    for bad_d_hid in wrong_typed_inputs:
+        with pytest.raises(TypeError) as excinfo:
+            RNNModel(
+                d_emb=1,
+                d_hid=bad_d_hid,
+                n_hid_lyr=1,
+                n_pre_hid_lyr=1,
+                n_post_hid_lyr=1,
+                p_emb=0.0,
+                p_hid=0.0,
+                tknzr=tknzr,
+            )
+
+        assert (
+            '`d_hid` must be an instance of `int`.'
+            in str(excinfo.value)
+        )
+
+    # Test case: Wrong input value.
+    wrong_value_inputs = [
+        0, -1, -2,
+    ]
+
+    for bad_d_hid in wrong_value_inputs:
+        with pytest.raises(ValueError) as excinfo:
+            RNNModel(
+                d_emb=1,
+                d_hid=bad_d_hid,
+                n_hid_lyr=1,
+                n_pre_hid_lyr=1,
+                n_post_hid_lyr=1,
+                p_emb=0.0,
+                p_hid=0.0,
+                tknzr=tknzr,
+            )
+
+        assert (
+            '`d_hid` must be bigger than or equal to ``1``.'
+            in str(excinfo.value)
+        )
+
+
+def test_n_hid_lyr(tknzr):
+    r"""``d_hid_lyr`` must be an instance of `int` and must be bigger than
+    or equal to ``1``.
+    """
+    # Test case: Type mismatched.
+    wrong_typed_inputs = [
+        0.1, '', (), [], {}, set(), None, ..., NotImplemented,
+    ]
+
+    for bad_n_hid_lyr in wrong_typed_inputs:
+        with pytest.raises(TypeError) as excinfo:
+            RNNModel(
+                d_emb=1,
+                d_hid=1,
+                n_hid_lyr=bad_n_hid_lyr,
+                n_pre_hid_lyr=1,
+                n_post_hid_lyr=1,
+                p_emb=0.0,
+                p_hid=0.0,
+                tknzr=tknzr,
+            )
+
+        assert (
+            '`n_hid_lyr` must be an instance of `int`.'
+            in str(excinfo.value)
+        )
+
+    # Test case: Wrong input value.
+    wrong_value_inputs = [
+        0, -1, -2,
+    ]
+
+    for bad_d_hid_lyr in wrong_value_inputs:
+        with pytest.raises(ValueError) as excinfo:
+            RNNModel(
+                d_emb=1,
+                d_hid=1,
+                n_hid_lyr=bad_d_hid_lyr,
+                n_pre_hid_lyr=1,
+                n_post_hid_lyr=1,
+                p_emb=0.0,
+                p_hid=0.0,
+                tknzr=tknzr,
+            )
+
+        assert (
+            '`n_hid_lyr` must be bigger than or equal to ``1``.'
+            in str(excinfo.value)
+        )
+
+
+def test_n_post_hid_lyr(tknzr):
+    r"""``n_post_hid_lyr`` must be an instance of `int` and must be bigger than
+    or equal to ``1``.
+    """
+    # Test case: Type mismatched.
+    wrong_typed_inputs = [
+        0.1, '', (), [], {}, set(), None, ..., NotImplemented,
+    ]
+
+    for bad_n_post_hid_lyr in wrong_typed_inputs:
+        with pytest.raises(TypeError) as excinfo:
+            RNNModel(
+                d_emb=1,
+                d_hid=1,
+                n_hid_lyr=1,
+                n_pre_hid_lyr=1,
+                n_post_hid_lyr=bad_n_post_hid_lyr,
+                p_emb=0.0,
+                p_hid=0.0,
+                tknzr=tknzr,
+            )
+
+        assert (
+            '`n_post_hid_lyr` must be an instance of `int`.'
+            in str(excinfo.value)
+        )
+
+    # Test case: Wrong input value.
+    wrong_value_inputs = [
+        -1, -2, -3,
+    ]
+
+    for bad_n_post_hid_lyr in wrong_value_inputs:
+        with pytest.raises(ValueError) as excinfo:
+            RNNModel(
+                d_emb=1,
+                d_hid=1,
+                n_hid_lyr=1,
+                n_pre_hid_lyr=1,
+                n_post_hid_lyr=bad_n_post_hid_lyr,
+                p_emb=0.0,
+                p_hid=0.0,
+                tknzr=tknzr,
+            )
+
+        assert (
+            '`n_post_hid_lyr` must be bigger than or equal to ``1``.'
+            in str(excinfo.value)
+        )
+
+
+def test_n_pre_hid_lyr(tknzr):
+    r"""``n_pre_hid_lyr`` must be an instance of `int` and must be bigger than
+    or equal to ``1``.
+    """
+    # Test case: Type mismatched.
+    wrong_typed_inputs = [
+        0.1, '', (), [], {}, set(), None, ..., NotImplemented,
+    ]
+
+    for bad_n_pre_hid_lyr in wrong_typed_inputs:
+        with pytest.raises(TypeError) as excinfo:
+            RNNModel(
+                d_emb=1,
+                d_hid=1,
+                n_hid_lyr=1,
+                n_pre_hid_lyr=bad_n_pre_hid_lyr,
+                n_post_hid_lyr=1,
+                p_emb=0.0,
+                p_hid=0.0,
+                tknzr=tknzr,
+            )
+
+        assert (
+            '`n_pre_hid_lyr` must be an instance of `int`.'
+            in str(excinfo.value)
+        )
+
+    # Test case: Wrong input value.
+    wrong_value_inputs = [
+        -1, -2, -3,
+    ]
+
+    for bad_n_pre_hid_lyr in wrong_value_inputs:
+        with pytest.raises(ValueError) as excinfo:
+            RNNModel(
+                d_emb=1,
+                d_hid=1,
+                n_hid_lyr=1,
+                n_pre_hid_lyr=bad_n_pre_hid_lyr,
+                n_post_hid_lyr=1,
+                p_emb=0.0,
+                p_hid=0.0,
+                tknzr=tknzr,
+            )
+
+        assert (
+            '`n_pre_hid_lyr` must be bigger than or equal to ``1``.'
+            in str(excinfo.value)
+        )
+
+
+def test_p_emb(tknzr):
+    r"""``p_emb`` must be an instance of `int` and must be bigger than
+    or equal to ``1``.
+    """
+    # Test case: Type mismatched.
+    wrong_typed_inputs = [
+        True, 0, 1, '', (), [], {}, set(), None, ..., NotImplemented,
+    ]
+
+    for bad_p_emb in wrong_typed_inputs:
+        with pytest.raises(TypeError) as excinfo:
+            RNNModel(
+                d_emb=1,
+                d_hid=1,
+                n_hid_lyr=1,
+                n_pre_hid_lyr=1,
+                n_post_hid_lyr=1,
+                p_emb=bad_p_emb,
+                p_hid=0.0,
+                tknzr=tknzr,
+            )
+
+        assert (
+            '`p_emb` must be an instance of `float`.'
+            in str(excinfo.value)
+        )
+
+    # Test case: Wrong input value.
+    wrong_value_inputs = [
+        -0.1, -1.0, 1.1, 2.0,
+    ]
+
+    for bad_p_emb in wrong_value_inputs:
+        with pytest.raises(ValueError) as excinfo:
+            RNNModel(
+                d_emb=1,
+                d_hid=1,
+                n_hid_lyr=1,
+                n_pre_hid_lyr=1,
+                n_post_hid_lyr=1,
+                p_emb=bad_p_emb,
+                p_hid=0.0,
+                tknzr=tknzr,
+            )
+
+        assert (
+            '`p_emb` must be bigger than or equal to ``0.0`` and'
+            + 'smaller than or equal to ``1.0``'
+            in str(excinfo.value)
+        )
+
+
+def test_p_hid(tknzr):
+    r"""``p_hid`` must be an instance of `int` and must be bigger than
+    or equal to ``1``.
+    """
+    # Test case: Type mismatched.
+    wrong_typed_inputs = [
+        True, 0, 1, '', (), [], {}, set(), None, ..., NotImplemented,
+    ]
+
+    for bad_p_hid in wrong_typed_inputs:
+        with pytest.raises(TypeError) as excinfo:
+            RNNModel(
+                d_emb=1,
+                d_hid=1,
+                n_hid_lyr=1,
+                n_pre_hid_lyr=1,
+                n_post_hid_lyr=1,
+                p_emb=0.0,
+                p_hid=bad_p_hid,
+                tknzr=tknzr,
+            )
+
+        assert (
+            '`p_hid` must be an instance of `float`.'
+            in str(excinfo.value)
+        )
+
+    # Test case: Wrong input value.
+    wrong_value_inputs = [
+        -0.1, -1.0, 1.1, 2.0,
+    ]
+
+    for bad_p_hid in wrong_value_inputs:
+        with pytest.raises(ValueError) as excinfo:
+            RNNModel(
+                d_emb=1,
+                d_hid=1,
+                n_hid_lyr=1,
+                n_pre_hid_lyr=1,
+                n_post_hid_lyr=1,
+                p_emb=0.0,
+                p_hid=bad_p_hid,
+                tknzr=tknzr,
+            )
+
+        assert (
+            '`p_hid` must be bigger than or equal to ``0.0`` and'
+            + 'smaller than or equal to ``1.0``'
+            in str(excinfo.value)
+        )
 
 
 def test_emb(rnn_model, tknzr, d_emb):
@@ -40,11 +403,12 @@ def test_pre_hid(rnn_model, d_emb, p_hid, d_hid, n_pre_hid_lyr):
     assert rnn_model.pre_hid[0].out_features == d_hid
     assert rnn_model.pre_hid[2].p == p_hid
 
-    for i in range(0, n_pre_hid_lyr, 3):
-        # Check the pre hidden layer parameters
-        assert rnn_model.pre_hid[i + 3].in_features == d_hid
-        assert rnn_model.pre_hid[i + 3].out_features == d_hid
-        assert rnn_model.pre_hid[i + 5].p == p_hid
+    if n_pre_hid_lyr > 1:
+        for i in range(0, n_pre_hid_lyr, 3):
+            # Check the pre hidden layer parameters
+            assert rnn_model.pre_hid[i + 3].in_features == d_hid
+            assert rnn_model.pre_hid[i + 3].out_features == d_hid
+            assert rnn_model.pre_hid[i + 5].p == p_hid
 
 
 def test_hid(rnn_model, n_hid_lyr, d_hid, p_hid):
@@ -65,21 +429,22 @@ def test_hid(rnn_model, n_hid_lyr, d_hid, p_hid):
         assert rnn_model.hid.dropout == p_hid
 
 
-def test_post_hid(rnn_model, d_emb, p_hid, d_hid, n_pre_hid_lyr):
+def test_post_hid(rnn_model, d_emb, p_hid, d_hid, n_post_hid_lyr):
     r"""``post_hid`` must be an instance of `nn.Sequential` and ``post_hid`` must
     construct the right shape."""
     # Check the post hidden embedding type
     assert isinstance(rnn_model.post_hid, nn.Sequential)
 
-    # Check the shape of post hidden embedding
-    for i in range(0, n_pre_hid_lyr, 3):
-        # Check the post hidden layer parameters
-        assert rnn_model.post_hid[i].p == p_hid
-        assert rnn_model.post_hid[i + 1].in_features == d_hid
-        assert rnn_model.post_hid[i + 1].out_features == d_hid
+    if n_post_hid_lyr > 1:
+        # Check the shape of post hidden embedding
+        for i in range(0, n_post_hid_lyr, 3):
+            # Check the post hidden layer parameters
+            assert rnn_model.post_hid[i].p == p_hid
+            assert rnn_model.post_hid[i + 1].in_features == d_hid
+            assert rnn_model.post_hid[i + 1].out_features == d_hid
 
-        # Check the post_hid layer type
-        assert isinstance(rnn_model.post_hid[i + 2], nn.ReLU)
+            # Check the post_hid layer type
+            assert isinstance(rnn_model.post_hid[i + 2], nn.ReLU)
 
     # Check the post hidden last two layer parameters
     assert rnn_model.post_hid[-1].in_features == d_hid

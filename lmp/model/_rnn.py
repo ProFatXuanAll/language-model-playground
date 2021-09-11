@@ -33,13 +33,9 @@ class RNNModel(BaseModel):
         Must be bigger than or equal to ``1``.
     n_post_hid_lyr: int
         Number of MLP layers ``+1`` after RNN layer.
-        ``+1`` since we need at least one MLP layer to transform dimension.
-        (If you want 2 layers, then you need to set ``n_post_hid_lyr = 1``.)
         Must be bigger than or equal to ``1``.
     n_pre_hid_lyr: int
         Number of MLP layers ``+1`` before RNN layer.
-        ``+1`` since we need at least one MLP layer to transform dimension.
-        (If you want 2 layers, then you need to set ``n_pre_hid_lyr = 1``.)
         Must be bigger than or equal to ``1``.
     p_emb: float
         Dropout probability for token embeddings.
@@ -92,6 +88,117 @@ class RNNModel(BaseModel):
             **kwargs: Optional[Dict],
     ):
         super().__init__()
+
+        #######################################################################
+        # Required parameters section.
+        #######################################################################
+
+        # ---------------------------------------------------------------------
+        # Checking parameter `d_emb`.
+        if not isinstance(d_emb, int):
+            raise TypeError('`d_emb` must be an instance of `int`.')
+
+        if d_emb < 1:
+            raise ValueError('`d_emb` must be bigger than or equal to ``1``.')
+
+        # Finish checking parameter `d_emb`.
+        # ---------------------------------------------------------------------
+
+        # ---------------------------------------------------------------------
+        # Checking parameter `d_hid`.
+        if not isinstance(d_hid, int):
+            raise TypeError('`d_hid` must be an instance of `int`.')
+
+        if d_hid < 1:
+            raise ValueError('`d_hid` must be bigger than or equal to ``1``.')
+
+        # Finish checking parameter `d_hid`.
+        # ---------------------------------------------------------------------
+
+        # ---------------------------------------------------------------------
+        # Checking parameter `n_hid_lyr`.
+        if not isinstance(n_hid_lyr, int):
+            raise TypeError('`n_hid_lyr` must be an instance of `int`.')
+
+        if n_hid_lyr < 1:
+            raise ValueError(
+                '`n_hid_lyr` must be bigger than or equal to ``1``.')
+
+        # Finish checking parameter `n_hid_lyr`.
+        # ---------------------------------------------------------------------
+
+        # ---------------------------------------------------------------------
+        # Checking parameter `n_post_hid_lyr`.
+        if not isinstance(n_post_hid_lyr, int):
+            raise TypeError('`n_post_hid_lyr` must be an instance of `int`.')
+
+        if n_post_hid_lyr < 1:
+            raise ValueError(
+                '`n_post_hid_lyr` must be bigger than or equal to ``1``.')
+
+        # Finish checking parameter `n_post_hid_lyr`.
+        # ---------------------------------------------------------------------
+
+        # ---------------------------------------------------------------------
+        # Checking parameter `n_pre_hid_lyr`.
+        if not isinstance(n_pre_hid_lyr, int):
+            raise TypeError('`n_pre_hid_lyr` must be an instance of `int`.')
+
+        if n_pre_hid_lyr < 1:
+            raise ValueError(
+                '`n_pre_hid_lyr` must be bigger than or equal to ``1``.')
+
+        # Finish checking parameter `n_pre_hid_lyr`.
+        # ---------------------------------------------------------------------
+
+        # ---------------------------------------------------------------------
+        # Checking parameter `p_emb`.
+        if not isinstance(p_emb, float):
+            raise TypeError('`p_emb` must be an instance of `float`.')
+
+        if 0 > p_emb or p_emb > 1.0:
+            raise ValueError(
+                '`p_emb` must be bigger than or equal to ``0.0`` and' +
+                'smaller than or equal to ``1.0``')
+
+        # Finish checking parameter `p_emb`.
+        # ---------------------------------------------------------------------
+
+        # ---------------------------------------------------------------------
+        # Checking parameter `p_hid`.
+        if not isinstance(p_hid, float):
+            raise TypeError('`p_hid` must be an instance of `float`.')
+
+        if 0 > p_hid or p_hid > 1.0:
+            raise ValueError(
+                '`p_hid` must be bigger than or equal to ``0.0`` and' +
+                'smaller than or equal to ``1.0``')
+
+        # Finish checking parameter `p_hid`.
+        # ---------------------------------------------------------------------
+
+        # ---------------------------------------------------------------------
+        # Checking parameter `tknzr`.
+        if not isinstance(tknzr, BaseTknzr):
+            raise TypeError('`tknzr` must be an instance of `BaseTknzr`.')
+
+        if not isinstance(tknzr.vocab_size, int):
+            raise TypeError('`tknzr.vocab_size` must be an instance of `int`.')
+
+        if not isinstance(tknzr.pad_tkid, int):
+            raise TypeError('`tknzr.pad_tkid` must be an instance of `int`.')
+
+        # Finish checking parameter `tknzr`.
+        # ---------------------------------------------------------------------
+
+        # `n_post_hid_lyr` first layer is required so the number will
+        # minus one to match the right number of layer. (If you want
+        # 1 layers, then you need to set ``n_pre_hid_lyr = 1``.)
+        n_post_hid_lyr -= 1
+        # `n_pre_hid_lyr` first layer is required so the number will
+        # minus one to match the right number of layer. (If you want
+        # 1 layers, then you need to set ``n_pre_hid_lyr = 1``.)
+        n_pre_hid_lyr -= 1
 
         # Token embedding layer.
         # Use token ids to lookup token embeddings.
