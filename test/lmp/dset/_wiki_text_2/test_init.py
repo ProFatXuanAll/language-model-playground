@@ -1,4 +1,4 @@
-r"""Test the constructor of :py:class:`lmp.dset.WikiText2Dset`.
+r"""Test the construction of :py:class:`lmp.dset.WikiText2Dset`.
 
 Test target:
 - :py:meth:`lmp.dset.WikiText2Dset.__init__`.

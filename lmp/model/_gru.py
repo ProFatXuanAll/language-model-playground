@@ -19,7 +19,7 @@ class GRUModel(RNNModel):
         Token embedding dimension.
         Must be bigger than or equal to ``1``.
     d_hid: int
-        Hidden dimension for MLP and GRU.
+        Hidden dimension for Feed-Forward layers and GRU layers.
         Must be bigger than or equal to ``1``.
     kwargs: Dict, optional
         Useless parameter.
@@ -28,14 +28,12 @@ class GRUModel(RNNModel):
         Number of GRU layers.
         Must be bigger than or equal to ``1``.
     n_post_hid_lyr: int
-        Number of MLP layers ``+1`` after GRU layer.
-        ``+1`` since we need at least one MLP layer to transform dimension.
-        (If you want 2 layers, then you need to set ``n_post_hid_lyr = 1``.)
+        Number of Feed-Forward layers after GRU layers.
+        All layers are paired with ReLU activatons except for the last one.
         Must be bigger than or equal to ``1``.
     n_pre_hid_lyr: int
-        Number of MLP layers ``+1`` before GRU layer.
-        ``+1`` since we need at least one MLP layer to transform dimension.
-        (If you want 2 layers, then you need to set ``n_pre_hid_lyr = 1``.)
+        Number of Feed-Forward layers before GRU layers.
+        All layers are paired with ReLU activatons.
         Must be bigger than or equal to ``1``.
     p_emb: float
         Dropout probability for token embeddings.

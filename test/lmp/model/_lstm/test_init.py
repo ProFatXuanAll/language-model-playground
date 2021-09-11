@@ -1,22 +1,21 @@
-r"""Test the constructor of :py:class:`lmp.model._lstm.LSTMModel`.
+r"""Test the construction of :py:class:`lmp.model.LSTMModel`.
 
 Test target:
-- :py:meth:`lmp.model._lstm.LSTMModel.__init__`.
+- :py:meth:`lmp.model.LSTMModel.__init__`.
 """
-import pytest
 
+import pytest
 import torch.nn as nn
 
-from lmp.model._lstm import LSTMModel
+from lmp.model import LSTMModel
+from lmp.tknzr import BaseTknzr
 
 
-def test_d_emb(tknzr):
-    r"""``d_emb`` must be an instance of `int` and must be bigger than
-    or equal to ``1``.
-    """
+def test_d_emb(tknzr: BaseTknzr):
+    r"""``d_emb`` must be an instance of `int` and be positive."""
     # Test case: Type mismatched.
     wrong_typed_inputs = [
-        0.1, '', (), [], {}, set(), None, ..., NotImplemented,
+        0.0, 0.1, 1.0, '', (), [], {}, set(), None, ..., NotImplemented,
     ]
 
     for bad_d_emb in wrong_typed_inputs:
@@ -32,12 +31,9 @@ def test_d_emb(tknzr):
                 tknzr=tknzr,
             )
 
-        assert (
-            '`d_emb` must be an instance of `int`.'
-            in str(excinfo.value)
-        )
+        assert '`d_emb` must be an instance of `int`' in str(excinfo.value)
 
-    # Test case: Wrong input value.
+    # Test case: Invalid value.
     wrong_value_inputs = [
         0, -1, -2,
     ]
@@ -56,18 +52,16 @@ def test_d_emb(tknzr):
             )
 
         assert (
-            '`d_emb` must be bigger than or equal to ``1``.'
+            '`d_emb` must be bigger than or equal to `1`'
             in str(excinfo.value)
         )
 
 
-def test_d_hid(tknzr):
-    r"""``d_hid`` must be an instance of `int` and must be bigger than
-    or equal to ``1``.
-    """
+def test_d_hid(tknzr: BaseTknzr):
+    r"""``d_hid`` must be an instance of `int` and be positive."""
     # Test case: Type mismatched.
     wrong_typed_inputs = [
-        0.1, '', (), [], {}, set(), None, ..., NotImplemented,
+        0.0, 0.1, 1.0, '', (), [], {}, set(), None, ..., NotImplemented,
     ]
 
     for bad_d_hid in wrong_typed_inputs:
@@ -83,12 +77,9 @@ def test_d_hid(tknzr):
                 tknzr=tknzr,
             )
 
-        assert (
-            '`d_hid` must be an instance of `int`.'
-            in str(excinfo.value)
-        )
+        assert '`d_hid` must be an instance of `int`' in str(excinfo.value)
 
-    # Test case: Wrong input value.
+    # Test case: Invalid value.
     wrong_value_inputs = [
         0, -1, -2,
     ]
@@ -107,18 +98,16 @@ def test_d_hid(tknzr):
             )
 
         assert (
-            '`d_hid` must be bigger than or equal to ``1``.'
+            '`d_hid` must be bigger than or equal to `1`'
             in str(excinfo.value)
         )
 
 
-def test_n_hid_lyr(tknzr):
-    r"""``d_hid_lyr`` must be an instance of `int` and must be bigger than
-    or equal to ``1``.
-    """
+def test_n_hid_lyr(tknzr: BaseTknzr):
+    r"""``n_hid_lyr`` must be an instance of `int` and be positive."""
     # Test case: Type mismatched.
     wrong_typed_inputs = [
-        0.1, '', (), [], {}, set(), None, ..., NotImplemented,
+        0.0, 0.1, 1.0, '', (), [], {}, set(), None, ..., NotImplemented,
     ]
 
     for bad_n_hid_lyr in wrong_typed_inputs:
@@ -134,12 +123,9 @@ def test_n_hid_lyr(tknzr):
                 tknzr=tknzr,
             )
 
-        assert (
-            '`n_hid_lyr` must be an instance of `int`.'
-            in str(excinfo.value)
-        )
+        assert '`n_hid_lyr` must be an instance of `int`' in str(excinfo.value)
 
-    # Test case: Wrong input value.
+    # Test case: Invalid value.
     wrong_value_inputs = [
         0, -1, -2,
     ]
@@ -158,18 +144,16 @@ def test_n_hid_lyr(tknzr):
             )
 
         assert (
-            '`n_hid_lyr` must be bigger than or equal to ``1``.'
+            '`n_hid_lyr` must be bigger than or equal to `1`'
             in str(excinfo.value)
         )
 
 
-def test_n_post_hid_lyr(tknzr):
-    r"""``n_post_hid_lyr`` must be an instance of `int` and must be bigger than
-    or equal to ``1``.
-    """
+def test_n_post_hid_lyr(tknzr: BaseTknzr):
+    r"""``n_post_hid_lyr`` must be an instance of `int` and be positive."""
     # Test case: Type mismatched.
     wrong_typed_inputs = [
-        0.1, '', (), [], {}, set(), None, ..., NotImplemented,
+        0.0, 0.1, 1.0, '', (), [], {}, set(), None, ..., NotImplemented,
     ]
 
     for bad_n_post_hid_lyr in wrong_typed_inputs:
@@ -186,13 +170,13 @@ def test_n_post_hid_lyr(tknzr):
             )
 
         assert (
-            '`n_post_hid_lyr` must be an instance of `int`.'
+            '`n_post_hid_lyr` must be an instance of `int`'
             in str(excinfo.value)
         )
 
-    # Test case: Wrong input value.
+    # Test case: Invalid value.
     wrong_value_inputs = [
-        -1, -2, -3,
+        0, -1, -2,
     ]
 
     for bad_n_post_hid_lyr in wrong_value_inputs:
@@ -209,18 +193,16 @@ def test_n_post_hid_lyr(tknzr):
             )
 
         assert (
-            '`n_post_hid_lyr` must be bigger than or equal to ``1``.'
+            '`n_post_hid_lyr` must be bigger than or equal to `1`'
             in str(excinfo.value)
         )
 
 
-def test_n_pre_hid_lyr(tknzr):
-    r"""``n_pre_hid_lyr`` must be an instance of `int` and must be bigger than
-    or equal to ``1``.
-    """
+def test_n_pre_hid_lyr(tknzr: BaseTknzr):
+    r"""``n_pre_hid_lyr`` must be an instance of `int` and be positive."""
     # Test case: Type mismatched.
     wrong_typed_inputs = [
-        0.1, '', (), [], {}, set(), None, ..., NotImplemented,
+        0.0, 0.1, 1.0, '', (), [], {}, set(), None, ..., NotImplemented,
     ]
 
     for bad_n_pre_hid_lyr in wrong_typed_inputs:
@@ -237,13 +219,13 @@ def test_n_pre_hid_lyr(tknzr):
             )
 
         assert (
-            '`n_pre_hid_lyr` must be an instance of `int`.'
+            '`n_pre_hid_lyr` must be an instance of `int`'
             in str(excinfo.value)
         )
 
-    # Test case: Wrong input value.
+    # Test case: Invalid value.
     wrong_value_inputs = [
-        -1, -2, -3,
+        0, -1, -2,
     ]
 
     for bad_n_pre_hid_lyr in wrong_value_inputs:
@@ -260,18 +242,16 @@ def test_n_pre_hid_lyr(tknzr):
             )
 
         assert (
-            '`n_pre_hid_lyr` must be bigger than or equal to ``1``.'
+            '`n_pre_hid_lyr` must be bigger than or equal to `1`'
             in str(excinfo.value)
         )
 
 
-def test_p_emb(tknzr):
-    r"""``p_emb`` must be an instance of `int` and must be bigger than
-    or equal to ``1``.
-    """
+def test_p_emb(tknzr: BaseTknzr):
+    r"""``p_emb`` must be an instance of `float` and must be a probability."""
     # Test case: Type mismatched.
     wrong_typed_inputs = [
-        True, 0, 1, '', (), [], {}, set(), None, ..., NotImplemented,
+        False, True, 0, 1, '', (), [], {}, set(), None, ..., NotImplemented,
     ]
 
     for bad_p_emb in wrong_typed_inputs:
@@ -287,14 +267,11 @@ def test_p_emb(tknzr):
                 tknzr=tknzr,
             )
 
-        assert (
-            '`p_emb` must be an instance of `float`.'
-            in str(excinfo.value)
-        )
+        assert '`p_emb` must be an instance of `float`' in str(excinfo.value)
 
-    # Test case: Wrong input value.
+    # Test case: Invalid value.
     wrong_value_inputs = [
-        -0.1, -1.0, 1.1, 2.0,
+        -1.0, -0.1, 1.1, 2.0,
     ]
 
     for bad_p_emb in wrong_value_inputs:
@@ -311,19 +288,16 @@ def test_p_emb(tknzr):
             )
 
         assert (
-            '`p_emb` must be bigger than or equal to ``0.0`` and'
-            + 'smaller than or equal to ``1.0``'
+            '`p_emb` must be in the range from `0.0` to `1.0`'
             in str(excinfo.value)
         )
 
 
-def test_p_hid(tknzr):
-    r"""``p_hid`` must be an instance of `int` and must be bigger than
-    or equal to ``1``.
-    """
+def test_p_hid(tknzr: BaseTknzr):
+    r"""``p_hid`` must be an instance of `float` and must be a probability."""
     # Test case: Type mismatched.
     wrong_typed_inputs = [
-        True, 0, 1, '', (), [], {}, set(), None, ..., NotImplemented,
+        False, True, 0, 1, '', (), [], {}, set(), None, ..., NotImplemented,
     ]
 
     for bad_p_hid in wrong_typed_inputs:
@@ -339,14 +313,11 @@ def test_p_hid(tknzr):
                 tknzr=tknzr,
             )
 
-        assert (
-            '`p_hid` must be an instance of `float`.'
-            in str(excinfo.value)
-        )
+        assert '`p_hid` must be an instance of `float`' in str(excinfo.value)
 
-    # Test case: Wrong input value.
+    # Test case: Invalid value.
     wrong_value_inputs = [
-        -0.1, -1.0, 1.1, 2.0,
+        -1.0, -0.1, 1.1, 2.0,
     ]
 
     for bad_p_hid in wrong_value_inputs:
@@ -363,90 +334,139 @@ def test_p_hid(tknzr):
             )
 
         assert (
-            '`p_hid` must be bigger than or equal to ``0.0`` and'
-            + 'smaller than or equal to ``1.0``'
+            '`p_hid` must be in the range from `0.0` to `1.0`'
             in str(excinfo.value)
         )
 
 
-def test_emb(lstm_model, tknzr, d_emb):
-    r"""``emb`` must be an instance of `nn.Embedding` and ``emb`` must
-    construct the right shape."""
-    # Check the embedding type
+def test_emb(d_emb: int, lstm_model: LSTMModel, tknzr: BaseTknzr):
+    r"""Test embedding layer.
+
+    If ``lstm_model`` is an instance of ``LSTMModel``, then ``lstm_model.emb``
+    must be an instance of `nn.Embedding` with correct shape.
+    """
+    # Type check.
     assert isinstance(lstm_model.emb, nn.Embedding)
 
-    # Check the shape of embedding
+    # Shape validation.
     assert lstm_model.emb.num_embeddings == tknzr.vocab_size
     assert lstm_model.emb.embedding_dim == d_emb
     assert lstm_model.emb.padding_idx == tknzr.pad_tkid
 
 
-def test_emb_dp(lstm_model, p_emb):
-    r"""``emb_dp`` must be an instance of `nn.Dropout` and ``emb_dp`` must
-    be the right value."""
-    # Check the embedding dropout type
+def test_emb_dp(p_emb: float, lstm_model: LSTMModel):
+    r"""Test embedding dropout layer.
+
+    If ``lstm_model`` is an instance of ``LSTMModel``, then
+    ``lstm_model.emb_dp`` must be an instance of `nn.Dropout` with correct
+    dropout probability.
+    """
+    # Type check.
     assert isinstance(lstm_model.emb_dp, nn.Dropout)
 
-    # Check the value of embedding dropout
+    # Check dropout probability.
     assert lstm_model.emb_dp.p == p_emb
 
 
-def test_pre_hid(lstm_model, d_emb, p_hid, d_hid, n_pre_hid_lyr):
-    r"""``pre_hid`` must be an instance of `nn.Sequential` and ``pre_hid`` must
-    construct the right shape."""
-    # Check the pre hidden embedding type
-    assert isinstance(lstm_model.pre_hid, nn.Sequential)
-    assert isinstance(lstm_model.pre_hid[1], nn.ReLU)
+def test_pre_hid(
+    d_emb: int,
+    d_hid: int,
+    n_pre_hid_lyr: int,
+    p_hid: float,
+    lstm_model: LSTMModel,
+):
+    r"""Test Feed-Forward layers before hidden layer.
 
-    # Check the shape of pre hidden embedding
+    If ``lstm_model`` is an instance of ``LSTMModel``, then
+    ``lstm_model.pre_hid`` must be an instance of `nn.Sequential`.
+    All ``nn.Linear`` layers in ``lstm_model.pre_hid`` must have correct shape.
+    All ``nn.Dropout`` layers in ``lstm_model.pre_hid`` must have correct
+    dropout probability.
+    All activations in ``lstm_model.pre_hid`` must be ``nn.ReLU``.
+    ``lstm_model.pre_hid`` must contain at least one ``nn.Linear``, one
+    ``nn.ReLU`` and one ``nn.Dropout`` layers.
+    """
+    # Type check.
+    assert isinstance(lstm_model.pre_hid, nn.Sequential)
+    assert isinstance(lstm_model.pre_hid[0], nn.Linear)
+    assert isinstance(lstm_model.pre_hid[1], nn.ReLU)
+    assert isinstance(lstm_model.pre_hid[2], nn.Dropout)
+
+    # Shape validation.
     assert lstm_model.pre_hid[0].in_features == d_emb
     assert lstm_model.pre_hid[0].out_features == d_hid
+
+    # Check dropout probability.
     assert lstm_model.pre_hid[2].p == p_hid
 
-    if n_pre_hid_lyr > 1:
-        for i in range(0, n_pre_hid_lyr, 3):
-            # Check the pre hidden layer parameters
-            assert lstm_model.pre_hid[i + 3].in_features == d_hid
-            assert lstm_model.pre_hid[i + 3].out_features == d_hid
-            assert lstm_model.pre_hid[i + 5].p == p_hid
+    for i in range(1, n_pre_hid_lyr):
+        # Type check.
+        assert isinstance(lstm_model.pre_hid[3 * i], nn.Linear)
+        assert isinstance(lstm_model.pre_hid[3 * i + 1], nn.ReLU)
+        assert isinstance(lstm_model.pre_hid[3 * i + 2], nn.Dropout)
+
+        # Shape validation.
+        assert lstm_model.pre_hid[3 * i].in_features == d_hid
+        assert lstm_model.pre_hid[3 * i].out_features == d_hid
+
+        # Check dropout probability.
+        assert lstm_model.pre_hid[3 * i + 2].p == p_hid
 
 
-def test_hid(lstm_model, n_hid_lyr, d_hid, p_hid):
-    r"""``hid`` must be an instance of `nn.LSTM` and ``hid`` must
-    construct the right shape."""
-    # Check the type of hidden layer
+def test_hid(d_hid: int, n_hid_lyr: int, p_hid: float, lstm_model: LSTMModel):
+    r"""Test hidden layer.
+
+    If ``lstm_model`` is an instance of ``LSTMModel``, then ``lstm_model.hid``
+    must be an instance of `nn.LSTM` with correct shape.
+    """
+    # Type check.
     assert isinstance(lstm_model.hid, nn.LSTM)
 
-    # Check the value of hidden layer
+    # Shape validation.
+    assert lstm_model.hid.batch_first
     if n_hid_lyr == 1:
         assert lstm_model.hid.input_size == d_hid
         assert lstm_model.hid.hidden_size == d_hid
-        assert lstm_model.hid.batch_first
     else:
         assert lstm_model.hid.input_size == d_hid
         assert lstm_model.hid.hidden_size == d_hid
-        assert lstm_model.hid.batch_first
         assert lstm_model.hid.dropout == p_hid
 
 
-def test_post_hid(lstm_model, d_emb, p_hid, d_hid, n_post_hid_lyr):
-    r"""``post_hid`` must be an instance of `nn.Sequential` and ``post_hid`` must
-    construct the right shape."""
-    # Check the post hidden embedding type
+def test_post_hid(lstm_model: LSTMModel, d_emb, p_hid, d_hid, n_post_hid_lyr):
+    r"""Test Feed-Forward layers after hidden layer.
+
+    If ``lstm_model`` is an instance of ``LSTMModel``, then
+    ``lstm_model.post_hid`` must be an instance of `nn.Sequential`.
+    All ``nn.Linear`` layers in ``lstm_model.post_hid`` must have correct
+    shape.
+    All ``nn.Dropout`` layers in ``lstm_model.post_hid`` must have correct
+    dropout probability.
+    All activations in ``lstm_model.post_hid`` must be ``nn.ReLU``.
+    ``lstm_model.post_hid`` must contain at least one ``nn.Dropout`` and one
+    ``nn.Linear`` layers.
+    """
+    # Type check.
     assert isinstance(lstm_model.post_hid, nn.Sequential)
+    assert isinstance(lstm_model.post_hid[-2], nn.Dropout)
+    assert isinstance(lstm_model.post_hid[-1], nn.Linear)
 
-    if n_post_hid_lyr > 1:
-        # Check the shape of post hidden embedding
-        for i in range(0, n_post_hid_lyr, 3):
-            # Check the post hidden layer parameters
-            assert lstm_model.post_hid[i].p == p_hid
-            assert lstm_model.post_hid[i + 1].in_features == d_hid
-            assert lstm_model.post_hid[i + 1].out_features == d_hid
+    # Check dropout probability.
+    assert lstm_model.post_hid[-2].p == p_hid
 
-            # Check the post_hid layer type
-            assert isinstance(lstm_model.post_hid[i + 2], nn.ReLU)
-
-    # Check the post hidden last two layer parameters
+    # Shape validation.
     assert lstm_model.post_hid[-1].in_features == d_hid
     assert lstm_model.post_hid[-1].out_features == d_emb
-    assert lstm_model.post_hid[-2].p == p_hid
+
+    for i in range(n_post_hid_lyr - 1):
+        # Type check.
+        assert isinstance(lstm_model.post_hid[3 * i], nn.Dropout)
+        assert isinstance(lstm_model.post_hid[3 * i + 1], nn.Linear)
+        assert isinstance(lstm_model.post_hid[3 * i + 2], nn.ReLU)
+
+        # Check dropout probability.
+        assert lstm_model.post_hid[3 * i].p == p_hid
+
+        # Shape validation.
+        assert lstm_model.post_hid[3 * i + 1].in_features == d_hid
+        assert lstm_model.post_hid[3 * i + 1].out_features == d_hid

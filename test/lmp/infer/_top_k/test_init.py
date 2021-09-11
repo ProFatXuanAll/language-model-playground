@@ -1,95 +1,86 @@
-r"""Test the constructor of :py:class:`lmp.infer._top_k.TopKInfer`.
+r"""Test the construction of :py:class:`lmp.infer.TopKInfer`.
 
 Test target:
-- :py:meth:`lmp.infer._top_k.TopKInfer.infer`.
+- :py:meth:`lmp.infer.TopKInfer.__init__`.
 """
+
 import pytest
 
-from lmp.infer._top_k import TopKInfer
+from lmp.infer import TopKInfer
 
 
 def test_max_seq_len():
-    r"""``max_seq_len`` must be limited in the range from zero to
-    ``hard_max_seq``, and ``max_seq_len`` must be an instance of int."""
-    # Test case: Wrong value input
-    for wrong_max_seq_len in [-1, -2, -3, 1000, 2000]:
-        with pytest.raises(ValueError) as excinfo:
-            infer = TopKInfer(
-                k=1,
-                max_seq_len=wrong_max_seq_len,
-            )
+    r"""Perform validation on parameter ``max_seq_len``.
 
-        assert (
-            '`self.max_seq_len` must be less than or equal to '
-            + '`self.hard_max_seq_len` and more than or equal to zero.'
-            in str(excinfo.value)
-        )
-
-    # Test case: `max_seq_len` is less than or equal to `hard_max_seq_len` and
-    # is more than zero.
-    for good_max_seq_len in [1, 20]:
-        infer = TopKInfer(
-            k=1,
-            max_seq_len=good_max_seq_len,
-        )
-        assert infer.max_seq_len == good_max_seq_len
-
+    ``max_seq_len`` must be an instance of ``int``, with value ranging from
+    ``0`` to ``TopKInfer.hard_max_seq_len``.
+    """
     # Test case: Type mismatched.
     wrong_typed_inputs = [
-        0.1, '', (), [], {}, set(), None, ..., NotImplemented,
+        0.0, 0.1, 1.0, '', (), [], {}, set(), None, ..., NotImplemented,
     ]
 
-    for wrong_seq_len in wrong_typed_inputs:
+    for bad_max_seq_len in wrong_typed_inputs:
         with pytest.raises(TypeError) as excinfo:
             infer = TopKInfer(
                 k=1,
-                max_seq_len=wrong_seq_len,
+                max_seq_len=bad_max_seq_len,
             )
 
         assert (
             '`max_seq_len` must be an instance of `int`' in str(excinfo.value)
         )
 
-    # Test case: Correct input.
-    for good_seq_len in [0, 1]:
-        infer = TopKInfer(
-            k=1,
-            max_seq_len=good_seq_len,
+    # Test case: Invalid value.
+    for bad_max_seq_len in [-1, -2, -3, TopKInfer.hard_max_seq_len + 1]:
+        with pytest.raises(ValueError) as excinfo:
+            infer = TopKInfer(
+                k=1,
+                max_seq_len=bad_max_seq_len,
+            )
+
+        assert (
+            '`max_seq_len` must be in the range from 0 to '
+            + f'{TopKInfer.hard_max_seq_len}.'
+            in str(excinfo.value)
         )
 
-        assert infer.max_seq_len == good_seq_len
+    # Test case: correct input.
+    for good_max_seq_len in [0, 1, TopKInfer.hard_max_seq_len]:
+        infer = TopKInfer(
+            k=1,
+            max_seq_len=good_max_seq_len,
+        )
+
+        assert infer.max_seq_len == good_max_seq_len
 
 
 def test_k():
-    r"""``k`` must more than zero, and ``max_seq_len`` must be an instance
-    of int."""
-    # Test case: `k` is negative.
-    for wrong_k in [0, -1, -2]:
-        with pytest.raises(ValueError) as excinfo:
-            infer = TopKInfer(
-                k=wrong_k,
-                max_seq_len=0,
-            )
-
-        assert (
-            '`k` must satisfy `k > 0`.' in str(excinfo.value)
-        )
+    r"""``k`` must be an instance of ``int`` and larger than ``0``."""
 
     # Test case: Type mismatched.
     wrong_typed_inputs = [
-        0.1, '', (), [], {}, set(), None, ..., NotImplemented,
+        0.0, 0.1, 1.0, '', (), [], {}, set(), None, ..., NotImplemented,
     ]
 
-    for wrong_k in wrong_typed_inputs:
+    for bad_k in wrong_typed_inputs:
         with pytest.raises(TypeError) as excinfo:
             infer = TopKInfer(
-                k=wrong_k,
+                k=bad_k,
                 max_seq_len=0,
             )
 
-        assert (
-            '`k` must be an instance of `int`.' in str(excinfo.value)
-        )
+        assert '`k` must be an instance of `int`.' in str(excinfo.value)
+
+    # Test case: Invalid value.
+    for bad_k in [0, -1, -2]:
+        with pytest.raises(ValueError) as excinfo:
+            infer = TopKInfer(
+                k=bad_k,
+                max_seq_len=0,
+            )
+
+        assert '`k` must satisfy `k > 0`' in str(excinfo.value)
 
     # Test case: Correct input.
     for good_k in [1, 2]:

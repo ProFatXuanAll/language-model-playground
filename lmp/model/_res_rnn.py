@@ -178,7 +178,8 @@ class ResRNNModel(RNNModel):
         Token embedding dimension.
         Must be bigger than or equal to ``1``.
     d_hid: int
-        Hidden dimension for MLP and residual connected RNN.
+        Hidden dimension for Feed-Forward layers and residual connected RNN
+        layers.
         Must be bigger than or equal to ``1``.
     kwargs: Dict, optional
         Useless parameter.
@@ -187,14 +188,12 @@ class ResRNNModel(RNNModel):
         Number of residual connected RNN layers.
         Must be bigger than or equal to ``1``.
     n_post_hid_lyr: int
-        Number of MLP layers ``+1`` after residual connected RNN layer.
-        ``+1`` since we need at least one MLP layer to transform dimension.
-        (If you want 2 layers, then you need to set ``n_post_hid_lyr = 1``.)
+        Number of Feed-Forward layers after residual connected RNN layers.
+        All layers are paired with ReLU activatons except for the last one.
         Must be bigger than or equal to ``1``.
     n_pre_hid_lyr: int
-        Number of MLP layers ``+1`` before residual connected RNN layer.
-        ``+1`` since we need at least one MLP layer to transform dimension.
-        (If you want 2 layers, then you need to set ``n_pre_hid_lyr = 1``.)
+        Number of Feed-Forward layers before residual connected RNN layers.
+        All layers are paired with ReLU activatons.
         Must be bigger than or equal to ``1``.
     p_emb: float
         Dropout probability for token embeddings.
@@ -222,12 +221,12 @@ class ResRNNModel(RNNModel):
         Model name is ``res-RNN``.
         Used for command line argument parsing.
     post_hid: torch.nn.Sequential
-        Rectified MLP which transform temporal features from hidden dimension
-        ``d_hid`` to embedding dimension ``d_emb``.
+        Rectified Feed-Forward layers which transform temporal features from
+        hidden dimension ``d_hid`` to embedding dimension ``d_emb``.
         Drop rectified units with probability ``p_hid``.
     pre_hid: torch.nn.Sequential
-        Rectified MLP which transform token embeddings from embedding
-        dimension ``d_emb`` to hidden dimension ``d_hid``.
+        Rectified Feed-Forward layers which transform token embeddings from
+        embedding dimension ``d_emb`` to hidden dimension ``d_hid``.
         Drop rectified units with probability ``p_hid``.
     """
     model_name: ClassVar[str] = 'res-RNN'

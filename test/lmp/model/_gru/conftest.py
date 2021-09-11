@@ -4,20 +4,21 @@ import pytest
 import torch
 
 from lmp.model import GRUModel
+from lmp.tknzr import BaseTknzr
 
 
 @pytest.fixture
 def gru_model(
-        tknzr,
-        d_emb,
-        d_hid,
-        n_hid_lyr,
-        n_pre_hid_lyr,
-        n_post_hid_lyr,
-        p_emb,
-        p_hid,
+        tknzr: BaseTknzr,
+        d_emb: int,
+        d_hid: int,
+        n_hid_lyr: int,
+        n_pre_hid_lyr: int,
+        n_post_hid_lyr: int,
+        p_emb: float,
+        p_hid: float,
 ) -> GRUModel:
-    r"""Example GRUModel instance."""
+    r"""Example ``GRUModel`` instance."""
     return GRUModel(
         d_emb=d_emb,
         d_hid=d_hid,

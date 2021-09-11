@@ -3,9 +3,10 @@ r"""Test tokenizer's vocab size.
 Test target:
 - :py:meth:`lmp.tknzr.CharTknzr.vocab_size`.
 """
+
 import pytest
 
-from lmp.tknzr._char import CharTknzr
+from lmp.tknzr import CharTknzr
 
 
 @pytest.mark.parametrize(
@@ -26,10 +27,10 @@ from lmp.tknzr._char import CharTknzr
             4,
         ),
         # Test subject:
-        # Automatically calculate `vocab_size`.
+        # Automatically calculate  vocabulary size..
         #
         # Expectation:
-        # Count the length of tk2id.
+        # Count the length of `tk2id`.
         (
             {
                 'is_uncased': True,
@@ -51,8 +52,13 @@ from lmp.tknzr._char import CharTknzr
 )
 def test_vocab_size(
     parameters,
-    expected,
+    expected: int,
 ):
+    r"""``CharTknzr.vocab_size`` is an instance property
+
+    Value of ``CharTknzr.vocab_size`` is the number of tokens included in the
+    vocabulary, thus must be a postive integer.
+    """
     tknzr = CharTknzr(
         is_uncased=parameters['is_uncased'],
         max_vocab=parameters['max_vocab'],

@@ -21,7 +21,7 @@ class TopPInfer(BaseInfer):
     are lower than ``P``.
     Just like top-k sampling, top-p sampling is also a non-greedy algorithm.
 
-    For comment throughout this class, we use ``K`` to denote the number of
+    For comments throughout this class, we use ``K`` to denote the number of
     token ids which cumulative probability are lower than ``P`` during the
     process of text generation.
 

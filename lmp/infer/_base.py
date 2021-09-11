@@ -1,4 +1,5 @@
 r"""Inference method base class."""
+
 import abc
 import argparse
 from typing import ClassVar, Dict, Optional
@@ -14,7 +15,7 @@ class BaseInfer(abc.ABC):
 
     All inference methods must inherit :py:class:`lmp.infer.BaseInfer`.
 
-    For comment throughout this class and its subclasses, we use the following
+    For comments throughout this class and its subclasses, we use the following
     symbols to denote the shape of tensors:
 
     - ``B``: Batch size.
@@ -57,11 +58,11 @@ class BaseInfer(abc.ABC):
         if not isinstance(max_seq_len, int):
             raise TypeError('`max_seq_len` must be an instance of `int`.')
 
-        # `self.max_seq_len` must in the range from zero to `self.max_seq_len.`
+        # `max_seq_len` must be valid.
         if not (0 <= max_seq_len <= self.__class__.hard_max_seq_len):
             raise ValueError(
-                '`self.max_seq_len` must be less than or equal to '
-                + '`self.hard_max_seq_len` and more than or equal to zero.'
+                '`max_seq_len` must be in the range from 0 to '
+                + f'{self.__class__.hard_max_seq_len}.'
             )
         else:
             self.max_seq_len = max_seq_len

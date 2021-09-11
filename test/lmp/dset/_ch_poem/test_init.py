@@ -1,4 +1,4 @@
-r"""Test the constructor of :py:class:`lmp.dset.ChPoemDset`.
+r"""Test the construction of :py:class:`lmp.dset.ChPoemDset`.
 
 Test target:
 - :py:meth:`lmp.dset.ChPoemDset.__init__`.

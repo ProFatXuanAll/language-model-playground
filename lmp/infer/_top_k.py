@@ -20,7 +20,7 @@ class TopKInfer(BaseInfer):
     choosen, but it provide dynamic of generation result (because of
     randomness, obviously).
 
-    For comment throughout this class, we use ``K`` to denote the number of
+    For comments throughout this class, we use ``K`` to denote the number of
     token ids which probabilities are higher then the rest ``V - K`` token ids
     during the process of text generation.
 

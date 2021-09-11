@@ -23,7 +23,7 @@ class RNNModel(BaseModel):
         Token embedding dimension.
         Must be bigger than or equal to ``1``.
     d_hid: int
-        Hidden dimension for MLP and RNN.
+        Hidden dimension for Feed-Forward layers and RNN layers.
         Must be bigger than or equal to ``1``.
     kwargs: Dict, optional
         Useless parameter.
@@ -32,10 +32,12 @@ class RNNModel(BaseModel):
         Number of RNN layers.
         Must be bigger than or equal to ``1``.
     n_post_hid_lyr: int
-        Number of MLP layers ``+1`` after RNN layer.
+        Number of Feed-Forward layers after RNN layers.
+        All layers are paired with ReLU activatons except for the last one.
         Must be bigger than or equal to ``1``.
     n_pre_hid_lyr: int
-        Number of MLP layers ``+1`` before RNN layer.
+        Number of Feed-Forward layers before RNN layers.
+        All layers are paired with ReLU activatons.
         Must be bigger than or equal to ``1``.
     p_emb: float
         Dropout probability for token embeddings.
@@ -64,12 +66,12 @@ class RNNModel(BaseModel):
         Model name is ``RNN``.
         Used for command line argument parsing.
     post_hid: torch.nn.Sequential
-        Rectified MLP which transform temporal features from hidden dimension
-        ``d_hid`` to embedding dimension ``d_emb``.
+        Rectified Feed-Forward layers which transform temporal features from
+        hidden dimension ``d_hid`` to embedding dimension ``d_emb``.
         Drop rectified units with probability ``p_hid``.
     pre_hid: torch.nn.Sequential
-        Rectified MLP which transform token embeddings from embedding
-        dimension ``d_emb`` to hidden dimension ``d_hid``.
+        Rectified Feed-Forward layers which transform token embeddings from
+        embedding dimension ``d_emb`` to hidden dimension ``d_hid``.
         Drop rectified units with probability ``p_hid``.
     """
     model_name: ClassVar[str] = 'RNN'
@@ -99,7 +101,7 @@ class RNNModel(BaseModel):
             raise TypeError('`d_emb` must be an instance of `int`.')
 
         if d_emb < 1:
-            raise ValueError('`d_emb` must be bigger than or equal to ``1``.')
+            raise ValueError('`d_emb` must be bigger than or equal to `1`.')
 
         # Finish checking parameter `d_emb`.
         # ---------------------------------------------------------------------
@@ -110,7 +112,7 @@ class RNNModel(BaseModel):
             raise TypeError('`d_hid` must be an instance of `int`.')
 
         if d_hid < 1:
-            raise ValueError('`d_hid` must be bigger than or equal to ``1``.')
+            raise ValueError('`d_hid` must be bigger than or equal to `1`.')
 
         # Finish checking parameter `d_hid`.
         # ---------------------------------------------------------------------
@@ -122,7 +124,7 @@ class RNNModel(BaseModel):
 
         if n_hid_lyr < 1:
             raise ValueError(
-                '`n_hid_lyr` must be bigger than or equal to ``1``.')
+                '`n_hid_lyr` must be bigger than or equal to `1`.')
 
         # Finish checking parameter `n_hid_lyr`.
         # ---------------------------------------------------------------------
@@ -134,7 +136,8 @@ class RNNModel(BaseModel):
 
         if n_post_hid_lyr < 1:
             raise ValueError(
-                '`n_post_hid_lyr` must be bigger than or equal to ``1``.')
+                '`n_post_hid_lyr` must be bigger than or equal to `1`.'
+            )
 
         # Finish checking parameter `n_post_hid_lyr`.
         # ---------------------------------------------------------------------
@@ -146,7 +149,8 @@ class RNNModel(BaseModel):
 
         if n_pre_hid_lyr < 1:
             raise ValueError(
-                '`n_pre_hid_lyr` must be bigger than or equal to ``1``.')
+                '`n_pre_hid_lyr` must be bigger than or equal to `1`.'
+            )
 
         # Finish checking parameter `n_pre_hid_lyr`.
         # ---------------------------------------------------------------------
@@ -156,10 +160,10 @@ class RNNModel(BaseModel):
         if not isinstance(p_emb, float):
             raise TypeError('`p_emb` must be an instance of `float`.')
 
-        if 0 > p_emb or p_emb > 1.0:
+        if not (0.0 <= p_emb <= 1.0):
             raise ValueError(
-                '`p_emb` must be bigger than or equal to ``0.0`` and' +
-                'smaller than or equal to ``1.0``')
+                '`p_emb` must be in the range from `0.0` to `1.0`.'
+            )
 
         # Finish checking parameter `p_emb`.
         # ---------------------------------------------------------------------
@@ -169,10 +173,10 @@ class RNNModel(BaseModel):
         if not isinstance(p_hid, float):
             raise TypeError('`p_hid` must be an instance of `float`.')
 
-        if 0 > p_hid or p_hid > 1.0:
+        if not (0.0 <= p_hid <= 1.0):
             raise ValueError(
-                '`p_hid` must be bigger than or equal to ``0.0`` and' +
-                'smaller than or equal to ``1.0``')
+                '`p_hid` must be in the range from `0.0` to `1.0`.'
+            )
 
         # Finish checking parameter `p_hid`.
         # ---------------------------------------------------------------------
@@ -182,23 +186,8 @@ class RNNModel(BaseModel):
         if not isinstance(tknzr, BaseTknzr):
             raise TypeError('`tknzr` must be an instance of `BaseTknzr`.')
 
-        if not isinstance(tknzr.vocab_size, int):
-            raise TypeError('`tknzr.vocab_size` must be an instance of `int`.')
-
-        if not isinstance(tknzr.pad_tkid, int):
-            raise TypeError('`tknzr.pad_tkid` must be an instance of `int`.')
-
         # Finish checking parameter `tknzr`.
         # ---------------------------------------------------------------------
-
-        # `n_post_hid_lyr` first layer is required so the number will
-        # minus one to match the right number of layer. (If you want
-        # 1 layers, then you need to set ``n_pre_hid_lyr = 1``.)
-        n_post_hid_lyr -= 1
-        # `n_pre_hid_lyr` first layer is required so the number will
-        # minus one to match the right number of layer. (If you want
-        # 1 layers, then you need to set ``n_pre_hid_lyr = 1``.)
-        n_pre_hid_lyr -= 1
 
         # Token embedding layer.
         # Use token ids to lookup token embeddings.
@@ -224,8 +213,8 @@ class RNNModel(BaseModel):
         # Output dtype : `torch.float32`.
         self.emb_dp = nn.Dropout(p=p_emb)
 
-        # Rectified MLP which transform token embeddings from embedding
-        # dimension `d_emb` to hidden dimension `d_hid`.
+        # Rectified Feed-Forward layers which transform token embeddings from
+        # embedding dimension `d_emb` to hidden dimension `d_hid`.
         # Drop rectified units with probability `p_hid`.
         # Input tensor : Output of `self.emb_dp`.
         # Input shape  : `(B, S, E)`.
@@ -239,7 +228,7 @@ class RNNModel(BaseModel):
             nn.Dropout(p=p_hid),
         ]
 
-        for _ in range(n_pre_hid_lyr):
+        for _ in range(n_pre_hid_lyr - 1):
             pre_hid.append(nn.Linear(in_features=d_hid, out_features=d_hid))
             pre_hid.append(nn.ReLU())
             pre_hid.append(nn.Dropout(p=p_hid))
@@ -272,8 +261,8 @@ class RNNModel(BaseModel):
                 batch_first=True,
             )
 
-        # Rectified MLP which transform temporal features from hidden dimension
-        # `d_hid` to embedding dimension `d_emb`.
+        # Rectified Feed-Forward layers which transform temporal features from
+        # hidden dimension `d_hid` to embedding dimension `d_emb`.
         # Drop rectified units with probability `p_hid`.
         # Input tensor : Output of `self.hid`.
         # Input shape  : `(B, S, H)`.
@@ -282,7 +271,7 @@ class RNNModel(BaseModel):
         # Output shape : `(B, S, E)`.
         # Output dtype : `torch.float32`.
         post_hid: List[nn.Module] = []
-        for _ in range(n_post_hid_lyr):
+        for _ in range(n_post_hid_lyr - 1):
             post_hid.append(nn.Dropout(p=p_hid))
             post_hid.append(nn.Linear(in_features=d_hid, out_features=d_hid))
             post_hid.append(nn.ReLU())
@@ -534,7 +523,7 @@ class RNNModel(BaseModel):
         )
         group.add_argument(
             '--d_hid',
-            help='Hidden dimension for MLP and RNN.',
+            help='Hidden dimension for Feed-Forward layers and RNN layers.',
             required=True,
             type=int,
         )
@@ -546,13 +535,13 @@ class RNNModel(BaseModel):
         )
         group.add_argument(
             '--n_post_hid_lyr',
-            help='Number of MLP layers ``+ 1`` after RNN layer.',
+            help='Number of Feed-Forward layers after RNN layers.',
             required=True,
             type=int,
         )
         group.add_argument(
             '--n_pre_hid_lyr',
-            help='Number of MLP layers ``+ 1`` before RNN layer.',
+            help='Number of Feed-Forward layers before RNN layers.',
             required=True,
             type=int,
         )
