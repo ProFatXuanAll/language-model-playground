@@ -68,7 +68,7 @@ Installation
 
    .. code-block:: shell
 
-        python -m lmp.script.sample_from_dataset --dset_name chinese-poem
+        python -m lmp.script.sample_from_dataset chinese-poem
 
 Training Pipline
 ----------------
