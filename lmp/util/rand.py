@@ -33,6 +33,10 @@ def set_seed(seed: int) -> None:
     if not isinstance(seed, int):
         raise TypeError('`seed` must be an instance of `int`.')
 
+    # Value check.
+    if seed < 1:
+        raise ValueError('`seed` must bigger than `0`.')
+
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
