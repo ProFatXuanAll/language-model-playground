@@ -16,16 +16,16 @@ def test_save(
         exp_name: str,
         file_path: str,
 ):
-        r"""Test save operation for configuration file."""
-        # Test Case: File exist.
-        char_tknzr.save(exp_name)
+    r"""Test save operation for configuration file."""
+    # Test Case: File exist.
+    char_tknzr.save(exp_name)
 
-        assert os.path.exists(file_path)
+    assert os.path.exists(file_path)
 
-        # Test Case: File format.
-        with open(file_path, 'r', encoding='utf-8') as input_file:
-            # Rasie error if file is invalid JSON.
-            assert json.load(input_file)
+    # Test Case: File format.
+    with open(file_path, 'r', encoding='utf-8') as input_file:
+        # Rasie error if file is invalid JSON.
+        assert json.load(input_file)
 
 
 def test_load(
