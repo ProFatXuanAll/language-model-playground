@@ -11,40 +11,32 @@ import os
 from lmp.tknzr import CharTknzr
 
 
-def test_config_file_exist(
+def test_save(
         char_tknzr: CharTknzr,
         exp_name: str,
         file_path: str,
 ):
-    r"""Save configuration as file."""
+        r"""Test save operation for configuration file."""
+        # Test Case: File exist.
+        char_tknzr.save(exp_name)
 
-    char_tknzr.save(exp_name)
+        assert os.path.exists(file_path)
 
-    assert os.path.exists(file_path)
+        # Test Case: File format.
+        with open(file_path, 'r', encoding='utf-8') as input_file:
+            # Rasie error if file is invalid JSON.
+            assert json.load(input_file)
 
 
-def test_config_file_format(
+def test_load(
         char_tknzr: CharTknzr,
         exp_name: str,
         file_path: str,
 ):
-    r"""Saved configuration must be JSON format."""
-
+    r"""Test load operation for configuration file."""
+    # Test Case: Consistency file between save and load.
     char_tknzr.save(exp_name)
 
-    with open(file_path, 'r', encoding='utf-8') as input_file:
-        # Raise error if file is invalid JSON.
-        assert json.load(input_file)
-
-
-def test_load_result(
-        char_tknzr: CharTknzr,
-        exp_name: str,
-        file_path: str,
-):
-    r"""Ensure configuration consistency between save and load."""
-
-    char_tknzr.save(exp_name)
     load_tknzr = CharTknzr.load(exp_name)
 
     assert char_tknzr.__dict__ == load_tknzr.__dict__
