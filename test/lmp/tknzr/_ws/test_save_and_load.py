@@ -8,6 +8,8 @@ Test target:
 import json
 import os
 
+import pytest
+
 from lmp.tknzr import WsTknzr
 
 
@@ -40,3 +42,16 @@ def test_load(
     load_tknzr = ws_tknzr.load(exp_name)
 
     assert ws_tknzr.__dict__ == load_tknzr.__dict__
+
+    # Test case: Type mismatched.
+    wrong_typed_inputs = [
+        0, 1, 0.0, 0.1, 1.0, (), [], {}, set(), None, ..., NotImplemented,
+    ]
+
+    for bad_exp_name in wrong_typed_inputs:
+        with pytest.raises(TypeError) as excinfo:
+            ws_tknzr.load(exp_name=bad_exp_name)
+
+        assert (
+            '`exp_name` must be an instance of `str`' in str(excinfo.value)
+        )
