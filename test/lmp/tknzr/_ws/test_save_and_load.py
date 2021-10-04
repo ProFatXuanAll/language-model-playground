@@ -8,6 +8,8 @@ Test target:
 import json
 import os
 
+import pytest
+
 from lmp.tknzr import WsTknzr
 
 
@@ -44,6 +46,21 @@ def test_load_result(
 ):
     r"""Ensure configuration consistency between save and load."""
 
+    # Test case: Type mismatched.
+    wrong_typed_inputs = [
+        False, True, 0, 1, 0.0, 0.1, 1.0, (), [], {}, set(), None, ...,
+        NotImplemented,
+    ]
+
+    for bad_exp_name in wrong_typed_inputs:
+        with pytest.raises(TypeError) as excinfo:
+            WsTknzr.load(exp_name=bad_exp_name)
+
+        assert (
+            '`exp_name` must be an instance of `str`' in str(excinfo.value)
+        )
+
+    # Test case: Valid input.
     ws_tknzr.save(exp_name)
     load_tknzr = WsTknzr.load(exp_name)
 
