@@ -1,8 +1,10 @@
-r"""Test setting the random seed.
+r"""Test random seed setting utilities.
 
 Test target:
 - :py:meth:`lmp.util.rand.set_seed`.
 """
+
+import random
 
 import pytest
 
@@ -10,6 +12,7 @@ import lmp.util.rand
 
 
 def test_set_seed():
+    r"""Setting random seeds."""
     # Test case: Type mismatched.
     wrong_typed_inputs = [
         0.0, 0.1, 1.0, '', (), [], {}, set(), None, ..., NotImplemented,
@@ -29,9 +32,12 @@ def test_set_seed():
             lmp.util.rand.set_seed(seed=bad_seed)
 
         assert (
-            '`seed` must bigger than `0`.' in str(excinfo.value)
+            '`seed` must be bigger than `0`.' in str(excinfo.value)
         )
 
     # Test case: correct input.
-    for good_seed in [1, 2]:
-        lmp.util.rand.set_seed(seed=good_seed)
+    lmp.util.rand.set_seed(seed=1)
+    state1 = random.getstate()
+    lmp.util.rand.set_seed(seed=1)
+    state2 = random.getstate()
+    assert state1 == state2

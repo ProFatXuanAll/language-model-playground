@@ -35,7 +35,7 @@ def set_seed(seed: int) -> None:
 
     # Value check.
     if seed < 1:
-        raise ValueError('`seed` must bigger than `0`.')
+        raise ValueError('`seed` must be bigger than `0`.')
 
     random.seed(seed)
     np.random.seed(seed)
