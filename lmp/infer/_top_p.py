@@ -32,9 +32,10 @@ class TopPInfer(BaseInfer):
         Intently left for subclass parameters extension.
     max_seq_len: str
         Generated sequence of tokens maximum sequence length constraint.
-        Must satisfy ``0 <= max_seq_len <= BaseInfer.hard_max_seq_len``.
-        If constraint is violated, then replace ``max_seq_len`` with
-        ``BaseInfer.hard_max_seq_len``.
+        Must satisfy ``-1 <= max_seq_len <= TopPInfer.hard_max_seq_len``.
+        If ``max_seq_len == -1``, then replace ``max_seq_len`` with
+        ``TopPInfer.hard_max_seq_len``.
+        Raise ``ValueError`` if constraint is violated.
     p: float
         Cumulative probability threshold.
         Must satisfy ``0.0 < p <= 1.0``.

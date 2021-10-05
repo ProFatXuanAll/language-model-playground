@@ -280,6 +280,11 @@ class RNNModel(BaseModel):
         post_hid.append(nn.Linear(in_features=d_hid, out_features=d_emb))
         self.post_hid = nn.Sequential(*post_hid)
 
+        # Calculate cross entropy loss for all non-padding tokens.
+        self.loss_ignore_padding = nn.CrossEntropyLoss(
+            ignore_index=tknzr.pad_tkid
+        )
+
     def forward(self, batch_prev_tkids: torch.Tensor) -> torch.Tensor:
         r"""Perform forward pass.
 
@@ -413,7 +418,7 @@ class RNNModel(BaseModel):
         # Output tensor: Average next tokens prediction loss.
         # Output shape : `(1)`.
         # Output dtype : `torch.float32`.
-        return F.cross_entropy(logits, batch_next_tkids)
+        return self.loss_ignore_padding(logits, batch_next_tkids)
 
     def pred(self, batch_prev_tkids: torch.Tensor) -> torch.Tensor:
         r"""Next token prediction.

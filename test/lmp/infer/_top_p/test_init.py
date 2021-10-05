@@ -13,7 +13,7 @@ def test_max_seq_len():
     r"""Perform validation on parameter ``max_seq_len``.
 
     ``max_seq_len`` must be an instance of ``int``, with value ranging from
-    ``0`` to ``TopPInfer.hard_max_seq_len``.
+    ``-1`` to ``TopPInfer.hard_max_seq_len``.
     """
     # Test case: Type mismatched.
     wrong_typed_inputs = [
@@ -32,7 +32,7 @@ def test_max_seq_len():
         )
 
     # Test case: Invalid value.
-    for bad_max_seq_len in [-1, -2, -3, TopPInfer.hard_max_seq_len + 1]:
+    for bad_max_seq_len in [-2, -3, TopPInfer.hard_max_seq_len + 1]:
         with pytest.raises(ValueError) as excinfo:
             infer = TopPInfer(
                 max_seq_len=bad_max_seq_len,
@@ -46,13 +46,16 @@ def test_max_seq_len():
         )
 
     # Test case: correct input.
-    for good_max_seq_len in [0, 1, TopPInfer.hard_max_seq_len]:
+    for good_max_seq_len in [-1, 0, 1, TopPInfer.hard_max_seq_len]:
         infer = TopPInfer(
             max_seq_len=good_max_seq_len,
             p=1.0,
         )
 
-        assert infer.max_seq_len == good_max_seq_len
+        if good_max_seq_len == -1:
+            assert infer.max_seq_len == TopPInfer.hard_max_seq_len
+        else:
+            assert infer.max_seq_len == good_max_seq_len
 
 
 def test_p():

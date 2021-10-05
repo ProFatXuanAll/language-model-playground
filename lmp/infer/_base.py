@@ -30,9 +30,10 @@ class BaseInfer(abc.ABC):
         Intently left for subclass parameters extension.
     max_seq_len: str
         Generated sequence of tokens maximum sequence length constraint.
-        Must satisfy ``0 <= max_seq_len <= BaseInfer.hard_max_seq_len``.
-        If constraint is violated, then replace ``max_seq_len`` with
+        Must satisfy ``-1 <= max_seq_len <= BaseInfer.hard_max_seq_len``.
+        If ``max_seq_len == -1``, then replace ``max_seq_len`` with
         ``BaseInfer.hard_max_seq_len``.
+        Raise ``ValueError`` if constraint is violated.
 
     Attributes
     ==========
@@ -50,6 +51,8 @@ class BaseInfer(abc.ABC):
     ======
     TypeError
         If ``max_seq_len`` is not an instance of :py:class:`int`.
+    ValueError
+        If ``max_seq_len`` is not in ``range(-1, BaseInfer.hard_max_seq_len)``.
     """
     hard_max_seq_len: ClassVar[int] = 512
     infer_name: ClassVar[str] = 'base'
@@ -59,7 +62,9 @@ class BaseInfer(abc.ABC):
             raise TypeError('`max_seq_len` must be an instance of `int`.')
 
         # `max_seq_len` must be valid.
-        if not (0 <= max_seq_len <= self.__class__.hard_max_seq_len):
+        if max_seq_len == -1:
+            self.max_seq_len = self.__class__.hard_max_seq_len
+        elif not (0 <= max_seq_len <= self.__class__.hard_max_seq_len):
             raise ValueError(
                 '`max_seq_len` must be in the range from 0 to '
                 + f'{self.__class__.hard_max_seq_len}.'
