@@ -468,3 +468,14 @@ def test_post_hid(gru_model: GRUModel, d_emb, p_hid, d_hid, n_post_hid_lyr):
         # Shape validation.
         assert gru_model.post_hid[3 * i + 1].in_features == d_hid
         assert gru_model.post_hid[3 * i + 1].out_features == d_hid
+
+
+def test_loss(gru_model: GRUModel):
+    r"""Test loss function
+
+    If ``rnn_model`` is an instance of ``RNNModel``, then
+    ``rnn_model.loss_ignore_padding`` must be an instance of
+    ``nn.CrossEntropyLoss``.
+    """
+    # Type check
+    assert isinstance(gru_model.loss_ignore_padding, nn.CrossEntropyLoss)

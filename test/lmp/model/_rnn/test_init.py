@@ -468,3 +468,14 @@ def test_post_hid(rnn_model: RNNModel, d_emb, p_hid, d_hid, n_post_hid_lyr):
         # Shape validation.
         assert rnn_model.post_hid[3 * i + 1].in_features == d_hid
         assert rnn_model.post_hid[3 * i + 1].out_features == d_hid
+
+
+def test_loss(rnn_model: RNNModel):
+    r"""Test loss function
+
+    If ``rnn_model`` is an instance of ``RNNModel``, then
+    ``rnn_model.loss_ignore_padding`` must be an instance of
+    ``nn.CrossEntropyLoss``.
+    """
+    # Type check
+    assert isinstance(rnn_model.loss_ignore_padding, nn.CrossEntropyLoss)
