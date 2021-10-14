@@ -36,10 +36,12 @@ from typing import Dict, Final, List, Set, Type
 from lmp.dset._base import BaseDset
 from lmp.dset._ch_poem import ChPoemDset
 from lmp.dset._wiki_text_2 import WikiText2Dset
+from lmp.dset._WNLI import WNLI
 
 ALL_DSETS: Final[List[Type[BaseDset]]] = [
     ChPoemDset,
     WikiText2Dset,
+    WNLI,
 ]
 DSET_OPTS: Final[Dict[str, Type[BaseDset]]] = {
     d.dset_name: d
