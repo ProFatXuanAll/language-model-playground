@@ -16,7 +16,7 @@ from lmp.dset._base import BaseDset
 class WNLI(BaseDset):
     r"""[WNLI]_ dataset.
 
-    WNLI is a relaxation of the Winograd Schema Challenge proposed as part of the GLUE benchmark and a conversion to the natural language inference (NLI) format.
+    Winograd NLI(WNLI) is a relaxation of the Winograd Schema Challenge proposed as part of the GLUE benchmark and a conversion to the natural language inference (NLI) format.
 
     .. _WNLI: https://cs.nyu.edu/~davise/papers/WinogradSchemas/WS.html
 
@@ -70,8 +70,7 @@ class WNLI(BaseDset):
 
     References
     ==========
-    .. [WikiText-2] Stephen Merity, Caiming Xiong, James Bradbury, and
-        Richard Socher. 2016. Pointer Sentinel Mixture Models
+    .. [Winograd NLI ] Ernest Davis, Leora Morgenstern, and Charles Ortiz.
 
     Examples
     ========
@@ -84,10 +83,9 @@ class WNLI(BaseDset):
     dset_name: ClassVar[str] = 'WNLI'
     file_name: ClassVar[str] = 'WNLI.zip'
     lang: ClassVar[str] = 'en'
-    vers: ClassVar[List[str]] = ['test', 'train', 'dev']
+    vers: ClassVar[List[str]] = ['test', 'train', 'valid']
     url: ClassVar[str] = ''.join([
-        'https://github.com/ProFatXuanAll',
-        '/demo-dataset/raw/main/wikitext-2',
+        'https://github.com/a868111817/demo-dataset/raw/main/WNLI',
     ])
 
     def __init__(self, *, ver: Optional[str] = None):
