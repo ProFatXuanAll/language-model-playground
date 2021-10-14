@@ -16,9 +16,9 @@ from lmp.dset._base import BaseDset
 class WNLI(BaseDset):
     r"""[WNLI]_ dataset.
 
-    Winograd NLI(WNLI) is a relaxation of the Winograd Schema Challenge proposed 
-    as part of the GLUE benchmark and a conversion 
-    to the natural language inference (NLI) format.
+    Winograd NLI(WNLI) is a relaxation of the Winograd Schema 
+    Challenge proposed as part of the GLUE benchmark and a 
+    conversion to the natural language inference (NLI) format.
 
     .. _WNLI: https://cs.nyu.edu/~davise/papers/WinogradSchemas/WS.html
 
@@ -72,7 +72,7 @@ class WNLI(BaseDset):
 
     References
     ==========
-    .. [Winograd NLI ] Ernest Davis, Leora Morgenstern, and Charles Ortiz.
+    .. [Winograd NLI] Ernest Davis, Leora Morgenstern, and Charles Ortiz.
 
     Examples
     ========
@@ -107,7 +107,7 @@ class WNLI(BaseDset):
                 df = pd.read_csv(input_text_file,sep='\t')
 
         # Merge tow cols.
-        df["sentence"] = df["sentence1"].map(str) + df["sentence2"]
+        df['sentence'] = df['sentence1'].map(str) + df['sentence2']
 
         # Normalized dataset.
         spls = df['sentence'].apply(str).apply(lmp.dset.util.norm).tolist()
