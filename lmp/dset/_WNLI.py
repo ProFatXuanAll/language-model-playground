@@ -16,7 +16,9 @@ from lmp.dset._base import BaseDset
 class WNLI(BaseDset):
     r"""[WNLI]_ dataset.
 
-    Winograd NLI(WNLI) is a relaxation of the Winograd Schema Challenge proposed as part of the GLUE benchmark and a conversion to the natural language inference (NLI) format.
+    Winograd NLI(WNLI) is a relaxation of the Winograd Schema Challenge proposed 
+    as part of the GLUE benchmark and a conversion 
+    to the natural language inference (NLI) format.
 
     .. _WNLI: https://cs.nyu.edu/~davise/papers/WinogradSchemas/WS.html
 
