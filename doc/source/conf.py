@@ -85,3 +85,6 @@ source_suffix = ['.rst', '.md']
 
 # Do not append parentheses to functions.
 add_function_parentheses = False
+
+locale_dirs = ['locale/']   # path is example but recommended.
+gettext_compact = False     # optional.
