@@ -1,0 +1,149 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, ProFatXuanAll
+# This file is distributed under the same license as the Language Model
+# Playground package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Language Model Playground 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-13 16:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/lmp/model/ResLSTMModel.py.rst:2
+msgid ":py:class:`lmp.model.ResLSTMModel`"
+msgstr ""
+
+#: lmp.model._res_lstm.ResLSTMModel:1 of
+msgid "LSTM language model with residual connection."
+msgstr ""
+
+#: lmp.model._res_lstm.ResLSTMModel:3 of
+msgid ""
+"Same architecture as :py:class:`lmp.model.ResRNNModel` but use residual "
+"connection on LSTM layer."
+msgstr ""
+
+#: lmp.model._res_lstm.ResLSTMBlock lmp.model._res_lstm.ResLSTMModel of
+msgid "Parameters"
+msgstr ""
+
+#: lmp.model._res_lstm.ResLSTMModel:6 of
+msgid "Token embedding dimension. Must be bigger than or equal to ``1``."
+msgstr ""
+
+#: lmp.model._res_lstm.ResLSTMModel:9 of
+msgid ""
+"Hidden dimension for Feed-Forward layers and residual connected LSTM "
+"layers. Must be bigger than or equal to ``1``."
+msgstr ""
+
+#: lmp.model._res_lstm.ResLSTMBlock:9 lmp.model._res_lstm.ResLSTMModel:13 of
+msgid "Useless parameter. Intently left for subclass parameters extension."
+msgstr ""
+
+#: lmp.model._res_lstm.ResLSTMBlock:12 lmp.model._res_lstm.ResLSTMModel:16 of
+msgid ""
+"Number of residual connected LSTM layers. Must be bigger than or equal to"
+" ``1``."
+msgstr ""
+
+#: lmp.model._res_lstm.ResLSTMModel:19 of
+msgid ""
+"Number of Feed-Forward layers after residual connected LSTM layers. All "
+"layers are paired with ReLU activatons except for the last one. Must be "
+"bigger than or equal to ``1``."
+msgstr ""
+
+#: lmp.model._res_lstm.ResLSTMModel:23 of
+msgid ""
+"Number of Feed-Forward layers before residual connected LSTM layers. All "
+"layers are paired with ReLU activatons. Must be bigger than or equal to "
+"``1``."
+msgstr ""
+
+#: lmp.model._res_lstm.ResLSTMModel:27 of
+msgid ""
+"Dropout probability for token embeddings. Must satisfy ``0.0 <= p_emb <= "
+"1.0``."
+msgstr ""
+
+#: lmp.model._res_lstm.ResLSTMBlock:15 lmp.model._res_lstm.ResLSTMModel:30 of
+msgid ""
+"Dropout probability for every hidden representations. Must satisfy ``0.0 "
+"<= p_hid <= 1.0``."
+msgstr ""
+
+#: lmp.model._res_lstm.ResLSTMModel:33 of
+msgid "Tokenizer instance with attributes ``pad_tkid`` and ``vocab_size``."
+msgstr ""
+
+#: lmp.model._res_lstm.ResLSTMModel:38 of
+msgid ""
+"Residual connected LSTM which encode temporal features. Each time step's "
+"hidden state depends on current input and previous hidden state. Drop "
+"temporal features with probability ``p_hid``."
+msgstr ""
+
+#: lmp.model._res_lstm.ResLSTMBlock lmp.model._res_lstm.ResLSTMModel of
+msgid "type"
+msgstr ""
+
+#: lmp.model._res_lstm.ResLSTMModel:43 of
+msgid "ResLSTMBlock"
+msgstr ""
+
+#: lmp.model._res_lstm.ResLSTMModel:47 of
+msgid "Model name is ``res-LSTM``. Used for command line argument parsing."
+msgstr ""
+
+#: lmp.model._res_lstm.ResLSTMModel:50 of
+msgid "ClassVar[str]"
+msgstr ""
+
+#: lmp.model._res_lstm.ResLSTMBlock:1 of
+msgid "Residual connected LSTM blocks."
+msgstr ""
+
+#: lmp.model._res_lstm.ResLSTMBlock:3 of
+msgid ""
+"Same architecture as :py:class:`lmp.model.ResRNNBlock` but replace RNN "
+"with LSTM instead."
+msgstr ""
+
+#: lmp.model._res_lstm.ResLSTMBlock:6 of
+msgid ""
+"Hidden dimension for residual connected LSTM. Must be bigger than or "
+"equal to ``1``."
+msgstr ""
+
+#: lmp.model._res_lstm.ResLSTMBlock:21 of
+msgid ""
+"Drop each output temporal features of ``self.recur`` with probability "
+"``p_hid``. Do not dropout last temporal features output from "
+"``self.recur[-1]`` since :py:class:`lmp.model.ResLSTMModel` have "
+"``self.post_hid`` which drop output of ``self.hid``."
+msgstr ""
+
+#: lmp.model._res_lstm.ResLSTMBlock:27 of
+msgid "torch.nn.ModuleList[torch.nn.Dropout]"
+msgstr ""
+
+#: lmp.model._res_lstm.ResLSTMBlock:31 of
+msgid ""
+"List of LSTM which encode temporal features. Each time step's hidden "
+"state depends on current input and previous hidden state."
+msgstr ""
+
+#: lmp.model._res_lstm.ResLSTMBlock:35 of
+msgid "torch.nn.ModuleList[torch.nn.LSTM]"
+msgstr ""
+

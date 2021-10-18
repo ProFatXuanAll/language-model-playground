@@ -1,0 +1,82 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, ProFatXuanAll
+# This file is distributed under the same license as the Language Model
+# Playground package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Language Model Playground 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-13 16:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/lmp/dset/index.rst:7
+msgid "All available dataset and utilities:"
+msgstr ""
+
+#: ../../source/lmp/dset/index.rst:2
+msgid ":py:mod:`lmp.dset`"
+msgstr ""
+
+#: lmp.dset:1 of
+msgid "Dataset module."
+msgstr ""
+
+#: lmp.dset:3 of
+msgid "All dataset classes must be re-imported in this file."
+msgstr ""
+
+#: lmp.dset:7 of
+msgid ""
+"All available dataset. Every time a new dataset is added, it must also be"
+" added to ``ALL_DSETS`` list."
+msgstr ""
+
+#: lmp.dset of
+msgid "type"
+msgstr ""
+
+#: lmp.dset:11 of
+msgid "List[:py:class:`lmp.dset.BaseDset`]"
+msgstr ""
+
+#: lmp.dset:15 of
+msgid ""
+"Mapping from dataset's name to dataset's class. All dataset must have "
+"class attribute ``dset_name``."
+msgstr ""
+
+#: lmp.dset:18 of
+msgid "Final[Dict[str, :py:class:`lmp.dset.BaseDset`]]"
+msgstr ""
+
+#: lmp.dset:22 of
+msgid ""
+"Set of language used in dataset. Only used as hint for code readability. "
+"All dataset must have class attribute ``lang``."
+msgstr ""
+
+#: lmp.dset:26 of
+msgid "Final[Set[str]]"
+msgstr ""
+
+#: lmp.dset:29 of
+msgid "Examples"
+msgstr ""
+
+#: lmp.dset:30 of
+msgid "Check ``'wikitext-2'`` is in available dataset classes."
+msgstr ""
+
+#: lmp.dset:36 of
+msgid "Get ``'wikitext-2'`` dataset class."
+msgstr ""
+

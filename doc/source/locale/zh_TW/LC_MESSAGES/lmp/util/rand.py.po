@@ -1,0 +1,67 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, ProFatXuanAll
+# This file is distributed under the same license as the Language Model
+# Playground package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Language Model Playground 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-13 16:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/lmp/util/rand.py.rst:2
+msgid ":py:mod:`lmp.util.rand`"
+msgstr ""
+
+#: lmp.util.rand:1 of
+msgid "Randomness utilites."
+msgstr ""
+
+#: lmp.util.rand.set_seed:1 of
+msgid "Do best effort to ensure reproducibility on same machine."
+msgstr ""
+
+#: lmp.util.rand.set_seed:3 of
+msgid ""
+"Set random seed on :py:mod:`random` module, :py:mod:`numpy.random`, "
+":py:func:`torch.manual_seed` and :py:mod:`torch.cuda`."
+msgstr ""
+
+#: lmp.util.rand.set_seed of
+msgid "Parameters"
+msgstr ""
+
+#: lmp.util.rand.set_seed:6 of
+msgid ""
+"Control random seed and let experiment reproducible. Must be bigger than "
+"or equal to `1`."
+msgstr ""
+
+#: lmp.util.rand.set_seed of
+msgid "Raises"
+msgstr ""
+
+#: lmp.util.rand.set_seed:10 of
+msgid "When `seed` is not an instance of `int`."
+msgstr ""
+
+#: lmp.util.rand.set_seed:13 of
+msgid "Notes"
+msgstr ""
+
+#: lmp.util.rand.set_seed:14 of
+msgid ""
+"Reproducibility is not guaranteed accross different python/numpy/pytorch "
+"release, different os platforms or different hardwares (including CPUs "
+"and GPUs)."
+msgstr ""
+

@@ -1,0 +1,58 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, ProFatXuanAll
+# This file is distributed under the same license as the Language Model
+# Playground package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Language Model Playground 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-13 16:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/lmp/util/log.py.rst:2
+msgid ":py:mod:`lmp.util.log`"
+msgstr ""
+
+#: lmp.util.log:1 of
+msgid "Logging utilities."
+msgstr ""
+
+#: lmp.util.log.get_tb_logger:1 of
+msgid "Get tensorboard logger."
+msgstr ""
+
+#: lmp.util.log.get_tb_logger:3 of
+msgid ""
+"Create tensorboard for performance log visualization. Logs will be "
+"written to ``log/exp_name``."
+msgstr ""
+
+#: lmp.util.log.get_tb_logger of
+msgid "Parameters"
+msgstr ""
+
+#: lmp.util.log.get_tb_logger:6 of
+msgid "Name of the logging experiment."
+msgstr ""
+
+#: lmp.util.log.get_tb_logger of
+msgid "Returns"
+msgstr ""
+
+#: lmp.util.log.get_tb_logger:9 of
+msgid "Tensorboard logger instance."
+msgstr ""
+
+#: lmp.util.log.get_tb_logger of
+msgid "Return type"
+msgstr ""
+

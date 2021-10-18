@@ -1,0 +1,258 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, ProFatXuanAll
+# This file is distributed under the same license as the Language Model
+# Playground package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Language Model Playground 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-13 16:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/lmp/model/ResSAttnRNNModel.py.rst:2
+msgid ":py:class:`lmp.model.ResSAttnRNNModel`"
+msgstr ""
+
+#: lmp.model._res_sattn_rnn.ResSAttnRNNModel:1 of
+msgid "Residual connected RNN language model with self attention mechanism."
+msgstr ""
+
+#: lmp.model._res_sattn_rnn.ResSAttnRNNModel:3 of
+msgid ""
+"Same architecture as :py:class:`lmp.model.SAttnRNNModel` but use residual"
+" connection on self attention RNN layer."
+msgstr ""
+
+#: lmp.model._res_sattn_rnn.ResSAttnRNNBlock
+#: lmp.model._res_sattn_rnn.ResSAttnRNNBlock.forward
+#: lmp.model._res_sattn_rnn.ResSAttnRNNModel of
+msgid "Parameters"
+msgstr ""
+
+#: lmp.model._res_sattn_rnn.ResSAttnRNNModel:6 of
+msgid "Token embedding dimension. Must be bigger than or equal to ``1``."
+msgstr ""
+
+#: lmp.model._res_sattn_rnn.ResSAttnRNNModel:9 of
+msgid ""
+"Hidden dimension for Feed-Forward layers and residual connected self "
+"attention RNN layers. Must be bigger than or equal to ``1``."
+msgstr ""
+
+#: lmp.model._res_sattn_rnn.ResSAttnRNNBlock:33
+#: lmp.model._res_sattn_rnn.ResSAttnRNNModel:13 of
+msgid "Useless parameter. Intently left for subclass parameters extension."
+msgstr ""
+
+#: lmp.model._res_sattn_rnn.ResSAttnRNNBlock:36
+#: lmp.model._res_sattn_rnn.ResSAttnRNNModel:16 of
+msgid ""
+"Number of residual connected self attention RNN layers. Must be bigger "
+"than or equal to ``1``."
+msgstr ""
+
+#: lmp.model._res_sattn_rnn.ResSAttnRNNModel:19 of
+msgid ""
+"Number of Feed-Forward layers after residual connected self attention RNN"
+" layers. All layers are paired with ReLU activatons except for the last "
+"one. Must be bigger than or equal to ``1``."
+msgstr ""
+
+#: lmp.model._res_sattn_rnn.ResSAttnRNNModel:24 of
+msgid ""
+"Number of Feed-Forward layers before residual connected self attention "
+"RNN layers. All layers are paired with ReLU activatons. Must be bigger "
+"than or equal to ``1``."
+msgstr ""
+
+#: lmp.model._res_sattn_rnn.ResSAttnRNNModel:29 of
+msgid ""
+"Dropout probability for token embeddings. Must satisfy ``0.0 <= p_emb <= "
+"1.0``."
+msgstr ""
+
+#: lmp.model._res_sattn_rnn.ResSAttnRNNBlock:39
+#: lmp.model._res_sattn_rnn.ResSAttnRNNModel:32 of
+msgid ""
+"Dropout probability for every hidden representations. Must satisfy ``0.0 "
+"<= p_hid <= 1.0``."
+msgstr ""
+
+#: lmp.model._res_sattn_rnn.ResSAttnRNNModel:35 of
+msgid "Tokenizer instance with attributes ``pad_tkid`` and ``vocab_size``."
+msgstr ""
+
+#: lmp.model._res_sattn_rnn.ResSAttnRNNModel:40 of
+msgid ""
+"Self attention RNN with residual connection which encode temporal "
+"features. Each time step's hidden state depends on current input and "
+"previous hidden state. Drop temporal features with probability ``p_hid``."
+msgstr ""
+
+#: lmp.model._res_sattn_rnn.ResSAttnRNNModel of
+msgid "type"
+msgstr ""
+
+#: lmp.model._res_sattn_rnn.ResSAttnRNNModel:46 of
+msgid "lmp.model.SAttnRNNBlock"
+msgstr ""
+
+#: lmp.model._res_sattn_rnn.ResSAttnRNNModel:50 of
+msgid "Model name is ``res-sattn-RNN``. Used for command line argument parsing."
+msgstr ""
+
+#: lmp.model._res_sattn_rnn.ResSAttnRNNModel:53 of
+msgid "ClassVar[str]"
+msgstr ""
+
+#: lmp.model._res_sattn_rnn.ResSAttnRNNBlock:1 of
+msgid "Residual connected RNN block with self attention mechanism."
+msgstr ""
+
+#: lmp.model._res_sattn_rnn.ResSAttnRNNBlock:3 of
+msgid ""
+"Same architecture as :py:class:`lmp.model.SAttnRNNModel` but use residual"
+" connection. Residual connection is used as follow:"
+msgstr ""
+
+#: lmp.model._res_sattn_rnn.ResSAttnRNNBlock:7 of
+msgid ""
+"\\begin{align*}\n"
+"t &\\in [1, S] \\\\\n"
+"l &\\in [1, L] \\\\\n"
+"h_0^l &= 0 \\\\\n"
+"y_t^l &= \\text{SAttnRNN}(x_t^l, h_{t-1}^l) + x_t^l \\\\\n"
+"x_{t+1}^l &= y_t^l\n"
+"\\end{align*}"
+msgstr ""
+
+#: lmp.model._res_sattn_rnn.ResSAttnRNNBlock:17 of
+msgid ""
+"Where :math:`S` means sequence length, :math:`L` means number of layer "
+"(same as ``n_hid_lyr``), :math:`x_t^l` means input sequence time step "
+":math:`t` at layer :math:`l`, :math:`h_t^l` means hidden representation "
+"time step :math:`t` encoded by self attention recurrent layer :math:`l`, "
+":math:`h_0^l` means initial hidden representation of self attention "
+"recurrent layer :math:`l`, :math:`y_t^l` is the output of time step "
+":math:`t` at layer :math:`l`."
+msgstr ""
+
+#: lmp.model._res_sattn_rnn.ResSAttnRNNBlock:25 of
+msgid ""
+"Each output of RNN will then use self attention scores as weights to "
+"calculate weighted sum as final output. Residual connection is added to "
+"final output."
+msgstr ""
+
+#: lmp.model._res_sattn_rnn.ResSAttnRNNBlock:29 of
+msgid ""
+"Hidden dimension for RNN and self attention linear transformation weights"
+" (including query, key, value and output). Must be bigger than or equal "
+"to ``1``."
+msgstr ""
+
+#: lmp.model._res_sattn_rnn.ResSAttnRNNBlock.forward:1 of
+msgid "Perform forward pass."
+msgstr ""
+
+#: lmp.model._res_sattn_rnn.ResSAttnRNNBlock.forward:3 of
+msgid "Forward pass algorithm is structured as follow:"
+msgstr ""
+
+#: lmp.model._res_sattn_rnn.ResSAttnRNNBlock.forward:5 of
+msgid ""
+"Input batch of previous token hidden representations. (shape: ``(B, S, "
+"H)``)"
+msgstr ""
+
+#: lmp.model._res_sattn_rnn.ResSAttnRNNBlock.forward:7 of
+msgid "Use for-loop to perform the following operations:"
+msgstr ""
+
+#: lmp.model._res_sattn_rnn.ResSAttnRNNBlock.forward:9 of
+msgid "Use recurrent layer to encode temporal features. (shape: ``(B, S, H)``)"
+msgstr ""
+
+#: lmp.model._res_sattn_rnn.ResSAttnRNNBlock.forward:11 of
+msgid ""
+"Calculate query, key and value features on recurrent layer output. "
+"(shape: ``(B, S, H)``)"
+msgstr ""
+
+#: lmp.model._res_sattn_rnn.ResSAttnRNNBlock.forward:14 of
+msgid ""
+"Calculate self attention scores with query and key features. (shape: "
+"``(B, S, S)``)"
+msgstr ""
+
+#: lmp.model._res_sattn_rnn.ResSAttnRNNBlock.forward:16 of
+msgid ""
+"Mask parts of self attention scores by replacing masked positions with "
+"large negative value. (shape: ``(B, S, S)``)"
+msgstr ""
+
+#: lmp.model._res_sattn_rnn.ResSAttnRNNBlock.forward:19 of
+msgid ""
+"Use self attention scores to as weights to calculate weighted sum on "
+"value features. (shape: ``(B, S, H)``)"
+msgstr ""
+
+#: lmp.model._res_sattn_rnn.ResSAttnRNNBlock.forward:22 of
+msgid ""
+"Perform one more linear transformation on weighted sum features. (shape: "
+"``(B, S, H)``)"
+msgstr ""
+
+#: lmp.model._res_sattn_rnn.ResSAttnRNNBlock.forward:24 of
+msgid "Add residual connection to previous step. (shape: ``(B, S, H)``)"
+msgstr ""
+
+#: lmp.model._res_sattn_rnn.ResSAttnRNNBlock.forward:26 of
+msgid ""
+"Drop some features. This step is skipped on last for loop step. (shape: "
+"``(B, S, H)``)"
+msgstr ""
+
+#: lmp.model._res_sattn_rnn.ResSAttnRNNBlock.forward:29 of
+msgid "Use sparse features as input of next loop."
+msgstr ""
+
+#: lmp.model._res_sattn_rnn.ResSAttnRNNBlock.forward:31 of
+msgid "Return final output. (shape: ``(B, S, H)``)"
+msgstr ""
+
+#: lmp.model._res_sattn_rnn.ResSAttnRNNBlock.forward:34 of
+msgid ""
+"Batch of attention mask. ``batch_tk_mask`` has shape ``(B, S, S)`` and "
+"``dtype == torch.bool``."
+msgstr ""
+
+#: lmp.model._res_sattn_rnn.ResSAttnRNNBlock.forward:38 of
+msgid ""
+"Batch of previous token hidden representation. ``batch_tk_reps`` has "
+"shape ``(B, S, H)`` and ``dtype == torch.float32``."
+msgstr ""
+
+#: lmp.model._res_sattn_rnn.ResSAttnRNNBlock.forward of
+msgid "Returns"
+msgstr ""
+
+#: lmp.model._res_sattn_rnn.ResSAttnRNNBlock.forward:43 of
+msgid ""
+"Residual connected self attention recurrent features with shape ``(B, S, "
+"H)`` and ``dtype == torch.float32``."
+msgstr ""
+
+#: lmp.model._res_sattn_rnn.ResSAttnRNNBlock.forward of
+msgid "Return type"
+msgstr ""
+

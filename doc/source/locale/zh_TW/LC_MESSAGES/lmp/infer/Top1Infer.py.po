@@ -1,0 +1,145 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, ProFatXuanAll
+# This file is distributed under the same license as the Language Model
+# Playground package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Language Model Playground 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-13 16:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/lmp/infer/Top1Infer.py.rst:2
+msgid ":py:class:`lmp.infer.Top1Infer`"
+msgstr ""
+
+#: lmp.infer._top_1.Top1Infer:1 of
+msgid "Top ``1`` inference method."
+msgstr ""
+
+#: lmp.infer._top_1.Top1Infer:3 of
+msgid ""
+"Use index with maximum probability as next token id prediction. It is a "
+"greedy algorithm, simple but lack of dynamic."
+msgstr ""
+
+#: lmp.infer._top_1.Top1Infer:8 of
+msgid ""
+"Inference method name is ``top-1``. Used for command line argument "
+"parsing."
+msgstr ""
+
+#: lmp.infer._top_1.Top1Infer of
+msgid "type"
+msgstr ""
+
+#: lmp.infer._top_1.Top1Infer:11 of
+msgid "ClassVar[str]"
+msgstr ""
+
+#: lmp.infer._top_1.Top1Infer.gen:1 of
+msgid "Generate text conditional on text segment."
+msgstr ""
+
+#: lmp.infer._top_1.Top1Infer.gen:3 of
+msgid "Top ``1`` inference algorithm is structured as follow:"
+msgstr ""
+
+#: lmp.infer._top_1.Top1Infer.gen:5 of
+msgid "Encode input text as ``1`` sample batch. (shape: ``(1, S')``)"
+msgstr ""
+
+#: lmp.infer._top_1.Top1Infer.gen:7 of
+msgid ""
+"Remove ``[eos]`` token since model is not trained to predict tokens after"
+" seeing ``[eos]``. (shape: ``(1, S'-1)`` or ``(1, S)`` where ``S'-1 = "
+"S``)"
+msgstr ""
+
+#: lmp.infer._top_1.Top1Infer.gen:10 of
+msgid ""
+"Truncate text to satisfy maximum sequence constraint. (shape: ``(1, S)`` "
+"or ``(1, max_seq_len)``)"
+msgstr ""
+
+#: lmp.infer._top_1.Top1Infer.gen:12 of
+msgid "Use for-loop to generate sequence of token ids."
+msgstr ""
+
+#: lmp.infer._top_1.Top1Infer.gen:14 of
+msgid ""
+"Use ``model.pred()`` to get next token ids probability distribution. "
+"(shape: ``(1, S, V)``)"
+msgstr ""
+
+#: lmp.infer._top_1.Top1Infer.gen:17 of
+msgid "Get the last next token id probability distribution. (shape: ``(1, V)``)"
+msgstr ""
+
+#: lmp.infer._top_1.Top1Infer.gen:19 of
+msgid ""
+"Get the index with maximum probability as the last next token id "
+"prediction result. (shape: ``(1, 1)``)"
+msgstr ""
+
+#: lmp.infer._top_1.Top1Infer.gen:22 of
+msgid ""
+"Concate the last next token id prediction result with previous next token"
+" id prediction result. (shape: ``(1, S+1)``)"
+msgstr ""
+
+#: lmp.infer._top_1.Top1Infer.gen:25 of
+msgid ""
+"Break loop if token ids sequence length violate ``self.max_seq_len`` "
+"constraint."
+msgstr ""
+
+#: lmp.infer._top_1.Top1Infer.gen:27 of
+msgid "Break loop if the last next token id prediction is ``[eos]``."
+msgstr ""
+
+#: lmp.infer._top_1.Top1Infer.gen:28 of
+msgid "Otherwise go to the for-loop start and continue generation."
+msgstr ""
+
+#: lmp.infer._top_1.Top1Infer.gen:30 of
+msgid "Decode generated sequence of token ids to text and return."
+msgstr ""
+
+#: lmp.infer._top_1.Top1Infer.gen of
+msgid "Parameters"
+msgstr ""
+
+#: lmp.infer._top_1.Top1Infer.gen:32 of
+msgid "Pre-trained language model to generate text."
+msgstr ""
+
+#: lmp.infer._top_1.Top1Infer.gen:34 of
+msgid "Pre-trained tokenizer for text segment encoding."
+msgstr ""
+
+#: lmp.infer._top_1.Top1Infer.gen:36 of
+msgid "Text segment to condition on."
+msgstr ""
+
+#: lmp.infer._top_1.Top1Infer.gen of
+msgid "Returns"
+msgstr ""
+
+#: lmp.infer._top_1.Top1Infer.gen:39 of
+msgid "Generated text."
+msgstr ""
+
+#: lmp.infer._top_1.Top1Infer.gen of
+msgid "Return type"
+msgstr ""
+

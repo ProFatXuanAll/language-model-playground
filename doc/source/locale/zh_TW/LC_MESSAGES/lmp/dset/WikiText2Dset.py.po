@@ -1,0 +1,160 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, ProFatXuanAll
+# This file is distributed under the same license as the Language Model
+# Playground package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Language Model Playground 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-13 16:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/lmp/dset/WikiText2Dset.py.rst:2
+msgid ":py:class:`lmp.dset.WikiText2Dset`"
+msgstr ""
+
+#: lmp.dset._wiki_text_2.WikiText2Dset:1 of
+msgid "[WikiText-2]_ dataset."
+msgstr ""
+
+#: lmp.dset._wiki_text_2.WikiText2Dset:3 of
+msgid ""
+"WikiText-2 is an English dataset which is part of the WikiText Long Term "
+"Dependency Language Modeling Dataset. See WikiText_ for more details on "
+"dataset."
+msgstr ""
+
+#: lmp.dset._wiki_text_2.WikiText2Dset of
+msgid "Parameters"
+msgstr ""
+
+#: lmp.dset._wiki_text_2.WikiText2Dset:10 of
+msgid ""
+"Version of the dataset. If ``ver is None``, then use default version "
+"``WikiText2Dset.df_ver`` of the dataset. Version must be available, "
+"available versions are  - ``train``: Training set. - ``test``: Testing "
+"set. - ``valid``: Validation set.  Defaults to ``None``."
+msgstr ""
+
+#: lmp.dset._wiki_text_2.WikiText2Dset:10 of
+msgid ""
+"Version of the dataset. If ``ver is None``, then use default version "
+"``WikiText2Dset.df_ver`` of the dataset. Version must be available, "
+"available versions are"
+msgstr ""
+
+#: lmp.dset._wiki_text_2.WikiText2Dset:15 of
+msgid "``train``: Training set."
+msgstr ""
+
+#: lmp.dset._wiki_text_2.WikiText2Dset:16 of
+msgid "``test``: Testing set."
+msgstr ""
+
+#: lmp.dset._wiki_text_2.WikiText2Dset:17 of
+msgid "``valid``: Validation set."
+msgstr ""
+
+#: lmp.dset._wiki_text_2.WikiText2Dset:19 of
+msgid "Defaults to ``None``."
+msgstr ""
+
+#: lmp.dset._wiki_text_2.WikiText2Dset:24 of
+msgid "Default version is ``train``."
+msgstr ""
+
+#: lmp.dset._wiki_text_2.WikiText2Dset of
+msgid "type"
+msgstr ""
+
+#: lmp.dset._wiki_text_2.WikiText2Dset:26
+#: lmp.dset._wiki_text_2.WikiText2Dset:33
+#: lmp.dset._wiki_text_2.WikiText2Dset:40
+#: lmp.dset._wiki_text_2.WikiText2Dset:46
+#: lmp.dset._wiki_text_2.WikiText2Dset:72 of
+msgid "ClassVar[str]"
+msgstr ""
+
+#: lmp.dset._wiki_text_2.WikiText2Dset:30 of
+msgid "Dataset name is ``wikitext-2``. Used for command line argument parsing."
+msgstr ""
+
+#: lmp.dset._wiki_text_2.WikiText2Dset:37 of
+msgid "Download dataset file name. Used only for downloading dataset files."
+msgstr ""
+
+#: lmp.dset._wiki_text_2.WikiText2Dset:44 of
+msgid "Use English as primary language."
+msgstr ""
+
+#: lmp.dset._wiki_text_2.WikiText2Dset:50 of
+msgid "All samples in the dataset."
+msgstr ""
+
+#: lmp.dset._wiki_text_2.WikiText2Dset:52 of
+msgid "List[str]"
+msgstr ""
+
+#: lmp.dset._wiki_text_2.WikiText2Dset:56 of
+msgid "Version of the dataset."
+msgstr ""
+
+#: lmp.dset._wiki_text_2.WikiText2Dset:58 of
+msgid "str"
+msgstr ""
+
+#: lmp.dset._wiki_text_2.WikiText2Dset:62 of
+msgid ""
+"All available versions of the dataset. Used to check whether specified "
+"version ``ver`` is available."
+msgstr ""
+
+#: lmp.dset._wiki_text_2.WikiText2Dset:65 of
+msgid "ClassVar[List[str]]"
+msgstr ""
+
+#: lmp.dset._wiki_text_2.WikiText2Dset:69 of
+msgid ""
+"URL for downloading dataset files. Used only for downloading dataset "
+"files."
+msgstr ""
+
+#: lmp.dset._wiki_text_2.WikiText2Dset of
+msgid "Raises"
+msgstr ""
+
+#: lmp.dset._wiki_text_2.WikiText2Dset:74 of
+msgid "When ``ver`` is not and instance of ``str``."
+msgstr ""
+
+#: lmp.dset._wiki_text_2.WikiText2Dset:75 of
+msgid "When dataset version ``ver`` is not available."
+msgstr ""
+
+#: lmp.dset._wiki_text_2.WikiText2Dset:77 of
+msgid ":obj:`lmp.dset.BaseDset`"
+msgstr ""
+
+#: lmp.dset._wiki_text_2.WikiText2Dset:80 of
+msgid "References"
+msgstr ""
+
+#: lmp.dset._wiki_text_2.WikiText2Dset:81 of
+msgid ""
+"Stephen Merity, Caiming Xiong, James Bradbury, and Richard Socher. 2016. "
+"Pointer Sentinel Mixture Models"
+msgstr ""
+
+#: lmp.dset._wiki_text_2.WikiText2Dset:85 of
+msgid "Examples"
+msgstr ""
+

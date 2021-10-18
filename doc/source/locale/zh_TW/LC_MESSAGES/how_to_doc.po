@@ -1,0 +1,76 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, ProFatXuanAll
+# This file is distributed under the same license as the Language Model
+# Playground package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Language Model Playground 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-13 16:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/how_to_doc.rst:2
+msgid "How To Document Guide"
+msgstr ""
+
+#: ../../source/how_to_doc.rst:6
+msgid "You need to install dev tools first by running"
+msgstr ""
+
+#: ../../source/how_to_doc.rst:13
+msgid "Documentation Style Guide"
+msgstr ""
+
+#: ../../source/how_to_doc.rst:15
+msgid ""
+"We mostly follow numpydoc_ (which is extended from PEP257_) style guide. "
+"Please RTFM."
+msgstr ""
+
+#: ../../source/how_to_doc.rst:22
+msgid "Autodoc"
+msgstr ""
+
+#: ../../source/how_to_doc.rst:24
+msgid ""
+"We use `sphinx.ext.napoleon`_ (which use `sphinx.ext.autodoc`_) extension"
+" to generate document from docstring. All modules, classes, functions and"
+" scripts should be documented. All following rule should be apply to "
+"document folder."
+msgstr ""
+
+#: ../../source/how_to_doc.rst:29
+msgid "Put ``lmp`` documents under ``doc/source/lmp``."
+msgstr ""
+
+#: ../../source/how_to_doc.rst:30
+msgid "Put ``test`` documents under ``doc/source/test``."
+msgstr ""
+
+#: ../../source/how_to_doc.rst:36
+msgid "Build Document"
+msgstr ""
+
+#: ../../source/how_to_doc.rst:38
+msgid ""
+"To build document, we use sphinx_ to generate document in HTML format. "
+"Run the following script::"
+msgstr ""
+
+#: ../../source/how_to_doc.rst:46
+msgid "Generate Document Coverage Report"
+msgstr ""
+
+#: ../../source/how_to_doc.rst:48
+msgid "Run the following command in project root directory::"
+msgstr ""
+

@@ -1,0 +1,134 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, ProFatXuanAll
+# This file is distributed under the same license as the Language Model
+# Playground package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Language Model Playground 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-13 16:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/contribute.rst:2
+msgid "Contributing to Language Model Playground"
+msgstr ""
+
+#: ../../source/contribute.rst:4
+msgid ""
+"We welcome all sorts of contributions to language model playground. "
+"Please read the `Before You Commit`_ section **before** you do anything. "
+"See `Need Helps`_ section for some know issues we currently need help the"
+" most. For other issues such as **bugs** or **features request** see `our"
+" GitHub issues`_."
+msgstr ""
+
+#: ../../source/contribute.rst:15
+msgid "You need to install dev tools first by running"
+msgstr ""
+
+#: ../../source/contribute.rst:22
+msgid "Before You Commit"
+msgstr ""
+
+#: ../../source/contribute.rst:24
+msgid "Fork the project on GitHub."
+msgstr ""
+
+#: ../../source/contribute.rst:25
+msgid ""
+"Do **type annotation** for every functions, classes and methods. See "
+":py:mod:`typing` and `PEP 484`_ for more information."
+msgstr ""
+
+#: ../../source/contribute.rst:28
+msgid "Run the following script to check type annotaions:"
+msgstr ""
+
+#: ../../source/contribute.rst:36
+msgid ""
+"We aware that some types in :py:mod:`typing` is **deprecated** in favor "
+"of built-in syntax. For example, :py:mod:`typing.List` is deprecated in "
+"favor of built-in :py:class:`list`. However, those deprecated types will "
+"be in effect only after 2025 (See details in `PEP 585`_). Thus we will "
+"continue using :py:mod:`typing` instead built-in syntax since the "
+":py:mod:`typing` namespace provide more hint for type annotation purpose."
+msgstr ""
+
+#: ../../source/contribute.rst:48
+msgid ""
+"You will see lots of error after running ``mypy`` script. This is "
+"expected since ``mypy`` can only do static type checking. False positive "
+"errors and warnings should be ignored."
+msgstr ""
+
+#: ../../source/contribute.rst:52
+msgid ""
+"Write docstring for every class, function and method. See "
+":doc:`how_to_doc` for detailed docstring guide line."
+msgstr ""
+
+#: ../../source/contribute.rst:55
+msgid "Run the following script to lint your code to conform `PEP 8`_."
+msgstr ""
+
+#: ../../source/contribute.rst:62
+msgid ""
+"Fix any error/warning messages showed on CLI. If you find some rule is "
+"not possible to be fix, please **open issue**."
+msgstr ""
+
+#: ../../source/contribute.rst:65
+msgid ""
+"Run tests and get test coverage report. Make sure your code do not break "
+"existing code. See :doc:`how_to_test` for detailed testing guide line."
+msgstr ""
+
+#: ../../source/contribute.rst:69
+msgid ""
+"Write tests for your code and make them maintainable. See "
+":doc:`how_to_test` for detailed testing guide line."
+msgstr ""
+
+#: ../../source/contribute.rst:77
+msgid "Need Helps"
+msgstr ""
+
+#: ../../source/contribute.rst:78
+msgid "The following list of items are the helps we needed."
+msgstr ""
+
+#: ../../source/contribute.rst:80
+msgid "Unittest on functions."
+msgstr ""
+
+#: ../../source/contribute.rst:81
+msgid "Unittest on classes."
+msgstr ""
+
+#: ../../source/contribute.rst:82
+msgid "Unittest on scripts."
+msgstr ""
+
+#: ../../source/contribute.rst:83
+msgid ""
+"Documentation translation to traditional Chinese. We also need to "
+"separate English documents from traditional Chinese."
+msgstr ""
+
+#: ../../source/contribute.rst:85
+msgid ""
+"Require installation script. Currently python is undergone throught some "
+"major change on their package management system. But we think its better "
+"to stick to ``setup.py`` solution and change to better solution after the"
+" change of package management system."
+msgstr ""
+

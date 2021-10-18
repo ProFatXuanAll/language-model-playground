@@ -1,0 +1,400 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, ProFatXuanAll
+# This file is distributed under the same license as the Language Model
+# Playground package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Language Model Playground 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-13 16:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/glossary.rst:2
+msgid "Glossary"
+msgstr ""
+"詞彙表"
+
+#: ../../source/glossary.rst:5
+msgid "checkpoint"
+msgstr ""
+"檢查點"
+
+#: ../../source/glossary.rst:6
+msgid "checkpoints"
+msgstr ""
+"檢查點數"
+
+#: ../../source/glossary.rst:8
+msgid ""
+"In the process of training :term:`language models`, we need to save our "
+"training results (model parameters) for later evaluation. We don't want "
+"to save our training results only after training. We want to save our "
+"training results every certain amount of update times. The :term:`step` "
+"number triggering save process is called **checkpoint**. All checkpoints "
+"will be saved at your :term:`experiment path` and named with format "
+"``model-\\d+.pt``, where ``\\d+`` means checkpoint step."
+msgstr ""
+"我們想要在訓練 :term:`語言模型` 的過程中，我們需要把訓練的結果 （模型參數）給存起來"
+"以幫助後續的模型驗證。我們不想要只存最後模型訓練的結果。為了存模型的數字就是檢查點數。"
+"所有的檢查點都會被存到 :term:`experiment path` 並且以 ``model-\\d+.pt`` 命名。"
+" ``\\d+`` 就是檢查點數。"
+
+#: ../../source/glossary.rst:17
+msgid "detokenize"
+msgstr ""
+"接詞"
+
+#: ../../source/glossary.rst:18
+msgid "detokenization"
+msgstr ""
+"連接器"
+
+#: ../../source/glossary.rst:20
+msgid "Converts list of tokens back to one and only one text."
+msgstr ""
+""
+
+#: ../../source/glossary.rst:22
+msgid ""
+"For example, when we detokenize ``['a', 'b', 'c']`` based on "
+"**character**, we get ``'abc'``; When we detokenize ``['a', 'b', 'c']`` "
+"base on **whitespace**, we get ``'a b c'``."
+msgstr ""
+
+#: ../../source/glossary.rst:27
+msgid ""
+"Detokenization is just the oppsite operation of :term:`tokenization`, and"
+" detokenization usually don't involve any statistics."
+msgstr ""
+
+#: ../../source/glossary.rst:29
+msgid "experiment"
+msgstr ""
+
+#: ../../source/glossary.rst:31
+msgid ""
+"May refer to :term:`tokenizer` training experiment or model training "
+"experiment. One usually train a tokenizer first and then train a model."
+msgstr ""
+
+#: ../../source/glossary.rst:34
+msgid "experiment name"
+msgstr ""
+
+#: ../../source/glossary.rst:36
+msgid "Name of a particular :term:`experiment`."
+msgstr ""
+
+#: ../../source/glossary.rst:37
+msgid "experiment path"
+msgstr ""
+
+#: ../../source/glossary.rst:39
+msgid ""
+"If :term:`experiment name` is ``my_exp``, then experiment path is "
+"``exp/my_exp``. All :term:`experiment` related files will be put under "
+"directory ``exp``."
+msgstr ""
+
+#: ../../source/glossary.rst:42
+msgid "language model"
+msgstr ""
+"語言模型"
+
+#: ../../source/glossary.rst:43
+msgid "language models"
+msgstr ""
+
+#: ../../source/glossary.rst:45
+msgid ""
+"A language model is a model which can calculate the probability of a "
+"given text is comming from human language."
+msgstr ""
+
+#: ../../source/glossary.rst:48
+msgid ""
+"For example, the text \"how are you?\" is used in daily conversation and "
+"thus language model should output high probability (or equivalently low "
+":term:`perplexity`). On the other hand the text \"you are how?\" is "
+"meaningless and thus language model should output low probability (or "
+"equivalently high :term:`perplexity`)."
+msgstr ""
+
+#: ../../source/glossary.rst:55
+msgid ""
+"More precisely, language model is an probabilistic algorithm which input "
+"is text and output is probability (or :term:`perplexity`). We denote "
+"language model as :math:`M` and input text as :math:`x`. The hypothesis "
+"(expected behavior) of language models are:"
+msgstr ""
+
+#: ../../source/glossary.rst:60
+msgid ""
+"If :math:`M(x) \\approx 1`, then :math:`x` is very likely comming from "
+"human language."
+msgstr ""
+
+#: ../../source/glossary.rst:62
+msgid ""
+"If :math:`M(x) \\approx 0`, then :math:`x` is not likely comming from "
+"human language."
+msgstr ""
+
+#: ../../source/glossary.rst:65
+msgid ""
+"The common way to evalute a language model is using :term:`perplexity`. "
+"In early days language model are used to evaluate generated text from "
+"speech recognition. More recently, language models like GPT_ and BERT_ "
+"have shown to be useful for lots of downstream NLP tasks including "
+"Natural Lanugage Understanding (NLU), Natural Language Generation (NLG), "
+"Question Answering (QA), cloze test, etc."
+msgstr ""
+
+#: ../../source/glossary.rst:78
+msgid ""
+"In this project we have provided script for training language model "
+"(:py:mod:`lmp.script.train_model`), evaluating language model ( "
+":py:mod:`lmp.script.evaluate_model_on_dataset`) and generate text using "
+"language model (:py:mod:`lmp.script.generate_text`)."
+msgstr ""
+
+#: ../../source/glossary.rst:84
+msgid "lmp.script"
+msgstr ""
+
+#: ../../source/glossary.rst:85
+msgid "All available scripts related to language model."
+msgstr ""
+
+#: ../../source/glossary.rst:86 ../../source/glossary.rst:98
+msgid "lmp.model"
+msgstr ""
+
+#: ../../source/glossary.rst:87
+msgid "All available language model."
+msgstr ""
+
+#: ../../source/glossary.rst:88
+msgid "NN"
+msgstr ""
+
+#: ../../source/glossary.rst:89
+msgid "neural network"
+msgstr ""
+"神經網路"
+
+#: ../../source/glossary.rst:91
+msgid ""
+"In this project we use famous deep learning framework PyTorch_ to "
+"implement our language models."
+msgstr ""
+
+#: ../../source/glossary.rst:99
+msgid "All available models."
+msgstr ""
+
+#: ../../source/glossary.rst:100
+msgid "NFKC"
+msgstr ""
+
+#: ../../source/glossary.rst:102
+msgid ""
+"**Unicode normalization** is a process which convert full-width character"
+" into half-width, convert same glyph into same unicode, etc. It is a "
+"standard tool to preprocess text."
+msgstr ""
+
+#: ../../source/glossary.rst:106
+msgid "See https://en.wikipedia.org/wiki/Unicode_equivalence for more detail."
+msgstr ""
+
+#: ../../source/glossary.rst:107
+msgid "OOV"
+msgstr ""
+
+#: ../../source/glossary.rst:108
+msgid "out-of-vocabulary"
+msgstr ""
+
+#: ../../source/glossary.rst:110
+msgid "Refers to :term:`tokens` which are **not** in :term:`vocabulary`."
+msgstr ""
+
+#: ../../source/glossary.rst:111
+msgid "Optimization"
+msgstr ""
+
+#: ../../source/glossary.rst:112
+msgid "optimization"
+msgstr ""
+
+#: ../../source/glossary.rst:113
+msgid "gradient descent"
+msgstr ""
+
+#: ../../source/glossary.rst:115
+msgid ""
+"In the context of :term:`neural network` optimization we usually mean to "
+"perform **gradient descent** on :term:`neural network`. To perform "
+"gradient descent, model need to first perform **forward pass**. During "
+"forward pass, model will take a input which we called **tensors** and "
+"pass tensors to deeper layers in model for calculation. Every path "
+"**tensor** flow throught the model will be recorded and construct a "
+"**tensor flowing graph**. The output of forward pass is then used to "
+"calculate **loss** on **objective function** (or **loss function**). We "
+"can say \"we are optimizing our model on objective function by minimizing"
+" loss.\" We can calculate gradient on loss with respect to model output. "
+"Then we can use gradient from loss to perform **back-propagation** with "
+"the aid of tensor flowing graph. After back-propagation, all parameters "
+"in model get their own gradients, then we can do **gradient descent**."
+msgstr ""
+
+#: ../../source/glossary.rst:132
+msgid "perplexity"
+msgstr ""
+
+#: ../../source/glossary.rst:134
+msgid ""
+"Perplexity is a way to evaluate :term:`language model`. Given a text "
+":math:`x` consist of :math:`n` tokens :math:`x_1, x_2, \\dots, x_n`, we "
+"want to calculate the probability of text :math:`x` is comming from human"
+" language:"
+msgstr ""
+
+#: ../../source/glossary.rst:139
+msgid ""
+"\\begin{align*}\n"
+"ppl(x) &= \\sqrt[n]{\\frac{1}{P(x_1, x_2, \\dots, x_n)}} \\\\\n"
+"&= \\bigg(P(x_1, x_2, \\dots, x_n)\\bigg)^{\\frac{-1}{n}} \\\\\n"
+"&= \\bigg(P(x_1) P(x_2|x_1) P(x_3|x_1, x_2) \\dots\n"
+"P(x_n|x_1, x_2, \\dots, x_{n - 1})\\bigg)^{\\frac{-1}{n}} \\\\\n"
+"&= \\bigg(\\prod_{i = 1}^n P(x_i|x_1, \\dots,\n"
+"x_{i - 1})\\bigg)^{\\frac{-1}{n}} \\\\\n"
+"&= e^{\\log \\prod_{i = 1}^n \\big(P(x_i|x_1, \\dots, x_{i - 1}\n"
+")\\big)^{\\frac{-1}{n}}} \\\\\n"
+"&= e^{\\frac{-1}{n}\\log \\prod_{i = 1}^n P(x_i|x_1, \\dots, x_{i - 1}\n"
+")} \\\\\n"
+"&= e^{\\frac{-1}{n} \\sum_{i = 1}^n \\log P(x_i|x_1, \\dots, x_{i - 1}\n"
+")} \\\\\n"
+"&= \\exp\\bigg(\\frac{-1}{n} \\sum_{i = 1}^n \\log P(x_i|x_1, \\dots,\n"
+"x_{i - 1})\\bigg)\n"
+"\\end{align*}"
+msgstr ""
+
+#: ../../source/glossary.rst:157
+msgid "step"
+msgstr ""
+
+#: ../../source/glossary.rst:159
+msgid "Refers to number of times a :term:`language model` has been updated."
+msgstr ""
+
+#: ../../source/glossary.rst:160
+msgid "token"
+msgstr ""
+
+#: ../../source/glossary.rst:161
+msgid "tokens"
+msgstr ""
+
+#: ../../source/glossary.rst:162
+msgid "tokenize"
+msgstr ""
+"斷詞"
+
+#: ../../source/glossary.rst:163
+msgid "tokenization"
+msgstr ""
+"斷詞器"
+
+#: ../../source/glossary.rst:165
+msgid "Chunks text into small pieces (which are called **tokens**)."
+msgstr ""
+
+#: ../../source/glossary.rst:167
+msgid ""
+"For example, when we tokenize text ``'abc 123'`` based on **character**, "
+"we get ``['a', 'b', 'c', ' ', '1', '2', '3']``; When we tokenize text "
+"``'abc 123'`` base on **whitespace**, we get ``['abc', '123']``."
+msgstr ""
+
+#: ../../source/glossary.rst:172
+msgid ""
+"When processing text, one usually need a :term:`tokenizer` to convert "
+"bunch of long text (maybe a sentence, a paragraph, a document or whole "
+"bunch of documents) into smaller tokens (may be characters, words, etc.) "
+"and thus acquire statistic information (count tokens frequency, plot "
+"tokens distribution, etc.) to perform furthur analyzations."
+msgstr ""
+
+#: ../../source/glossary.rst:178
+msgid ""
+"How to tokenize is a research problem, and there are many statistic-based"
+" tokenization models (which we call them :term:`tokenizer`) have been "
+"proposed. One such famous example is STANZA_ proposed by Stanford."
+msgstr ""
+
+#: ../../source/glossary.rst:184
+msgid "token id"
+msgstr ""
+
+#: ../../source/glossary.rst:186
+msgid ""
+"Since :term:`token` (a string) cannot be directly used to compute, we "
+"assign each token a **id** and replace tokens with their own ids to "
+"perform furthur calculation. Sometimes we also need a mechaism to convert"
+" token id back to their original token, in such cases we should assume "
+"that the :term:`vocabulary` only consist of **unique** token and id "
+"pairs."
+msgstr ""
+
+#: ../../source/glossary.rst:193
+msgid ""
+"For example, we can use a token id to perform embedding matrix lookup, "
+"the lookup result is a vector (which we suppose to) represent that token."
+msgstr ""
+
+#: ../../source/glossary.rst:196
+msgid "Tokenizer"
+msgstr ""
+
+#: ../../source/glossary.rst:197
+msgid "tokenizer"
+msgstr ""
+
+#: ../../source/glossary.rst:198
+msgid "tokenizers"
+msgstr ""
+
+#: ../../source/glossary.rst:200
+msgid ""
+"Tools for text :term:`tokenization`. It can refer to statistic-based "
+"tokenization models."
+msgstr ""
+
+#: ../../source/glossary.rst:202
+msgid "Vocabulary"
+msgstr ""
+
+#: ../../source/glossary.rst:203
+msgid "vocabulary"
+msgstr ""
+
+#: ../../source/glossary.rst:205
+msgid ""
+"When processing text, one have to choose how many :term:`tokens` need to "
+"be analyzed since we have limited memory size. Those chosen tokens are "
+"referred as **known tokens**, and are collectivly called **vocabulary**. "
+"For the rest of the tokens (there are a lot of such tokens out there) not"
+" in the vocabulary are thus called :term:`out-of-vocabulary` tokens."
+msgstr ""
+

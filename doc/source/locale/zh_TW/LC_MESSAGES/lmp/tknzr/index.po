@@ -1,0 +1,72 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, ProFatXuanAll
+# This file is distributed under the same license as the Language Model
+# Playground package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Language Model Playground 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-13 16:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/lmp/tknzr/index.rst:7
+msgid "All available tokenizers:"
+msgstr ""
+
+#: ../../source/lmp/tknzr/index.rst:2
+msgid ":py:mod:`lmp.tknzr`"
+msgstr ""
+
+#: lmp.tknzr:1 of
+msgid ":term:`Tokenizer` module."
+msgstr ""
+
+#: lmp.tknzr:3 of
+msgid "All tokenizer classes must be re-imported in this file."
+msgstr ""
+
+#: lmp.tknzr:7 of
+msgid ""
+"All available tokenizers. Every time a new tokenizer is added, it must "
+"also be added to ``ALL_TKNZRS`` list."
+msgstr ""
+
+#: lmp.tknzr of
+msgid "type"
+msgstr ""
+
+#: lmp.tknzr:11 of
+msgid "List[:py:class:`lmp.tknzr.BaseTknzr`]"
+msgstr ""
+
+#: lmp.tknzr:15 of
+msgid ""
+"Mapping from tokenizer's name to tokenizer's class. All tokenizers must "
+"have class attribute ``tknzr_name``."
+msgstr ""
+
+#: lmp.tknzr:18 of
+msgid "Final[Dict[str, :py:class:`lmp.tknzr.BaseTknzr`]]"
+msgstr ""
+
+#: lmp.tknzr:21 of
+msgid "Examples"
+msgstr ""
+
+#: lmp.tknzr:22 of
+msgid "Check ``'character'`` is an available tokenizer class."
+msgstr ""
+
+#: lmp.tknzr:28 of
+msgid "Get ``'character'`` tokenizer class."
+msgstr ""
+

@@ -1,0 +1,99 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, ProFatXuanAll
+# This file is distributed under the same license as the Language Model
+# Playground package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Language Model Playground 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-13 16:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/lmp/script/generate_text.py.rst:2
+msgid ":py:mod:`lmp.script.generate_text`"
+msgstr ""
+
+#: lmp.script.generate_text:1 of
+msgid "Generate text using pre-trained language model."
+msgstr ""
+
+#: lmp.script.generate_text:3 of
+msgid ""
+"Automatically generate text with pred-trained language model condition on"
+" given text segment. Pre-trained model are used to generate text. This "
+"script serve as model validation, and it is usually run after training "
+"model."
+msgstr ""
+
+#: lmp.script.generate_text:12 of
+msgid ":obj:`lmp.model`"
+msgstr ""
+
+#: lmp.script.generate_text:12 of
+msgid "All available models."
+msgstr ""
+
+#: lmp.script.generate_text:15 of
+msgid ":obj:`lmp.infer`"
+msgstr ""
+
+#: lmp.script.generate_text:15 of
+msgid "All available inference methods."
+msgstr ""
+
+#: lmp.script.generate_text:17 of
+msgid ":obj:`lmp.script.train_model`"
+msgstr ""
+
+#: lmp.script.generate_text:18 of
+msgid "Train language model."
+msgstr ""
+
+#: lmp.script.generate_text:21 of
+msgid "Examples"
+msgstr ""
+
+#: lmp.script.generate_text:22 of
+msgid ""
+"The following example use ``\"Hello world\"`` as conditional text segment"
+" to generate text with pre-trained language model experiment ``my_exp``. "
+"It use ``top-1`` as inference method to generate text. It load pre-"
+"trained language model on checkpoint number ``5000``."
+msgstr ""
+
+#: lmp.script.generate_text.main:1 of
+msgid "Script entry point."
+msgstr ""
+
+#: lmp.script.generate_text.parse_arg:1 of
+msgid "Parse arguments from CLI."
+msgstr ""
+
+#: lmp.script.generate_text.parse_arg:3 of
+msgid ""
+"Argument must begin with a inference method name ``infer_name``. All "
+"arguments are added with inference method's static method "
+"``infer_parser``."
+msgstr ""
+
+#: lmp.script.generate_text.parse_arg of
+msgid "Returns"
+msgstr ""
+
+#: lmp.script.generate_text.parse_arg:7 of
+msgid "Arguments from CLI."
+msgstr ""
+
+#: lmp.script.generate_text.parse_arg of
+msgid "Return type"
+msgstr ""
+

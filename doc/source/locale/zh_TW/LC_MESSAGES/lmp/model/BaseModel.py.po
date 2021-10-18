@@ -1,0 +1,296 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, ProFatXuanAll
+# This file is distributed under the same license as the Language Model
+# Playground package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Language Model Playground 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-13 16:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/lmp/model/BaseModel.py.rst:2
+msgid ":py:class:`lmp.model.BaseModel`"
+msgstr ""
+
+#: lmp.model._base.BaseModel:1 of
+msgid "Neural network language model abstract base class."
+msgstr ""
+
+#: lmp.model._base.BaseModel:3 of
+msgid ""
+"Provide basic functionality for save and load pred-trained model "
+"parameters. All language models must inherit "
+":py:class:`lmp.model.BaseModel`."
+msgstr ""
+
+#: lmp.model._base.BaseModel:7 of
+msgid ""
+"For comment throughout this class and its subclasses, we use the "
+"following symbols to denote the shape of tensors:"
+msgstr ""
+
+#: lmp.model._base.BaseModel:10 of
+msgid "``B``: Batch size."
+msgstr ""
+
+#: lmp.model._base.BaseModel:11 of
+msgid "``E``: Token embedding dimension."
+msgstr ""
+
+#: lmp.model._base.BaseModel:12 of
+msgid "``H``: Hidden representation dimension."
+msgstr ""
+
+#: lmp.model._base.BaseModel:13 of
+msgid "``S``: Length of sequence of tokens."
+msgstr ""
+
+#: lmp.model._base.BaseModel:14 of
+msgid "``V``: Vocabulary size."
+msgstr ""
+
+#: lmp.model._base.BaseModel lmp.model._base.BaseModel.forward
+#: lmp.model._base.BaseModel.load lmp.model._base.BaseModel.loss_fn
+#: lmp.model._base.BaseModel.ppl lmp.model._base.BaseModel.pred
+#: lmp.model._base.BaseModel.save lmp.model._base.BaseModel.train_parser of
+msgid "Parameters"
+msgstr ""
+
+#: lmp.model._base.BaseModel:16 of
+msgid "Useless parameter. Intently left for subclass parameters extension."
+msgstr ""
+
+#: lmp.model._base.BaseModel:22 of
+msgid "Model parameters output file name."
+msgstr ""
+
+#: lmp.model._base.BaseModel of
+msgid "type"
+msgstr ""
+
+#: lmp.model._base.BaseModel:24 lmp.model._base.BaseModel:32 of
+msgid "ClassVar[str]"
+msgstr ""
+
+#: lmp.model._base.BaseModel:28 of
+msgid ""
+"Display name for model on CLI. Used for command line argument parsing. "
+"Subclass must overwrite ``model_name`` attribute."
+msgstr ""
+
+#: lmp.model._base.BaseModel.forward:1 of
+msgid "Perform forward pass."
+msgstr ""
+
+#: lmp.model._base.BaseModel.forward:3 lmp.model._base.BaseModel.loss_fn:9
+#: lmp.model._base.BaseModel.ppl:32 lmp.model._base.BaseModel.pred:3 of
+msgid ""
+"Batch of previous token ids encoded by :py:class:`lmp.tknzr.BaseTknzr` "
+"subclass instance. ``batch_prev_tkids`` has shape ``(B, S)`` and ``dtype "
+"== torch.int64``."
+msgstr ""
+
+#: lmp.model._base.BaseModel.forward lmp.model._base.BaseModel.loss_fn
+#: lmp.model._base.BaseModel.ppl lmp.model._base.BaseModel.pred of
+msgid "Returns"
+msgstr ""
+
+#: lmp.model._base.BaseModel.forward:9 of
+msgid "Output logits after forward pass."
+msgstr ""
+
+#: lmp.model._base.BaseModel.forward lmp.model._base.BaseModel.loss_fn
+#: lmp.model._base.BaseModel.ppl lmp.model._base.BaseModel.pred of
+msgid "Return type"
+msgstr ""
+
+#: lmp.model._base.BaseModel.forward lmp.model._base.BaseModel.load
+#: lmp.model._base.BaseModel.loss_fn lmp.model._base.BaseModel.pred
+#: lmp.model._base.BaseModel.save of
+msgid "Raises"
+msgstr ""
+
+#: lmp.model._base.BaseModel.forward:12 of
+msgid "When subclass do not implement forward pass."
+msgstr ""
+
+#: lmp.model._base.BaseModel.load:1 of
+msgid "Load model parameters from compressed pickle."
+msgstr ""
+
+#: lmp.model._base.BaseModel.load:3 of
+msgid ""
+"Load pre-trained model using saved parameters. Use hyperparameters (which"
+" are collected in ``**kwargs``) to construct new model, then load pre-"
+"trained parameters. Construct new model is needed since we need an exact "
+"same model architecture to load pre-trained parameters. This class method"
+" only work if pre-trained model parameters exists under "
+":term:`experiment` ``exp_name``. Load lastest (biggest) checkpoint if "
+"``ckpt == -1``."
+msgstr ""
+
+#: lmp.model._base.BaseModel.load:12 of
+msgid ""
+"Pre-trained model checkpoint. Load lastest (biggest) checkpoint if ``ckpt"
+" == -1``."
+msgstr ""
+
+#: lmp.model._base.BaseModel.load:15 of
+msgid "Name of the existing experiment."
+msgstr ""
+
+#: lmp.model._base.BaseModel.load:17 of
+msgid ""
+"Model's hyperparameters. All keyword arguments are collected in "
+"``**kwargs`` and are passed directly to model's ``__init__`` method."
+msgstr ""
+
+#: lmp.model._base.BaseModel.load:22 of
+msgid "If file ``exp/exp_name/model-ckpt.pt`` does not exist."
+msgstr ""
+
+#: lmp.model._base.BaseModel.load:23 of
+msgid "When ``exp_name`` is not an instance of ``str``."
+msgstr ""
+
+#: lmp.model._base.BaseModel.load:24 of
+msgid "When ``exp_name`` is empty string."
+msgstr ""
+
+#: lmp.model._base.BaseModel.load:26 of
+msgid ":obj:`lmp.model.BaseModel.save`"
+msgstr ""
+
+#: lmp.model._base.BaseModel.load:29 lmp.model._base.BaseModel.save:18
+#: lmp.model._base.BaseModel.train_parser:12 of
+msgid "Examples"
+msgstr ""
+
+#: lmp.model._base.BaseModel.loss_fn:1 of
+msgid "Calculate language model training loss."
+msgstr ""
+
+#: lmp.model._base.BaseModel.loss_fn:3 lmp.model._base.BaseModel.ppl:26 of
+msgid ""
+"Prediction targets. Batch of next token ids encoded by "
+":py:class:`lmp.tknzr.BaseTknzr` subclass instance. ``batch_next_tkids`` "
+"has same shape and ``dtype`` as ``batch_prev_tkids``."
+msgstr ""
+
+#: lmp.model._base.BaseModel.loss_fn:15 of
+msgid ""
+"Average next token prediction loss. Returned tensor has shape ``(1)`` and"
+" ``dtype == torch.float32``."
+msgstr ""
+
+#: lmp.model._base.BaseModel.loss_fn:19 of
+msgid "When subclass do not implement loss function."
+msgstr ""
+
+#: lmp.model._base.BaseModel.ppl:1 of
+msgid "Calculate mean perplexity on batch of token ids."
+msgstr ""
+
+#: lmp.model._base.BaseModel.ppl:3 of
+msgid "Perplexity is calculate by the following formula"
+msgstr ""
+
+#: lmp.model._base.BaseModel.ppl:5 of
+msgid ""
+"\\begin{align*}\n"
+"& \\text{ppl}(w_1, w_2, \\dots, w_n) \\\\\n"
+"&= \\sqrt[n]{\\frac{1}{P(w_1, w_2, \\dots, w_n)}} \\\\\n"
+"&= \\big(P(w_1, w_2, \\dots, w_n)\\big)^{\\frac{-1}{n}} \\\\\n"
+"&= \\big(\n"
+"   P(w_1) P(w_2|w_1) \\dots, P(w_n|w_1, \\dots, w_{n-1}))\n"
+"   \\big)^{\\frac{-1}{n}} \\\\\n"
+"&= \\big(\n"
+"   \\prod_{i=1}^n P(w_i|w_1, \\dots, w_{i-1})\n"
+"   \\big)^{\\frac{-1}{n}} \\\\\n"
+"&= e^{\\log\\big(\n"
+"   \\prod_{i=1}^n P(w_i|w_1, \\dots, w_{i-1})\n"
+"   \\big)^{\\frac{-1}{n}}} \\\\\n"
+"&= e^{\\frac{-1}{n} \\sum_{i=1}^n \\log P(w_i|w_1, \\dots, w_{i-1})}\n"
+"\\end{align*}"
+msgstr ""
+
+#: lmp.model._base.BaseModel.ppl:23 of
+msgid ""
+"Each token ids in batch will calculate their own perplexities then return"
+" average perplexity over batch (using arithmatic mean)."
+msgstr ""
+
+#: lmp.model._base.BaseModel.ppl:38 of
+msgid "Average perplexity on batch of token ids."
+msgstr ""
+
+#: lmp.model._base.BaseModel.pred:1 of
+msgid "Next token prediction."
+msgstr ""
+
+#: lmp.model._base.BaseModel.pred:9 of
+msgid ""
+"Predicition for next token. Return tensor has shape ``(B, S, V)`` and "
+"``dtype == torch.float32``."
+msgstr ""
+
+#: lmp.model._base.BaseModel.pred:14 of
+msgid "When subclass do not implement next token prediction."
+msgstr ""
+
+#: lmp.model._base.BaseModel.save:1 of
+msgid "Save model parameters in compressed pickle."
+msgstr ""
+
+#: lmp.model._base.BaseModel.save:3 of
+msgid ""
+"Save the trained model parameters into zip compressed pickle file and "
+"named it with ``self.__class__.file_name``. This method will create a "
+"directory for each model training experiment if that directory is not "
+"created before."
+msgstr ""
+
+#: lmp.model._base.BaseModel.save:8 of
+msgid "Model training checkpoint."
+msgstr ""
+
+#: lmp.model._base.BaseModel.save:10 of
+msgid "Name of the language model training experiment."
+msgstr ""
+
+#: lmp.model._base.BaseModel.save:13 of
+msgid ""
+"When experiment directory path already exists but is not a     directory,"
+" or when expeirment file path already exists but is a     directory."
+msgstr ""
+
+#: lmp.model._base.BaseModel.save:15 of
+msgid ":obj:`lmp.model.BaseModel.load`"
+msgstr ""
+
+#: lmp.model._base.BaseModel.train_parser:1 of
+msgid "Training language model CLI arguments parser."
+msgstr ""
+
+#: lmp.model._base.BaseModel.train_parser:3 of
+msgid "Parser for CLI arguments."
+msgstr ""
+
+#: lmp.model._base.BaseModel.train_parser:8 of
+msgid ":obj:`lmp.script.train_model`"
+msgstr ""
+
+#: lmp.model._base.BaseModel.train_parser:9 of
+msgid "Language model training script."
+msgstr ""
+

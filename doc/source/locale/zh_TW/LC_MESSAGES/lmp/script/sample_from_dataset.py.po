@@ -1,0 +1,108 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, ProFatXuanAll
+# This file is distributed under the same license as the Language Model
+# Playground package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Language Model Playground 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-13 16:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/lmp/script/sample_from_dataset.py.rst:2
+msgid ":py:mod:`lmp.script.sample_from_dataset`"
+msgstr ""
+
+#: lmp.script.sample_from_dataset:1 of
+msgid "Sample dataset using index."
+msgstr ""
+
+#: lmp.script.sample_from_dataset:3 of
+msgid ""
+"Tool for observing data point in specified dataset. Use index to sample "
+"from dataset."
+msgstr ""
+
+#: lmp.script.sample_from_dataset:8 of
+msgid ":obj:`lmp.dset`"
+msgstr ""
+
+#: lmp.script.sample_from_dataset:9 of
+msgid "All available dataset."
+msgstr ""
+
+#: lmp.script.sample_from_dataset:12 of
+msgid "Examples"
+msgstr ""
+
+#: lmp.script.sample_from_dataset:13 of
+msgid ""
+"The following example sample index ``0`` from "
+":py:class:`lmp.dset.WikiText2Dset` ``train`` dataset."
+msgstr ""
+
+#: lmp.script.sample_from_dataset:20 of
+msgid ""
+"The following example sample index ``1`` from "
+":py:class:`lmp.dset.WikiText2Dset` ``train`` dataset."
+msgstr ""
+
+#: lmp.script.sample_from_dataset:27 of
+msgid ""
+"The following example sample index ``1`` from "
+":py:class:`lmp.dset.WikiText2Dset` ``test`` dataset."
+msgstr ""
+
+#: lmp.script.sample_from_dataset:34 of
+msgid "Use ``-h`` or ``--help`` options to get list of available dataset."
+msgstr ""
+
+#: lmp.script.sample_from_dataset:40 of
+msgid ""
+"Use ``-h`` or ``--help`` options on specific dataset to get a list of "
+"available versions."
+msgstr ""
+
+#: lmp.script.sample_from_dataset.main:1 of
+msgid "Script entry point."
+msgstr ""
+
+#: lmp.script.sample_from_dataset.parse_arg:1 of
+msgid "Parse arguments from CLI."
+msgstr ""
+
+#: lmp.script.sample_from_dataset.parse_arg:3 of
+msgid ""
+"Argument must begin with a dataset name ``dset_name``. The following "
+"arguments are optional:"
+msgstr ""
+
+#: lmp.script.sample_from_dataset.parse_arg:6 of
+msgid "Version of the dataset. Default to ``dset``'s default version."
+msgstr ""
+
+#: lmp.script.sample_from_dataset.parse_arg:8 of
+msgid "Sample index. Default to ``0``."
+msgstr ""
+
+#: lmp.script.sample_from_dataset.parse_arg of
+msgid "Returns"
+msgstr ""
+
+#: lmp.script.sample_from_dataset.parse_arg:11 of
+msgid "Arguments from CLI."
+msgstr ""
+
+#: lmp.script.sample_from_dataset.parse_arg of
+msgid "Return type"
+msgstr ""
+

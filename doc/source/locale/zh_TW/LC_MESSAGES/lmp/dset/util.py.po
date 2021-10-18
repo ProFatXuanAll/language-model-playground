@@ -1,0 +1,162 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, ProFatXuanAll
+# This file is distributed under the same license as the Language Model
+# Playground package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Language Model Playground 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-13 16:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/lmp/dset/util.py.rst:2
+msgid ":py:mod:`lmp.dset.util`"
+msgstr ""
+
+#: lmp.dset.util:1 of
+msgid "Utilities for text pre-processing and post-processing."
+msgstr ""
+
+#: lmp.dset.util.download:1 of
+msgid "Download dataset files."
+msgstr ""
+
+#: lmp.dset.util.download:3 of
+msgid ""
+"All dataset files are hosted on `demo-dataset`_ repository. If dataset "
+"files is not on your local repository, then it will be automatically "
+"downloaded from `demo-dataset`_ repository. Once dataset files are "
+"downloaded, they will not be downloaded again."
+msgstr ""
+
+#: lmp.dset.util.download lmp.dset.util.norm lmp.dset.util.pad_to_max
+#: lmp.dset.util.trunc_to_max of
+msgid "Parameters"
+msgstr ""
+
+#: lmp.dset.util.download:10 of
+msgid "Dataset file URL."
+msgstr ""
+
+#: lmp.dset.util.download:12 of
+msgid "Dataset file save path."
+msgstr ""
+
+#: lmp.dset.util.download of
+msgid "Raises"
+msgstr ""
+
+#: lmp.dset.util.download:15 of
+msgid ""
+"If output file directory exists but not a directory, or output file     "
+"path exists but not a file."
+msgstr ""
+
+#: lmp.dset.util.norm:1 of
+msgid "Perform normalization on Text."
+msgstr ""
+
+#: lmp.dset.util.norm:3 of
+msgid ""
+"Text will first be :term:`NFKC` normalized, then convert consecutive "
+"whitespaces into single whitespace. Both leading and trailing whitespaces"
+" will be stripped."
+msgstr ""
+
+#: lmp.dset.util.norm:7 of
+msgid "Text to be normalized."
+msgstr ""
+
+#: lmp.dset.util.norm lmp.dset.util.pad_to_max lmp.dset.util.trunc_to_max of
+msgid "Returns"
+msgstr ""
+
+#: lmp.dset.util.norm:10 of
+msgid "Normalized text."
+msgstr ""
+
+#: lmp.dset.util.norm lmp.dset.util.pad_to_max lmp.dset.util.trunc_to_max of
+msgid "Return type"
+msgstr ""
+
+#: lmp.dset.util.norm:14 lmp.dset.util.pad_to_max:27
+#: lmp.dset.util.trunc_to_max:22 of
+msgid "Examples"
+msgstr ""
+
+#: lmp.dset.util.pad_to_max:1 of
+msgid "Pad sequence when sequence is shorter than required."
+msgstr ""
+
+#: lmp.dset.util.pad_to_max:3 of
+msgid ""
+"Add padding ``pad`` at the end of sequence until satisfying maximum "
+"sequence length constraint. When ``max_seq_len == -1`` or sequence is not"
+" shorter than ``max_seq_len``, do nothing and return the original "
+"sequence. Otherwise return padded sequence."
+msgstr ""
+
+#: lmp.dset.util.pad_to_max:9 of
+msgid ""
+"Sequence can be either a list of integer or a list of string. When "
+"``seq`` is a list of integer, ``pad`` must also be integer; When ``seq`` "
+"is a list of string, ``pad`` must also be string."
+msgstr ""
+
+#: lmp.dset.util.pad_to_max:13 of
+msgid "Sequence to be padded."
+msgstr ""
+
+#: lmp.dset.util.pad_to_max:15 of
+msgid "Padding to be add at the end of sequence."
+msgstr ""
+
+#: lmp.dset.util.pad_to_max:17 lmp.dset.util.trunc_to_max:12 of
+msgid "Maximum sequence length constraint. Defaults to ``-1``."
+msgstr ""
+
+#: lmp.dset.util.pad_to_max:21 of
+msgid "Padded sequence."
+msgstr ""
+
+#: lmp.dset.util.pad_to_max:24 of
+msgid ":obj:`lmp.dset.util.trunc_to_max`"
+msgstr ""
+
+#: lmp.dset.util.trunc_to_max:1 of
+msgid "Truncate sequence when sequence is longer than allowed."
+msgstr ""
+
+#: lmp.dset.util.trunc_to_max:3 of
+msgid ""
+"Truncate trailing sequence to satisfy maximum sequence length constraint."
+" When ``max_seq_len == -1`` or sequence is not longer than "
+"``max_seq_len``, do nothing and return the original sequence. Otherwise "
+"return truncated sequence."
+msgstr ""
+
+#: lmp.dset.util.trunc_to_max:8 of
+msgid "Sequence can be either a list of integer or a list of string."
+msgstr ""
+
+#: lmp.dset.util.trunc_to_max:10 of
+msgid "Sequence to be truncated."
+msgstr ""
+
+#: lmp.dset.util.trunc_to_max:16 of
+msgid "Truncated sequence."
+msgstr ""
+
+#: lmp.dset.util.trunc_to_max:19 of
+msgid ":obj:`lmp.dset.util.pad_to_max`"
+msgstr ""
+

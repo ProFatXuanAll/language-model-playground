@@ -1,0 +1,106 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, ProFatXuanAll
+# This file is distributed under the same license as the Language Model
+# Playground package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Language Model Playground 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-13 16:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/lmp/model/GRUModel.py.rst:2
+msgid ":py:class:`lmp.model.GRUModel`"
+msgstr ""
+
+#: lmp.model._gru.GRUModel:1 of
+msgid "GRU language model."
+msgstr ""
+
+#: lmp.model._gru.GRUModel:3 of
+msgid "Same architecture as :py:class:`lmp.model.RNNModel` but use GRU layer."
+msgstr ""
+
+#: lmp.model._gru.GRUModel of
+msgid "Parameters"
+msgstr ""
+
+#: lmp.model._gru.GRUModel:5 of
+msgid "Token embedding dimension. Must be bigger than or equal to ``1``."
+msgstr ""
+
+#: lmp.model._gru.GRUModel:8 of
+msgid ""
+"Hidden dimension for Feed-Forward layers and GRU layers. Must be bigger "
+"than or equal to ``1``."
+msgstr ""
+
+#: lmp.model._gru.GRUModel:11 of
+msgid "Useless parameter. Left intended for subclass parameters extension."
+msgstr ""
+
+#: lmp.model._gru.GRUModel:14 of
+msgid "Number of GRU layers. Must be bigger than or equal to ``1``."
+msgstr ""
+
+#: lmp.model._gru.GRUModel:17 of
+msgid ""
+"Number of Feed-Forward layers after GRU layers. All layers are paired "
+"with ReLU activatons except for the last one. Must be bigger than or "
+"equal to ``1``."
+msgstr ""
+
+#: lmp.model._gru.GRUModel:21 of
+msgid ""
+"Number of Feed-Forward layers before GRU layers. All layers are paired "
+"with ReLU activatons. Must be bigger than or equal to ``1``."
+msgstr ""
+
+#: lmp.model._gru.GRUModel:25 of
+msgid ""
+"Dropout probability for token embeddings. Must satisfy ``0.0 <= p_emb <= "
+"1.0``."
+msgstr ""
+
+#: lmp.model._gru.GRUModel:28 of
+msgid ""
+"Dropout probability for every hidden representations. Must satisfy ``0.0 "
+"<= p_hid <= 1.0``."
+msgstr ""
+
+#: lmp.model._gru.GRUModel:31 of
+msgid "Tokenizer instance with attributes ``pad_tkid`` and ``vocab_size``."
+msgstr ""
+
+#: lmp.model._gru.GRUModel:36 of
+msgid ""
+"GRU which encode temporal features. Each time step's hidden state depends"
+" on current input and previous hidden state. Dropout temporal features "
+"with probability ``p_hid`` if ``n_hid_lyr > 1``."
+msgstr ""
+
+#: lmp.model._gru.GRUModel of
+msgid "type"
+msgstr ""
+
+#: lmp.model._gru.GRUModel:42 of
+msgid "torch.nn.GRU"
+msgstr ""
+
+#: lmp.model._gru.GRUModel:46 of
+msgid "Model name is ``GRU``. Used for command line argument parsing."
+msgstr ""
+
+#: lmp.model._gru.GRUModel:49 of
+msgid "ClassVar[str]"
+msgstr ""
+

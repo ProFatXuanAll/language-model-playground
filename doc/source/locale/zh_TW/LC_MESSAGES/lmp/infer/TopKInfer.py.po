@@ -1,0 +1,220 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, ProFatXuanAll
+# This file is distributed under the same license as the Language Model
+# Playground package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Language Model Playground 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-13 16:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/lmp/infer/TopKInfer.py.rst:2
+msgid ":py:class:`lmp.infer.TopKInfer`"
+msgstr ""
+
+#: lmp.infer._top_k.TopKInfer:1 of
+msgid "Top ``K`` inference method."
+msgstr ""
+
+#: lmp.infer._top_k.TopKInfer:3 of
+msgid ""
+"Use indice with the top ``K`` highest probability as possible next token "
+"id, then randomly choose ``1`` index out of ``K`` as next token id "
+"prediction. It is a non-greedy algorithm since the best prediction is not"
+" always choosen, but it provide dynamic of generation result (because of "
+"randomness, obviously)."
+msgstr ""
+
+#: lmp.infer._top_k.TopKInfer:10 of
+msgid ""
+"For comments throughout this class, we use ``K`` to denote the number of "
+"token ids which probabilities are higher then the rest ``V - K`` token "
+"ids during the process of text generation."
+msgstr ""
+
+#: lmp.infer._top_k.TopKInfer lmp.infer._top_k.TopKInfer.gen
+#: lmp.infer._top_k.TopKInfer.infer_parser of
+msgid "Parameters"
+msgstr ""
+
+#: lmp.infer._top_k.TopKInfer:14 of
+msgid "Number of token ids to sample from. Must satisfy ``k > 0``."
+msgstr ""
+
+#: lmp.infer._top_k.TopKInfer:17 of
+msgid "Useless parameter. Intently left for subclass parameters extension."
+msgstr ""
+
+#: lmp.infer._top_k.TopKInfer:20 of
+msgid ""
+"Generated sequence of tokens maximum sequence length constraint. Must "
+"satisfy ``-1 <= max_seq_len <= TopKInfer.hard_max_seq_len``. If "
+"``max_seq_len == -1``, then replace ``max_seq_len`` with "
+"``TopKInfer.hard_max_seq_len``. Raise ``ValueError`` if constraint is "
+"violated."
+msgstr ""
+
+#: lmp.infer._top_k.TopKInfer:29 of
+msgid ""
+"Inference method name is ``top-k``. Used for command line argument "
+"parsing."
+msgstr ""
+
+#: lmp.infer._top_k.TopKInfer of
+msgid "type"
+msgstr ""
+
+#: lmp.infer._top_k.TopKInfer:32 of
+msgid "ClassVar[str]"
+msgstr ""
+
+#: lmp.infer._top_k.TopKInfer:36 of
+msgid "Number of token ids to sample from."
+msgstr ""
+
+#: lmp.infer._top_k.TopKInfer:38 of
+msgid "int"
+msgstr ""
+
+#: lmp.infer._top_k.TopKInfer:42 of
+msgid ":obj:`lmp.infer.Top1Infer`"
+msgstr ""
+
+#: lmp.infer._top_k.TopKInfer:43 of
+msgid "Top 1 inference method."
+msgstr ""
+
+#: lmp.infer._top_k.TopKInfer.gen:1 of
+msgid "Generate text conditional on text segment."
+msgstr ""
+
+#: lmp.infer._top_k.TopKInfer.gen:3 of
+msgid "Top ``K`` inference algorithm is structured as follow:"
+msgstr ""
+
+#: lmp.infer._top_k.TopKInfer.gen:5 of
+msgid "Encode input text as ``1`` sample batch. (shape: ``(1, S')``)"
+msgstr ""
+
+#: lmp.infer._top_k.TopKInfer.gen:7 of
+msgid ""
+"Remove ``[eos]`` token since model is not trained to predict tokens after"
+" seeing ``[eos]``. (shape: ``(1, S'-1)`` or ``(1, S)`` where ``S'-1 = "
+"S``)"
+msgstr ""
+
+#: lmp.infer._top_k.TopKInfer.gen:10 of
+msgid ""
+"Truncate text to satisfy maximum sequence constraint. (shape: ``(1, S)`` "
+"or ``(1, max_seq_len)``)"
+msgstr ""
+
+#: lmp.infer._top_k.TopKInfer.gen:12 of
+msgid "Use for-loop to generate sequence of token ids."
+msgstr ""
+
+#: lmp.infer._top_k.TopKInfer.gen:14 of
+msgid ""
+"Use ``model.pred()`` to get next token ids probability distribution. "
+"(shape: ``(1, S, V)``)"
+msgstr ""
+
+#: lmp.infer._top_k.TopKInfer.gen:17 of
+msgid "Get the last next token id probability distribution. (shape: ``(1, V)``)"
+msgstr ""
+
+#: lmp.infer._top_k.TopKInfer.gen:19 of
+msgid ""
+"Get the top ``K`` highest probability distribution and their respective "
+"indices. (shape: ``(1, K)``)"
+msgstr ""
+
+#: lmp.infer._top_k.TopKInfer.gen:22 of
+msgid "Use top ``K`` highest probability to construct multinomial distribution."
+msgstr ""
+
+#: lmp.infer._top_k.TopKInfer.gen:24 of
+msgid ""
+"Sample ``1`` index from top ``K`` indices tensor using previously "
+"constructed multinomial distribution. Use sampled index as next token id "
+"prediction result. (shape: ``(1, 1)``)"
+msgstr ""
+
+#: lmp.infer._top_k.TopKInfer.gen:28 of
+msgid ""
+"Concate the last next token id prediction result with previous next token"
+" id prediction result. (shape: ``(1, S+1)``)"
+msgstr ""
+
+#: lmp.infer._top_k.TopKInfer.gen:31 of
+msgid ""
+"Break loop if token ids sequence length violate ``self.max_seq_len`` "
+"constraint."
+msgstr ""
+
+#: lmp.infer._top_k.TopKInfer.gen:33 of
+msgid "Break loop if the last next token id prediction is ``[eos]``."
+msgstr ""
+
+#: lmp.infer._top_k.TopKInfer.gen:34 of
+msgid "Otherwise go to the for-loop start and continue generation."
+msgstr ""
+
+#: lmp.infer._top_k.TopKInfer.gen:36 of
+msgid "Decode generated sequence of token ids to text and return."
+msgstr ""
+
+#: lmp.infer._top_k.TopKInfer.gen:38 of
+msgid "Pre-trained language model to generate text."
+msgstr ""
+
+#: lmp.infer._top_k.TopKInfer.gen:40 of
+msgid "Pre-trained tokenizer for text segment encoding."
+msgstr ""
+
+#: lmp.infer._top_k.TopKInfer.gen:42 of
+msgid "Text segment to condition on."
+msgstr ""
+
+#: lmp.infer._top_k.TopKInfer.gen of
+msgid "Returns"
+msgstr ""
+
+#: lmp.infer._top_k.TopKInfer.gen:45 of
+msgid "Generated text."
+msgstr ""
+
+#: lmp.infer._top_k.TopKInfer.gen of
+msgid "Return type"
+msgstr ""
+
+#: lmp.infer._top_k.TopKInfer.infer_parser:1 of
+msgid "Top ``K`` inference method CLI arguments parser."
+msgstr ""
+
+#: lmp.infer._top_k.TopKInfer.infer_parser:3 of
+msgid "Parser for CLI arguments."
+msgstr ""
+
+#: lmp.infer._top_k.TopKInfer.infer_parser:8 of
+msgid ":obj:`lmp.script.generate_text`"
+msgstr ""
+
+#: lmp.infer._top_k.TopKInfer.infer_parser:9 of
+msgid "Generate text using pre-trained language model."
+msgstr ""
+
+#: lmp.infer._top_k.TopKInfer.infer_parser:12 of
+msgid "Examples"
+msgstr ""
+

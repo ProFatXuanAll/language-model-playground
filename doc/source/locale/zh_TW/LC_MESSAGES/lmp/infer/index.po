@@ -1,0 +1,74 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, ProFatXuanAll
+# This file is distributed under the same license as the Language Model
+# Playground package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Language Model Playground 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-13 16:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/lmp/infer/index.rst:7
+msgid "All available inference methods:"
+msgstr ""
+
+#: ../../source/lmp/infer/index.rst:2
+msgid ":py:mod:`lmp.infer`"
+msgstr ""
+
+#: lmp.infer:1 of
+msgid "Language model inference methods module."
+msgstr ""
+
+#: lmp.infer:3 of
+msgid ""
+"All language model inference method classes must be re-imported in this "
+"file."
+msgstr ""
+
+#: lmp.infer:7 of
+msgid ""
+"All available language model inference methods. Every time a new "
+"inference method is added, it must also be added to ``ALL_INFERS`` list."
+msgstr ""
+
+#: lmp.infer of
+msgid "type"
+msgstr ""
+
+#: lmp.infer:11 of
+msgid "List[:py:class:`lmp.model.BaseInfer`]"
+msgstr ""
+
+#: lmp.infer:15 of
+msgid ""
+"Mapping from inference method's name to inference method's class. All "
+"inference methods must have class attribute ``infer_name``."
+msgstr ""
+
+#: lmp.infer:18 of
+msgid "Final[Dict[str, :py:class:`lmp.model.BaseInfer`]]"
+msgstr ""
+
+#: lmp.infer:21 of
+msgid "Examples"
+msgstr ""
+
+#: lmp.infer:22 of
+msgid "Check ``'top-1'`` is an available inference method."
+msgstr ""
+
+#: lmp.infer:28 of
+msgid "Get ``'top-1'`` inference method class."
+msgstr ""
+

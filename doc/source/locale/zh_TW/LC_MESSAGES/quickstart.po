@@ -1,0 +1,488 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, ProFatXuanAll
+# This file is distributed under the same license as the Language Model
+# Playground package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Language Model Playground 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-13 16:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/quickstart.rst:2
+msgid "Quick Start"
+msgstr ""
+
+#: ../../source/quickstart.rst:4
+msgid "We provide installation instructions only for Ubuntu ``18.04+`` (for now)."
+msgstr ""
+
+#: ../../source/quickstart.rst:6
+msgid "Todo"
+msgstr ""
+
+#: ../../source/quickstart.rst:8
+msgid "Run test on Mac and Windows."
+msgstr ""
+
+#: ../../source/quickstart.rst:11
+msgid "Environment Prerequest"
+msgstr ""
+
+#: ../../source/quickstart.rst:12
+msgid "We only use python version ``3.8+``. You can install python with"
+msgstr ""
+
+#: ../../source/quickstart.rst:19
+msgid ""
+"We use PyTorch_ and thus use ``CUDA`` version: ``10.0+``. This only work "
+"if you have **Nvidia** GPUs. You can install ``CUDA`` library with"
+msgstr ""
+
+#: ../../source/quickstart.rst:27
+msgid "We use ``pipenv`` to install dependencies. You can install ``pipenv`` with"
+msgstr ""
+
+#: ../../source/quickstart.rst:37
+msgid "Installation"
+msgstr ""
+
+#: ../../source/quickstart.rst:39
+msgid "Clone the project from GitHub."
+msgstr ""
+
+#: ../../source/quickstart.rst:45
+msgid "Change current directory to ``language-model-playground``."
+msgstr ""
+
+#: ../../source/quickstart.rst:51
+msgid ""
+"Install dependencies. We use ``pipenv`` to create virtual environment and"
+" install dependencies in virtual environment."
+msgstr ""
+
+#: ../../source/quickstart.rst:59
+msgid "Start the virtual environment created by ``pipenv``."
+msgstr ""
+
+#: ../../source/quickstart.rst:65
+msgid ""
+"Now you can run any script under :py:mod:`lmp.script`! For example, you "
+"can take a look on chinese poem dataset by running "
+":py:mod:`lmp.script.sample_from_dataset`"
+msgstr ""
+
+#: ../../source/quickstart.rst:74
+msgid "Training Pipline"
+msgstr ""
+
+#: ../../source/quickstart.rst:76
+msgid "We now demonstrate a basic :term:`language model` training pipline."
+msgstr ""
+
+#: ../../source/quickstart.rst:80
+msgid ""
+"Throughout this tutorial you might see the symbol ``\\`` appear several "
+"times. ``\\`` are only used to format our CLI codes to avoid long lines. "
+"All CLI codes should be able to fit-in one line, but this would make your"
+" code unreadable and should be considered as a bad choice."
+msgstr ""
+
+#: ../../source/quickstart.rst:87
+msgid "1. Choose a Dataset"
+msgstr ""
+
+#: ../../source/quickstart.rst:88
+msgid "Choose a dataset to train."
+msgstr ""
+
+#: ../../source/quickstart.rst:90
+msgid "In this example we use :py:class:`lmp.dset.WikiText2Dset` as our dataset."
+msgstr ""
+
+#: ../../source/quickstart.rst:94
+msgid ":py:mod:`lmp.dset`"
+msgstr ""
+
+#: ../../source/quickstart.rst:95
+msgid "All available dataset."
+msgstr ""
+
+#: ../../source/quickstart.rst:98
+msgid "2. Choose a Tokenizer"
+msgstr ""
+
+#: ../../source/quickstart.rst:100
+msgid ""
+"Choose a :term:`tokenizer` and train :term:`tokenizer` on dataset we "
+"already choose."
+msgstr ""
+
+#: ../../source/quickstart.rst:103
+msgid ""
+"In this example we use :py:class:`lmp.tknzr.WsTknzr` since all samples in"
+" :py:class:`lmp.dset.WikiText2Dset` are whitespace separated."
+msgstr ""
+
+#: ../../source/quickstart.rst:106
+msgid ""
+"We use :py:mod:`lmp.script.train_tokenizer` to train :term:`tokenizer` "
+"given following arguments:"
+msgstr ""
+
+#: ../../source/quickstart.rst:119
+msgid ""
+"We use ``whitespace`` to specify we want to use "
+":py:class:`lmp.tknzr.WsTknzr` as our :term:`tokenizer`, and we train our "
+":term:`tokenizer` on Wikitext-2 dataset using ``--dset_name wikitext-2`` "
+"arguments. We use ``--ver train`` since our :term:`language model` will "
+"be trained on training version of Wikitext-2, and we simply treat "
+":term:`OOV` in both validation and test versions as unknown words."
+msgstr ""
+
+#: ../../source/quickstart.rst:126
+msgid ""
+"We use ``--max_vocab -1`` to include all :term:`tokens` in Wikitext-2. "
+"This results in :term:`vocabulary` size around ``30000``, which is a "
+"little bit too much. Thus we also use ``--min_count 10`` to filter out "
+"all :term:`tokens` whose frequency are lower than ``10``. Here we simply "
+"assume that all :term:`tokens` occur less than ``10`` times might be "
+"typos, name entities, digits, or something else that we believe are not "
+"useful. We also use ``--is_uncased`` to convert all uppercase letters "
+"into lowercase, this also help to reducing :term:`vocabulary` size. (for "
+"example, ``You`` and ``you`` are now treated as same words)"
+msgstr ""
+
+#: ../../source/quickstart.rst:138
+msgid ""
+"All arguments we used are just a mather of choice for pre-processing. You"
+" can change them to any values you want."
+msgstr ""
+
+#: ../../source/quickstart.rst:143
+msgid ":py:mod:`lmp.tknzr`"
+msgstr ""
+
+#: ../../source/quickstart.rst:144
+msgid "All available :term:`tokenizers`."
+msgstr ""
+
+#: ../../source/quickstart.rst:147
+msgid "3. Evaluate Tokenizer"
+msgstr ""
+
+#: ../../source/quickstart.rst:149
+msgid ""
+"After training :term:`tokenizer`, you can now use your pre-trained "
+":term:`tokenizer` to :term:`tokenize` arbitrary text."
+msgstr ""
+
+#: ../../source/quickstart.rst:152
+msgid ""
+"For example, you can try to :term:`tokenize` ``hello world`` with script "
+":py:mod:`lmp.script.tokenize`:"
+msgstr ""
+
+#: ../../source/quickstart.rst:161
+msgid "You should see something like ``['hello', 'world']``."
+msgstr ""
+
+#: ../../source/quickstart.rst:164
+msgid "4. Choose a Language Model"
+msgstr ""
+
+#: ../../source/quickstart.rst:165
+msgid ""
+"Now we can train our :term:`language model` with the help of pre-trained "
+":term:`tokenizer`."
+msgstr ""
+":term:`分詞器`"
+
+#: ../../source/quickstart.rst:168
+msgid ""
+"In this example we use :py:mod:`lmp.model.LSTM` as our training target. "
+"We use :py:mod:`lmp.script.train_model` to train :term:`language model` "
+"as follow:"
+msgstr ""
+
+#: ../../source/quickstart.rst:198
+msgid ""
+":py:mod:`lmp.script.train_model` have similar structure as "
+":py:mod:`lmp.script.train_tokenizer`; We use ``LSTM`` to specify we want "
+"to use :py:class:`lmp.model.LSTMModel` as our :term:`language model`, and"
+" train our model on Wikitext-2 dataset using ``--dset_name wikitext-2`` "
+"arguments. We use ``--ver train`` to specify we want to use training "
+"version of Wikitext-2 which is also used to train our :term:`tokenizer`."
+msgstr ""
+
+#: ../../source/quickstart.rst:206
+msgid ""
+"We will train on Wikitext-2 dataset for ``10`` **epochs**, which means we"
+" will repeatly train on sample dataset for ``10`` times. (This is "
+"specified in ``--n_epoch 10``.) Each time we group all samples in "
+"Wikitext-2 with group size ``32``, and sequentially feed them to model. "
+"(This is specified in ``--batch_size 32``.). We call one such group as a "
+"**mini-batch**. All samples in mini-batch are randomly gathered in every "
+"epoch, and the order to feed mini-batches to model are randomly purmuted."
+" Thus when we train ``10`` epochs we might have ``10`` different mini-"
+"batches training order and hundreds of thousands of different mini-"
+"batches."
+msgstr ""
+
+#: ../../source/quickstart.rst:218
+msgid ""
+"All samples in mini-batch are first pre-processed by our pre-train "
+":term:`tokenizer` (as specified in ``--tknzr_exp_name my_tknzr_exp``) and"
+" then fed into model. If you think you need a different "
+":term:`tokenizer`, you can go back to previous step to see how you can "
+"obtain a pre-trained :term:`tokenizer`."
+msgstr ""
+
+#: ../../source/quickstart.rst:224
+msgid ""
+"We will output our model training result and save them as files (more "
+"precisely, compressed pickle files). Save will trigger every ``1000`` "
+"updates (as specified in ``--ckpt_step``). We call these saved files as "
+":term:`checkpoint`, all they saved are model parameters. Later we will "
+"reuse these model parameters to perform further operation such as "
+":term:`perplexity` evaluation or text generation. We save these files "
+"with name ``model-\\d+.pt``, where ``\\d+`` means digits. (For example we"
+" might save at :term:`checkpoint` ``5000`` as ``model-5000.pt``.)"
+msgstr ""
+
+#: ../../source/quickstart.rst:235
+msgid ""
+"We also log our model performance during training, i.e., **loss "
+"function** output. Log will trigger every ``200`` updates (as specified "
+"in ``--log_step``). You can see performance logs on your CLI, or you can "
+"use browser to see your performance logs by the following script:"
+msgstr ""
+
+#: ../../source/quickstart.rst:245
+msgid ""
+"After launch the command, you should open your **browser** and type "
+"http://localhost:6006/ to see your performance logs."
+msgstr ""
+
+#: ../../source/quickstart.rst:248
+msgid "For the rest arguments, we split them into two categories:"
+msgstr ""
+
+#: ../../source/quickstart.rst:250
+msgid ":term:`Optimization` hyperparameters."
+msgstr ""
+
+#: ../../source/quickstart.rst:251
+msgid "**Model architecture** hyperparameters."
+msgstr ""
+
+#: ../../source/quickstart.rst:253
+msgid ""
+"For :term:`optimization`, we only provide you with one "
+":term:`optimization` method, namely :py:class:`torch.optim.Adam`. We use "
+":py:class:`torch.optim.Adam` to perform :term:`gradient descent` on "
+":term:`language model`. Our :term:`optimization` target is to minimize "
+"token prediction negative log-likelihood, or simply cross-entropy. (This "
+"is equivalent to maximize log-likelihood, or just likelihood.) See "
+":py:class:`torch.nn.CrossEntropyLoss` for loss function. Arguments "
+"including ``--beta1``, ``--beta2``, ``--eps``, ``--lr`` and ``--wd`` are "
+"directly passed to :py:class:`torch.optim.Adam`."
+msgstr ""
+
+#: ../../source/quickstart.rst:264
+msgid ""
+"For **model architecture**, you can simply checkt the model's constructor"
+" to see what parameters the model needed. Or you can use ``python -m "
+"lmp.script.train_model model_name -h`` to see parameters on CLI. For the "
+"meaning of those model architecture hyperparameters, we recommend you to "
+"see their documents for more details."
+msgstr ""
+
+#: ../../source/quickstart.rst:271
+msgid ""
+"Just like training :term:`tokenizer`, all arguments we used are just a "
+"mather of choice for training. You can change them to any values you "
+"want."
+msgstr ""
+
+#: ../../source/quickstart.rst:277
+msgid ":py:mod:`lmp.model`"
+msgstr ""
+
+#: ../../source/quickstart.rst:278
+msgid "All available :term:`language models`."
+msgstr ""
+
+#: ../../source/quickstart.rst:281
+msgid "5. Evaluate Language Model"
+msgstr ""
+
+#: ../../source/quickstart.rst:282
+msgid ""
+"Its time to check whether our :term:`language model` is successfully "
+"trained!"
+msgstr ""
+
+#: ../../source/quickstart.rst:284
+msgid ""
+"In this example we use Wikitext-2 dataset to perform **validation** and "
+"**testing**. But before that we should check whether our model is "
+"**underfitting**."
+msgstr ""
+
+#: ../../source/quickstart.rst:296
+msgid ""
+"We use **training** version of WikiText-2 dataset (as specified in "
+"``--ver train``) to check our performance. The script above will evaluate"
+" all :term:`checkpoints` we have saved starting from :term:`checkpoint` "
+"``0`` all the way to last :term:`checkpoint`. We use :term:`perplexity` "
+"as our evaluation metric. See :py:meth:`lmp.model.BaseModel.ppl` for "
+":term:`perplexity` details."
+msgstr ""
+
+#: ../../source/quickstart.rst:303
+msgid ""
+"Again you can use browser to see your evaluation logs by the following "
+"script:"
+msgstr ""
+
+#: ../../source/quickstart.rst:309
+msgid ""
+"After launch the command, you should open your **browser** and type "
+"http://localhost:6006/ to see your evaluation logs. We will not write "
+"this script again later on."
+msgstr ""
+
+#: ../../source/quickstart.rst:313
+msgid ""
+"If you didn't see the :term:`perplexity` goes down, this means your model"
+" is **underfitting**. You should go back to re-train your :term:`language"
+" model`. Try using different batch size, number of epochs, and all sorts "
+"of hyperparameters combination."
+msgstr ""
+
+#: ../../source/quickstart.rst:319
+msgid ""
+"If you see the :term:`perplexity` goes down, that is good! But how low "
+"should the :term:`perplexity` be? To answer that question, we recommed "
+"you to see the paper paired with the dataset (in some dataset they might "
+"not have papers to reference). But overall, lower than ``100`` might be a"
+" good indicator for a well-trained :term:`language model`."
+msgstr ""
+
+#: ../../source/quickstart.rst:326
+msgid "We should now check whether our model is **overfitting**."
+msgstr ""
+
+#: ../../source/quickstart.rst:336
+msgid ""
+"We use **validation** version of WikiText-2 dataset (as specified in "
+"``--ver valid``) to check our performance."
+msgstr ""
+
+#: ../../source/quickstart.rst:339
+msgid ""
+"If :term:`perplexity` on validation set does not do well, then we should "
+"go back to re-train our model, then validate again, then re-train our "
+"model again, and so on. The loop goes on and on until we reach a point "
+"where we get good :term:`perplexity` on both training and validation "
+"dataset. This means we might have a :term:`language model` which is able "
+"to generalize on dataset we have never used to train (validation set in "
+"this case). To further verify our hypothesis, we should now use **test** "
+"version of WikiText-2 dataset to check our performance."
+msgstr ""
+
+#: ../../source/quickstart.rst:358
+msgid "6. Generate Text"
+msgstr ""
+
+#: ../../source/quickstart.rst:359
+msgid ""
+"Finally we can use our well-trained :term:`language model` to generate "
+"text. In this example we use :py:mod:`lmp.script.generate_text` to "
+"generate text:"
+msgstr ""
+
+#: ../../source/quickstart.rst:369
+msgid ""
+"We use ``top-1`` to specify we want to use "
+":py:class:`lmp.infer.Top1Infer` as inference method to generate text. We "
+"use ``\"We are\"`` as condition text and generate text to complete the "
+"sentence or paragraph."
+msgstr ""
+
+#: ../../source/quickstart.rst:374
+msgid ""
+"You can use different :term:`checkpoint` by changing the ``--ckpt 5000`` "
+"argument. All available :term:`checkpoints` is under :term:`experiment "
+"path` ``exp/my_model_exp``. If :term:`checkpoint` does not exist then it "
+"will cause error. Also if the models paired :term:`tokenizer` does not "
+"exist then it will cause error as well."
+msgstr ""
+
+#: ../../source/quickstart.rst:384
+msgid ":py:mod:`lmp.infer`"
+msgstr ""
+
+#: ../../source/quickstart.rst:385
+msgid "All available inference methods."
+msgstr ""
+
+#: ../../source/quickstart.rst:388
+msgid "7. Record Experiment Results"
+msgstr ""
+
+#: ../../source/quickstart.rst:389
+msgid ""
+"Now you have done the experiment, you can record them and compare "
+"experiments performed by others. See :doc:`Experiment Results "
+"<experiment/index>` for others' experiment and record yours!"
+msgstr ""
+
+#: ../../source/quickstart.rst:395
+msgid "Documents"
+msgstr ""
+
+#: ../../source/quickstart.rst:397
+msgid ""
+"You can read documents on `this website`_ or use the following steps to "
+"build documents locally. We use Sphinx_ to build our documents."
+msgstr ""
+
+#: ../../source/quickstart.rst:405
+msgid "Install documentation dependencies."
+msgstr ""
+
+#: ../../source/quickstart.rst:411
+msgid "Compile documents."
+msgstr ""
+
+#: ../../source/quickstart.rst:417
+msgid "Open in the browser."
+msgstr ""
+
+#: ../../source/quickstart.rst:425
+msgid "Testing"
+msgstr ""
+
+#: ../../source/quickstart.rst:426
+msgid "Install testing dependencies."
+msgstr ""
+
+#: ../../source/quickstart.rst:432
+msgid "Run test."
+msgstr ""
+
+#: ../../source/quickstart.rst:438
+msgid "Get test coverage report."
+msgstr ""
+

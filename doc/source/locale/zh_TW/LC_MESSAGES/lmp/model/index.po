@@ -1,0 +1,82 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, ProFatXuanAll
+# This file is distributed under the same license as the Language Model
+# Playground package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Language Model Playground 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-13 16:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/lmp/model/index.rst:7
+msgid "All available models:"
+msgstr ""
+
+#: ../../source/lmp/model/index.rst:2
+msgid ":py:mod:`lmp.model`"
+msgstr ""
+
+#: lmp.model:1 of
+msgid "Neural network language model module."
+msgstr ""
+
+#: lmp.model:3 of
+msgid "All language model classes must be re-imported in this file."
+msgstr ""
+
+#: lmp.model:7 of
+msgid ""
+"All available language models. Every time a new language model is added, "
+"it must also be added to ``ALL_MODELS`` list."
+msgstr ""
+
+#: lmp.model of
+msgid "type"
+msgstr ""
+
+#: lmp.model:11 of
+msgid "List[:py:class:`lmp.model.BaseModel`]"
+msgstr ""
+
+#: lmp.model:15 of
+msgid ""
+"Mapping from language model's name to language model's class. All "
+"language models must have class attribute ``model_name``."
+msgstr ""
+
+#: lmp.model:18 of
+msgid "Final[Dict[str, :py:class:`lmp.model.BaseModel`]]"
+msgstr ""
+
+#: lmp.model:22 of
+msgid ""
+"Mapping from language model's name to private models used internally. "
+"This is only used for documentation purpose."
+msgstr ""
+
+#: lmp.model:25 of
+msgid "Final[Dict[str, List[torch.nn.Module]]]"
+msgstr ""
+
+#: lmp.model:28 of
+msgid "Examples"
+msgstr ""
+
+#: lmp.model:29 of
+msgid "Check ``'RNN'`` is an available language model."
+msgstr ""
+
+#: lmp.model:35 of
+msgid "Get ``'RNN'`` language model class."
+msgstr ""
+
