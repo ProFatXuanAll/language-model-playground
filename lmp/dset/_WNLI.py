@@ -16,8 +16,8 @@ from lmp.dset._base import BaseDset
 class WNLI(BaseDset):
     r"""[WNLI]_ dataset.
 
-    Winograd NLI(WNLI) is a relaxation of the Winograd Schema 
-    Challenge proposed as part of the GLUE benchmark and a 
+    Winograd NLI(WNLI) is a relaxation of the Winograd Schema
+    Challenge proposed as part of the GLUE benchmark and a
     conversion to the natural language inference (NLI) format.
 
     .. _WNLI: https://cs.nyu.edu/~davise/papers/WinogradSchemas/WS.html
@@ -104,16 +104,19 @@ class WNLI(BaseDset):
                 input_zipfile.open(f'WNLI/{self.ver}.tsv', 'r'),
                 encoding='utf-8',
             ) as input_text_file:
-                df = pd.read_csv(input_text_file,sep='\t')
+                df = pd.read_csv(input_text_file, sep='\t')
 
         # Merge tow cols.
-        df['sentence'] = df['sentence1'].map(str) + df['sentence2']
+        df['sentence'] = df[['sentence1', 'sentence2']].apply(
+            lambda row: row[0] + ' ' + row[1],
+            axis=1, 
+        )
 
         # Normalized dataset.
         spls = df['sentence'].apply(str).apply(lmp.dset.util.norm).tolist()
 
         # split the letters and symbols
-        spls = map(lambda spl: re.sub( r'([a-zA-Z])([,.!?])', r'\1 \2',spl), spls)
-        spls = map(lambda spl: re.sub( r'([,.!?])([a-zA-Z])', r'\1 \2',spl), spls)
-        
+        spls = map(lambda spl: re.sub(r'(\w)([,.!?])', r'\1 \2', spl), spls)
+        spls = map(lambda spl: re.sub(r'([,.!?])(\w)', r'\1 \2', spl), spls)
+
         self.spls = list(spls)
