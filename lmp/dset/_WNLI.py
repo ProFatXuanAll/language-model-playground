@@ -109,7 +109,7 @@ class WNLI(BaseDset):
         # Merge tow cols.
         df['sentence'] = df[['sentence1', 'sentence2']].apply(
             lambda row: row[0] + ' ' + row[1],
-            axis=1, 
+            axis=1,
         )
 
         # Normalized dataset.
