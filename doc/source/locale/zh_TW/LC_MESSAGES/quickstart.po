@@ -21,32 +21,39 @@ msgstr ""
 #: ../../source/quickstart.rst:2
 msgid "Quick Start"
 msgstr ""
+"快速上手"
 
 #: ../../source/quickstart.rst:4
 msgid "We provide installation instructions only for Ubuntu ``18.04+`` (for now)."
 msgstr ""
+"我們只提供安裝指令給 Ubuntu ``18.04+`` （現在）。"
 
 #: ../../source/quickstart.rst:6
 msgid "Todo"
 msgstr ""
+"未來計畫"
 
 #: ../../source/quickstart.rst:8
 msgid "Run test on Mac and Windows."
 msgstr ""
+"在 Mac 和 Windows 上跑測試。"
 
 #: ../../source/quickstart.rst:11
 msgid "Environment Prerequest"
 msgstr ""
+"環境的先決條件。"
 
 #: ../../source/quickstart.rst:12
 msgid "We only use python version ``3.8+``. You can install python with"
 msgstr ""
+"我們只使用 python ``3.8+`` 版本。可以使用以下指令來安裝"
 
 #: ../../source/quickstart.rst:19
 msgid ""
 "We use PyTorch_ and thus use ``CUDA`` version: ``10.0+``. This only work "
 "if you have **Nvidia** GPUs. You can install ``CUDA`` library with"
 msgstr ""
+"我們使用 PyTorch_ 和 ``CUDA`` 版本 ``10.0+``。"
 
 #: ../../source/quickstart.rst:27
 msgid "We use ``pipenv`` to install dependencies. You can install ``pipenv`` with"

@@ -233,7 +233,7 @@ msgstr ""
 
 #: ../../source/glossary.rst:100
 msgid "NFKC"
-msgstr ""
+msgstr "以相容等價方式來分解，然後以標準等價重組之正規化。"
 
 #: ../../source/glossary.rst:102
 msgid ""
@@ -241,6 +241,8 @@ msgid ""
 " into half-width, convert same glyph into same unicode, etc. It is a "
 "standard tool to preprocess text."
 msgstr ""
+"**Unicode 正規化**把全形符號轉成半形符號和把一樣的字行轉換成一樣的 unicode等……"
+"這是一個標準的處理文字工具。"
 
 #: ../../source/glossary.rst:106
 msgid "See https://en.wikipedia.org/wiki/Unicode_equivalence for more detail."
