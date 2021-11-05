@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Language Model Playground 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-13 16:38+0800\n"
+"POT-Creation-Date: 2021-10-21 16:35+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,8 +20,7 @@ msgstr ""
 
 #: ../../source/contribute.rst:2
 msgid "Contributing to Language Model Playground"
-msgstr ""
-"對語言模型範例貢獻"
+msgstr "對語言模型範例貢獻"
 
 #: ../../source/contribute.rst:4
 msgid ""
@@ -31,127 +30,106 @@ msgid ""
 " most. For other issues such as **bugs** or **features request** see `our"
 " GitHub issues`_."
 msgstr ""
-"我們歡迎各種方式的貢獻。在貢獻之前，請先閱讀 `Before You Commit`_。"
-"我們已知的議題會在 `Need Helps`_ 。 其他的議題像是 **錯誤** 或是 **功能要求**，"
-"會在 `our Github issues`_。"
+"我們歡迎各種方式的貢獻。在貢獻之前，請先閱讀 `Before You Commit`_。我們已知的議題會在 `Need Helps`_ 。 "
+"其他的議題像是 **錯誤** 或是 **功能要求**，會在 `our Github issues`_。"
 
 #: ../../source/contribute.rst:15
 msgid "You need to install dev tools first by running"
-msgstr ""
-"在運行程式之前，你需要先安裝開發環境的工具。"
+msgstr "在運行程式之前，你需要先安裝開發環境的工具。"
 
 #: ../../source/contribute.rst:22
 msgid "Before You Commit"
-msgstr ""
-"在提交程式碼之前"
+msgstr "在提交程式碼之前"
 
 #: ../../source/contribute.rst:24
 msgid "Fork the project on GitHub."
-msgstr ""
-"複製專案到 GitHub。"
+msgstr "複製專案到 GitHub。"
 
 #: ../../source/contribute.rst:25
 msgid ""
 "Do **type annotation** for every functions, classes and methods. See "
 ":py:mod:`typing` and `PEP 484`_ for more information."
-msgstr ""
-"對每一個函式、類別和方法做 **type annotaion**。更多資訊請看" 
-" :py:mod:`typing` 和 `PEP 484`_  。"
-
+msgstr "對每一個函式、類別和方法做 **type annotaion**。更多資訊請看 :py:mod:`typing` 和 `PEP 484`_  。"
 
 #: ../../source/contribute.rst:28
 msgid "Run the following script to check type annotaions:"
-msgstr ""
-"運行下面腳本來做型態檢查："
+msgstr "運行下面腳本來做型態檢查："
 
 #: ../../source/contribute.rst:36
+#, fuzzy
 msgid ""
 "We aware that some types in :py:mod:`typing` is **deprecated** in favor "
 "of built-in syntax. For example, :py:mod:`typing.List` is deprecated in "
 "favor of built-in :py:class:`list`. However, those deprecated types will "
-"be ineffect only after 2025 (See details in `PEP 585`_). Thus we will "
+"be in effect only after 2025 (See details in `PEP 585`_). Thus we will "
 "continue using :py:mod:`typing` instead built-in syntax since the "
 ":py:mod:`typing` namespace provide more hint for type annotation purpose."
 msgstr ""
-"我們發現有些內建的語法 **棄用** :py:mod:`typing` 中的型態 。"
-"例如， :py:class:`List` 已經棄用 :py:mod:`typing.List`。然而，那些被棄用的型態會一直有"
-"效用直到 2025年（更多細節可以參考 `PEP 585`_）。我們會持續使用 :py:mod:`typing` 而不是"
-"內建的語法，因為 :py:mod:`typing` 命名空間提供更多的型態提示。"
+"我們發現有些內建的語法 **棄用** :py:mod:`typing` 中的型態 。例如， :py:class:`List` 已經棄用 "
+":py:mod:`typing.List`。然而，那些被棄用的型態會一直有效用直到 2025年（更多細節可以參考 `PEP "
+"585`_）。我們會持續使用 :py:mod:`typing` 而不是內建的語法，因為 :py:mod:`typing` "
+"命名空間提供更多的型態提示。"
 
 #: ../../source/contribute.rst:48
 msgid ""
 "You will see lots of error after running ``mypy`` script. This is "
 "expected since ``mypy`` can only do static type checking. False positive "
 "errors and warnings should be ignored."
-msgstr ""
-"在運行完 ``mypy`` 後，你會看到許多錯誤。這是正常的，因為 ``mypy`` 只能做靜態的型態檢查。"
-"假錯誤和警告應該被忽略。"
+msgstr "在運行完 ``mypy`` 後，你會看到許多錯誤。這是正常的，因為 ``mypy`` 只能做靜態的型態檢查。假錯誤和警告應該被忽略。"
 
 #: ../../source/contribute.rst:52
 msgid ""
 "Write docstring for every class, function and method. See "
 ":doc:`how_to_doc` for detailed docstring guide line."
-msgstr ""
-"為每一個類別、函式和方法寫文件說明字串。更多細節的文件說明字串可以看 :doc:`how_to_doc` 。"
+msgstr "為每一個類別、函式和方法寫文件說明字串。更多細節的文件說明字串可以看 :doc:`how_to_doc` 。"
 
 #: ../../source/contribute.rst:55
 msgid "Run the following script to lint your code to conform `PEP 8`_."
-msgstr ""
-"運行下面的腳本讓程式碼符合 `PEP 8`_ 規則。"
+msgstr "運行下面的腳本讓程式碼符合 `PEP 8`_ 規則。"
 
 #: ../../source/contribute.rst:62
 msgid ""
 "Fix any error/warning messages showed on CLI. If you find some rule is "
 "not possible to be fix, please **open issue**."
-msgstr ""
-"修補任一個出現在終端機界面上的錯誤或警告。如果發現有一些規則不能修復的話，請 **打開議題** 。"
+msgstr "修補任一個出現在終端機界面上的錯誤或警告。如果發現有一些規則不能修復的話，請 **打開議題** 。"
 
 #: ../../source/contribute.rst:65
 msgid ""
 "Run tests and get test coverage report. Make sure your code do not break "
 "existing code. See :doc:`how_to_test` for detailed testing guide line."
-msgstr ""
-"運行測試程式和得到測試覆蓋的回報。確保你的程式碼不會破壞已經有的程式碼。更多測試細節可以看"
-" :doc:`how_to_test` 。"
+msgstr "運行測試程式和得到測試覆蓋的報告。確保你的程式碼不會破壞已經有的程式碼。更多測試細節可以看 :doc:`how_to_test` 。"
 
 #: ../../source/contribute.rst:69
 msgid ""
 "Write tests for your code and make them maintainable. See "
 ":doc:`how_to_test` for detailed testing guide line."
-msgstr ""
-"撰寫測試程式碼並讓它容易維護。更多些測試細節可以參考 :doc:`how_to_test` 。"
+msgstr "撰寫測試程式碼並讓它容易維護。更多些測試細節可以參考 :doc:`how_to_test` 。"
 
 #: ../../source/contribute.rst:77
 msgid "Need Helps"
-msgstr ""
-"需要幫助"
+msgstr "需要幫助"
 
 #: ../../source/contribute.rst:78
 msgid "The following list of items are the helps we needed."
-msgstr ""
-"我們需要的幫助都在下面的列表"
+msgstr "我們需要的幫助都在下面的列表"
 
 #: ../../source/contribute.rst:80
 msgid "Unittest on functions."
-msgstr ""
-"對函式做單元測試。"
+msgstr "對函式做單元測試。"
 
 #: ../../source/contribute.rst:81
 msgid "Unittest on classes."
-msgstr ""
-"對類別做單元測試。"
+msgstr "對類別做單元測試。"
 
 #: ../../source/contribute.rst:82
 msgid "Unittest on scripts."
-msgstr ""
-"對腳本做單元測試。"
+msgstr "對腳本做單元測試。"
 
 #: ../../source/contribute.rst:83
 msgid ""
 "Documentation translation to traditional Chinese. We also need to "
 "separate English documents from traditional Chinese."
-msgstr ""
-"我們需要把文件翻譯和把繁體中文抽離英文文件。"
+msgstr "我們需要把文件翻譯和把繁體中文抽離英文文件。"
 
 #: ../../source/contribute.rst:85
 msgid ""
@@ -162,3 +140,4 @@ msgid ""
 msgstr ""
 "需要安裝腳本。現階段 python 的套件管理系統正經歷重大的變化。但我們堅持 ``setup.py`` "
 "的解決之道，並在套件管理系統改好後尋求更好的安裝方法。"
+
