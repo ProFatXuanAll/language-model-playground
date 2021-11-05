@@ -21,24 +21,30 @@ msgstr ""
 #: ../../source/how_to_doc.rst:2
 msgid "How To Document Guide"
 msgstr ""
+"怎麽做文件指南"
 
 #: ../../source/how_to_doc.rst:6
 msgid "You need to install dev tools first by running"
 msgstr ""
+"在運行之前，你需要先安裝環境工具。"
 
 #: ../../source/how_to_doc.rst:13
 msgid "Documentation Style Guide"
 msgstr ""
+"文件風格指南"
 
 #: ../../source/how_to_doc.rst:15
 msgid ""
 "We mostly follow numpydoc_ (which is extended from PEP257_) style guide. "
 "Please RTFM."
 msgstr ""
+"大部分的時候我們會遵守 numpydoc_ （來自 PEP257_） 風格指南。"
+"請 RTFM"
 
 #: ../../source/how_to_doc.rst:22
 msgid "Autodoc"
 msgstr ""
+"自動建立文件"
 
 #: ../../source/how_to_doc.rst:24
 msgid ""
@@ -47,30 +53,38 @@ msgid ""
 " scripts should be documented. All following rule should be apply to "
 "document folder."
 msgstr ""
+"我們使用 `sphinx.ext.napoleon`_ （ `sphinx.ext.autodoc`_ ） 擴充從文件說明字串產生"
+"文件。所有的模組、類別、函數和腳本都應該有文件說明。所有的規則普遍適用於檔案文件。"
 
 #: ../../source/how_to_doc.rst:29
 msgid "Put ``lmp`` documents under ``doc/source/lmp``."
 msgstr ""
+"把 ``lmp`` 文件放入 ``doc/source/lmp`` 。"
 
 #: ../../source/how_to_doc.rst:30
 msgid "Put ``test`` documents under ``doc/source/test``."
 msgstr ""
+"把 ``test`` 文件放入 ``doc/source/test`` 。"
 
 #: ../../source/how_to_doc.rst:36
 msgid "Build Document"
 msgstr ""
+"建立文件"
 
 #: ../../source/how_to_doc.rst:38
 msgid ""
 "To build document, we use sphinx_ to generate document in HTML format. "
 "Run the following script::"
 msgstr ""
+"我們使用 sphinx_ 產生 HTML 格式的文件。"
+"運行下面的腳本：："
 
 #: ../../source/how_to_doc.rst:46
 msgid "Generate Document Coverage Report"
 msgstr ""
+"產生文件覆蓋回報"
 
 #: ../../source/how_to_doc.rst:48
 msgid "Run the following command in project root directory::"
 msgstr ""
-
+"在專案的根目錄運行下面的指令：："
