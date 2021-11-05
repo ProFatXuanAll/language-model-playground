@@ -82,7 +82,7 @@ msgstr ""
 #: ../../source/how_to_doc.rst:46
 msgid "Generate Document Coverage Report"
 msgstr ""
-"產生文件覆蓋回報"
+"產生文件覆蓋報告"
 
 #: ../../source/how_to_doc.rst:48
 msgid "Run the following command in project root directory::"
