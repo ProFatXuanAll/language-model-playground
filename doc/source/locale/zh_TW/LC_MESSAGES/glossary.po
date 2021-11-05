@@ -45,7 +45,7 @@ msgid ""
 msgstr ""
 "我們想要在訓練 :term:`語言模型` 的過程中，我們需要把訓練的結果 （模型參數）給存起來"
 "以幫助後續的模型驗證。我們不想要只存最後模型訓練的結果。為了存模型的數字 :term:`步` "
-"就是 ** 紀錄點數 ** 。所有的紀錄點都會被存到 :term:`實驗檔案路徑` 並且以 "
+"就是 **紀錄點數** 。所有的紀錄點都會被存到 :term:`實驗檔案路徑` 並且以 "
 "``model-\\d+.pt`` 命名。 ``\\d+`` 就是紀錄點數。"
 
 #: ../../source/glossary.rst:17
@@ -69,7 +69,7 @@ msgid ""
 "**character**, we get ``'abc'``; When we detokenize ``['a', 'b', 'c']`` "
 "base on **whitespace**, we get ``'a b c'``."
 msgstr ""
-"比如說，我們要基於字元而串起 ``['a', 'b', 'c']``，我們得到``'abc'``，而當我們"
+"比如說，我們要基於字元而串起 ``['a', 'b', 'c']``，我們得到 ``'abc'`` ，而當我們"
 "基於空白而串起 ``['a', 'b', 'c']``，我們得到 ``'a b c'``。"
 
 #: ../../source/glossary.rst:27
@@ -140,8 +140,8 @@ msgid ""
 "meaningless and thus language model should output low probability (or "
 "equivalently high :term:`perplexity`)."
 msgstr ""
-"舉例來說，\"how are you?\" 是日常所說的用語，所以在語言模型中應該得到很高的機率（ 很，"
-"低的 :term:`困惑度` ）反之，\"you are how?\" 是無意義的用語，在語言模型中要得到很低的機率"
+"舉例來說， "how are you?" 是日常所說的用語，所以在語言模型中應該得到很高的機率（ 很，"
+"低的 :term:`困惑度` ）反之， "you are how?" 是無意義的用語，在語言模型中要得到很低的機率"
 "（或是很低的 :term:`困惑度` 分數。"
 
 #: ../../source/glossary.rst:55
