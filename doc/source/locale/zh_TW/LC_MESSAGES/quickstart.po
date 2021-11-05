@@ -41,7 +41,7 @@ msgstr ""
 #: ../../source/quickstart.rst:11
 msgid "Environment Prerequest"
 msgstr ""
-"環境的先決條件。"
+"環境的先決條件"
 
 #: ../../source/quickstart.rst:12
 msgid "We only use python version ``3.8+``. You can install python with"
