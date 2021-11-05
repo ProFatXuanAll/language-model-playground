@@ -21,10 +21,12 @@ msgstr ""
 #: ../../source/experiment/index.rst:8
 msgid "Contents:"
 msgstr ""
+"內容："
 
 #: ../../source/experiment/index.rst:2
 msgid "Experiment Results"
 msgstr ""
+"實驗結果"
 
 #: ../../source/experiment/index.rst:4
 msgid ""
@@ -32,4 +34,5 @@ msgid ""
 "results must be reproducible, thus all arguments used in experiment must "
 "be speciftied."
 msgstr ""
+"所有的實驗結果都必須存入此檔案路徑。實驗必須有可重複性，因此所有用到的參數必須被指定。"
 
