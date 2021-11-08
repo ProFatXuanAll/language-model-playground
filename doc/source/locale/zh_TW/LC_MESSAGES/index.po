@@ -111,7 +111,7 @@ msgid ""
 " provided. (e.g. :py:class:`lmp.dset.WikiText2Dset`)"
 msgstr ""
 "使用 :py:mod:`lmp.script.sample_from_dataset` 來查看我們提供的資料集，如"
-":py:class:`lmp.dset.WikiText2Dset` 。"
+" :py:class:`lmp.dset.WikiText2Dset` 。"
 
 #: ../../source/index.rst:54
 msgid ""

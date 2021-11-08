@@ -21,7 +21,7 @@ msgstr ""
 #: ../../source/how_to_doc.rst:2
 msgid "How To Document Guide"
 msgstr ""
-"怎麽做文件指南"
+"文件製作指南"
 
 #: ../../source/how_to_doc.rst:6
 msgid "You need to install dev tools first by running"
