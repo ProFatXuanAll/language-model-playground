@@ -32,7 +32,7 @@ msgid ""
 ":term:`neural network` based :term:`language models`\". We use Pytorch_ "
 "to implement :term:`language models`."
 msgstr "" 
-"語言模型範例是一個教材關於怎麼建立 :term:`神經網路` 的 :term:`語言模型` 。我們使用 PyTorch "
+"語言模型範例是一個教材關於怎麼建立 :term:`神經網路` 的 :term:`語言模型` 。我們使用 PyTorch_ "
 "來建立 :term:`語言模型` "
 
 #: ../../source/index.rst:15
@@ -118,7 +118,7 @@ msgid ""
 "Use :py:mod:`lmp.script.train_tokenizer` to train :term:`tokenizers`. "
 "(e.g. :py:class:`lmp.tknzr.WsTknzr`)"
 msgstr ""
-"使用 :py:mod:`lmp.script.train_tokenizer` 來訓練 :term:`tokenizers` 。"
+"使用 :py:mod:`lmp.script.train_tokenizer` 來訓練 :term:`斷詞器` 。"
 "如 :py:class:`lmp.tknzr.WsTknzr` 。"
 
 #: ../../source/index.rst:56
@@ -126,7 +126,7 @@ msgid ""
 "Use :py:mod:`lmp.script.tokenize` to :term:`tokenize` text with pre-"
 "trained :term:`tokenizers`."
 msgstr ""
-"使用預訓練的 :term:`斷詞器` :py:mod:`lmp.script.tokenize` 來對文章對詞。"
+"使用預訓練的 :term:`斷詞器` :py:mod:`lmp.script.tokenize` 來對文章 :term:`斷詞` 。"
 
 #: ../../source/index.rst:58
 msgid "Use :py:mod:`lmp.script.train_model` to train :term:`language models`."
@@ -139,8 +139,8 @@ msgid ""
 ":term:`perplexity` on given sample with pre-trained :term:`language "
 "model` checkpoint."
 msgstr ""
-"使用 :py:mod:`lmp.script.evaluate_model_on_sample` 來計算預訓練中檢查點的"
-":term:`語言模型` 困惑度。"
+"使用 :py:mod:`lmp.script.evaluate_model_on_sample` 從預訓練"
+"中紀錄點的 :term:`語言模型` 來計算樣本中的 :term:`困惑度`  。" 
 
 #: ../../source/index.rst:62
 msgid ""
@@ -148,22 +148,22 @@ msgid ""
 ":term:`perplexity` on dataset with range of pre-trained :term:`language "
 "model` :term:`checkpoints`."
 msgstr ""
-"使用 :py:mod:`lmp.script.evaluate_model_on_dataset` 來計算預訓練中範圍內的檢查點的"
-":term:`語言模型` 困惑度。"
+"使用 :py:mod:`lmp.script.evaluate_model_on_dataset` 從預訓練中範圍內 :term:`紀錄點` 的"
+" :term:`語言模型` 來計算資料集中的 :term:`困惑度` 。"
 
 #: ../../source/index.rst:65
 msgid ""
 "Use :py:mod:`lmp.script.generate_text` to generate text with pre-trained "
 ":term:`language model` :term:`checkpoint`."
 msgstr ""
-"使用 :py:mod:`lmp.script.generate_text` 和預訓練 :term:`語言模型` 的:term:`檢查點` 來產生文字。"
+"使用 :py:mod:`lmp.script.generate_text` 和預訓練 :term:`語言模型` 的 :term:`紀錄點` 來產生文字。"
 
 #: ../../source/index.rst:69
 msgid ""
 "Get started with :doc:`Quick start <quickstart>` or jump directly to "
 "contents you are interesting in!"
 msgstr ""
-"從 :doc:`Quick start <quickstart>` 或是直貼跳到你有興趣的內容。"
+"從 :doc:`快速上手 <quickstart>` 或是直貼跳到你有興趣的內容。"
 
 #: ../../source/index.rst:85
 msgid "Indices and tables"

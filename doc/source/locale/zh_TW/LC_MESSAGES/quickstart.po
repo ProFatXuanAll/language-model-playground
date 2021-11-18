@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Language Model Playground 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-13 16:38+0800\n"
+"POT-Creation-Date: 2021-11-16 19:12+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,66 +20,59 @@ msgstr ""
 
 #: ../../source/quickstart.rst:2
 msgid "Quick Start"
-msgstr ""
-"快速上手"
+msgstr "快速上手"
 
 #: ../../source/quickstart.rst:4
 msgid "We provide installation instructions only for Ubuntu ``18.04+`` (for now)."
-msgstr ""
-"我們只提供安裝指令給 Ubuntu ``18.04+`` （現在）。"
+msgstr "我們只提供安裝指令給 Ubuntu ``18.04+`` （現在）。"
 
 #: ../../source/quickstart.rst:6
 msgid "Todo"
-msgstr ""
-"未來計畫"
+msgstr "未來計畫"
 
 #: ../../source/quickstart.rst:8
 msgid "Run test on Mac and Windows."
-msgstr ""
-"在 Mac 和 Windows 上跑測試。"
+msgstr "在 Mac 和 Windows 上跑測試。"
 
 #: ../../source/quickstart.rst:11
 msgid "Environment Prerequest"
-msgstr ""
-"環境的先決條件"
+msgstr "環境設置的先決條件"
 
 #: ../../source/quickstart.rst:12
 msgid "We only use python version ``3.8+``. You can install python with"
-msgstr ""
-"我們只使用 python ``3.8+`` 版本。可以使用以下指令來安裝"
+msgstr "我們只使用 python ``3.8+`` 版本。可以使用以下指令來安裝"
 
 #: ../../source/quickstart.rst:19
 msgid ""
 "We use PyTorch_ and thus use ``CUDA`` version: ``10.0+``. This only work "
 "if you have **Nvidia** GPUs. You can install ``CUDA`` library with"
-msgstr ""
-"我們使用 PyTorch_ 和 ``CUDA`` 版本 ``10.0+``。"
+msgstr "我們使用 PyTorch_ 和 ``CUDA`` 版本 ``10.0+``。"
 
 #: ../../source/quickstart.rst:27
 msgid "We use ``pipenv`` to install dependencies. You can install ``pipenv`` with"
-msgstr ""
+msgstr "我們使用 ``pipenv`` 來安裝套件。我們可以用下列指令安裝 ``pipenv``"
 
 #: ../../source/quickstart.rst:37
 msgid "Installation"
-msgstr ""
+msgstr "安裝"
 
 #: ../../source/quickstart.rst:39
 msgid "Clone the project from GitHub."
-msgstr ""
+msgstr "從 GitHub 複製專案"
 
 #: ../../source/quickstart.rst:45
 msgid "Change current directory to ``language-model-playground``."
-msgstr ""
+msgstr "改變現在的檔案路徑到 ``language-model-playground`` 。"
 
 #: ../../source/quickstart.rst:51
 msgid ""
 "Install dependencies. We use ``pipenv`` to create virtual environment and"
 " install dependencies in virtual environment."
-msgstr ""
+msgstr "安裝環境。 我們使用 ``pipenv`` 來開啟虛擬環境，並安裝套件在虛擬環境中。"
 
 #: ../../source/quickstart.rst:59
 msgid "Start the virtual environment created by ``pipenv``."
-msgstr ""
+msgstr "使用 ``pipenv`` 來開啟虛擬環境。"
 
 #: ../../source/quickstart.rst:65
 msgid ""
@@ -87,14 +80,16 @@ msgid ""
 "can take a look on chinese poem dataset by running "
 ":py:mod:`lmp.script.sample_from_dataset`"
 msgstr ""
+"現在我們可以從 :py:mod:`lmp.script` 中跑任一個腳本！舉例來說，我們可以運行指令 "
+":py:mod:`lmp.script.sample_from_dataset` 來查看中文詩詞資料集。"
 
 #: ../../source/quickstart.rst:74
 msgid "Training Pipline"
-msgstr ""
+msgstr "管線化訓練"
 
 #: ../../source/quickstart.rst:76
 msgid "We now demonstrate a basic :term:`language model` training pipline."
-msgstr ""
+msgstr "我們現在演練一次基礎的管線化訓練 :term:`語言模型` 。"
 
 #: ../../source/quickstart.rst:80
 msgid ""
@@ -103,18 +98,20 @@ msgid ""
 "All CLI codes should be able to fit-in one line, but this would make your"
 " code unreadable and should be considered as a bad choice."
 msgstr ""
+"在這次教學中，你可能會看過很多次 ``\\\\`` 。 ``\\\\`` "
+"只用在終端機界面的程式碼，為了避免單一行過長。所有的終端機界面的程式碼應該都可以是一行解決，但這會讓程式碼變得難以閱讀，所以應極力避免。"
 
 #: ../../source/quickstart.rst:87
 msgid "1. Choose a Dataset"
-msgstr ""
+msgstr "1. 選擇一個資料集"
 
 #: ../../source/quickstart.rst:88
 msgid "Choose a dataset to train."
-msgstr ""
+msgstr "選擇一個資料集來訓練。"
 
 #: ../../source/quickstart.rst:90
 msgid "In this example we use :py:class:`lmp.dset.WikiText2Dset` as our dataset."
-msgstr ""
+msgstr "在這次的範例中，我們使用 :py:class:`lmp.dset.WikiText2Dset` 來當作我們的資料集。"
 
 #: ../../source/quickstart.rst:94
 msgid ":py:mod:`lmp.dset`"
@@ -122,29 +119,31 @@ msgstr ""
 
 #: ../../source/quickstart.rst:95
 msgid "All available dataset."
-msgstr ""
+msgstr "所有可用的資料集"
 
 #: ../../source/quickstart.rst:98
 msgid "2. Choose a Tokenizer"
-msgstr ""
+msgstr "2. 選擇一個斷詞器"
 
 #: ../../source/quickstart.rst:100
 msgid ""
 "Choose a :term:`tokenizer` and train :term:`tokenizer` on dataset we "
 "already choose."
-msgstr ""
+msgstr "選擇一個 :term:`斷詞器` 和選擇我們已經選好的資料集來訓練 :term:`斷詞器` 。"
 
 #: ../../source/quickstart.rst:103
 msgid ""
 "In this example we use :py:class:`lmp.tknzr.WsTknzr` since all samples in"
 " :py:class:`lmp.dset.WikiText2Dset` are whitespace separated."
 msgstr ""
+"在這個範例中，我們使用 :py:class:`lmp.tknzr.WsTknzr` ，因為所有從 "
+":py:class:`lmp.dset.WikiText2Dset` 取樣都是以空白來區分。"
 
 #: ../../source/quickstart.rst:106
 msgid ""
 "We use :py:mod:`lmp.script.train_tokenizer` to train :term:`tokenizer` "
 "given following arguments:"
-msgstr ""
+msgstr "我們輸入一下參數，並使用 :py:mod:`lmp.script.train_tokenizer` 來訓練 :term:`斷詞器` 。"
 
 #: ../../source/quickstart.rst:119
 msgid ""
@@ -155,6 +154,10 @@ msgid ""
 "be trained on training version of Wikitext-2, and we simply treat "
 ":term:`OOV` in both validation and test versions as unknown words."
 msgstr ""
+"我們使用 ``whitespace`` 來指定 :py:class:`lmp.tknzr.WsTknzr` 當作我們的 :term:`斷詞器` "
+"，並輸入 ``--dset_name wikitext-2`` ，利用 Wikitext-2 資料集訓練我們的 :term:`斷詞器` 。輸入 "
+"``--ver train`` ，因為我們 :term:`語言模型` 會在訓練版本的 Wikitext-2上做訓練，在驗證和測試版本中，我們把 "
+":term:`不在字彙裡的詞` 當作未知的詞。"
 
 #: ../../source/quickstart.rst:126
 msgid ""
@@ -168,12 +171,17 @@ msgid ""
 "into lowercase, this also help to reducing :term:`vocabulary` size. (for "
 "example, ``You`` and ``you`` are now treated as same words)"
 msgstr ""
+"我們使用 ``--max_vocab -1`` 把所有 Wikitext-2 的 :term:`斷詞` 放進字彙裡。結果就是 :term:`字彙`"
+" 裡有大約 ``30000`` 個詞，這有點太多。因此我們使用 ``--min_count 10`` 來過濾所有出現次數少於 ``10`` 的 "
+":term:`斷詞` 。在這裡我們假設所有次數少於 ``10`` 的 :term:`斷詞` "
+"都是錯別字、存有物、數字或是我們覺得是沒有用的東西。我們也使用 ``--is_uncased`` 來把所有大寫轉換成小寫，這幫助我們減少 "
+":term:`字彙` 的大小。（舉例來說， ``You`` 和 ``you`` 被視為相同的詞）"
 
 #: ../../source/quickstart.rst:138
 msgid ""
 "All arguments we used are just a mather of choice for pre-processing. You"
 " can change them to any values you want."
-msgstr ""
+msgstr "所有我們使用的參數都只是其中一種前處理。如果想要的話，你可以改變任何一個數值。"
 
 #: ../../source/quickstart.rst:143
 msgid ":py:mod:`lmp.tknzr`"
@@ -181,38 +189,39 @@ msgstr ""
 
 #: ../../source/quickstart.rst:144
 msgid "All available :term:`tokenizers`."
-msgstr ""
+msgstr "所有可使用的 :term:`斷詞器` 。"
 
 #: ../../source/quickstart.rst:147
 msgid "3. Evaluate Tokenizer"
-msgstr ""
+msgstr "3. 衡量斷詞器"
 
 #: ../../source/quickstart.rst:149
 msgid ""
 "After training :term:`tokenizer`, you can now use your pre-trained "
 ":term:`tokenizer` to :term:`tokenize` arbitrary text."
-msgstr ""
+msgstr "在做完 :term:`斷詞器` 的訓練後，我們可以使用這個預訓練好的 :term:`斷詞器` 來對任一文章做 :term:`斷詞` 。"
 
 #: ../../source/quickstart.rst:152
 msgid ""
 "For example, you can try to :term:`tokenize` ``hello world`` with script "
 ":py:mod:`lmp.script.tokenize`:"
 msgstr ""
+"舉例來說，我們可以試著運行腳本 :py:mod:`lmp.script.tokenize` 來對 ``hello world`` 做 "
+":term:`斷詞` 。"
 
 #: ../../source/quickstart.rst:161
 msgid "You should see something like ``['hello', 'world']``."
-msgstr ""
+msgstr "我們應該會看到 ``['hello', 'world']`` 。"
 
 #: ../../source/quickstart.rst:164
 msgid "4. Choose a Language Model"
-msgstr ""
+msgstr "4. 選擇一個語言模型"
 
 #: ../../source/quickstart.rst:165
 msgid ""
 "Now we can train our :term:`language model` with the help of pre-trained "
 ":term:`tokenizer`."
-msgstr ""
-":term:`分詞器`"
+msgstr "現在我們可以藉由預訓練的 :term:`斷詞器` 來訓練 :term:`語言模型` 。"
 
 #: ../../source/quickstart.rst:168
 msgid ""
@@ -220,6 +229,8 @@ msgid ""
 "We use :py:mod:`lmp.script.train_model` to train :term:`language model` "
 "as follow:"
 msgstr ""
+"在這個範例中，我們使用 :py:mod:`lmp.model.LSTM` 來當作我們的訓練目標。我們使用 "
+":py:mod:`lmp.script.train_model` 來訓練 :term:`語言模型` ，大致上如下："
 
 #: ../../source/quickstart.rst:198
 msgid ""
@@ -230,6 +241,11 @@ msgid ""
 "arguments. We use ``--ver train`` to specify we want to use training "
 "version of Wikitext-2 which is also used to train our :term:`tokenizer`."
 msgstr ""
+":py:mod:`lmp.script.train_model` 和 :py:mod:`lmp.script.train_tokenizer` "
+"有相似的結構；我們使用 ``LSTM`` 來指定 :py:class:`lmp.model.LSTMModel` ，當我們想要的 "
+":term:`語言模型` ，並且輸入參數 ``--dset_name wikitext-2`` ，來在 Wikitext-2 "
+"資料集上做訓練。我們輸入 ``--ver train`` 來指定我們想要在 Wikitext-2 上訓練的版本，這也是我們在 "
+":term:`斷詞器`。上訓練的版本。"
 
 #: ../../source/quickstart.rst:206
 msgid ""
@@ -244,6 +260,10 @@ msgid ""
 "batches training order and hundreds of thousands of different mini-"
 "batches."
 msgstr ""
+"我們會在 Wikitext-2 資料集上做 ``10`` **期** 訓練，也就是說，我們會在同一個資料集重複訓練 ``10`` 次。（指定 "
+"``--n_epoch 10``）每次我們訓練，都是取樣 Wikitext-2 其中  ``32`` 筆並合併成一組然後一併輸入進模型。（指定 "
+"``--batch_size 32``）。我們稱一組為**小批次**。所有組都是從每一期中取樣，並且重新排列順序。因此如果我們訓練 ``10`` "
+"期我們可能會有 ``10`` 個不同順序的 **小批次** 和成千上萬個不同的 **小批次**。"
 
 #: ../../source/quickstart.rst:218
 msgid ""
@@ -253,6 +273,8 @@ msgid ""
 ":term:`tokenizer`, you can go back to previous step to see how you can "
 "obtain a pre-trained :term:`tokenizer`."
 msgstr ""
+"預訓練的 :term:`斷詞器` 會預處理所有來自小批次的取樣（使用 ``--tknzr_exp_name my_tknzr_exp`` "
+"指定），然後輸入進模型。如果你需要不同的 :term:`斷詞器`，你可以從前一步驟中看到得到預訓練的 :term:`斷詞器` 。"
 
 #: ../../source/quickstart.rst:224
 msgid ""
@@ -265,6 +287,10 @@ msgid ""
 "with name ``model-\\d+.pt``, where ``\\d+`` means digits. (For example we"
 " might save at :term:`checkpoint` ``5000`` as ``model-5000.pt``.)"
 msgstr ""
+"我們會以壓縮的 pickle 檔儲存訓練好的模型。如果我們指定 ``ckpt_step`` 的參數為 ``1000``，我們每 ``1000`` "
+"個更新就會儲存一次。我們儲存模型的參數，稱為 :term:`紀錄點` 。接著我們會重新利用這些參數來做更多事，比如計算 :term:`困惑度` "
+"和文字生成。我們將這些檔案命名成 ``model-\\d+.pt`` ， ``\\d+`` 是數字的意思。（舉例來說，我們的 "
+":term:`紀錄點` 是 ``5000``，則我們就會命名為 ``model-5000.pt``。）"
 
 #: ../../source/quickstart.rst:235
 msgid ""
@@ -273,24 +299,26 @@ msgid ""
 "in ``--log_step``). You can see performance logs on your CLI, or you can "
 "use browser to see your performance logs by the following script:"
 msgstr ""
+"另外，我們也紀錄模型的表現。如 **損失函數** 的輸出。紀錄日誌每 ``200`` 個更新會儲存一次（指定 "
+"``--log_step``）。我們可以透過終端機界面觀察模型表現日誌，或者是透過運行以下腳本開啟瀏覽器來看模型表現日誌："
 
 #: ../../source/quickstart.rst:245
 msgid ""
 "After launch the command, you should open your **browser** and type "
 "http://localhost:6006/ to see your performance logs."
-msgstr ""
+msgstr "運行我們的指令後，我們打開 **瀏覽器** 後並輸入 http://localhost:6006/ 來看模型表現日誌。"
 
 #: ../../source/quickstart.rst:248
 msgid "For the rest arguments, we split them into two categories:"
-msgstr ""
+msgstr "我們把剩下的參數分成兩個大類："
 
 #: ../../source/quickstart.rst:250
 msgid ":term:`Optimization` hyperparameters."
-msgstr ""
+msgstr ":term:`最佳化` 超參數。"
 
 #: ../../source/quickstart.rst:251
 msgid "**Model architecture** hyperparameters."
-msgstr ""
+msgstr "**模型架構** 超參數。"
 
 #: ../../source/quickstart.rst:253
 msgid ""
@@ -304,15 +332,23 @@ msgid ""
 "including ``--beta1``, ``--beta2``, ``--eps``, ``--lr`` and ``--wd`` are "
 "directly passed to :py:class:`torch.optim.Adam`."
 msgstr ""
+"對於 :term:`最佳化` ，我們只提供 :py:class:`torch.optim.Adam` 這一種 :term:`最佳化` 的方法。我們使用 "
+":py:class:`torch.optim.Adam` 來對 :term:`語言模型` 做 :term:`梯度下降法` "
+"。我們 :term:`最佳化` 的目標是最小化負對數概似函數或是單純的交叉熵。（也就是說最大化對數概似函數或概似。）可以看 "
+":py:class:`torch.nn.CrossEntropyLoss` 來了解損失函數。 "
+":py:class:`torch.optim.Adam` 可以直接傳遞 ``--beta1`` 、 ``--beta2`` 、``--eps``、"
+" ``--lr`` 和 ``--wd`` 等參數。"
 
 #: ../../source/quickstart.rst:264
 msgid ""
-"For **model architecture**, you can simply checkt the model's constructor"
-" to see what parameters the model needed. Or you can use ``python -m "
+"For **model architecture**, you can simply check the model's constructor "
+"to see what parameters the model needed. Or you can use ``python -m "
 "lmp.script.train_model model_name -h`` to see parameters on CLI. For the "
 "meaning of those model architecture hyperparameters, we recommend you to "
 "see their documents for more details."
 msgstr ""
+"對於 **模型架構** ， 可以簡單的從模型的建構子知道模型需要哪些參數。或是運行指令 ``python -m "
+"lmp.script.train_model model_name -h`` 來查看需要的參數。我們建議查看文件來知道模型超參數的意義等細節。"
 
 #: ../../source/quickstart.rst:271
 msgid ""
@@ -320,6 +356,8 @@ msgid ""
 "mather of choice for training. You can change them to any values you "
 "want."
 msgstr ""
+"就如同我們在訓練 :term:`斷詞器` ，所有的我們選擇的參數都只是一種選擇。"
+"你可以改成你想要的值。"
 
 #: ../../source/quickstart.rst:277
 msgid ":py:mod:`lmp.model`"
@@ -328,16 +366,19 @@ msgstr ""
 #: ../../source/quickstart.rst:278
 msgid "All available :term:`language models`."
 msgstr ""
+"所有可使用的 :term:`語言模型` 。"
 
 #: ../../source/quickstart.rst:281
 msgid "5. Evaluate Language Model"
 msgstr ""
+"5. 評估語言模型"
 
 #: ../../source/quickstart.rst:282
 msgid ""
 "Its time to check whether our :term:`language model` is successfully "
 "trained!"
 msgstr ""
+"是時候來檢查 :term:`語言模型` 有沒有訓練成功了。"
 
 #: ../../source/quickstart.rst:284
 msgid ""
@@ -345,6 +386,8 @@ msgid ""
 "**testing**. But before that we should check whether our model is "
 "**underfitting**."
 msgstr ""
+"在這個範例中，我們使用 Wikitext-2 資料集來示範 **驗證** 和 **測試** 。在此之前，"
+"我們應該先確認我們的模型有沒有 **乏適** 。"
 
 #: ../../source/quickstart.rst:296
 msgid ""
@@ -355,12 +398,16 @@ msgid ""
 "as our evaluation metric. See :py:meth:`lmp.model.BaseModel.ppl` for "
 ":term:`perplexity` details."
 msgstr ""
+"我們使用 **訓練** 版本的 WikiText-2 資料集（指定於 ``--ver train``） 來確認模型表現。"
+"上述的腳本會驗證所有的 :term:`紀錄點` ，從第 `0` 個 :term:`紀錄點` 到最後一個 :term:`紀錄點` 。"
+"我們使用 :term:`困惑度` 作為評估指標。 更多 :term:`困惑度` 的細節可以參考 :py:meth:`lmp.model.BaseModel.ppl` 。"
 
 #: ../../source/quickstart.rst:303
 msgid ""
 "Again you can use browser to see your evaluation logs by the following "
 "script:"
 msgstr ""
+"又一次的，你可以使用以下的腳本來瀏覽訓練評估的紀錄。"
 
 #: ../../source/quickstart.rst:309
 msgid ""
@@ -368,6 +415,8 @@ msgid ""
 "http://localhost:6006/ to see your evaluation logs. We will not write "
 "this script again later on."
 msgstr ""
+"在運行完指令後，你可以打開你自己的 **瀏覽器** 然後輸入 http://localhost:6006/ 來"
+" 瀏覽訓練評估紀錄。以後我們不會再修改這個腳本。"
 
 #: ../../source/quickstart.rst:313
 msgid ""
@@ -376,6 +425,8 @@ msgid ""
 " model`. Try using different batch size, number of epochs, and all sorts "
 "of hyperparameters combination."
 msgstr ""
+"如果你沒有看到 :term:`困惑度` 沒有持續下降，這代表你的模型 **乏適**。"
+"你應該重新訓練你的 :term:`語言模型` 。試著使用不同批量、數量期和所有超參數的組合。"
 
 #: ../../source/quickstart.rst:319
 msgid ""
@@ -385,16 +436,22 @@ msgid ""
 "not have papers to reference). But overall, lower than ``100`` might be a"
 " good indicator for a well-trained :term:`language model`."
 msgstr ""
+"如果你有看到 :term:`困惑度` 有持續下降，那很棒！但 :term:`困惑度` 應該要到多低呢？"
+"我們建議去看資料集對應到的論文（有些資料集可能沒有被其他論文做過）。總之，小於 ```100``` "
+"應該是一個好的指標表示訓練良好的 :term:`語言模型` 。"
 
 #: ../../source/quickstart.rst:326
 msgid "We should now check whether our model is **overfitting**."
 msgstr ""
+"你現在應該要檢查模型是否有 **過度擬合** 。"
 
 #: ../../source/quickstart.rst:336
 msgid ""
 "We use **validation** version of WikiText-2 dataset (as specified in "
 "``--ver valid``) to check our performance."
 msgstr ""
+"我們使用 **驗證** 版本的 WikiText-2 資料集（使用 ``--ver valid`` 指定）"
+"來確認我們模型的表現。"
 
 #: ../../source/quickstart.rst:339
 msgid ""
@@ -407,10 +464,15 @@ msgid ""
 "this case). To further verify our hypothesis, we should now use **test** "
 "version of WikiText-2 dataset to check our performance."
 msgstr ""
+"如果模型在驗證資料的 :term:`困惑度` 表現不是特別好，我們應該重新訓練我們的模型，"
+"並且重新驗證一次，再重新訓練一次，以此下去。這個循環會一直持續到在訓練和驗證資料集"
+"都得到良好的 :term:`困惑度` 。這意謂著我們有一個 :term:`語言模型` 可以在沒有訓練過得情況下"
+"（此處就是我們的驗證資料集）產生一定質量的文字。為了驗證我們的假設，我們應該使用 **測試** 版本的"
+"WikiText-2 資料集來驗證我們模型的表現。"
 
 #: ../../source/quickstart.rst:358
 msgid "6. Generate Text"
-msgstr ""
+msgstr "6. 產生文字"
 
 #: ../../source/quickstart.rst:359
 msgid ""
@@ -418,6 +480,8 @@ msgid ""
 "text. In this example we use :py:mod:`lmp.script.generate_text` to "
 "generate text:"
 msgstr ""
+"最終，我們可以用訓練好的 :term:`語言模型` 來產生文字。在這個範例中，我們可以使用 "
+":py:mod:`lmp.script.generate_text` 來產生文字："
 
 #: ../../source/quickstart.rst:369
 msgid ""
@@ -426,6 +490,8 @@ msgid ""
 "use ``\"We are\"`` as condition text and generate text to complete the "
 "sentence or paragraph."
 msgstr ""
+"我們可以使用 ``top-1`` 來指定 :py:class:`lmp.infer.Top1Infer` 為我們要的推測方法來產生文字。"
+"我們使用 ``\"We are\"`` 來當作初始文字並產生文字以完成接下來的句子和段落。"
 
 #: ../../source/quickstart.rst:374
 msgid ""
@@ -435,6 +501,9 @@ msgid ""
 "will cause error. Also if the models paired :term:`tokenizer` does not "
 "exist then it will cause error as well."
 msgstr ""
+"我們可以指定 ``--ckpt 5000`` 來使用不同的 :term:`紀錄點` 。所有可使用的 :term:`紀錄點` "
+"都在 :term:`實驗檔案路徑` ``exp/my_model_exp`` 。如果 :term:`紀錄點` 不存在，則發生錯誤。"
+"另外，如果與模型相對的 :term:`斷詞器` 不存在的話，錯誤一樣也會發生。"
 
 #: ../../source/quickstart.rst:384
 msgid ":py:mod:`lmp.infer`"
@@ -442,11 +511,12 @@ msgstr ""
 
 #: ../../source/quickstart.rst:385
 msgid "All available inference methods."
-msgstr ""
+msgstr "所有可使用的推測方法"
 
 #: ../../source/quickstart.rst:388
 msgid "7. Record Experiment Results"
 msgstr ""
+"7. 紀錄實驗結果"
 
 #: ../../source/quickstart.rst:389
 msgid ""
@@ -454,42 +524,45 @@ msgid ""
 "experiments performed by others. See :doc:`Experiment Results "
 "<experiment/index>` for others' experiment and record yours!"
 msgstr ""
+"現在，你已經完成了實驗，你可以紀錄它們並和其他人的實驗結果進行比較。"
+"看 :doc:`Experiment Results <experiment/index>` 來看別人的結果並紀錄"
+"你自己的吧！"
 
 #: ../../source/quickstart.rst:395
 msgid "Documents"
-msgstr ""
+msgstr "文件"
 
 #: ../../source/quickstart.rst:397
 msgid ""
 "You can read documents on `this website`_ or use the following steps to "
 "build documents locally. We use Sphinx_ to build our documents."
-msgstr ""
+msgstr "你可以先在 `這個網站`_ 先閱讀文件或是使用以下的步驟建立本地端的文件。我們使用Sphinx_ 建立文件。"
 
-#: ../../source/quickstart.rst:405
+#: ../../source/quickstart.rst:408
 msgid "Install documentation dependencies."
-msgstr ""
+msgstr "安裝文件相關套件"
 
-#: ../../source/quickstart.rst:411
+#: ../../source/quickstart.rst:414
 msgid "Compile documents."
-msgstr ""
+msgstr "編譯文件"
 
-#: ../../source/quickstart.rst:417
+#: ../../source/quickstart.rst:420
 msgid "Open in the browser."
-msgstr ""
+msgstr "在瀏覽器上打開"
 
-#: ../../source/quickstart.rst:425
+#: ../../source/quickstart.rst:428
 msgid "Testing"
-msgstr ""
+msgstr "測試"
 
-#: ../../source/quickstart.rst:426
+#: ../../source/quickstart.rst:429
 msgid "Install testing dependencies."
-msgstr ""
+msgstr "安裝測試環境套件"
 
-#: ../../source/quickstart.rst:432
+#: ../../source/quickstart.rst:435
 msgid "Run test."
-msgstr ""
+msgstr "運行測試程式"
 
-#: ../../source/quickstart.rst:438
+#: ../../source/quickstart.rst:441
 msgid "Get test coverage report."
-msgstr ""
+msgstr "得到測試覆蓋率報告"
 

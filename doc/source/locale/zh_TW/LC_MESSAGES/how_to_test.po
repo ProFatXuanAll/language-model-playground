@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Language Model Playground 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-21 16:35+0800\n"
+"POT-Creation-Date: 2021-11-16 19:12+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -54,6 +54,6 @@ msgstr "待做"
 
 #: ../../source/how_to_test.rst:38
 #, fuzzy
-msgid "Add more test writing guide line."
+msgid "Add more test writing guideline."
 msgstr "加入更多程式準則。"
 
