@@ -312,7 +312,7 @@ msgid ""
 "want to calculate the probability of text :math:`x` is comming from human"
 " language:"
 msgstr ""
-"困惑度，可以用來評估 :term:`語言模型`。給定一段文字， :math:`x` 由 :math:`n` 個詞所組成，"
+"困惑度，可以用來評估 :term:`語言模型` 。給定一段文字， :math:`x` 由 :math:`n` 個詞所組成，"
 ":math:`x_1, x_2, \\dots, x_n` ，我們要計算文字 :math:`x` 是由人來所產生出來的機率。"
 
 #: ../../source/glossary.rst:139
@@ -414,7 +414,7 @@ msgid ""
 "that the :term:`vocabulary` only consist of **unique** token and id "
 "pairs."
 msgstr ""
-"因為我們無法直接對 :term:`token` （一段文字）做計算，我們會給每個詞一個編號來做更多計算。"
+"因為我們無法直接對 :term:`詞` （一段文字）做計算，我們會給每個詞一個編號來做更多計算。"
 "有時我們需要一個機制來轉換詞編號回一般的文字，在這種情況我們假設 :term:`字彙` 中詞和詞編號是"
 "一一對應。"
 

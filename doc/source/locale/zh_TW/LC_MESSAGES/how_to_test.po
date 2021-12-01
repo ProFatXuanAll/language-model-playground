@@ -53,7 +53,6 @@ msgid "Todo"
 msgstr "待做"
 
 #: ../../source/how_to_test.rst:38
-#, fuzzy
 msgid "Add more test writing guideline."
 msgstr "加入更多程式準則。"
 

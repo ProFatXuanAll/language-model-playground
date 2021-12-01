@@ -58,7 +58,7 @@ msgstr "安裝"
 
 #: ../../source/quickstart.rst:39
 msgid "Clone the project from GitHub."
-msgstr "從 GitHub 複製專案"
+msgstr "從 GitHub 複製專案。"
 
 #: ../../source/quickstart.rst:45
 msgid "Change current directory to ``language-model-playground``."
@@ -437,7 +437,7 @@ msgid ""
 " good indicator for a well-trained :term:`language model`."
 msgstr ""
 "如果你有看到 :term:`困惑度` 有持續下降，那很棒！但 :term:`困惑度` 應該要到多低呢？"
-"我們建議去看資料集對應到的論文（有些資料集可能沒有被其他論文做過）。總之，小於 ```100``` "
+"我們建議去看資料集對應到的論文（有些資料集可能沒有被其他論文做過）。總之，小於 ``100`` "
 "應該是一個好的指標表示訓練良好的 :term:`語言模型` 。"
 
 #: ../../source/quickstart.rst:326
