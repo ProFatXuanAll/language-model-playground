@@ -204,7 +204,7 @@ Glossary
     vocabulary
         When processing text, one have to choose how many :term:`tokens` need
         to be analyzed since we have limited memory size. Those chosen tokens
-        are referred as **known tokens**, and are collectivly called
+        are referred as **known tokens**, and are collectively called
         **vocabulary**. For the rest of the tokens (there are a lot of such
         tokens out there) not in the vocabulary are thus called
         :term:`out-of-vocabulary` tokens.

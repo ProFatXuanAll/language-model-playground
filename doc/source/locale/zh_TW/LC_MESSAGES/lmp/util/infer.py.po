@@ -1,0 +1,77 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, ProFatXuanAll
+# This file is distributed under the same license as the Language Model
+# Playground package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Language Model Playground 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-13 16:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/lmp/util/infer.py.rst:2
+msgid ":py:mod:`lmp.util.infer`"
+msgstr ""
+
+#: lmp.util.infer:1 of
+msgid "Inference method utilities."
+msgstr ""
+
+#: lmp.util.infer.create:1 of
+msgid "Create inference method instance."
+msgstr ""
+
+#: lmp.util.infer.create:3 of
+msgid ""
+"Create inference method instance based on ``infer_name``. All keyword "
+"arguments are collected in ``**kwargs`` and are passed directly to "
+"inference method's ``__init__`` method."
+msgstr ""
+
+#: lmp.util.infer.create of
+msgid "Parameters"
+msgstr ""
+
+#: lmp.util.infer.create:7 of
+msgid "Name of the inference method to create."
+msgstr ""
+
+#: lmp.util.infer.create:9 of
+msgid ""
+"Inference method specific parameters. All inference method specific "
+"parameters must be passed in as keyword arguments."
+msgstr ""
+
+#: lmp.util.infer.create of
+msgid "Returns"
+msgstr ""
+
+#: lmp.util.infer.create:14 of
+msgid "Inference method instance."
+msgstr ""
+
+#: lmp.util.infer.create of
+msgid "Return type"
+msgstr ""
+
+#: lmp.util.infer.create:19 of
+msgid ":obj:`lmp.infer`"
+msgstr ""
+
+#: lmp.util.infer.create:20 of
+msgid "All available inference methods."
+msgstr ""
+
+#: lmp.util.infer.create:23 of
+msgid "Examples"
+msgstr ""
+

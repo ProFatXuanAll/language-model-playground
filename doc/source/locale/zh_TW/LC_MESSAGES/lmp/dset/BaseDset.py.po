@@ -1,0 +1,173 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, ProFatXuanAll
+# This file is distributed under the same license as the Language Model
+# Playground package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Language Model Playground 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-13 16:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/lmp/dset/BaseDset.py.rst:2
+msgid ":py:class:`lmp.dset.BaseDset`"
+msgstr ""
+
+#: lmp.dset._base.BaseDset:1 of
+msgid "Dataset base class."
+msgstr ""
+
+#: lmp.dset._base.BaseDset:3 of
+msgid ""
+"All dataset files are hosted on `demo-dataset`_ repository. If any "
+"dataset files is not on your local machine, then "
+":py:class:`lmp.dset.BaseDset` will automatically download dataset files "
+"from `demo-dataset`_ repository. Once dataset files are downloaded, they "
+"will not be downloaded again."
+msgstr ""
+
+#: lmp.dset._base.BaseDset lmp.dset._base.BaseDset.__getitem__ of
+msgid "Parameters"
+msgstr ""
+
+#: lmp.dset._base.BaseDset:11 of
+msgid ""
+"Version of the dataset. If ``ver is None``, then use default version "
+"``self.__class__.df_ver`` of the dataset."
+msgstr ""
+
+#: lmp.dset._base.BaseDset:18 of
+msgid "Default version of the dataset."
+msgstr ""
+
+#: lmp.dset._base.BaseDset of
+msgid "type"
+msgstr ""
+
+#: lmp.dset._base.BaseDset:20 lmp.dset._base.BaseDset:28
+#: lmp.dset._base.BaseDset:35 lmp.dset._base.BaseDset:41
+#: lmp.dset._base.BaseDset:67 of
+msgid "ClassVar[str]"
+msgstr ""
+
+#: lmp.dset._base.BaseDset:24 of
+msgid ""
+"Display name for dataset on CLI. Used for command line argument parsing. "
+"Subclass must overwrite ``dset_name`` attribute."
+msgstr ""
+
+#: lmp.dset._base.BaseDset:32 of
+msgid "Download dataset file name. Used only for downloading dataset files."
+msgstr ""
+
+#: lmp.dset._base.BaseDset:39 of
+msgid "Language of the dataset."
+msgstr ""
+
+#: lmp.dset._base.BaseDset:45 of
+msgid "All samples in the dataset."
+msgstr ""
+
+#: lmp.dset._base.BaseDset:47 of
+msgid "List[str]"
+msgstr ""
+
+#: lmp.dset._base.BaseDset:51 of
+msgid "Version of the dataset."
+msgstr ""
+
+#: lmp.dset._base.BaseDset:53 of
+msgid "str"
+msgstr ""
+
+#: lmp.dset._base.BaseDset:57 of
+msgid ""
+"All available versions of the dataset. Used to check whether specified "
+"version ``ver`` is available."
+msgstr ""
+
+#: lmp.dset._base.BaseDset:60 of
+msgid "ClassVar[List[str]]"
+msgstr ""
+
+#: lmp.dset._base.BaseDset:64 of
+msgid ""
+"URL for downloading dataset files. Used only for downloading dataset "
+"files."
+msgstr ""
+
+#: lmp.dset._base.BaseDset lmp.dset._base.BaseDset.__getitem__ of
+msgid "Raises"
+msgstr ""
+
+#: lmp.dset._base.BaseDset:69 of
+msgid "When ``ver`` is not and instance of ``str``."
+msgstr ""
+
+#: lmp.dset._base.BaseDset:70 of
+msgid "When dataset version ``ver`` is not available."
+msgstr ""
+
+#: lmp.dset._base.BaseDset.__getitem__:1 of
+msgid "Sample text using index."
+msgstr ""
+
+#: lmp.dset._base.BaseDset.__getitem__:3 of
+msgid "Sample index."
+msgstr ""
+
+#: lmp.dset._base.BaseDset.__getitem__:6 of
+msgid "When ``idx >= len(self.spls)``."
+msgstr ""
+
+#: lmp.dset._base.BaseDset.__getitem__:7 of
+msgid "When ``idx`` is not an instance of ``int``."
+msgstr ""
+
+#: lmp.dset._base.BaseDset.__iter__:1 of
+msgid "Iterate through each sample in the dataset."
+msgstr ""
+
+#: lmp.dset._base.BaseDset.__iter__ of
+msgid "Yields"
+msgstr ""
+
+#: lmp.dset._base.BaseDset.__iter__:3 of
+msgid "*str* -- Each text sapmle in ``self.spls``."
+msgstr ""
+
+#: lmp.dset._base.BaseDset.__len__:1 of
+msgid "Get dataset size."
+msgstr ""
+
+#: lmp.dset._base.BaseDset.__len__ of
+msgid "Returns"
+msgstr ""
+
+#: lmp.dset._base.BaseDset.__len__:3 of
+msgid "Number of samples in the dataset."
+msgstr ""
+
+#: lmp.dset._base.BaseDset.__len__ of
+msgid "Return type"
+msgstr ""
+
+#: lmp.dset._base.BaseDset.download:1 of
+msgid "Download dataset file if not exists."
+msgstr ""
+
+#: lmp.dset._base.BaseDset.download:3 of
+msgid ""
+"Only download dataset file if not exists. Once dataset is downloaded it "
+"will not be downloaded again."
+msgstr ""
+

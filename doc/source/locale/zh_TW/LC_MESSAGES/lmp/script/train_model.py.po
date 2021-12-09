@@ -1,0 +1,136 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, ProFatXuanAll
+# This file is distributed under the same license as the Language Model
+# Playground package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Language Model Playground 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-13 16:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/lmp/script/train_model.py.rst:2
+msgid ":py:mod:`lmp.script.train_model`"
+msgstr ""
+
+#: lmp.script.train_model:1 of
+msgid "Train language model."
+msgstr ""
+
+#: lmp.script.train_model:3 of
+msgid ""
+"Tool for training language model on particular dataset. This script is "
+"usually run after training tokenizer. Training performance will be shown "
+"on both CLI and tensorboard. Use ``pipenv run tensorboard`` to launch "
+"tensorboard and use browser to open URL http://localhost:6006/ to see "
+"training performance."
+msgstr ""
+
+#: lmp.script.train_model:11 of
+msgid ":obj:`lmp.model`"
+msgstr ""
+
+#: lmp.script.train_model:12 of
+msgid "All available models."
+msgstr ""
+
+#: lmp.script.train_model:15 of
+msgid "Examples"
+msgstr ""
+
+#: lmp.script.train_model:16 of
+msgid ""
+"The following example train :py:class:`lmp.model.RNNModel` (``RNN``) on "
+":py:class:`lmp.dset.WikiText2Dset` using ``train`` version (``--dset_name"
+" wikitext-2`` and ``--ver train``)."
+msgstr ""
+
+#: lmp.script.train_model:46 of
+msgid ""
+"The training result will be save at ``exp/my_model_exp``, and can be "
+"reused by other scripts. We only save checkpoint for each ``--ckpt_step``"
+" step and log performance for each ``--log_step``."
+msgstr ""
+
+#: lmp.script.train_model:51 of
+msgid ""
+"One can train more epochs by increasing ``--n_epoch``, but be careful "
+"model might be overfitting if trained to much epochs."
+msgstr ""
+
+#: lmp.script.train_model:80 of
+msgid "One can reduce overfitting with the following way:"
+msgstr ""
+
+#: lmp.script.train_model:82 of
+msgid "Increase ``--batch_size`` which makes samples more dynamic."
+msgstr ""
+
+#: lmp.script.train_model:83 of
+msgid "Increase ``--wd`` which makes L2 penalty larger as weight grows."
+msgstr ""
+
+#: lmp.script.train_model:84 of
+msgid ""
+"Reduce model parameters (In :py:class:`lmp.model.RNNModel` this means "
+"``--d_emb``, ``--d_hid``, ``n_hid_lyr``, ``n_post_hid_lyr`` and "
+"``n_pre_hid_lyr``)."
+msgstr ""
+
+#: lmp.script.train_model:87 of
+msgid ""
+"Use dropout (In :py:class:`lmp.model.RNNModel` this means ``--p_emb`` and"
+" ``--p_hid``)."
+msgstr ""
+
+#: lmp.script.train_model:89 of
+msgid "Use any combinations of above tricks."
+msgstr ""
+
+#: lmp.script.train_model:117 of
+msgid ""
+"We use :py:class:`torch.optim.AdamW` to perform optimization. Use "
+"``--beta1``, ``--beta2``, ``--eps``, ``--lr`` and ``--wd`` to adjust "
+"optimizer hyper-parameters. We also use ``--max_norm`` to avoid gradient "
+"explosion."
+msgstr ""
+
+#: lmp.script.train_model:148 of
+msgid "Use ``-h`` or ``--help`` options to get list of available models."
+msgstr ""
+
+#: lmp.script.train_model.main:1 of
+msgid "Script entry point."
+msgstr ""
+
+#: lmp.script.train_model.parse_arg:1 of
+msgid "Parse arguments from CLI."
+msgstr ""
+
+#: lmp.script.train_model.parse_arg:3 of
+msgid ""
+"Argument must begin with a model name ``model_name``. All arguments are "
+"added with model's static method ``train_parser``."
+msgstr ""
+
+#: lmp.script.train_model.parse_arg of
+msgid "Returns"
+msgstr ""
+
+#: lmp.script.train_model.parse_arg:6 of
+msgid "Arguments from CLI."
+msgstr ""
+
+#: lmp.script.train_model.parse_arg of
+msgid "Return type"
+msgstr ""
+

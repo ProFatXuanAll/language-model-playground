@@ -37,7 +37,7 @@ Before You Commit
         favor of built-in syntax.
         For example, :py:mod:`typing.List` is deprecated in favor of built-in
         :py:class:`list`.
-        However, those deprecated types will be in effect only after 2025
+        However, those deprecated types will be ineffect only after 2025
         (See details in `PEP 585`_).
         Thus we will continue using :py:mod:`typing` instead built-in syntax
         since the :py:mod:`typing` namespace provide more hint for type

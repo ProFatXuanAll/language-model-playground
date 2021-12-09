@@ -1,0 +1,96 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, ProFatXuanAll
+# This file is distributed under the same license as the Language Model
+# Playground package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Language Model Playground 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-13 16:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/lmp/script/tokenize.py.rst:2
+msgid ":py:mod:`lmp.script.tokenize`"
+msgstr ""
+
+#: lmp.script.tokenize:1 of
+msgid "Use pre-trained tokenizer to tokenize text."
+msgstr ""
+
+#: lmp.script.tokenize:3 of
+msgid ""
+"Pre-trained tokenizer must exist, i.e., perform tokenizer training first "
+"then use this script."
+msgstr ""
+
+#: lmp.script.tokenize:9 of
+msgid ":obj:`lmp.script.train_tokenizer`"
+msgstr ""
+
+#: lmp.script.tokenize:9 of
+msgid "Train tokenizer."
+msgstr ""
+
+#: lmp.script.tokenize:11 of
+msgid ":obj:`lmp.tknzr`"
+msgstr ""
+
+#: lmp.script.tokenize:12 of
+msgid "All available tokenizers."
+msgstr ""
+
+#: lmp.script.tokenize:15 of
+msgid "Examples"
+msgstr ""
+
+#: lmp.script.tokenize:16 of
+msgid ""
+"The following example used pre-trained tokenizer under experiment "
+"``my_exp`` to tokenize text ``'hello world'``."
+msgstr ""
+
+#: lmp.script.tokenize:25 of
+msgid "Use ``-h`` or ``--help`` options to get list of available options."
+msgstr ""
+
+#: lmp.script.tokenize.main:1 of
+msgid "Script entry point."
+msgstr ""
+
+#: lmp.script.tokenize.parse_arg:1 of
+msgid "Parse arguments from CLI."
+msgstr ""
+
+#: lmp.script.tokenize.parse_arg:3 of
+msgid "Parse pre-trained tokenizer experiment name and text to be tokenized."
+msgstr ""
+
+#: lmp.script.tokenize.parse_arg:5 of
+msgid "Pre-trained tokenizer experiment name."
+msgstr ""
+
+#: lmp.script.tokenize.parse_arg:6 of
+msgid "Text to be tokenized."
+msgstr ""
+
+#: lmp.script.tokenize.parse_arg of
+msgid "Returns"
+msgstr ""
+
+#: lmp.script.tokenize.parse_arg:8 of
+msgid "Arguments from CLI."
+msgstr ""
+
+#: lmp.script.tokenize.parse_arg of
+msgid "Return type"
+msgstr ""
+

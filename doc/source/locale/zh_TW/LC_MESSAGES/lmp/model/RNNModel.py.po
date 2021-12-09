@@ -1,0 +1,291 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, ProFatXuanAll
+# This file is distributed under the same license as the Language Model
+# Playground package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Language Model Playground 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-13 16:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/lmp/model/RNNModel.py.rst:2
+msgid ":py:class:`lmp.model.RNNModel`"
+msgstr ""
+
+#: lmp.model._rnn.RNNModel:1 of
+msgid "Vanilla RNN language model."
+msgstr ""
+
+#: lmp.model._rnn.RNNModel:3 of
+msgid ""
+"Use ``self.loss_fn`` for training and use ``self.pred`` for inference. "
+"Both are depended on forward pass alogorithm ``self.forward``."
+msgstr ""
+
+#: lmp.model._rnn.RNNModel lmp.model._rnn.RNNModel.forward
+#: lmp.model._rnn.RNNModel.loss_fn lmp.model._rnn.RNNModel.pred
+#: lmp.model._rnn.RNNModel.train_parser of
+msgid "Parameters"
+msgstr ""
+
+#: lmp.model._rnn.RNNModel:6 of
+msgid "Token embedding dimension. Must be bigger than or equal to ``1``."
+msgstr ""
+
+#: lmp.model._rnn.RNNModel:9 of
+msgid ""
+"Hidden dimension for Feed-Forward layers and RNN layers. Must be bigger "
+"than or equal to ``1``."
+msgstr ""
+
+#: lmp.model._rnn.RNNModel:12 of
+msgid "Useless parameter. Intently left for subclass parameters extension."
+msgstr ""
+
+#: lmp.model._rnn.RNNModel:15 of
+msgid "Number of RNN layers. Must be bigger than or equal to ``1``."
+msgstr ""
+
+#: lmp.model._rnn.RNNModel:18 of
+msgid ""
+"Number of Feed-Forward layers after RNN layers. All layers are paired "
+"with ReLU activatons except for the last one. Must be bigger than or "
+"equal to ``1``."
+msgstr ""
+
+#: lmp.model._rnn.RNNModel:22 of
+msgid ""
+"Number of Feed-Forward layers before RNN layers. All layers are paired "
+"with ReLU activatons. Must be bigger than or equal to ``1``."
+msgstr ""
+
+#: lmp.model._rnn.RNNModel:26 of
+msgid ""
+"Dropout probability for token embeddings. Must satisfy ``0.0 <= p_emb <= "
+"1.0``."
+msgstr ""
+
+#: lmp.model._rnn.RNNModel:29 of
+msgid ""
+"Dropout probability for every hidden representations. Must satisfy ``0.0 "
+"<= p_hid <= 1.0``."
+msgstr ""
+
+#: lmp.model._rnn.RNNModel:32 of
+msgid "Tokenizer instance with attributes ``pad_tkid`` and ``vocab_size``."
+msgstr ""
+
+#: lmp.model._rnn.RNNModel:37 of
+msgid "Token embedding lookup matrix. Use token ids to lookup token embeddings."
+msgstr ""
+
+#: lmp.model._rnn.RNNModel of
+msgid "type"
+msgstr ""
+
+#: lmp.model._rnn.RNNModel:40 of
+msgid "torch.nn.Embedding"
+msgstr ""
+
+#: lmp.model._rnn.RNNModel:44 of
+msgid ""
+"Token embedding dropout. Drop embedding features with probability "
+"``p_emb``."
+msgstr ""
+
+#: lmp.model._rnn.RNNModel:47 of
+msgid "torch.nn.Dropout"
+msgstr ""
+
+#: lmp.model._rnn.RNNModel:51 of
+msgid ""
+"Vanilla RNN which encode temporal features. Each time step's hidden state"
+" depends on current input and previous hidden state. Dropout temporal "
+"features with probability ``p_hid`` if ``n_hid_lyr > 1``."
+msgstr ""
+
+#: lmp.model._rnn.RNNModel:57 of
+msgid "torch.nn.RNN"
+msgstr ""
+
+#: lmp.model._rnn.RNNModel:61 of
+msgid "Model name is ``RNN``. Used for command line argument parsing."
+msgstr ""
+
+#: lmp.model._rnn.RNNModel:64 of
+msgid "ClassVar[str]"
+msgstr ""
+
+#: lmp.model._rnn.RNNModel:68 of
+msgid ""
+"Rectified Feed-Forward layers which transform temporal features from "
+"hidden dimension ``d_hid`` to embedding dimension ``d_emb``. Drop "
+"rectified units with probability ``p_hid``."
+msgstr ""
+
+#: lmp.model._rnn.RNNModel:72 lmp.model._rnn.RNNModel:80 of
+msgid "torch.nn.Sequential"
+msgstr ""
+
+#: lmp.model._rnn.RNNModel:76 of
+msgid ""
+"Rectified Feed-Forward layers which transform token embeddings from "
+"embedding dimension ``d_emb`` to hidden dimension ``d_hid``. Drop "
+"rectified units with probability ``p_hid``."
+msgstr ""
+
+#: lmp.model._rnn.RNNModel.forward:1 of
+msgid "Perform forward pass."
+msgstr ""
+
+#: lmp.model._rnn.RNNModel.forward:3 of
+msgid "Forward pass algorithm is structured as follow:"
+msgstr ""
+
+#: lmp.model._rnn.RNNModel.forward:5 of
+msgid "Input batch of previous token ids. (shape: ``(B, S)``)"
+msgstr ""
+
+#: lmp.model._rnn.RNNModel.forward:7 of
+msgid ""
+"Use batch of previous token ids to perform token embeddings lookup on "
+"``self.emb``. (shape: ``(B, S, E)``)"
+msgstr ""
+
+#: lmp.model._rnn.RNNModel.forward:10 of
+msgid ""
+"Use ``self.emb_dp`` to drop some features in token embeddings. (shape: "
+"``(B, S, E)``)"
+msgstr ""
+
+#: lmp.model._rnn.RNNModel.forward:12 of
+msgid ""
+"Use ``self.pre_hid`` to transform token embeddings from embedding "
+"dimension ``E`` to hidden dimension ``H``. (shape: ``(B, S, H)``)"
+msgstr ""
+
+#: lmp.model._rnn.RNNModel.forward:15 of
+msgid "Use ``self.hid`` to encode temporal features. (shape: ``(B, S, H)``)"
+msgstr ""
+
+#: lmp.model._rnn.RNNModel.forward:17 of
+msgid ""
+"Use ``self.post_hid`` to transform temporal features from hidden "
+"dimension ``H`` to embedding dimension ``E``. (shape: ``(B, S, E)``)"
+msgstr ""
+
+#: lmp.model._rnn.RNNModel.forward:20 of
+msgid ""
+"Find the most possible next token id in embedding matrix ``self.emb`` "
+"using inner product. This reduce parameters since we share weight on "
+"token embedding and output projection. (shape: ``(B, S, V)``)"
+msgstr ""
+
+#: lmp.model._rnn.RNNModel.forward:25 of
+msgid ""
+"Return logits. Used with ``self.pred`` to convert logit into prediction. "
+"Used wtih ``self.loss_fn`` to perform optimization. (shape: ``(B, S, "
+"V)``)"
+msgstr ""
+
+#: lmp.model._rnn.RNNModel.forward:30 lmp.model._rnn.RNNModel.loss_fn:13
+#: lmp.model._rnn.RNNModel.pred:6 of
+msgid ""
+"Batch of previous token ids encoded by :py:class:`lmp.tknzr.BaseTknzr` "
+"subclass instance. ``batch_prev_tkids`` has shape ``(B, S)`` and ``dtype "
+"== torch.int64``."
+msgstr ""
+
+#: lmp.model._rnn.RNNModel.forward lmp.model._rnn.RNNModel.loss_fn
+#: lmp.model._rnn.RNNModel.pred of
+msgid "Returns"
+msgstr ""
+
+#: lmp.model._rnn.RNNModel.forward:36 of
+msgid ""
+"Next token logits for each token id in batch. Logits has shape ``(B, S, "
+"V)`` and ``dtype == torch.float32``."
+msgstr ""
+
+#: lmp.model._rnn.RNNModel.forward lmp.model._rnn.RNNModel.loss_fn
+#: lmp.model._rnn.RNNModel.pred of
+msgid "Return type"
+msgstr ""
+
+#: lmp.model._rnn.RNNModel.loss_fn:1 of
+msgid "Calculate language model training loss."
+msgstr ""
+
+#: lmp.model._rnn.RNNModel.loss_fn:3 of
+msgid ""
+"Use forward pass to get logits and then use cross-entropy to calculate "
+"next token prediction loss. Use teacher forcing to implement this method."
+msgstr ""
+
+#: lmp.model._rnn.RNNModel.loss_fn:7 of
+msgid ""
+"Prediction targets. Batch of next token ids encoded by "
+":py:class:`lmp.tknzr.BaseTknzr` subclass instance. ``batch_next_tkids`` "
+"has same shape and ``dtype`` as ``batch_prev_tkids``."
+msgstr ""
+
+#: lmp.model._rnn.RNNModel.loss_fn:19 of
+msgid ""
+"Average next token prediction loss. Returned tensor has shape ``(1)`` and"
+" ``dtype == torch.float32``."
+msgstr ""
+
+#: lmp.model._rnn.RNNModel.pred:1 of
+msgid "Next token prediction."
+msgstr ""
+
+#: lmp.model._rnn.RNNModel.pred:3 of
+msgid ""
+"Use forward pass ouput logits to choose the most possible token id from "
+"vocabulary as next token."
+msgstr ""
+
+#: lmp.model._rnn.RNNModel.pred:12 of
+msgid ""
+"Softmax predicition for next token. Return tensor has shape ``(B, S, V)``"
+" and ``dtype == torch.float32``."
+msgstr ""
+
+#: lmp.model._rnn.RNNModel.train_parser:1 of
+msgid "Training vanilla RNN language model CLI arguments parser."
+msgstr ""
+
+#: lmp.model._rnn.RNNModel.train_parser:3 of
+msgid "Parser for CLI arguments."
+msgstr ""
+
+#: lmp.model._rnn.RNNModel.train_parser:9 of
+msgid ":obj:`lmp.model.BaseModel.train_parser`"
+msgstr ""
+
+#: lmp.model._rnn.RNNModel.train_parser:9 of
+msgid "Training language model CLI arguments."
+msgstr ""
+
+#: lmp.model._rnn.RNNModel.train_parser:11 of
+msgid ":obj:`lmp.script.train_model`"
+msgstr ""
+
+#: lmp.model._rnn.RNNModel.train_parser:12 of
+msgid "Language model training script."
+msgstr ""
+
+#: lmp.model._rnn.RNNModel.train_parser:15 of
+msgid "Examples"
+msgstr ""
+

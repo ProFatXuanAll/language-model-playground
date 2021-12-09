@@ -1,0 +1,149 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, ProFatXuanAll
+# This file is distributed under the same license as the Language Model
+# Playground package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Language Model Playground 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-13 16:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/lmp/model/SAttnGRUModel.py.rst:2
+msgid ":py:class:`lmp.model.SAttnGRUModel`"
+msgstr ""
+
+#: lmp.model._sattn_gru.SAttnGRUModel:1 of
+msgid "GRU language model with self attention mechanism."
+msgstr ""
+
+#: lmp.model._sattn_gru.SAttnGRUModel:3 of
+msgid ""
+"Same architecture as :py:class:`lmp.model.SAttnRNNModel` but use self "
+"attention on GRU layer."
+msgstr ""
+
+#: lmp.model._sattn_gru.SAttnGRUBlock lmp.model._sattn_gru.SAttnGRUModel of
+msgid "Parameters"
+msgstr ""
+
+#: lmp.model._sattn_gru.SAttnGRUModel:6 of
+msgid "Token embedding dimension. Must be bigger than or equal to ``1``."
+msgstr ""
+
+#: lmp.model._sattn_gru.SAttnGRUModel:9 of
+msgid ""
+"Hidden dimension for Feed-Forward layers and self attention GRU layers. "
+"Must be bigger than or equal to ``1``."
+msgstr ""
+
+#: lmp.model._sattn_gru.SAttnGRUBlock:10 lmp.model._sattn_gru.SAttnGRUModel:12
+#: of
+msgid "Useless parameter. Intently left for subclass parameters extension."
+msgstr ""
+
+#: lmp.model._sattn_gru.SAttnGRUBlock:13 lmp.model._sattn_gru.SAttnGRUModel:15
+#: of
+msgid ""
+"Number of self attention GRU layers. Must be bigger than or equal to "
+"``1``."
+msgstr ""
+
+#: lmp.model._sattn_gru.SAttnGRUModel:18 of
+msgid ""
+"Number of Feed-Forward layers after self attention GRU layers. All layers"
+" are paired with ReLU activatons except for the last one. Must be bigger "
+"than or equal to ``1``."
+msgstr ""
+
+#: lmp.model._sattn_gru.SAttnGRUModel:22 of
+msgid ""
+"Number of Feed-Forward layers before self attention GRU layers. All "
+"layers are paired with ReLU activatons. Must be bigger than or equal to "
+"``1``."
+msgstr ""
+
+#: lmp.model._sattn_gru.SAttnGRUModel:26 of
+msgid ""
+"Dropout probability for token embeddings. Must satisfy ``0.0 <= p_emb <= "
+"1.0``."
+msgstr ""
+
+#: lmp.model._sattn_gru.SAttnGRUBlock:16 lmp.model._sattn_gru.SAttnGRUModel:29
+#: of
+msgid ""
+"Dropout probability for every hidden representations. Must satisfy ``0.0 "
+"<= p_hid <= 1.0``."
+msgstr ""
+
+#: lmp.model._sattn_gru.SAttnGRUModel:32 of
+msgid "Tokenizer instance with attributes ``pad_tkid`` and ``vocab_size``."
+msgstr ""
+
+#: lmp.model._sattn_gru.SAttnGRUModel:37 of
+msgid ""
+"Self attention GRU which encode temporal features. Each time step's "
+"hidden state depends on current input and previous hidden state. Drop "
+"temporal features with probability ``p_hid``."
+msgstr ""
+
+#: lmp.model._sattn_gru.SAttnGRUBlock lmp.model._sattn_gru.SAttnGRUModel of
+msgid "type"
+msgstr ""
+
+#: lmp.model._sattn_gru.SAttnGRUModel:42 of
+msgid "lmp.model.SAttnGRUBlock"
+msgstr ""
+
+#: lmp.model._sattn_gru.SAttnGRUModel:46 of
+msgid "Model name is ``sattn-GRU``. Used for command line argument parsing."
+msgstr ""
+
+#: lmp.model._sattn_gru.SAttnGRUModel:49 of
+msgid "ClassVar[str]"
+msgstr ""
+
+#: lmp.model._sattn_gru.SAttnGRUBlock:1 of
+msgid "GRU block with self attention mechanism."
+msgstr ""
+
+#: lmp.model._sattn_gru.SAttnGRUBlock:3 of
+msgid ""
+"Same architecture as :py:class:`lmp.model.SAttnRNNBlock` but replace RNN "
+"with GRU instead."
+msgstr ""
+
+#: lmp.model._sattn_gru.SAttnGRUBlock:6 of
+msgid ""
+"Hidden dimension for GRU and self attention linear transformation weights"
+" (including query, key, value and output). Must be bigger than or equal "
+"to ``1``."
+msgstr ""
+
+#: lmp.model._sattn_gru.SAttnGRUBlock:22 of
+msgid ""
+"List of GRU which encode temporal features. Each time step's hidden state"
+" depends on current input and previous hidden state."
+msgstr ""
+
+#: lmp.model._sattn_gru.SAttnGRUBlock:26 of
+msgid "torch.nn.ModuleList[torch.nn.GRU]"
+msgstr ""
+
+#: lmp.model._sattn_gru.SAttnGRUBlock:30 of
+msgid ":obj:`lmp.model.SAttnGRUModel`"
+msgstr ""
+
+#: lmp.model._sattn_gru.SAttnGRUBlock:31 of
+msgid "Model use self attention GRU blocks."
+msgstr ""
+

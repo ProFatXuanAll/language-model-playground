@@ -1,0 +1,147 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, ProFatXuanAll
+# This file is distributed under the same license as the Language Model
+# Playground package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Language Model Playground 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-13 16:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/lmp/tknzr/CharTknzr.py.rst:2
+msgid ":py:class:`lmp.tknzr.CharTknzr`"
+msgstr ""
+
+#: lmp.tknzr._char.CharTknzr:1 of
+msgid "Character :term:`tokenizer` class."
+msgstr ""
+
+#: lmp.tknzr._char.CharTknzr:3 of
+msgid "Tokenize text into (unicode) character."
+msgstr ""
+
+#: lmp.tknzr._char.CharTknzr lmp.tknzr._char.CharTknzr.dtknz
+#: lmp.tknzr._char.CharTknzr.tknz of
+msgid "Parameters"
+msgstr ""
+
+#: lmp.tknzr._char.CharTknzr:5 of
+msgid "Convert text into lowercase if set to ``True``."
+msgstr ""
+
+#: lmp.tknzr._char.CharTknzr:7 of
+msgid ""
+"Maximum vocabulary size. Set to ``-1`` to include as many tokens as "
+"possible in vocabulary."
+msgstr ""
+
+#: lmp.tknzr._char.CharTknzr:10 of
+msgid ""
+"Minimum token frequency for each token to be included in tokenizer's "
+"vocabulary."
+msgstr ""
+
+#: lmp.tknzr._char.CharTknzr:13 of
+msgid ""
+"Token (a string) to id (an integer) lookup table. If ``tk2id is not "
+"None``, then initialize lookup table with ``tk2id``. Otherwise initialize"
+" lookup table with special tokens only."
+msgstr ""
+
+#: lmp.tknzr._char.CharTknzr:17 of
+msgid "Useless parameter. Intently left for subclass parameters extension."
+msgstr ""
+
+#: lmp.tknzr._char.CharTknzr:23 of
+msgid "Tokenizer name is ``character``. Used for command line argument parsing."
+msgstr ""
+
+#: lmp.tknzr._char.CharTknzr of
+msgid "type"
+msgstr ""
+
+#: lmp.tknzr._char.CharTknzr:26 of
+msgid "ClassVar[str]"
+msgstr ""
+
+#: lmp.tknzr._char.CharTknzr of
+msgid "Raises"
+msgstr ""
+
+#: lmp.tknzr._char.CharTknzr:28 of
+msgid "When parameters do not obey their type annotations."
+msgstr ""
+
+#: lmp.tknzr._char.CharTknzr:30 of
+msgid ":obj:`lmp.tknzr.BaseTknzr`"
+msgstr ""
+
+#: lmp.tknzr._char.CharTknzr:33 lmp.tknzr._char.CharTknzr.dtknz:16
+#: lmp.tknzr._char.CharTknzr.tknz:15 of
+msgid "Examples"
+msgstr ""
+
+#: lmp.tknzr._char.CharTknzr.dtknz:1 of
+msgid "Convert :term:`tokens` back to text."
+msgstr ""
+
+#: lmp.tknzr._char.CharTknzr.dtknz:3 of
+msgid ""
+"Tokens will be joined without whitespaces. Returned text is normalized by"
+" :py:meth:`lmp.tknzr.BaseTknz.norm`."
+msgstr ""
+
+#: lmp.tknzr._char.CharTknzr.dtknz:6 of
+msgid "Sequence of tokens to be detokenized."
+msgstr ""
+
+#: lmp.tknzr._char.CharTknzr.dtknz lmp.tknzr._char.CharTknzr.tknz of
+msgid "Returns"
+msgstr ""
+
+#: lmp.tknzr._char.CharTknzr.dtknz:9 of
+msgid ""
+"Normalized text without additional whitespaces other than the ones came "
+"with tokens."
+msgstr ""
+
+#: lmp.tknzr._char.CharTknzr.dtknz lmp.tknzr._char.CharTknzr.tknz of
+msgid "Return type"
+msgstr ""
+
+#: lmp.tknzr._char.CharTknzr.dtknz:13 of
+msgid ":obj:`lmp.tknzr.CharTknzr.tknz`, :obj:`lmp.tknzr.BaseTknzr.norm`"
+msgstr ""
+
+#: lmp.tknzr._char.CharTknzr.tknz:1 of
+msgid "Perform character :term:`tokenization` on text."
+msgstr ""
+
+#: lmp.tknzr._char.CharTknzr.tknz:3 of
+msgid ""
+"Text will first be normalized by :py:meth:`lmp.tknzr.BaseTknz.norm`, then"
+" be tokenized into list of characters."
+msgstr ""
+
+#: lmp.tknzr._char.CharTknzr.tknz:6 of
+msgid "Text to be tokenized."
+msgstr ""
+
+#: lmp.tknzr._char.CharTknzr.tknz:9 of
+msgid "List of normalized characters."
+msgstr ""
+
+#: lmp.tknzr._char.CharTknzr.tknz:12 of
+msgid ":obj:`lmp.tknzr.CharTknzr.dtknz`, :obj:`lmp.tknzr.BaseTknzr.norm`"
+msgstr ""
+

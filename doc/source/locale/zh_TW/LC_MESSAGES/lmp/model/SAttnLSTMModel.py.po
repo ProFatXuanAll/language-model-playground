@@ -1,0 +1,149 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, ProFatXuanAll
+# This file is distributed under the same license as the Language Model
+# Playground package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Language Model Playground 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-13 16:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/lmp/model/SAttnLSTMModel.py.rst:2
+msgid ":py:class:`lmp.model.SAttnLSTMModel`"
+msgstr ""
+
+#: lmp.model._sattn_lstm.SAttnLSTMModel:1 of
+msgid "LSTM language model with self attention mechanism."
+msgstr ""
+
+#: lmp.model._sattn_lstm.SAttnLSTMModel:3 of
+msgid ""
+"Same architecture as :py:class:`lmp.model.SAttnRNNModel` but use self "
+"attention on LSTM layer."
+msgstr ""
+
+#: lmp.model._sattn_lstm.SAttnLSTMBlock lmp.model._sattn_lstm.SAttnLSTMModel of
+msgid "Parameters"
+msgstr ""
+
+#: lmp.model._sattn_lstm.SAttnLSTMModel:6 of
+msgid "Token embedding dimension. Must be bigger than or equal to ``1``."
+msgstr ""
+
+#: lmp.model._sattn_lstm.SAttnLSTMModel:9 of
+msgid ""
+"Hidden dimension for Feed-Forward layers and self attention LSTM layers. "
+"Must be bigger than or equal to ``1``."
+msgstr ""
+
+#: lmp.model._sattn_lstm.SAttnLSTMBlock:10
+#: lmp.model._sattn_lstm.SAttnLSTMModel:13 of
+msgid "Useless parameter. Intently left for subclass parameters extension."
+msgstr ""
+
+#: lmp.model._sattn_lstm.SAttnLSTMBlock:13
+#: lmp.model._sattn_lstm.SAttnLSTMModel:16 of
+msgid ""
+"Number of self attention LSTM layers. Must be bigger than or equal to "
+"``1``."
+msgstr ""
+
+#: lmp.model._sattn_lstm.SAttnLSTMModel:19 of
+msgid ""
+"Number of Feed-Forward layers after self attention LSTM layers. All "
+"layers are paired with ReLU activatons except for the last one. Must be "
+"bigger than or equal to ``1``."
+msgstr ""
+
+#: lmp.model._sattn_lstm.SAttnLSTMModel:23 of
+msgid ""
+"Number of Feed-Forward layers before self attention LSTM layers. All "
+"layers are paired with ReLU activatons. Must be bigger than or equal to "
+"``1``."
+msgstr ""
+
+#: lmp.model._sattn_lstm.SAttnLSTMModel:27 of
+msgid ""
+"Dropout probability for token embeddings. Must satisfy ``0.0 <= p_emb <= "
+"1.0``."
+msgstr ""
+
+#: lmp.model._sattn_lstm.SAttnLSTMBlock:16
+#: lmp.model._sattn_lstm.SAttnLSTMModel:30 of
+msgid ""
+"Dropout probability for every hidden representations. Must satisfy ``0.0 "
+"<= p_hid <= 1.0``."
+msgstr ""
+
+#: lmp.model._sattn_lstm.SAttnLSTMModel:33 of
+msgid "Tokenizer instance with attributes ``pad_tkid`` and ``vocab_size``."
+msgstr ""
+
+#: lmp.model._sattn_lstm.SAttnLSTMModel:38 of
+msgid ""
+"Self attention LSTM which encode temporal features. Each time step's "
+"hidden state depends on current input and previous hidden state. Drop "
+"temporal features with probability ``p_hid``."
+msgstr ""
+
+#: lmp.model._sattn_lstm.SAttnLSTMBlock lmp.model._sattn_lstm.SAttnLSTMModel of
+msgid "type"
+msgstr ""
+
+#: lmp.model._sattn_lstm.SAttnLSTMModel:43 of
+msgid "lmp.model.SAttnLSTMBlock"
+msgstr ""
+
+#: lmp.model._sattn_lstm.SAttnLSTMModel:47 of
+msgid "Model name is ``sattn-LSTM``. Used for command line argument parsing."
+msgstr ""
+
+#: lmp.model._sattn_lstm.SAttnLSTMModel:50 of
+msgid "ClassVar[str]"
+msgstr ""
+
+#: lmp.model._sattn_lstm.SAttnLSTMBlock:1 of
+msgid "LSTM block with self attention mechanism."
+msgstr ""
+
+#: lmp.model._sattn_lstm.SAttnLSTMBlock:3 of
+msgid ""
+"Same architecture as :py:class:`lmp.model.SAttnRNNBlock` but replace RNN "
+"with LSTM instead."
+msgstr ""
+
+#: lmp.model._sattn_lstm.SAttnLSTMBlock:6 of
+msgid ""
+"Hidden dimension for LSTM and self attention linear transformation "
+"weights (including query, key, value and output). Must be bigger than or "
+"equal to ``1``."
+msgstr ""
+
+#: lmp.model._sattn_lstm.SAttnLSTMBlock:22 of
+msgid ""
+"List of LSTM which encode temporal features. Each time step's hidden "
+"state depends on current input and previous hidden state."
+msgstr ""
+
+#: lmp.model._sattn_lstm.SAttnLSTMBlock:26 of
+msgid "torch.nn.ModuleList[torch.nn.LSTM]"
+msgstr ""
+
+#: lmp.model._sattn_lstm.SAttnLSTMBlock:30 of
+msgid ":obj:`lmp.model.SAttnLSTMModel`"
+msgstr ""
+
+#: lmp.model._sattn_lstm.SAttnLSTMBlock:31 of
+msgid "Model use self attention LSTM blocks."
+msgstr ""
+

@@ -1,0 +1,799 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, ProFatXuanAll
+# This file is distributed under the same license as the Language Model
+# Playground package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Language Model Playground 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-13 16:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:2
+msgid "Experiment 3: Modified ``d_hid``"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:5
+msgid "Tokenizers"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:7
+msgid "Tokenizers' experiment shared by models."
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:10
+msgid "tknzr_name"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:10
+#: Dataset/WikiText2Dset_exp3.rst:29
+msgid "dset_name"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:10
+msgid "exp_name"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:10
+msgid "max_vocab"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:10
+msgid "min_count"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:10
+#: Dataset/WikiText2Dset_exp3.rst:47
+msgid "ver"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:10
+msgid "is_uncased"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:12
+msgid "whitespace"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:12
+#: Dataset/WikiText2Dset_exp3.rst:29
+msgid "wikitext-2"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:12
+#: Dataset/WikiText2Dset_exp3.rst:45
+msgid "ws-tknzr"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:12
+msgid "-1"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:12
+msgid "10"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:12
+#: Dataset/WikiText2Dset_exp3.rst:47
+msgid "train"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:12
+msgid "True"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:16
+msgid "Models Shared Parameters"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:19
+msgid "parameters"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:19
+msgid "value"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:21
+msgid "batch_size"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:21
+msgid "32"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:23
+msgid "beta1"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:23
+msgid "0.9"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:25
+msgid "beta2"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:25
+msgid "0.99"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:27
+msgid "ckpt_step"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:27
+msgid "5000"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:31
+msgid "eps"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:31
+msgid "1e-8"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:33
+msgid "log_step"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:33
+msgid "2500"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:35
+msgid "lr"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:35
+msgid "1e-3"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:37
+msgid "max_norm"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:37
+msgid "1"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:39
+msgid "max_seq_len"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:39
+#: Dataset/WikiText2Dset_exp3.rst:79 Dataset/WikiText2Dset_exp3.rst:99
+#: Dataset/WikiText2Dset_exp3.rst:119
+msgid "512"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:41
+msgid "n_epoch"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:41
+msgid "200"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:43
+msgid "seed"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:43
+msgid "42"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:45
+msgid "tknzr_exp_name"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:49
+msgid "d_emb"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:49
+msgid "100"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:51
+msgid "n_hid_lyr"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:51
+#: Dataset/WikiText2Dset_exp3.rst:53 Dataset/WikiText2Dset_exp3.rst:55
+msgid "2"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:53
+msgid "n_post_hid_lyr"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:55
+msgid "n_pre_hid_lyr"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:57
+msgid "p_emb"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:57
+#: Dataset/WikiText2Dset_exp3.rst:59
+msgid "0.1"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:59
+msgid "p_hid"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:61
+msgid "wd"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:61
+msgid "1e-2"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:66
+msgid "Models Perplexity Performance"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:69
+msgid "Training Set"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:71
+#: Dataset/WikiText2Dset_exp3.rst:91 Dataset/WikiText2Dset_exp3.rst:111
+msgid "``d_hid``"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:71
+#: Dataset/WikiText2Dset_exp3.rst:91 Dataset/WikiText2Dset_exp3.rst:111
+msgid "step 10k"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:71
+#: Dataset/WikiText2Dset_exp3.rst:91 Dataset/WikiText2Dset_exp3.rst:111
+msgid "step 30k"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:71
+#: Dataset/WikiText2Dset_exp3.rst:91 Dataset/WikiText2Dset_exp3.rst:111
+msgid "step 50k"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:71
+#: Dataset/WikiText2Dset_exp3.rst:91 Dataset/WikiText2Dset_exp3.rst:111
+msgid "step 70k"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:71
+#: Dataset/WikiText2Dset_exp3.rst:91 Dataset/WikiText2Dset_exp3.rst:111
+msgid "step 90k"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:73
+#: Dataset/WikiText2Dset_exp3.rst:93 Dataset/WikiText2Dset_exp3.rst:113
+msgid "128"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:73
+msgid "4.293"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:73
+msgid "3.741"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:73
+#: Dataset/WikiText2Dset_exp3.rst:117
+msgid "3.562"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:73
+msgid "3.451"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:73
+msgid "3.358"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:75
+#: Dataset/WikiText2Dset_exp3.rst:95 Dataset/WikiText2Dset_exp3.rst:115
+msgid "256"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:75
+msgid "3.82"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:75
+msgid "3.25"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:75
+msgid "3.057"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:75
+msgid "2.941"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:75
+msgid "2.855"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:77
+#: Dataset/WikiText2Dset_exp3.rst:97 Dataset/WikiText2Dset_exp3.rst:117
+msgid "384"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:77
+msgid "3.553"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:77
+msgid "2.935"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:77
+msgid "2.715"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:77
+msgid "2.591"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:77
+msgid "2.5"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:79
+msgid "3.322"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:79
+msgid "2.63"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:79
+msgid "2.382"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:79
+msgid "2.253"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:79
+#: Dataset/WikiText2Dset_exp3.rst:83
+msgid "2.151"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:81
+#: Dataset/WikiText2Dset_exp3.rst:101 Dataset/WikiText2Dset_exp3.rst:121
+msgid "640"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:81
+msgid "3.121"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:81
+msgid "2.359"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:81
+msgid "2.08"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:81
+msgid "1.942"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:81
+msgid "1.845"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:83
+#: Dataset/WikiText2Dset_exp3.rst:103 Dataset/WikiText2Dset_exp3.rst:123
+msgid "768"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:83
+msgid "2.995"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:83
+msgid "1.862"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:83
+msgid "1.713"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:83
+msgid "1.626"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:85
+#: Dataset/WikiText2Dset_exp3.rst:105 Dataset/WikiText2Dset_exp3.rst:125
+msgid "896"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:85
+msgid "**2.792**"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:85
+msgid "**1.907**"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:85
+msgid "**1.62**"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:85
+msgid "**1.485**"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:85
+msgid "**1.414**"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:89
+msgid "Validation Set"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:93
+msgid "4.045"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:93
+msgid "3.704"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:93
+msgid "3.62"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:93
+msgid "3.575"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:93
+msgid "3.544"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:95
+msgid "3.78"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:95
+msgid "**3.522**"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:95
+#: Dataset/WikiText2Dset_exp3.rst:115
+msgid "**3.472**"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:95
+msgid "**3.455**"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:95
+msgid "**3.444**"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:97
+msgid "3.711"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:97
+msgid "3.53"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:97
+msgid "3.556"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:97
+msgid "3.558"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:97
+msgid "3.559"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:99
+msgid "**3.697**"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:99
+msgid "3.659"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:99
+msgid "3.774"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:99
+msgid "3.808"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:99
+msgid "3.846"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:101
+msgid "3.737"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:101
+msgid "3.848"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:101
+msgid "4.112"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:101
+msgid "4.192"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:101
+msgid "4.282"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:103
+msgid "3.772"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:103
+msgid "4.068"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:103
+msgid "4.476"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:103
+msgid "4.705"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:103
+msgid "4.806"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:105
+msgid "3.877"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:105
+msgid "4.475"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:105
+msgid "5.167"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:105
+msgid "5.513"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:105
+msgid "5.641"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:109
+msgid "Testing Set"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:113
+msgid "4.028"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:113
+msgid "3.709"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:113
+msgid "3.617"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:113
+msgid "3.57"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:113
+msgid "3.533"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:115
+msgid "3.762"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:115
+msgid "**3.515**"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:115
+msgid "**3.458**"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:115
+msgid "**3.448**"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:117
+msgid "3.703"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:117
+msgid "3.532"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:117
+msgid "3.557"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:117
+msgid "3.565"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:119
+msgid "**3.686**"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:119
+msgid "3.657"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:119
+msgid "3.783"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:119
+msgid "3.826"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:119
+msgid "3.885"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:121
+msgid "3.724"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:121
+msgid "3.863"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:121
+msgid "4.159"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:121
+msgid "4.256"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:121
+msgid "4.332"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:123
+msgid "3.76"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:123
+msgid "4.124"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:123
+msgid "4.584"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:123
+msgid "4.851"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:123
+msgid "4.929"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:125
+msgid "3.883"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:125
+msgid "4.551"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:125
+msgid "5.326"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:125
+msgid "5.728"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:125
+msgid "5.886"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:130
+msgid "Conclusions"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:133
+msgid "Perplexity performance on **training set**:"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:133
+msgid "``d_hid=896`` perform the **best** on all steps."
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:134
+msgid "``d_hid=128`` perform the **worst** on all steps."
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:137
+msgid "Perplexity performance on **validation set**:"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:136
+#: Dataset/WikiText2Dset_exp3.rst:140
+msgid ""
+"``d_hid=256`` perform the **best** on ``30k`` and ``50k`` and ``70k`` and"
+" ``90k`` steps."
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:137
+#: Dataset/WikiText2Dset_exp3.rst:141
+msgid "``d_hid=128`` perform the **worst** on ``10k`` steps."
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:138
+#: Dataset/WikiText2Dset_exp3.rst:142
+msgid ""
+"``d_hid=896`` perform the **worst** on ``30k`` and ``50k`` and ``70k`` "
+"and ``90k`` steps."
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:141
+msgid "Perplexity performance on **testing set**:"
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:143
+msgid "``d_hid=896`` is **overfitting**."
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:144
+msgid ""
+"``d_hid=896`` perform **best** on **training set**, but perform poor on "
+"**validation set** and **testing set**."
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:145
+msgid "``d_hid=128`` is **underfitting**."
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:146
+msgid "``d_hid=128`` perform the **worst** on all sets."
+msgstr ""
+
+#: ../../source/experiment/WikiText-2 Dataset/WikiText2Dset_exp3.rst:147
+msgid ""
+"``d_hid=256`` perform the **best** on **validation set** and **testing "
+"set**."
+msgstr ""
+

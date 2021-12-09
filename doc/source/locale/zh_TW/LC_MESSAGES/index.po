@@ -1,0 +1,183 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, ProFatXuanAll
+# This file is distributed under the same license as the Language Model
+# Playground package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Language Model Playground 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-13 16:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/index.rst:72
+msgid "Table of Contents:"
+msgstr "目錄"
+
+#: ../../source/index.rst:7
+msgid "Welcome to Language Model Playground's documentation!"
+msgstr "歡迎來到語言模型範例"
+
+#: ../../source/index.rst:9
+msgid ""
+"**Language model playground** is a tutorial about \"How to implement "
+":term:`neural network` based :term:`language models`\". We use Pytorch_ "
+"to implement :term:`language models`."
+msgstr "" 
+"語言模型範例是一個教材關於怎麼建立 :term:`神經網路` 的 :term:`語言模型` 。我們使用 PyTorch_ "
+"來建立 :term:`語言模型` "
+
+#: ../../source/index.rst:15
+msgid "We have implemented several :term:`language models` including:"
+msgstr "" 
+"我們使用多種 :term:`語言模型` 包括："
+
+#: ../../source/index.rst:17
+msgid "RNN only models. (e.g. :py:mod:`lmp.model.RNNModel`)"
+msgstr ""
+"單純的循環神經網路，如 :py:mod:`lmp.model.RNNModel`。"
+
+#: ../../source/index.rst:19
+msgid ""
+"RNN models with residual connections. (e.g. "
+":py:mod:`lmp.model.ResRNNModel`)"
+msgstr ""
+"有殘差連結的循環神經網路，如 :py:mod:`lmp.model.ResRNNModel`。"
+
+#: ../../source/index.rst:21
+msgid ""
+"RNN models with self attention mechanism. (e.g. "
+":py:mod:`lmp.model.SAttnRNNModel`)"
+msgstr ""
+"有自注意力的循環神經網路，如 :py:mod:`lmp.model.SAttnRNNModel`。"
+
+#: ../../source/index.rst:23
+msgid "Transformer models."
+msgstr ""
+"Transformer 模型"
+
+#: ../../source/index.rst:24 ../../source/index.rst:67
+msgid "And more to come!"
+msgstr "" 
+"未來還會有更多！"
+
+#: ../../source/index.rst:26
+msgid ""
+"You can easily create these models by ``import lmp.model`` and choose the"
+" model you want. Or you can create models using training script "
+":py:mod:`lmp.script.train_model`."
+msgstr ""
+"藉由引用 ``import lmp.model`` 和選擇你要的模型，就可以輕易使用這些模型。"
+"或是你可以使用腳本 :py:mod:`lmp.script.train_model` 來產生這些模型。"
+
+#: ../../source/index.rst:41
+msgid ":py:mod:`lmp.model`"
+msgstr ""
+""
+
+#: ../../source/index.rst:42
+msgid "All available models are put under :py:mod:`lmp.model`."
+msgstr ""
+"所有可用的模型都在 :py:mod:`lmp.model`。"
+
+#: ../../source/index.rst:44
+msgid "Todo"
+msgstr ""
+"未來計畫"
+
+#: ../../source/index.rst:46
+msgid "Add Transformer models."
+msgstr "" 
+"增加 Transformer 模型。"
+
+#: ../../source/index.rst:48
+msgid ""
+"We have written serveral **scripts** to demostrate training pipline of "
+":term:`language models` and furthur usage on :term:`language models`:"
+msgstr ""
+"我們有多個腳本來示範管線化訓練 :term:`語言模型`，還有更多 :term:`語言模型` 的使用方法。"
+
+#: ../../source/index.rst:51
+msgid ""
+"Use :py:mod:`lmp.script.sample_from_dataset` to take a look at dataset we"
+" provided. (e.g. :py:class:`lmp.dset.WikiText2Dset`)"
+msgstr ""
+"使用 :py:mod:`lmp.script.sample_from_dataset` 來查看我們提供的資料集，如"
+" :py:class:`lmp.dset.WikiText2Dset` 。"
+
+#: ../../source/index.rst:54
+msgid ""
+"Use :py:mod:`lmp.script.train_tokenizer` to train :term:`tokenizers`. "
+"(e.g. :py:class:`lmp.tknzr.WsTknzr`)"
+msgstr ""
+"使用 :py:mod:`lmp.script.train_tokenizer` 來訓練 :term:`斷詞器` 。"
+"如 :py:class:`lmp.tknzr.WsTknzr` 。"
+
+#: ../../source/index.rst:56
+msgid ""
+"Use :py:mod:`lmp.script.tokenize` to :term:`tokenize` text with pre-"
+"trained :term:`tokenizers`."
+msgstr ""
+"使用預訓練的 :term:`斷詞器` :py:mod:`lmp.script.tokenize` 來對文章 :term:`斷詞` 。"
+
+#: ../../source/index.rst:58
+msgid "Use :py:mod:`lmp.script.train_model` to train :term:`language models`."
+msgstr ""
+"使用 :py:mod:`lmp.script.train_model` 來訓練 :term:`語言模型` 。"
+
+#: ../../source/index.rst:59
+msgid ""
+"Use :py:mod:`lmp.script.evaluate_model_on_sample` to calculate "
+":term:`perplexity` on given sample with pre-trained :term:`language "
+"model` checkpoint."
+msgstr ""
+"使用 :py:mod:`lmp.script.evaluate_model_on_sample` 從預訓練"
+"中紀錄點的 :term:`語言模型` 來計算樣本中的 :term:`困惑度`  。" 
+
+#: ../../source/index.rst:62
+msgid ""
+"Use :py:mod:`lmp.script.evaluate_model_on_dataset` to calculate "
+":term:`perplexity` on dataset with range of pre-trained :term:`language "
+"model` :term:`checkpoints`."
+msgstr ""
+"使用 :py:mod:`lmp.script.evaluate_model_on_dataset` 從預訓練中範圍內 :term:`紀錄點` 的"
+" :term:`語言模型` 來計算資料集中的 :term:`困惑度` 。"
+
+#: ../../source/index.rst:65
+msgid ""
+"Use :py:mod:`lmp.script.generate_text` to generate text with pre-trained "
+":term:`language model` :term:`checkpoint`."
+msgstr ""
+"使用 :py:mod:`lmp.script.generate_text` 和預訓練 :term:`語言模型` 的 :term:`紀錄點` 來產生文字。"
+
+#: ../../source/index.rst:69
+msgid ""
+"Get started with :doc:`Quick start <quickstart>` or jump directly to "
+"contents you are interesting in!"
+msgstr ""
+"從 :doc:`快速上手 <quickstart>` 或是直貼跳到你有興趣的內容。"
+
+#: ../../source/index.rst:85
+msgid "Indices and tables"
+msgstr ""
+
+#: ../../source/index.rst:87
+msgid ":ref:`genindex`"
+msgstr ""
+
+#: ../../source/index.rst:88
+msgid ":ref:`modindex`"
+msgstr ""
+
+#: ../../source/index.rst:89
+msgid ":ref:`search`"
+msgstr ""
+

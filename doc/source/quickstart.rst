@@ -261,7 +261,7 @@ See :py:class:`torch.nn.CrossEntropyLoss` for loss function.
 Arguments including ``--beta1``, ``--beta2``, ``--eps``, ``--lr`` and ``--wd``
 are directly passed to :py:class:`torch.optim.Adam`.
 
-For **model architecture**, you can simply checkt the model's constructor to
+For **model architecture**, you can simply check the model's constructor to
 see what parameters the model needed.
 Or you can use ``python -m lmp.script.train_model model_name -h`` to see
 parameters on CLI.
@@ -401,6 +401,9 @@ We use Sphinx_ to build our documents.
 .. _`this website`: https://language-model-playground.readthedocs.io/en/
     latest/index.html
 .. _Sphinx: https://www.sphinx-doc.org/en/master/
+.. _`這個網站`: https://language-model-playground.readthedocs.io/en/
+    latest/index.html
+
 
 1. Install documentation dependencies.
 

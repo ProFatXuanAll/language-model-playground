@@ -1,0 +1,629 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, ProFatXuanAll
+# This file is distributed under the same license as the Language Model
+# Playground package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Language Model Playground 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-13 16:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/lmp/tknzr/BaseTknzr.py.rst:2
+msgid ":py:class:`lmp.tknzr.BaseTknzr`"
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr:1 of
+msgid ":term:`Tokenizer` abstract base class."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr:3 of
+msgid ""
+"Implement basic functionalities for text processing, including text "
+"normalization, saving and loading text processing configuration."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr:6 of
+msgid ""
+":py:class:`lmp.tknzr.BaseTknzr` is designed to be the base class of all "
+"tokenizers, thus both tokenization (:py:meth:`lmp.tknzr.BaseTknzr.tknz`) "
+"and detokenization (:py:meth:`lmp.tknzr.BaseTknzr.dtknz`) functions are "
+"left unimplemented. Directly or indirectly calling tokenization related "
+"functions will raise :py:exc:`NotImplementedError`. To use tokenization "
+"related functionalities, one must used subclasses of "
+":py:class:`lmp.tknzr.BaseTknzr` instead (such as "
+":py:class:`lmp.tknzr.CharTknzr` or :py:class:`lmp.tknzr.WsTknzr`). All "
+"subclasses are available under :py:mod:`lmp.tknzr`."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr lmp.tknzr._base.BaseTknzr.batch_dec
+#: lmp.tknzr._base.BaseTknzr.batch_enc lmp.tknzr._base.BaseTknzr.build_vocab
+#: lmp.tknzr._base.BaseTknzr.dec lmp.tknzr._base.BaseTknzr.dtknz
+#: lmp.tknzr._base.BaseTknzr.enc lmp.tknzr._base.BaseTknzr.load
+#: lmp.tknzr._base.BaseTknzr.norm lmp.tknzr._base.BaseTknzr.save
+#: lmp.tknzr._base.BaseTknzr.tknz lmp.tknzr._base.BaseTknzr.train_parser of
+msgid "Parameters"
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr:17 of
+msgid ""
+"Convert text into lowercase if set to ``True``. See "
+":py:meth:`lmp.tknzr.BaseTknzr.norm`."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr:20 of
+msgid ""
+"Tokenizer's maximum vocabulary size. Set to ``-1`` to include as many "
+"tokens as possible in vocabulary. Must be larger than or equal to ``-1``."
+" See :py:meth:`lmp.tknzr.BaseTknzr.build_vocab`."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr:25 of
+msgid ""
+"Minimum token frequency for each token to be included in tokenizer's "
+"vocabulary. Must be larger than ``0``. See "
+":py:meth:`lmp.tknzr.BaseTknzr.build_vocab`."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr:30 of
+msgid ""
+"Token to id lookup table. If ``tk2id`` is given, then initialize token to"
+" id lookup table with ``tk2id``. Otherwise initialize lookup table with "
+"special tokens only. Keys in ``tk2id`` must be ``str``, and values in "
+"``tk2id`` must be non-negative integers. See "
+":py:meth:`lmp.tknzr.BaseTknzr.build_vocab`."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr:38 of
+msgid "Useless parameter. Intently left for subclass parameters extension."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr:44 of
+msgid ""
+"Special token which represents the begining of a text. Text will be "
+"prepended with :py:attr:`lmp.tknzr.BaseTknzr.bos_tk` when encoded by "
+":py:attr:`lmp.tknzr.BaseTknzr.enc`."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr of
+msgid "type"
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr:48 lmp.tknzr._base.BaseTknzr:62
+#: lmp.tknzr._base.BaseTknzr:74 lmp.tknzr._base.BaseTknzr:110
+#: lmp.tknzr._base.BaseTknzr:130 lmp.tknzr._base.BaseTknzr:139 of
+msgid "ClassVar[str]"
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr:52 of
+msgid "Special token id of :py:attr:`lmp.tknzr.BaseTknzr.bos_tk`."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr:54 lmp.tknzr._base.BaseTknzr:68
+#: lmp.tknzr._base.BaseTknzr:116 lmp.tknzr._base.BaseTknzr:148 of
+msgid "ClassVar[int]"
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr:58 of
+msgid ""
+"Special token which represents the end of a text. Text will be appended "
+"with :py:attr:`lmp.tknzr.BaseTknzr.eos_tk` when encoded by "
+":py:attr:`lmp.tknzr.BaseTknzr.enc`."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr:66 of
+msgid "Special token id of :py:attr:`lmp.tknzr.BaseTknzr.eos_tk`."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr:72 of
+msgid "Tokenizer's configuration file name."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr:78 of
+msgid "Id (a non-negative integer) to token (a string) lookup table."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr:80 of
+msgid "Dict[int, str]"
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr:84 of
+msgid ""
+"When performing :py:meth:`lmp.tknzr.BaseTknzr.norm`, convert text into "
+"lowercase if :py:attr:`lmp.tknzr.BaseTknzr.is_uncased` is ``True``."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr:87 of
+msgid "bool"
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr:91 of
+msgid ""
+"Tokenizer's maximum vocabulary size. Set to ``-1`` to include as many "
+"tokens as possible in vocabulary."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr:94 lmp.tknzr._base.BaseTknzr:101 of
+msgid "int"
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr:98 of
+msgid ""
+"Minimum token frequency for each token to be included in tokenizer's "
+"vocabulary."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr:105 of
+msgid ""
+"Special token which represents paddings of a text. Text may be appended "
+"with padding tokens :py:attr:`lmp.tknzr.BaseTknzr.pad_tk` when encoded by"
+" :py:attr:`lmp.tknzr.BaseTknzr.enc`."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr:114 of
+msgid "Special token id of :py:attr:`lmp.tknzr.BaseTknzr.pad_tk`."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr:120 of
+msgid "Token (a string) to id (a non-negative integer) lookup table."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr:122 of
+msgid "Dict[str, int]"
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr:126 of
+msgid ""
+"Display name for tokenizer on CLI. Used for command line argument "
+"parsing. Subclass must overwrite ``tknzr_name`` class attribute."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr:134 of
+msgid ""
+"Special token which represents unknown tokens in a text. Tokens in text "
+"may be replaced with :py:attr:`lmp.tknzr.BaseTknzr.unk_tk` when encoded "
+"by :py:attr:`lmp.tknzr.BaseTknzr.enc`."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr:143 of
+msgid ""
+"Special token id of :py:attr:`lmp.tknzr.BaseTknzr.unk_tk`. Token ids in a"
+" sequence may be replaced with :py:attr:`lmp.tknzr.BaseTknzr.unk_tkid` "
+"when decoded by :py:attr:`lmp.tknzr.BaseTknzr.dec`."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr lmp.tknzr._base.BaseTknzr.dtknz
+#: lmp.tknzr._base.BaseTknzr.load lmp.tknzr._base.BaseTknzr.save
+#: lmp.tknzr._base.BaseTknzr.tknz of
+msgid "Raises"
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr:150 of
+msgid "When parameters do not obey their type annotations."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr:151 of
+msgid "When parameters do not obey their value contraints."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr:155 of
+msgid ":obj:`lmp.tknzr`"
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr:156 of
+msgid "All available tokenizers."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.batch_dec:1 of
+msgid "Decode batch of sequences of :term:`token id`\\s back to batch of text."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.batch_dec:3 of
+msgid ""
+"Each sequence of token ids in `batch_tkids` will be decoded with "
+"``self.dec()``."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.batch_dec:6 of
+msgid "Batch of sequences of token ids to be decoded."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.batch_dec:8 of
+msgid ""
+"Whether to remove special tokens. See :py:meth:`lmp.tknzr.BaseTknzr.dec` "
+"for ``rm_sp_tks`` usage. Defaults to ``False``."
+msgstr ""
+
+#: lmp.tknzr.BaseTknzr.vocab_size lmp.tknzr._base.BaseTknzr.batch_dec
+#: lmp.tknzr._base.BaseTknzr.batch_enc lmp.tknzr._base.BaseTknzr.build_vocab
+#: lmp.tknzr._base.BaseTknzr.dec lmp.tknzr._base.BaseTknzr.dtknz
+#: lmp.tknzr._base.BaseTknzr.enc lmp.tknzr._base.BaseTknzr.norm
+#: lmp.tknzr._base.BaseTknzr.tknz of
+msgid "Returns"
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.batch_dec:13 of
+msgid "Batch of decoded text."
+msgstr ""
+
+#: lmp.tknzr.BaseTknzr.vocab_size lmp.tknzr._base.BaseTknzr.batch_dec
+#: lmp.tknzr._base.BaseTknzr.batch_enc lmp.tknzr._base.BaseTknzr.build_vocab
+#: lmp.tknzr._base.BaseTknzr.dec lmp.tknzr._base.BaseTknzr.dtknz
+#: lmp.tknzr._base.BaseTknzr.enc lmp.tknzr._base.BaseTknzr.norm
+#: lmp.tknzr._base.BaseTknzr.tknz of
+msgid "Return type"
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.batch_dec:16 of
+msgid ":obj:`lmp.tknzr.BaseTknzr.batch_enc`, :obj:`lmp.tknzr.BaseTknzr.dec`"
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.batch_enc:1 of
+msgid "Encode batch of text into batch of sequences of token ids."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.batch_enc:3 of
+msgid ""
+"Each text in ``batch_txt`` will be encoded with "
+":py:meth:`lmp.tknzr.BaseTknzr.enc`. All encoded sequence of token ids "
+"will have the same length."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.batch_enc:7 of
+msgid ""
+"If ``max_seq_len == -1``, then ``max_seq_len`` will be set to the longest"
+" encoded sequence in ``batch_txt``."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.batch_enc:10 of
+msgid "Batch of text to be encoded."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.batch_enc:12 of
+msgid ""
+"Truncate and pad each token ids sequence in the batch to maximum sequence"
+" length. If ``max_seq_len == -1``, then ``max_seq_len`` will be set to "
+"the longest encoded sequence in ``batch_txt``. Defaults to ``-1``."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.batch_enc:19 of
+msgid "Encoded batch of sequence of token ids."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.batch_enc:22 of
+msgid ""
+":obj:`lmp.dset.util.pad_to_max`, :obj:`lmp.dset.util.trunc_to_max`, "
+":obj:`lmp.tknzr.BaseTknzr.batch_dec`, :obj:`lmp.tknzr.BaseTknzr.enc`"
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.build_vocab:1 of
+msgid "Build :term:`vocabulary` for tokenizer."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.build_vocab:3 of
+msgid ""
+"Build vocabulary based on :term:`token` frequency. Each text in "
+"``batch_text`` will first be normalized then tokenized. We then count "
+"each token's frequency and build vocabulary based on token's frequency. "
+"Vocabulary is sorted by token frenquency in descending order."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.build_vocab:9 of
+msgid ""
+"If a token is going to be added to vocabulary, then its token id will be "
+"assign to the largest token id + 1. If a token's frequency is lower than "
+":py:attr:`lmp.tknzr.BaseTknzr.min_count`, then that token will not be "
+"added to vocabulary. If a token is already in vocabulary, then it will "
+"not be added again to vocabulary. If the size of vocabulary is already "
+"larger than :py:attr:`lmp.tknzr.BaseTknzr.max_vocab`, then no new tokens "
+"will be added to vocabulary."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.build_vocab:20 of
+msgid "Source of text to build vocabulary."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.build_vocab:26 of
+msgid ""
+":obj:`lmp.tknzr.BaseTknzr.norm`, :obj:`lmp.tknzr.BaseTknzr.tknz`, "
+":obj:`lmp.tknzr.BaseTknzr.vocab_size`"
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.dec:1 of
+msgid "Decode sequence of :term:`token id`\\s back to text."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.dec:3 of
+msgid ""
+"Sequence of token ids will first be converted into sequence of tokens, "
+"then be detokenized back to text."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.dec:6 of
+msgid ""
+"Special tokens other than ``[unk]`` will be removed if ``rm_sp_tks == "
+"True``. Unknown tokens ``[unk]`` will not be removed even if ``rm_sp_tks "
+"== True``. If some token ids in sequence are not in tokenizer's inverse "
+"lookup table, then they will be converted into ``[unk]`` token."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.dec:13 of
+msgid "Sequence of token ids to be decoded."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.dec:15 of
+msgid ""
+"Whether to remove special tokens. If ``rm_sp_tks == True``, then remove "
+"``[bos]``, ``[eos]`` and ``[pad]``. Defaults to ``False``."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.dec:21 of
+msgid "Decoded text."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.dec:24 of
+msgid ":obj:`lmp.tknzr.BaseTknzr.enc`"
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.dec:28 of
+msgid ""
+"Unknown tokens cannot be converted back to original tokens, so unknown "
+"tokens should not be removed and serve as a hint of :term:`OOV`."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.dtknz:1 of
+msgid "Convert :term:`tokens` back to text."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.dtknz:3 of
+msgid ""
+"Tokens will be detokenized and normalized by "
+":py:meth:`lmp.tknzr.BaseTknz.norm`. The order of detokenization and "
+"normalization does not matter."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.dtknz:7 of
+msgid "Sequence of tokens to be detokenized."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.dtknz:10 of
+msgid "Normalized text which is detokenized from tokens."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.dtknz:13 of
+msgid "When subclasses do not implement detokenization."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.dtknz:15 of
+msgid ":obj:`lmp.tknzr.BaseTknzr.tknz`, :obj:`lmp.tknzr.BaseTknzr.norm`"
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.enc:1 of
+msgid "Encode text into sequence of :term:`token id`\\s."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.enc:3 of
+msgid ""
+"Text will first be tokenized into sequence to tokens, then formatted as "
+"follow::"
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.enc:8 of
+msgid ""
+"Meaning of special tokens: ``[bos]`` denote \"begin of sentence\", "
+"``[eos]`` denote \"end of sentence\", ``[pad]`` denote \"padding of "
+"sentence\" and ``[unk]`` denote \"unknown tokens\"."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.enc:12 of
+msgid ""
+"Both special tokens ``[bos]`` and ``[eos]`` will be added to sequence of "
+"tokens."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.enc:15 of
+msgid ""
+"If sequence is longer than ``max_seq_len`` after adding ``[bos]`` and "
+"``[eos]``, then sequence will be truncated with length equals to "
+"``max_seq_len``."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.enc:19 of
+msgid ""
+"If sequence is shorter than ``max_seq_len`` after adding ``[bos]`` and "
+"``[eos]``, then ``[pad]`` will be added util sequence has length "
+"``max_seq_len``."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.enc:23 of
+msgid ""
+"If some tokens in sequence are :term:`OOV`, then they will be replaced "
+"with ``[unk]``."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.enc:26 of
+msgid "All tokens in sequence are converted into token ids and returned."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.enc:28 of
+msgid "Text to be encoded."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.enc:30 of
+msgid ""
+"Truncate or pad sequence to maximum sequence length. If ``max_seq_len == "
+"-1``, then sequence will neither be truncated nor be padded. Defaults to "
+"``-1``."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.enc:36 of
+msgid "Encoded token ids."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.enc:39 of
+msgid ""
+":obj:`lmp.dset.util.pad_to_max`, :obj:`lmp.dset.util.trunc_to_max`, "
+":obj:`lmp.tknzr.BaseTknzr.dec`, :obj:`lmp.tknzr.BaseTknzr.tknz`"
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.load:1 of
+msgid "Load :term:`tokenizer` configuration from JSON file."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.load:3 of
+msgid ""
+"Load pre-trained tokenizer using previously saved configuration. This "
+"class method only work if pre-trained tokenizer exists under "
+":term:`experiment` ``exp_name``."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.load:7 of
+msgid "Name of existing experiment."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.load:10 of
+msgid "If file ``exp/exp_name/tknzr.json`` does not exist."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.load:11 of
+msgid "If tokenizer configuration is not in JSON format."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.load:12 of
+msgid "When ``exp_name`` is not an instance of ``str``."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.load:13 of
+msgid "When ``exp_name`` is empty string."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.load:17 of
+msgid ":obj:`lmp.tknzr.BaseTknzr.save`"
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.load:18 of
+msgid "Save trained tokenizer into JSON format."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.load:21 lmp.tknzr._base.BaseTknzr.norm:17
+#: lmp.tknzr._base.BaseTknzr.save:19 lmp.tknzr._base.BaseTknzr.train_parser:12
+#: of
+msgid "Examples"
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.norm:1 of
+msgid "Perform normalization on text."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.norm:3 of
+msgid ""
+"Text will first be normalized using :py:func:`lmp.dset.util.norm`, then "
+"perform case conversion. If :py:attr:`lmp.tknzr.BaseTknzr.is_uncased` is "
+"``True``, then output text will be converted into lowercase."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.norm:8 of
+msgid "Text to be normalized."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.norm:11 of
+msgid "Normalized text."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.norm:14 of
+msgid ":obj:`lmp.dset.util.norm`"
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.save:1 of
+msgid "Save :term:`tokenizer` configuration in JSON format."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.save:3 of
+msgid ""
+"Save trained tokenizer's configuration into JSON format and named it as "
+":py:attr:`lmp.tknzr.BaseTknzr.file_name`. This method will create a "
+"directory for each tokenizer training experiment if that directory is not"
+" created before."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.save:8 of
+msgid "Training experiment name of the tokenizer."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.save:11 of
+msgid ""
+"When experiment directory path already exists but is not a     directory,"
+" or when expeirment file path already exists but is a     directory."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.save:15 of
+msgid ":obj:`lmp.tknzr.BaseTknzr.load`"
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.save:16 of
+msgid "Load pre-trained tokenizers from JSON."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.tknz:1 of
+msgid "Perform :term:`tokenization` on text."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.tknz:3 of
+msgid ""
+"Text will first be normalized by :py:meth:`lmp.tknzr.BaseTknz.norm`, then"
+" be tokenized into list of tokens."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.tknz:6 of
+msgid "Text to be tokenized."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.tknz:9 of
+msgid "List of normalized tokens tokenized from text."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.tknz:12 of
+msgid "When subclasses do not implement tokenization."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.tknz:14 of
+msgid ":obj:`lmp.tknzr.BaseTknzr.dtknz`, :obj:`lmp.tknzr.BaseTknzr.norm`"
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.train_parser:1 of
+msgid "Training :term:`tokenizer` CLI arguments parser."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.train_parser:3 of
+msgid "Parser for CLI arguments."
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.train_parser:8 of
+msgid ":obj:`lmp.script.train_tokenizer`"
+msgstr ""
+
+#: lmp.tknzr._base.BaseTknzr.train_parser:9 of
+msgid "Tokenizer training script."
+msgstr ""
+
+#: lmp.tknzr.BaseTknzr.vocab_size:1 of
+msgid "Get :term:`vocabulary` size of the tokenizer."
+msgstr ""
+
+#: lmp.tknzr.BaseTknzr.vocab_size:3 of
+msgid "Size of the tokenizer's vocabulary."
+msgstr ""
+
+#: lmp.tknzr.BaseTknzr.vocab_size:6 of
+msgid ":obj:`lmp.tknzr.BaseTknzr.build_vocab`"
+msgstr ""
+

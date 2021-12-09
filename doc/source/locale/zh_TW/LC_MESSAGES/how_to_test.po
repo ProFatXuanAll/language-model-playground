@@ -1,0 +1,58 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, ProFatXuanAll
+# This file is distributed under the same license as the Language Model
+# Playground package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Language Model Playground 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-11-16 19:12+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/how_to_test.rst:2
+msgid "How To Test Guide"
+msgstr "測試程式指南"
+
+#: ../../source/how_to_test.rst:6
+msgid "You need to install dev tools first by running"
+msgstr "在運行之前，你需要先安裝環境工具。"
+
+#: ../../source/how_to_test.rst:13
+msgid "Test Style Guide"
+msgstr "測試風格指南"
+
+#: ../../source/how_to_test.rst:15
+msgid ""
+"We use pytest_ testing framework to test our code. We use coverage_ to "
+"provide test coverage report. Please RTFM."
+msgstr "我們使用 pytest_ 測試框架來測試我們的程式碼。我們使用 coverage_ 來產生測試覆蓋報告。請 RTFM。"
+
+#: ../../source/how_to_test.rst:23
+msgid "Run Test"
+msgstr "運行測試"
+
+#: ../../source/how_to_test.rst:25 ../../source/how_to_test.rst:32
+msgid "Run the following command in project root directory::"
+msgstr "在根目錄運行下面的指令：："
+
+#: ../../source/how_to_test.rst:30
+msgid "Generate Test Coverage Report"
+msgstr "產生測試文件報告"
+
+#: ../../source/how_to_test.rst:36
+msgid "Todo"
+msgstr "待做"
+
+#: ../../source/how_to_test.rst:38
+msgid "Add more test writing guideline."
+msgstr "加入更多程式準則。"
+

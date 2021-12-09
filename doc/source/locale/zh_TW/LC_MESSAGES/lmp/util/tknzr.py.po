@@ -1,0 +1,99 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, ProFatXuanAll
+# This file is distributed under the same license as the Language Model
+# Playground package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Language Model Playground 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-13 16:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/lmp/util/tknzr.py.rst:2
+msgid ":py:mod:`lmp.util.tknzr`"
+msgstr ""
+
+#: lmp.util.tknzr:1 of
+msgid "Tokenizer utilities."
+msgstr ""
+
+#: lmp.util.tknzr.create:1 of
+msgid "Create new tokenizer."
+msgstr ""
+
+#: lmp.util.tknzr.create:3 of
+msgid ""
+"Create new tokenizer based on ``tknzr_name``. All keyword arguments are "
+"collected in ``**kwargs`` and are passed directly to tokenizer's "
+"``__init__`` method."
+msgstr ""
+
+#: lmp.util.tknzr.create lmp.util.tknzr.load of
+msgid "Parameters"
+msgstr ""
+
+#: lmp.util.tknzr.create:7 of
+msgid "Name of the tokenizer to create."
+msgstr ""
+
+#: lmp.util.tknzr.create:9 of
+msgid ""
+"Tokenizer specific parameters. All tokenizer specific parameters must be "
+"passed in as keyword arguments."
+msgstr ""
+
+#: lmp.util.tknzr.create lmp.util.tknzr.load of
+msgid "Returns"
+msgstr ""
+
+#: lmp.util.tknzr.create:14 of
+msgid "New tokenizer instance."
+msgstr ""
+
+#: lmp.util.tknzr.create lmp.util.tknzr.load of
+msgid "Return type"
+msgstr ""
+
+#: lmp.util.tknzr.create:19 lmp.util.tknzr.load:16 of
+msgid ":obj:`lmp.tknzr`"
+msgstr ""
+
+#: lmp.util.tknzr.create:20 lmp.util.tknzr.load:17 of
+msgid "All available tokenizers."
+msgstr ""
+
+#: lmp.util.tknzr.create:23 lmp.util.tknzr.load:20 of
+msgid "Examples"
+msgstr ""
+
+#: lmp.util.tknzr.load:1 of
+msgid "Load pre-trained tokenizer."
+msgstr ""
+
+#: lmp.util.tknzr.load:3 of
+msgid ""
+"Load pre-trained tokenizer from experiment ``exp_name``. Tokenizer "
+"instance is load based on ``tknzr_name``."
+msgstr ""
+
+#: lmp.util.tknzr.load:6 of
+msgid "Pre-trained tokenizer experiment name."
+msgstr ""
+
+#: lmp.util.tknzr.load:8 of
+msgid "Name of the tokenizer to load."
+msgstr ""
+
+#: lmp.util.tknzr.load:11 of
+msgid "Pre-trained tokenizer instance."
+msgstr ""
+

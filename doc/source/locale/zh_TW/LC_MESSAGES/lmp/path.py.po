@@ -1,0 +1,65 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, ProFatXuanAll
+# This file is distributed under the same license as the Language Model
+# Playground package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Language Model Playground 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-13 16:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/lmp/path.py.rst:2
+msgid ":py:mod:`lmp.path`"
+msgstr ""
+
+#: lmp.path:1 of
+msgid "Path variables shared throughout this project."
+msgstr ""
+
+#: lmp.path:5 of
+msgid "Absolute path of the project root directory."
+msgstr ""
+
+#: lmp.path of
+msgid "type"
+msgstr ""
+
+#: lmp.path:7 lmp.path:16 lmp.path:24 lmp.path:31 of
+msgid "Final[str]"
+msgstr ""
+
+#: lmp.path:11 of
+msgid ""
+"Absolute path of all the dataset. Some of the dataset size are too big to"
+" be tracked on GitHub, thus we host all of our dataset files on different"
+" GitHub repository. See :py:class:`lmp.dset.BaseDset` for more "
+"information."
+msgstr ""
+
+#: lmp.path:20 of
+msgid ""
+"Absolute path of all experiments. Experiment are ignore by `.git`, no "
+"experiment results (model checkpoints, tokenizer cofiguration, etc.) will"
+" be commited."
+msgstr ""
+
+#: lmp.path:28 of
+msgid ""
+"Absolute path of all experiments' log. Experiment are ignore by `.git`, "
+"no experiment logs will be commited."
+msgstr ""
+
+#: lmp.path:34 of
+msgid "Example"
+msgstr ""
+

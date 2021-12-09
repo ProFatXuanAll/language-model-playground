@@ -1,0 +1,123 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, ProFatXuanAll
+# This file is distributed under the same license as the Language Model
+# Playground package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Language Model Playground 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-13 16:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/lmp/script/evaluate_model_on_dataset.py.rst:2
+msgid ":py:mod:`lmp.script.evaluate_model_on_dataset`"
+msgstr ""
+
+#: lmp.script.evaluate_model_on_dataset:1 of
+msgid "Evaluate language model on dataset."
+msgstr ""
+
+#: lmp.script.evaluate_model_on_dataset:3 of
+msgid ""
+"Tool for evaluating language model on dataset. Pre-trained model are used"
+" to calculate perplexity on dataset. This script serve as model "
+"validation, and it is usually run after training model. All evaluation "
+"results will be shown on both CLI and tensorboard. Use ``pipenv run "
+"tensorboard`` to launch tensorboard and use browser to open URL "
+"http://localhost:6006/ to see evaluation results."
+msgstr ""
+
+#: lmp.script.evaluate_model_on_dataset:14 of
+msgid ":obj:`lmp.model`"
+msgstr ""
+
+#: lmp.script.evaluate_model_on_dataset:14 of
+msgid "All available models."
+msgstr ""
+
+#: lmp.script.evaluate_model_on_dataset:16 of
+msgid ":obj:`lmp.script.train_model`"
+msgstr ""
+
+#: lmp.script.evaluate_model_on_dataset:17 of
+msgid "Train language model."
+msgstr ""
+
+#: lmp.script.evaluate_model_on_dataset:20 of
+msgid "Examples"
+msgstr ""
+
+#: lmp.script.evaluate_model_on_dataset:21 of
+msgid ""
+"The following example using ``valid`` version of "
+":py:class:`lmp.dset.WikiText2` dataset to evaluate pre-trained language "
+"model experiment ``my_exp``. It evaluate on checkpoints start from number"
+" ``5000`` to last."
+msgstr ""
+
+#: lmp.script.evaluate_model_on_dataset:33 of
+msgid "The following example evaluate on the latest checkpoint."
+msgstr ""
+
+#: lmp.script.evaluate_model_on_dataset:43 of
+msgid "Specify only some checkpoints to be evaluated."
+msgstr ""
+
+#: lmp.script.evaluate_model_on_dataset:54 of
+msgid ""
+"Since evaluation do not need to calculate backward pass, model will "
+"consume less memory than training, thus we can use larger batch size by "
+"increasing ``--batch_size`` to accelerate evaluation process."
+msgstr ""
+
+#: lmp.script.evaluate_model_on_dataset.main:1 of
+msgid "Script entry point."
+msgstr ""
+
+#: lmp.script.evaluate_model_on_dataset.parse_arg:1 of
+msgid "Parse arguments from CLI."
+msgstr ""
+
+#: lmp.script.evaluate_model_on_dataset.parse_arg:3 of
+msgid ""
+"Parse pre-trained language model experiment name and evaluate on dataset."
+" Argument must begin with a dataset name ``dset_name``."
+msgstr ""
+
+#: lmp.script.evaluate_model_on_dataset.parse_arg:6 of
+msgid "Evaluation batch size."
+msgstr ""
+
+#: lmp.script.evaluate_model_on_dataset.parse_arg:7 of
+msgid "Pre-trained model checkpoint."
+msgstr ""
+
+#: lmp.script.evaluate_model_on_dataset.parse_arg:8 of
+msgid "Pre-trained tokenizer experiment name."
+msgstr ""
+
+#: lmp.script.evaluate_model_on_dataset.parse_arg:9 of
+msgid "Version of the dataset. Default to ``dset``'s default version."
+msgstr ""
+
+#: lmp.script.evaluate_model_on_dataset.parse_arg of
+msgid "Returns"
+msgstr ""
+
+#: lmp.script.evaluate_model_on_dataset.parse_arg:12 of
+msgid "Arguments from CLI."
+msgstr ""
+
+#: lmp.script.evaluate_model_on_dataset.parse_arg of
+msgid "Return type"
+msgstr ""
+

@@ -35,4 +35,4 @@ Run the following command in project root directory::
 
 .. todo::
 
-    Add more test writing guide line.
+    Add more test writing guideline.

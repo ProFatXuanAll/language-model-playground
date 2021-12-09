@@ -1,0 +1,470 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, ProFatXuanAll
+# This file is distributed under the same license as the Language Model
+# Playground package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Language Model Playground 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-13 16:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/glossary.rst:2
+msgid "Glossary"
+msgstr ""
+"詞彙表"
+
+#: ../../source/glossary.rst:5
+msgid "checkpoint"
+msgstr ""
+"紀錄點"
+
+#: ../../source/glossary.rst:6
+msgid "checkpoints"
+msgstr ""
+"紀錄點"
+
+#: ../../source/glossary.rst:8
+msgid ""
+"In the process of training :term:`language models`, we need to save our "
+"training results (model parameters) for later evaluation. We don't want "
+"to save our training results only after training. We want to save our "
+"training results every certain amount of update times. The :term:`step` "
+"number triggering save process is called **checkpoint**. All checkpoints "
+"will be saved at your :term:`experiment path` and named with format "
+"``model-\\d+.pt``, where ``\\d+`` means checkpoint step."
+msgstr ""
+"我們想要在訓練 :term:`語言模型` 的過程中，我們需要把訓練的結果 （模型參數）給存起來"
+"以幫助後續的模型驗證。我們不想要只存最後模型訓練的結果。為了存模型的數字 :term:`步` "
+"就是 **紀錄點數** 。所有的紀錄點都會被存到 :term:`實驗檔案路徑` 並且以 "
+"``model-\\d+.pt`` 命名。 ``\\d+`` 就是紀錄點數。"
+
+#: ../../source/glossary.rst:17
+msgid "detokenize"
+msgstr ""
+"接詞"
+
+#: ../../source/glossary.rst:18
+msgid "detokenization"
+msgstr ""
+"連接器"
+
+#: ../../source/glossary.rst:20
+msgid "Converts list of tokens back to one and only one text."
+msgstr ""
+"把斷詞串在一起。"
+
+#: ../../source/glossary.rst:22
+msgid ""
+"For example, when we detokenize ``['a', 'b', 'c']`` based on "
+"**character**, we get ``'abc'``; When we detokenize ``['a', 'b', 'c']`` "
+"base on **whitespace**, we get ``'a b c'``."
+msgstr ""
+"比如說，我們要基於字元而串起 ``['a', 'b', 'c']``，我們得到 ``'abc'`` ，而當我們"
+"基於空白而串起 ``['a', 'b', 'c']``，我們得到 ``'a b c'``。"
+
+#: ../../source/glossary.rst:27
+msgid ""
+"Detokenization is just the oppsite operation of :term:`tokenization`, and"
+" detokenization usually don't involve any statistics."
+msgstr ""
+"接詞器是 :term:`斷詞器` 的相反，並且接詞器通常不和機率有關。"
+
+#: ../../source/glossary.rst:29
+msgid "experiment"
+msgstr ""
+"實驗"
+
+#: ../../source/glossary.rst:31
+msgid ""
+"May refer to :term:`tokenizer` training experiment or model training "
+"experiment. One usually train a tokenizer first and then train a model."
+msgstr ""
+"可以是 :term:`斷詞器` 的實驗或者是模型的實驗，通常是先訓練好斷詞器再訓練一個模型。"
+
+#: ../../source/glossary.rst:34
+msgid "experiment name"
+msgstr ""
+"實驗名稱"
+
+#: ../../source/glossary.rst:36
+msgid "Name of a particular :term:`experiment`."
+msgstr ""
+":term:`實驗` 的特殊名稱"
+
+#: ../../source/glossary.rst:37
+msgid "experiment path"
+msgstr ""
+"實驗檔案路徑"
+
+#: ../../source/glossary.rst:39
+msgid ""
+"If :term:`experiment name` is ``my_exp``, then experiment path is "
+"``exp/my_exp``. All :term:`experiment` related files will be put under "
+"directory ``exp``."
+msgstr ""
+"如果 :term:`實驗名稱` 是 ``my_exp``，並且實驗檔案路徑是 ``exp/my_exp``，"
+"則所有有關 :term:`實驗` 的檔案都會被存在 ``exp`` 檔案以下。"
+
+#: ../../source/glossary.rst:42
+msgid "language model"
+msgstr ""
+"語言模型"
+
+#: ../../source/glossary.rst:43
+msgid "language models"
+msgstr ""
+"語言模型"
+
+#: ../../source/glossary.rst:45
+msgid ""
+"A language model is a model which can calculate the probability of a "
+"given text is comming from human language."
+msgstr ""
+"語言模型可以計算人類所產生的文字的機率。"
+
+#: ../../source/glossary.rst:48
+msgid ""
+"For example, the text \"how are you?\" is used in daily conversation and "
+"thus language model should output high probability (or equivalently low "
+":term:`perplexity`). On the other hand the text \"you are how?\" is "
+"meaningless and thus language model should output low probability (or "
+"equivalently high :term:`perplexity`)."
+msgstr ""
+"舉例來說， "how are you?" 是日常所說的用語，所以在語言模型中應該得到很高的機率（ 很，"
+"低的 :term:`困惑度` ）反之， "you are how?" 是無意義的用語，在語言模型中要得到很低的機率"
+"（或是很低的 :term:`困惑度` 分數。"
+
+#: ../../source/glossary.rst:55
+msgid ""
+"More precisely, language model is an probabilistic algorithm which input "
+"is text and output is probability (or :term:`perplexity`). We denote "
+"language model as :math:`M` and input text as :math:`x`. The hypothesis "
+"(expected behavior) of language models are:"
+msgstr ""
+"更精確的說，語言模型是一個算機率的模型，輸入文字並且輸出機率（或是 :term:`困惑度` ）。"
+"我們在此稱語言模型為 :math:`M` ，並且輸入文字為 :math:`x`，這樣的語言模型假設表示："
+
+#: ../../source/glossary.rst:60
+msgid ""
+"If :math:`M(x) \\approx 1`, then :math:`x` is very likely comming from "
+"human language."
+msgstr ""
+"如果 :math:`M(x) \\approx 1`，則 :math:`x` 是非常接近人類語言的。"
+
+#: ../../source/glossary.rst:62
+msgid ""
+"If :math:`M(x) \\approx 0`, then :math:`x` is not likely comming from "
+"human language."
+msgstr ""
+"如果 :math:`M(x) \\approx 0`，則 :math:`x` 不會是一般人類語言。"
+
+#: ../../source/glossary.rst:65
+msgid ""
+"The common way to evalute a language model is using :term:`perplexity`. "
+"In early days language model are used to evaluate generated text from "
+"speech recognition. More recently, language models like GPT_ and BERT_ "
+"have shown to be useful for lots of downstream NLP tasks including "
+"Natural Lanugage Understanding (NLU), Natural Language Generation (NLG), "
+"Question Answering (QA), cloze test, etc."
+msgstr ""
+"一般驗證語言模型的方法是 :term:`困惑度` 。在早期，語言模型通常都是驗證語音辨識。"
+"最近，語言模型，像是 GPT_ 和 BERT_ 都在自然語言的下游任務中表現良好。包括文字理解"
+"、文字生成、文字問答和克漏字題目等．．．．．．"
+
+#: ../../source/glossary.rst:78
+msgid ""
+"In this project we have provided script for training language model "
+"(:py:mod:`lmp.script.train_model`), evaluating language model ( "
+":py:mod:`lmp.script.evaluate_model_on_dataset`) and generate text using "
+"language model (:py:mod:`lmp.script.generate_text`)."
+msgstr ""
+"在這個專案中，我們提供訓練語言模型的腳本（:py:mod:`lmp.script.train_model`），"
+"驗證語言模型的腳本（:py:mod:`lmp.script.evaluate_model_on_dataset`） 和利用"
+"語言模型的文字生成（:py:mod:`lmp.script.generate_text`）。"
+
+#: ../../source/glossary.rst:84
+msgid "lmp.script"
+msgstr ""
+
+#: ../../source/glossary.rst:85
+msgid "All available scripts related to language model."
+msgstr ""
+"所有和語言模型有關的腳本。"
+
+#: ../../source/glossary.rst:86 ../../source/glossary.rst:98
+msgid "lmp.model"
+msgstr ""
+
+#: ../../source/glossary.rst:87
+msgid "All available language model."
+msgstr ""
+"所有可使用的語言模型"
+
+#: ../../source/glossary.rst:88
+msgid "NN"
+msgstr ""
+
+#: ../../source/glossary.rst:89
+msgid "neural network"
+msgstr ""
+"神經網路"
+
+#: ../../source/glossary.rst:91
+msgid ""
+"In this project we use famous deep learning framework PyTorch_ to "
+"implement our language models."
+msgstr ""
+"在這個專案中，我們使用 Pytorch_ 框架來實做語言模型。"
+
+#: ../../source/glossary.rst:99
+msgid "All available models."
+msgstr ""
+"所有可使用的模型。"
+
+#: ../../source/glossary.rst:100
+msgid "NFKC"
+msgstr "以相容等價方式來分解，然後以標準等價重組之正規化。"
+
+#: ../../source/glossary.rst:102
+msgid ""
+"**Unicode normalization** is a process which convert full-width character"
+" into half-width, convert same glyph into same unicode, etc. It is a "
+"standard tool to preprocess text."
+msgstr ""
+"**Unicode正規化** 把全形符號轉成半形符號和把一樣的字行轉換成一樣的 unicode等……"
+"這是一個標準的處理文字工具。"
+
+#: ../../source/glossary.rst:106
+msgid "See https://en.wikipedia.org/wiki/Unicode_equivalence for more detail."
+msgstr ""
+"更多詳細的資料可以參考 https://en.wikipedia.org/wiki/Unicode_equivalence 。"
+
+#: ../../source/glossary.rst:107
+msgid "OOV"
+msgstr ""
+"未登錄詞"
+
+#: ../../source/glossary.rst:108
+msgid "out-of-vocabulary"
+msgstr "不在字彙裡的詞"
+
+#: ../../source/glossary.rst:110
+msgid "Refers to :term:`tokens` which are **not** in :term:`vocabulary`."
+msgstr ""
+"意指不在 :term:`字彙` 裡的 :term:`詞` 。"
+
+#: ../../source/glossary.rst:111
+msgid "Optimization"
+msgstr ""
+"最佳化"
+
+#: ../../source/glossary.rst:112
+msgid "optimization"
+msgstr ""
+"最佳化"
+
+#: ../../source/glossary.rst:113
+msgid "gradient descent"
+msgstr ""
+"梯度下降法"
+
+#: ../../source/glossary.rst:115
+msgid ""
+"In the context of :term:`neural network` optimization we usually mean to "
+"perform **gradient descent** on :term:`neural network`. To perform "
+"gradient descent, model need to first perform **forward pass**. During "
+"forward pass, model will take a input which we called **tensors** and "
+"pass tensors to deeper layers in model for calculation. Every path "
+"**tensor** flow throught the model will be recorded and construct a "
+"**tensor flowing graph**. The output of forward pass is then used to "
+"calculate **loss** on **objective function** (or **loss function**). We "
+"can say \"we are optimizing our model on objective function by minimizing"
+" loss.\" We can calculate gradient on loss with respect to model output. "
+"Then we can use gradient from loss to perform **back-propagation** with "
+"the aid of tensor flowing graph. After back-propagation, all parameters "
+"in model get their own gradients, then we can do **gradient descent**."
+msgstr ""
+"通常在最佳化 :term:`神經網路` 的時候，我們都是使用梯度下降法。"
+"在執行最佳化的過程中，首先在 :term:`神經網路` 經過 **前向傳播** ，模型會輸入一段 **張量** ，"
+"經過模型深層計算後，會紀錄成並輸出 **張量流向圖** ，輸出後值會和 **目標函數** （ **損失函數** ）"
+"計算 **損失**  。可以說最佳化模型就是在縮小和目標函數的損失。藉由 **張量流向圖** 我們可以計算梯度，並拿去"
+"做 **反向傳播** 。所有參數在做完 **反向傳播** 之後都可得到各自的梯度，因此我們可以做梯度下降法。"
+
+#: ../../source/glossary.rst:132
+msgid "perplexity"
+msgstr ""
+"困惑度"
+
+#: ../../source/glossary.rst:134
+msgid ""
+"Perplexity is a way to evaluate :term:`language model`. Given a text "
+":math:`x` consist of :math:`n` tokens :math:`x_1, x_2, \\dots, x_n`, we "
+"want to calculate the probability of text :math:`x` is comming from human"
+" language:"
+msgstr ""
+"困惑度，可以用來評估 :term:`語言模型` 。給定一段文字， :math:`x` 由 :math:`n` 個詞所組成，"
+":math:`x_1, x_2, \\dots, x_n` ，我們要計算文字 :math:`x` 是由人來所產生出來的機率。"
+
+#: ../../source/glossary.rst:139
+msgid ""
+"\\begin{align*}\n"
+"ppl(x) &= \\sqrt[n]{\\frac{1}{P(x_1, x_2, \\dots, x_n)}} \\\\\n"
+"&= \\bigg(P(x_1, x_2, \\dots, x_n)\\bigg)^{\\frac{-1}{n}} \\\\\n"
+"&= \\bigg(P(x_1) P(x_2|x_1) P(x_3|x_1, x_2) \\dots\n"
+"P(x_n|x_1, x_2, \\dots, x_{n - 1})\\bigg)^{\\frac{-1}{n}} \\\\\n"
+"&= \\bigg(\\prod_{i = 1}^n P(x_i|x_1, \\dots,\n"
+"x_{i - 1})\\bigg)^{\\frac{-1}{n}} \\\\\n"
+"&= e^{\\log \\prod_{i = 1}^n \\big(P(x_i|x_1, \\dots, x_{i - 1}\n"
+")\\big)^{\\frac{-1}{n}}} \\\\\n"
+"&= e^{\\frac{-1}{n}\\log \\prod_{i = 1}^n P(x_i|x_1, \\dots, x_{i - 1}\n"
+")} \\\\\n"
+"&= e^{\\frac{-1}{n} \\sum_{i = 1}^n \\log P(x_i|x_1, \\dots, x_{i - 1}\n"
+")} \\\\\n"
+"&= \\exp\\bigg(\\frac{-1}{n} \\sum_{i = 1}^n \\log P(x_i|x_1, \\dots,\n"
+"x_{i - 1})\\bigg)\n"
+"\\end{align*}"
+msgstr ""
+
+#: ../../source/glossary.rst:157
+msgid "step"
+msgstr ""
+"步"
+
+#: ../../source/glossary.rst:159
+msgid "Refers to number of times a :term:`language model` has been updated."
+msgstr ""
+"指訓練 :term:`語言模型` 被更新的次數。"
+
+#: ../../source/glossary.rst:160
+msgid "token"
+msgstr ""
+"詞"
+
+#: ../../source/glossary.rst:161
+msgid "tokens"
+msgstr ""
+"詞"
+
+#: ../../source/glossary.rst:162
+msgid "tokenize"
+msgstr ""
+"斷詞"
+
+#: ../../source/glossary.rst:163
+msgid "tokenization"
+msgstr ""
+"斷詞器"
+
+#: ../../source/glossary.rst:165
+msgid "Chunks text into small pieces (which are called **tokens**)."
+msgstr ""
+"分離一段文字成小片段（又被稱為 **詞** ）"
+
+#: ../../source/glossary.rst:167
+msgid ""
+"For example, when we tokenize text ``'abc 123'`` based on **character**, "
+"we get ``['a', 'b', 'c', ' ', '1', '2', '3']``; When we tokenize text "
+"``'abc 123'`` base on **whitespace**, we get ``['abc', '123']``."
+msgstr ""
+"舉例來說，我們對 ``'abc 123'`` 做基於字元的斷詞，我們得到 ``['a', 'b', 'c', ' ', '1', '2', '3']`` "
+"而當我們對 ``'abc 123'`` 做基於空白的斷詞，我們得到 ``['abc', '123']``。"
+
+#: ../../source/glossary.rst:172
+msgid ""
+"When processing text, one usually need a :term:`tokenizer` to convert "
+"bunch of long text (maybe a sentence, a paragraph, a document or whole "
+"bunch of documents) into smaller tokens (may be characters, words, etc.) "
+"and thus acquire statistic information (count tokens frequency, plot "
+"tokens distribution, etc.) to perform furthur analyzations."
+msgstr ""
+"我們通常需要 :term:`斷詞器` 來把一大段文字（可能是一個句子、一個段落、一篇文件或是整篇文件）"
+"分離成小的詞（或是字元和字等……）。藉此我們可以做更多的分析，包括得到頻率的資訊（計算詞出現的"
+"頻率、圖和詞分佈）"
+
+#: ../../source/glossary.rst:178
+msgid ""
+"How to tokenize is a research problem, and there are many statistic-based"
+" tokenization models (which we call them :term:`tokenizer`) have been "
+"proposed. One such famous example is STANZA_ proposed by Stanford."
+msgstr ""
+"怎麽斷詞是一個研究主題，並且有許多基於機率的斷詞模型（通常我們稱為 :term:`斷詞器`）被提出"
+"一個有名的例子是史丹佛所提出的 STANZA_。"
+
+#: ../../source/glossary.rst:184
+msgid "token id"
+msgstr ""
+"詞編號"
+
+#: ../../source/glossary.rst:186
+msgid ""
+"Since :term:`token` (a string) cannot be directly used to compute, we "
+"assign each token a **id** and replace tokens with their own ids to "
+"perform furthur calculation. Sometimes we also need a mechaism to convert"
+" token id back to their original token, in such cases we should assume "
+"that the :term:`vocabulary` only consist of **unique** token and id "
+"pairs."
+msgstr ""
+"因為我們無法直接對 :term:`詞` （一段文字）做計算，我們會給每個詞一個編號來做更多計算。"
+"有時我們需要一個機制來轉換詞編號回一般的文字，在這種情況我們假設 :term:`字彙` 中詞和詞編號是"
+"一一對應。"
+
+#: ../../source/glossary.rst:193
+msgid ""
+"For example, we can use a token id to perform embedding matrix lookup, "
+"the lookup result is a vector (which we suppose to) represent that token."
+msgstr ""
+"舉例來說，我們可以用詞編號對嵌入矩陣查詢。查後的結果是一個向量來代表詞。"
+
+#: ../../source/glossary.rst:196
+msgid "Tokenizer"
+msgstr ""
+"斷詞器"
+
+#: ../../source/glossary.rst:197
+msgid "tokenizer"
+msgstr ""
+"斷詞器"
+
+#: ../../source/glossary.rst:198
+msgid "tokenizers"
+msgstr ""
+"斷詞器"
+
+#: ../../source/glossary.rst:200
+msgid ""
+"Tools for text :term:`tokenization`. It can refer to statistic-based "
+"tokenization models."
+msgstr ""
+"用來對文字來 :term:`斷詞`。可以是指基於機率的斷詞模型。"
+
+#: ../../source/glossary.rst:202
+msgid "Vocabulary"
+msgstr ""
+"字彙"
+
+#: ../../source/glossary.rst:203
+msgid "vocabulary"
+msgstr ""
+"字彙"
+
+#: ../../source/glossary.rst:205
+msgid ""
+"When processing text, one have to choose how many :term:`tokens` need to "
+"be analyzed since we have limited memory size. Those chosen tokens are "
+"referred as **known tokens**, and are collectively called **vocabulary**. "
+"For the rest of the tokens (there are a lot of such tokens out there) not"
+" in the vocabulary are thus called :term:`out-of-vocabulary` tokens."
+msgstr ""
+"當處理文字時，必須考慮選用那些 :term:`詞` 需要被分析，因為我們的記憶體是有限的。"
+"那些被選擇的詞可以是 **known tokens** 也被稱作 **字彙** ，剩下來不在字彙中的詞（排除在字彙裡）"
+"被稱作 :term:`不在字彙裡的詞`。"
