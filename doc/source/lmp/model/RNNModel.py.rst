@@ -2,4 +2,4 @@
 ==============================
 
 .. autoclass:: lmp.model.RNNModel
-    :members:
+   :members:

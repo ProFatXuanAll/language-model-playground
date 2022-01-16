@@ -2,22 +2,13 @@
 ===================
 
 .. automodule:: lmp.model
-    :members:
+   :members:
 
 .. toctree::
-    :maxdepth: 1
-    :caption: All available models:
+   :maxdepth: 1
+   :caption: All available models:
 
-    BaseModel.py
-    GRUModel.py
-    LSTMModel.py
-    RNNModel.py
-    ResGRUModel.py
-    ResLSTMModel.py
-    ResRNNModel.py
-    ResSAttnGRUModel.py
-    ResSAttnLSTMModel.py
-    ResSAttnRNNModel.py
-    SAttnGRUModel.py
-    SAttnLSTMModel.py
-    SAttnRNNModel.py
+   BaseModel.py
+   GRUModel.py
+   LSTMModel.py
+   RNNModel.py

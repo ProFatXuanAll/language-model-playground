@@ -2,4 +2,4 @@
 ================================
 
 .. automodule:: lmp.script.train_model
-    :members:
+   :members:

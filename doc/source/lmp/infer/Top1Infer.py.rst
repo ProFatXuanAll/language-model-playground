@@ -2,4 +2,4 @@
 ===============================
 
 .. autoclass:: lmp.infer.Top1Infer
-    :members:
+   :members:

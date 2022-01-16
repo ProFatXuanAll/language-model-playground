@@ -2,4 +2,4 @@
 ====================================
 
 .. automodule:: lmp.script.train_tokenizer
-    :members:
+   :members:

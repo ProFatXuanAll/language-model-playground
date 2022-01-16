@@ -2,13 +2,13 @@
 ===================
 
 .. automodule:: lmp.infer
-    :members:
+   :members:
 
 .. toctree::
-    :maxdepth: 1
-    :caption: All available inference methods:
+   :maxdepth: 1
+   :caption: All available inference methods:
 
-    BaseInfer.py
-    Top1Infer.py
-    TopKInfer.py
-    TopPInfer.py
+   BaseInfer.py
+   Top1Infer.py
+   TopKInfer.py
+   TopPInfer.py

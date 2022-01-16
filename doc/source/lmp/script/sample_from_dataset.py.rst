@@ -2,4 +2,4 @@
 ========================================
 
 .. automodule:: lmp.script.sample_from_dataset
-    :members:
+   :members:

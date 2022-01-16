@@ -1,4 +1,4 @@
-r"""Test :py:class:`lmp.model` signature."""
+"""Test :py:class:`lmp.model` signatures."""
 
 import inspect
 from inspect import Parameter, Signature
@@ -9,165 +9,137 @@ from lmp.model._res_rnn import ResRNNBlock, ResRNNModel
 from lmp.tknzr._base import BaseTknzr
 
 
-def test_class():
-    r"""Ensure class signature."""
-    assert inspect.isclass(ResGRUModel)
-    assert not inspect.isabstract(ResGRUModel)
-    assert issubclass(ResGRUModel, ResRNNModel)
-    assert inspect.isclass(ResGRUBlock)
-    assert not inspect.isabstract(ResGRUBlock)
-    assert issubclass(ResGRUBlock, ResRNNBlock)
+def test_class() -> None:
+  """Ensure class signatures."""
+  assert inspect.isclass(ResGRUModel)
+  assert not inspect.isabstract(ResGRUModel)
+  assert issubclass(ResGRUModel, ResRNNModel)
+  assert inspect.isclass(ResGRUBlock)
+  assert not inspect.isabstract(ResGRUBlock)
+  assert issubclass(ResGRUBlock, ResRNNBlock)
 
 
-def test_class_attribute():
-    r"""Ensure class attributes' signature."""
-    assert isinstance(ResGRUModel.model_name, str)
-    assert ResGRUModel.model_name == 'res-GRU'
-    assert ResGRUModel.file_name == 'model-{}.pt'
+def test_class_attribute() -> None:
+  """Ensure class attributes' signatures."""
+  assert isinstance(ResGRUModel.model_name, str)
+  assert ResGRUModel.model_name == 'res-GRU'
+  assert ResGRUModel.file_name == 'model-{}.pt'
 
 
-def test_instance_method():
-    r"""Ensure instance methods' signature."""
-    assert hasattr(ResGRUBlock, '__init__')
-    assert inspect.signature(ResGRUBlock.__init__) == Signature(
-        parameters=[
-            Parameter(
-                name='self',
-                kind=Parameter.POSITIONAL_OR_KEYWORD,
-                default=Parameter.empty,
-            ),
-            Parameter(
-                name='d_hid',
-                kind=Parameter.KEYWORD_ONLY,
-                annotation=int,
-                default=Parameter.empty,
-            ),
-            Parameter(
-                name='n_hid_lyr',
-                kind=Parameter.KEYWORD_ONLY,
-                annotation=int,
-                default=Parameter.empty,
-            ),
-            Parameter(
-                name='p_hid',
-                kind=Parameter.KEYWORD_ONLY,
-                annotation=float,
-                default=Parameter.empty,
-            ),
-            Parameter(
-                name='kwargs',
-                kind=Parameter.VAR_KEYWORD,
-                annotation=Optional[Dict],
-            ),
-        ],
-        return_annotation=Signature.empty,
-    )
+def test_instance_method() -> None:
+  """Ensure instance methods' signatures."""
+  assert hasattr(ResGRUBlock, '__init__')
+  assert inspect.signature(ResGRUBlock.__init__) == Signature(
+    parameters=[
+      Parameter(
+        name='self',
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        default=Parameter.empty,
+      ),
+      Parameter(
+        name='d_hid',
+        kind=Parameter.KEYWORD_ONLY,
+        annotation=int,
+        default=Parameter.empty,
+      ),
+      Parameter(
+        name='n_hid_lyr',
+        kind=Parameter.KEYWORD_ONLY,
+        annotation=int,
+        default=Parameter.empty,
+      ),
+      Parameter(
+        name='p_hid',
+        kind=Parameter.KEYWORD_ONLY,
+        annotation=float,
+        default=Parameter.empty,
+      ),
+      Parameter(
+        name='kwargs',
+        kind=Parameter.VAR_KEYWORD,
+        annotation=Optional[Dict],
+      ),
+    ],
+    return_annotation=Signature.empty,
+  )
 
-    assert hasattr(ResGRUModel, '__init__')
-    assert inspect.signature(ResGRUModel.__init__) == Signature(
-        parameters=[
-            Parameter(
-                name='self',
-                kind=Parameter.POSITIONAL_OR_KEYWORD,
-                default=Parameter.empty,
-            ),
-            Parameter(
-                name='d_emb',
-                kind=Parameter.KEYWORD_ONLY,
-                annotation=int,
-                default=Parameter.empty,
-            ),
-            Parameter(
-                name='d_hid',
-                kind=Parameter.KEYWORD_ONLY,
-                annotation=int,
-                default=Parameter.empty,
-            ),
-            Parameter(
-                name='n_hid_lyr',
-                kind=Parameter.KEYWORD_ONLY,
-                annotation=int,
-                default=Parameter.empty,
-            ),
-            Parameter(
-                name='n_post_hid_lyr',
-                kind=Parameter.KEYWORD_ONLY,
-                annotation=int,
-                default=Parameter.empty,
-            ),
-            Parameter(
-                name='n_pre_hid_lyr',
-                kind=Parameter.KEYWORD_ONLY,
-                annotation=int,
-                default=Parameter.empty,
-            ),
-            Parameter(
-                name='p_emb',
-                kind=Parameter.KEYWORD_ONLY,
-                annotation=float,
-                default=Parameter.empty,
-            ),
-            Parameter(
-                name='p_hid',
-                kind=Parameter.KEYWORD_ONLY,
-                annotation=float,
-                default=Parameter.empty,
-            ),
-            Parameter(
-                name='tknzr',
-                kind=Parameter.KEYWORD_ONLY,
-                annotation=BaseTknzr,
-                default=Parameter.empty,
-            ),
-            Parameter(
-                name='kwargs',
-                kind=Parameter.VAR_KEYWORD,
-                annotation=Optional[Dict],
-            ),
-        ],
-        return_annotation=Signature.empty,
-    )
+  assert hasattr(ResGRUModel, '__init__')
+  assert inspect.signature(ResGRUModel.__init__) == Signature(
+    parameters=[
+      Parameter(
+        name='self',
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        default=Parameter.empty,
+      ),
+      Parameter(
+        name='d_emb',
+        kind=Parameter.KEYWORD_ONLY,
+        annotation=int,
+        default=Parameter.empty,
+      ),
+      Parameter(
+        name='d_hid',
+        kind=Parameter.KEYWORD_ONLY,
+        annotation=int,
+        default=Parameter.empty,
+      ),
+      Parameter(
+        name='n_hid_lyr',
+        kind=Parameter.KEYWORD_ONLY,
+        annotation=int,
+        default=Parameter.empty,
+      ),
+      Parameter(
+        name='n_post_hid_lyr',
+        kind=Parameter.KEYWORD_ONLY,
+        annotation=int,
+        default=Parameter.empty,
+      ),
+      Parameter(
+        name='n_pre_hid_lyr',
+        kind=Parameter.KEYWORD_ONLY,
+        annotation=int,
+        default=Parameter.empty,
+      ),
+      Parameter(
+        name='p_emb',
+        kind=Parameter.KEYWORD_ONLY,
+        annotation=float,
+        default=Parameter.empty,
+      ),
+      Parameter(
+        name='p_hid',
+        kind=Parameter.KEYWORD_ONLY,
+        annotation=float,
+        default=Parameter.empty,
+      ),
+      Parameter(
+        name='tknzr',
+        kind=Parameter.KEYWORD_ONLY,
+        annotation=BaseTknzr,
+        default=Parameter.empty,
+      ),
+      Parameter(
+        name='kwargs',
+        kind=Parameter.VAR_KEYWORD,
+        annotation=Optional[Dict],
+      ),
+    ],
+    return_annotation=Signature.empty,
+  )
 
 
 def test_inherent_method():
-    r'''Ensure inherent methods' signature are same as base class.'''
-    assert (
-        inspect.signature(ResRNNModel.forward)
-        ==
-        inspect.signature(ResGRUModel.forward)
-    )
+  """Ensure inherent methods are same as base class."""
+  assert (inspect.signature(ResRNNModel.forward) == inspect.signature(ResGRUModel.forward))
 
-    assert (
-        inspect.signature(ResRNNModel.load)
-        ==
-        inspect.signature(ResGRUModel.load)
-    )
+  assert (inspect.signature(ResRNNModel.load) == inspect.signature(ResGRUModel.load))
 
-    assert (
-        inspect.signature(ResRNNModel.loss_fn)
-        ==
-        inspect.signature(ResGRUModel.loss_fn)
-    )
+  assert (inspect.signature(ResRNNModel.loss_fn) == inspect.signature(ResGRUModel.loss_fn))
 
-    assert (
-        inspect.signature(ResRNNModel.pred)
-        ==
-        inspect.signature(ResGRUModel.pred)
-    )
-    assert (
-        inspect.signature(ResRNNModel.ppl)
-        ==
-        inspect.signature(ResGRUModel.ppl)
-    )
+  assert (inspect.signature(ResRNNModel.pred) == inspect.signature(ResGRUModel.pred))
+  assert (inspect.signature(ResRNNModel.ppl) == inspect.signature(ResGRUModel.ppl))
 
-    assert (
-        inspect.signature(ResRNNModel.save)
-        ==
-        inspect.signature(ResGRUModel.save)
-    )
+  assert (inspect.signature(ResRNNModel.save) == inspect.signature(ResGRUModel.save))
 
-    assert (
-        inspect.signature(ResRNNModel.train_parser)
-        ==
-        inspect.signature(ResGRUModel.train_parser)
-    )
+  assert (inspect.signature(ResRNNModel.train_parser) == inspect.signature(ResGRUModel.train_parser))

@@ -2,4 +2,4 @@
 ==============================
 
 .. autoclass:: lmp.model.GRUModel
-    :members:
+   :members:

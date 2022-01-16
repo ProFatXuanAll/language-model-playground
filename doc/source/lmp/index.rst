@@ -2,16 +2,15 @@
 =============
 
 .. automodule:: lmp
-    :members:
+   :members:
 
 .. toctree::
-    :maxdepth: 2
-    :caption: Contents:
+   :maxdepth: 2
+   :caption: Contents:
 
-    dset/index
-    infer/index
-    model/index
-    path.py
-    script/index
-    tknzr/index
-    util/index
+   dset/index
+   infer/index
+   model/index
+   script/index
+   tknzr/index
+   util/index

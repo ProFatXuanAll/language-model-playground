@@ -2,4 +2,4 @@
 ==================================
 
 .. automodule:: lmp.script.generate_text
-    :members:
+   :members:

@@ -2,12 +2,12 @@
 ===================
 
 .. automodule:: lmp.tknzr
-    :members:
+   :members:
 
 .. toctree::
-    :maxdepth: 1
-    :caption: All available tokenizers:
+   :maxdepth: 1
+   :caption: All available tokenizers:
 
-    BaseTknzr.py
-    CharTknzr.py
-    WsTknzr.py
+   BaseTknzr.py
+   CharTknzr.py
+   WsTknzr.py

@@ -1,0 +1,23 @@
+[flake8]
+# Print total number of errors.
+count = True
+# Enable syntax checking of doctests in docstrings.
+doctests = True
+# Extension for flake8 which uses pydocstyle to check docstrings.
+docstring-convention = numpy
+# Do not lint following files or paths.
+exclude =
+  ./.git
+  ./docs,
+  *venv,
+  *.venv,
+  *.pyi,
+  __pycache__
+# We use 2 space for indentation instead of 4.
+indent-size = 2
+# Use all CPU cores to perform linting.
+jobs = auto
+# Set maximum length to 120.
+max-line-length = 120
+# Count the number of occurrences of each error/warning code and print a report.
+statistics = True

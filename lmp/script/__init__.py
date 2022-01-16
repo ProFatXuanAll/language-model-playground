@@ -1,1 +1,1 @@
-r"""All available scripts in this project."""
+"""All available scripts in this project."""

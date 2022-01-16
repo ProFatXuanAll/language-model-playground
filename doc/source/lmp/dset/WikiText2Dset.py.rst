@@ -2,4 +2,4 @@
 ==================================
 
 .. autoclass:: lmp.dset.WikiText2Dset
-    :members:
+   :members:

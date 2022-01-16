@@ -2,16 +2,17 @@
 ==================
 
 .. automodule:: lmp.util
-    :members:
+   :members:
 
 .. toctree::
-    :maxdepth: 1
-    :caption: All available utilities:
+   :maxdepth: 1
+   :caption: All available utilities:
 
-    cfg.py
-    dset.py
-    infer.py
-    log.py
-    model.py
-    rand.py
-    tknzr.py
+   cfg.py
+   dset.py
+   infer.py
+   log.py
+   model.py
+   path.py
+   rand.py
+   tknzr.py

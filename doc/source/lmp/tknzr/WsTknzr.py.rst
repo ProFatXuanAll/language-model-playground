@@ -2,4 +2,4 @@
 =============================
 
 .. autoclass:: lmp.tknzr.WsTknzr
-    :members:
+   :members:

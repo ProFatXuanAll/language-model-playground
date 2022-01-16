@@ -2,4 +2,4 @@
 ===============================
 
 .. autoclass:: lmp.infer.BaseInfer
-    :members:
+   :members:

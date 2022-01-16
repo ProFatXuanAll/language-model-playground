@@ -2,13 +2,12 @@
 ==================
 
 .. automodule:: lmp.dset
-    :members:
+   :members:
 
 .. toctree::
-    :maxdepth: 1
-    :caption: All available dataset and utilities:
+   :maxdepth: 1
+   :caption: All available dataset and utilities:
 
-    BaseDset.py
-    ChPoemDset.py
-    WikiText2Dset.py
-    util.py
+   BaseDset.py
+   ChPoemDset.py
+   WikiText2Dset.py

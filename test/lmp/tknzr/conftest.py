@@ -1,37 +1,61 @@
-r"""Setup fixtures for testing :py:mod:`lmp.tknzr`."""
+"""Setup fixtures for testing :py:mod:`lmp.tknzr`."""
 
 import os
 from typing import Dict
 
 import pytest
 
-import lmp.path
+import lmp.util.path
 from lmp.tknzr import BaseTknzr
 
 
+@pytest.fixture(params=[False, True])
+def is_uncased(request) -> bool:
+  """Respect cases if set to ``False``."""
+  return request.param
+
+
+@pytest.fixture(params=[-1, 10000])
+def max_vocab(request) -> int:
+  """Maximum vocabulary size."""
+  return request.param
+
+
+@pytest.fixture(params=[0, 10])
+def min_count(request) -> int:
+  """Minimum token occurrence counts."""
+  return request.param
+
+
 @pytest.fixture(params=[
-    {'input': 'ABC', 'output': 'abc'},
-    {'input': 'abc', 'output': 'abc'},
+  {
+    'input': 'ABC',
+    'output': 'abc'
+  },
+  {
+    'input': 'abc',
+    'output': 'abc'
+  },
 ])
-def cased_txt(request) -> Dict[str, str]:
-    r"""Text with whitespaces at head and tail."""
-    return request.param
+def uncased_txt(request) -> Dict[str, str]:
+  """Case-insensitive text."""
+  return request.param
 
 
 @pytest.fixture
-def file_path(request, exp_name: str) -> str:
-    r"""Tokenizer configuration file path.
+def tknzr_file_path(request, exp_name: str) -> str:
+  """Tokenizer save file path.
 
-    After testing, clean up files and directories create during test.
-    """
-    abs_dir_path = os.path.join(lmp.path.EXP_PATH, exp_name)
-    abs_file_path = os.path.join(abs_dir_path, BaseTknzr.file_name)
+  After testing, clean up files and directories created during test.
+  """
+  abs_dir_path = os.path.join(lmp.util.path.EXP_PATH, exp_name)
+  abs_file_path = os.path.join(abs_dir_path, BaseTknzr.file_name)
 
-    def fin():
-        if os.path.exists(abs_file_path):
-            os.remove(abs_file_path)
-        if os.path.exists(abs_dir_path):
-            os.removedirs(abs_dir_path)
+  def fin() -> None:
+    if os.path.exists(abs_file_path):
+      os.remove(abs_file_path)
+    if os.path.exists(abs_dir_path) and not os.listdir(abs_dir_path):
+      os.removedirs(abs_dir_path)
 
-    request.addfinalizer(fin)
-    return abs_file_path
+  request.addfinalizer(fin)
+  return abs_file_path
