@@ -672,7 +672,7 @@ class BaseTknzr(abc.ABC):
       Tokenizer's vocabulary size.
     """
     # `batch_txt` validation.
-    lmp.util.validate.raise_if_not_instance(val=batch_txt, val_name='batch_txt', val_type=list)
+    lmp.util.validate.raise_if_not_instance(val=batch_txt, val_name='batch_txt', val_type=Iterable)
 
     # Count each token's occurrence.
     c: typing.Counter[str] = Counter()
