@@ -5,7 +5,6 @@ We provide installation instructions only for Ubuntu ``20.04+``.
 
 Environment Prerequests
 -----------------------
-
 1. We use Python_ with version ``3.8+``.  You can install Python_ with
 
    .. code-block:: shell
@@ -14,7 +13,8 @@ Environment Prerequests
 
    .. note::
 
-      You might need to use ``sudo`` to perform installation.
+      Currently the latest version of Python_ supported by PyTorch_ is ``3.8``.  That's why we install ``python3.8``
+      instead of ``python3.10``.  You might need to use ``sudo`` to perform installation.
 
 2. We use PyTorch_ with version ``1.10+`` and CUDA_ with version ``11.2+``.  This only work if you have **Nvidia**
    GPUs.  You can install CUDA_ library with
@@ -44,7 +44,6 @@ Environment Prerequests
 
 Installation
 ------------
-
 1. Clone the project_ from GitHub.
 
    .. code-block:: shell
@@ -70,15 +69,14 @@ Installation
       pipenv shell
 
 5. Now you can run any scripts provided by this project!  For example, you can take a look at chinese poem dataset by
-   running :py:mod:`lmp.script.sample_from_dataset`
+   running :py:mod:`lmp.script.sample_dset`
 
    .. code-block:: shell
 
-      python -m lmp.script.sample_from_dataset chinese-poem
+      python -m lmp.script.sample_dset chinese-poem
 
 Training Language Model Pipline
 -------------------------------
-
 We now demonstrate a basic :term:`language model` training pipline.
 
 .. note::
@@ -100,17 +98,16 @@ In this example we use :py:class:`lmp.dset.WikiText2Dset` as our dataset.
 
 2. Choose a Tokenizer
 ~~~~~~~~~~~~~~~~~~~~~
-
 Choose a :term:`tokenizer` and train :term:`tokenizer` on dataset we already choose.
 
 In this example we use :py:class:`lmp.tknzr.WsTknzr` since all samples in :py:class:`lmp.dset.WikiText2Dset` are
 whitespace separated.
 
-We use :py:mod:`lmp.script.train_tokenizer` to train :term:`tokenizer` given following arguments:
+We use :py:mod:`lmp.script.train_tknzr` to train :term:`tokenizer` given following arguments:
 
 .. code-block:: shell
 
-   python -m lmp.script.train_tokenizer whitespace \
+   python -m lmp.script.train_tknzr whitespace \
      --dset_name wiki-text-2 \
      --exp_name my_tknzr_exp \
      --is_uncased \
@@ -139,7 +136,6 @@ All arguments we used are just a mather of choice for pre-processing.  You can c
 
 3. Evaluate Tokenizer
 ~~~~~~~~~~~~~~~~~~~~~
-
 After training :term:`tokenizer`, you can now use your pre-trained :term:`tokenizer` to :term:`tokenize` arbitrary
 text.
 
@@ -155,7 +151,6 @@ You should see something like ``['hello', 'world']``.
 
 4. Choose a Language Model
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 Now we can train our :term:`language model` with the help of pre-trained :term:`tokenizer`.
 
 In this example we use :py:mod:`lmp.model.LSTM` as our training target.  We use :py:mod:`lmp.script.train_model` to
@@ -187,7 +182,7 @@ train :term:`language model` as follow:
      --p_hid 0.1 \
      --wd 1e-2
 
-:py:mod:`lmp.script.train_model` have similar structure as :py:mod:`lmp.script.train_tokenizer`;  We use ``LSTM`` to
+:py:mod:`lmp.script.train_model` have similar structure as :py:mod:`lmp.script.train_tknzr`;  We use ``LSTM`` to
 specify we want to use :py:class:`lmp.model.LSTMModel` as our :term:`language model`, and train our model on
 Wiki-text-2 dataset using ``--dset_name wiki-text-2`` arguments.  We use ``--ver train`` to specify we want to use
 training version of Wiki-text-2 which is also used to train our :term:`tokenizer`.
@@ -245,7 +240,6 @@ them to any values you want.
 
 5. Evaluate Language Model
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 Its time to check whether our :term:`language model` is successfully trained!
 
 In this example we use Wiki-text-2 dataset to perform **validation** and **testing**.  But before that we should check
@@ -309,7 +303,6 @@ hypothesis, we should now use **test** version of Wiki-Text-2 dataset to check o
 
 6. Generate Text
 ~~~~~~~~~~~~~~~~
-
 Finally we can use our well-trained :term:`language model` to generate text.  In this example we use
 :py:mod:`lmp.script.generate_text` to generate text:
 
@@ -334,13 +327,11 @@ Also if the models paired :term:`tokenizer` does not exist then it will cause er
 
 7. Record Experiment Results
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 Now you have done the experiment, you can record them and compare experiments performed by others.  See
 :doc:`Experiment Results <experiment/index>` for others' experiment and record yours!
 
 Documents
 ---------
-
 You can read documents on `this website`_ or use the following steps to build documents locally.  We use Sphinx_ to
 build our documents.
 

@@ -2,9 +2,9 @@
 
 Attributes
 ----------
-ALL_DSETS: List[:py:class:`lmp.dset.BaseDset`]
+ALL_DSETS: list[lmp.dset.BaseDset]
   All available dataset.
-DSET_OPTS: Final[Dict[str, :py:class:`lmp.dset.BaseDset`]]
+DSET_OPTS: typing.Final[dict[str, lmp.dset.BaseDset]]
   Mapping dataset's name ``dset_name`` to dataset's class.
 
 Examples

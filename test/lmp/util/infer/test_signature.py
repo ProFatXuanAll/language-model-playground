@@ -8,7 +8,7 @@ import lmp.util.infer
 from lmp.infer import BaseInfer
 
 
-def test_module_function():
+def test_module_function() -> None:
   """Ensure module function's signatures."""
   assert inspect.isfunction(lmp.util.infer.create)
   assert inspect.signature(lmp.util.infer.create) == Signature(

@@ -8,7 +8,7 @@ import lmp.util.model
 from lmp.model import BaseModel
 
 
-def test_module_function():
+def test_module_function() -> None:
   """Ensure module function's signatures."""
   assert inspect.isfunction(lmp.util.model.create)
   assert inspect.signature(lmp.util.model.create) == Signature(

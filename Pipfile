@@ -6,15 +6,15 @@ verify_ssl = true
 [dev-packages]
 coverage = "*"
 flake8 = "*"
+flake8-docstrings = "*"
 furo = "*"
 isort = "*"
 mypy = "*"
 pytest = "*"
 sphinx = "*"
 sphinx-autobuild = "*"
-yapf = "*"
-flake8-docstrings = "*"
 types-requests = "*"
+yapf = "*"
 
 [packages]
 numpy = "*"

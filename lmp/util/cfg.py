@@ -1,35 +1,41 @@
-"""Save training configuration and load pre-trained configuration."""
+"""Save and load training configurations."""
 
 import argparse
 import json
 import os
 
 import lmp.util.path
+import lmp.util.validate
 
 CFG_NAME = 'cfg.json'
 
 
 def save(args: argparse.Namespace, exp_name: str) -> None:
-  """Save training configuration in JSON format.
+  """Save training configurations into JSON file.
 
-  Save training configuration in to path ``exp/exp_name/cfg.json``.  All CLI arguments will be saved.  If experiment
-  path ``exp/exp_name/cfg.json`` does not exists, then create path recursively.
+  Save training configuration in to path ``root/exp/exp_name/cfg.json``.  Here ``root`` refers to
+  :py:attr:`lmp.util.path.PROJECT_ROOT`.  All successfully parsed CLI arguments will be saved.  If folders along the
+  saving path do not exist, then this method will create folders recursively.
+
+  .. danger::
+
+    This method overwrite existed files.  Make sure you know what you are doing before calling this method.
 
   Parameters
   ----------
   args: argparse.Namespace
-    CLI arguments which will be saved as training configuration.
+    Parsed CLI arguments which will be saved.
   exp_name: str
-    Current training experiment name.
+    Name of the training experiment.
 
-  Raises
-  ------
-  FileExistsError
-    If experiment path ``exp/exp_name/cfg.json`` exists and is a directory.
+  Returns
+  -------
+  None
 
   See Also
   --------
   lmp.util.cfg.load
+    Load training configurations from JSON file.
 
   Examples
   --------
@@ -39,48 +45,51 @@ def save(args: argparse.Namespace, exp_name: str) -> None:
   >>> lmp.util.cfg.save(args=args, exp_name='my_exp')
   None
   """
-  # Get file directory and path.
+  # `args` validation.
+  lmp.util.validate.raise_if_not_instance(val=args, val_name='args', val_type=argparse.Namespace)
+
+  # `exp_name` validation.
+  lmp.util.validate.raise_if_not_instance(val=exp_name, val_name='exp_name', val_type=str)
+  lmp.util.validate.raise_if_empty_str(val=exp_name, val_name='exp_name')
+
+  # `file_dir` validation.
   file_dir = os.path.join(lmp.util.path.EXP_PATH, exp_name)
+  lmp.util.validate.raise_if_is_file(path=file_dir)
+
+  # `file_path` validation.
   file_path = os.path.join(file_dir, CFG_NAME)
+  lmp.util.validate.raise_if_is_directory(path=file_path)
 
   # Create experiment path if not exist.
   if not os.path.exists(file_dir):
     os.makedirs(file_dir)
 
-  if os.path.isdir(file_path):
-    raise FileExistsError(f'{file_path} is a directory.')
-
   # Save configuration in JSON format.
   with open(file_path, 'w', encoding='utf-8') as output_file:
-    json.dump(args.__dict__, output_file, ensure_ascii=False)
+    json.dump(args.__dict__, output_file, ensure_ascii=False, sort_keys=True)
 
 
 def load(exp_name: str) -> argparse.Namespace:
-  """Load pre-trained configuration from JSON file.
+  """Load training configuration from JSON file.
 
-  Load pre-trained configuration from path ``exp/exp_name/cfg.json``.  Experiments must been performed before using
-  this function.  Wrap configuration in :py:class:`argparse.Namespace` for convenience.
+  Load training configuration from path ``root/exp/exp_name/cfg.json``.  Here ``root`` refers to
+  :py:attr:`lmp.util.path.PROJECT_ROOT`.  Loaded configurations will be wrapped in :py:class:`argparse.Namespace` for
+  convenience.
 
   Parameters
   ----------
   exp_name: str
-    Pre-trained experiment name.
+    Name of the training experiment.
 
   Returns
   -------
   argparse.Namespace
-    Pre-trained experiment configuration.
-
-  Raises
-  ------
-  FileExistsError
-    If experiment path ``exp/exp_name/cfg.json`` exists and is a directory.
-  FileNotFoundError
-    If experiment path ``exp/exp_name/cfg.json`` does not exist.
+    Training experiment's configurations.
 
   See Also
   --------
   lmp.util.cfg.save
+    Save training configurations into JSON file.
 
   Examples
   --------
@@ -92,14 +101,13 @@ def load(exp_name: str) -> argparse.Namespace:
   >>> args == lmp.util.cfg.load(exp_name='my_exp')
   True
   """
-  # Get file path.
+  # `exp_name` validation.
+  lmp.util.validate.raise_if_not_instance(val=exp_name, val_name='exp_name', val_type=str)
+  lmp.util.validate.raise_if_empty_str(val=exp_name, val_name='exp_name')
+
+  # `file_path` validation.
   file_path = os.path.join(lmp.util.path.EXP_PATH, exp_name, CFG_NAME)
-
-  if not os.path.exists(file_path):
-    raise FileNotFoundError(f'{file_path} does not exist.')
-
-  if os.path.isdir(file_path):
-    raise FileExistsError(f'{file_path} is a directory.')
+  lmp.util.validate.raise_if_is_directory(path=file_path)
 
   # Load configuration from JSON file.
   with open(file_path, 'r', encoding='utf-8') as input_file:

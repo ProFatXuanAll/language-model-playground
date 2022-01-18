@@ -39,7 +39,7 @@ import lmp.util.tknzr
 from lmp.infer import INFER_OPTS
 
 
-def parse_arg() -> argparse.Namespace:
+def parse_args() -> argparse.Namespace:
   """Parse arguments from CLI.
 
   Argument must begin with a inference method name ``infer_name``.  All arguments are added with inference method's
@@ -71,8 +71,8 @@ def parse_arg() -> argparse.Namespace:
 
 def main() -> None:
   """Script entry point."""
-  # Parse command-line argument.
-  args = parse_arg()
+  # Parse CLI arguments.
+  args = parse_args()
 
   # Set random seed for reproducibility.
   lmp.util.rand.set_seed(seed=args.seed)

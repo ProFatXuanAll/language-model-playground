@@ -99,7 +99,7 @@ class BaseModel(abc.ABC, torch.nn.Module):
 
   @torch.no_grad()
   def ppl(self, batch_next_tkids: torch.Tensor, batch_prev_tkids: torch.Tensor) -> float:
-    """Calculate mean perplexity on batch of token ids.
+    r"""Calculate mean perplexity on batch of token ids.
 
     Perplexity is calculate by the following formula
 

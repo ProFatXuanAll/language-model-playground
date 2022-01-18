@@ -26,15 +26,15 @@ class BaseDset(torch.utils.data.Dataset):
 
   Attributes
   ----------
-  df_ver: ClassVar[str]
+  df_ver: typing.ClassVar[str]
     Default version of the dataset.
-  dset_name: ClassVar[str]
+  dset_name: typing.ClassVar[str]
     CLI Display name of the dataset.  Only used to parse CLI arguments.
-  spls: List[str]
+  spls: list[str]
     All samples in the dataset.
   ver: str
     Version of the dataset.
-  vers: ClassVar[List[str]]
+  vers: typing.ClassVar[list[str]]
     List of supported datasets' versions.
 
   See Also

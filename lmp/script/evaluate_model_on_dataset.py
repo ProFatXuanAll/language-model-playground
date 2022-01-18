@@ -73,7 +73,7 @@ import lmp.util.tknzr
 from lmp.dset import DSET_OPTS
 
 
-def parse_arg() -> argparse.Namespace:
+def parse_args() -> argparse.Namespace:
   """Parse arguments from CLI.
 
   Parse pre-trained language model experiment name and evaluate on dataset.  Argument must begin with a dataset name
@@ -159,8 +159,8 @@ def parse_arg() -> argparse.Namespace:
 
 def main() -> None:
   """Script entry point."""
-  # Parse command-line argument.
-  args = parse_arg()
+  # Parse CLI arguments.
+  args = parse_args()
 
   # Get dataset instance with specified version.
   dset = lmp.util.dset.load(dset_name=args.dset_name, ver=args.ver)

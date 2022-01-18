@@ -12,7 +12,7 @@ def test_module_attribute():
   assert lmp.util.cfg.CFG_NAME == 'cfg.json'
 
 
-def test_module_function():
+def test_module_function() -> None:
   """Ensure module function's signatures."""
   assert inspect.isfunction(lmp.util.cfg.load)
   assert inspect.signature(lmp.util.cfg.load) == Signature(
@@ -26,7 +26,6 @@ def test_module_function():
     ],
     return_annotation=argparse.Namespace,
   )
-
   assert inspect.isfunction(lmp.util.cfg.save)
   assert inspect.signature(lmp.util.cfg.save) == Signature(
     parameters=[

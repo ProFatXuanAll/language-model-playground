@@ -8,7 +8,7 @@ import re
 import typing
 import unicodedata
 from collections import Counter
-from typing import ClassVar, Dict, List, Optional, Type, TypeVar
+from typing import ClassVar, Dict, Iterable, List, Optional, Type, TypeVar
 
 import lmp.dset
 import lmp.util.path
@@ -38,25 +38,25 @@ class BaseTknzr(abc.ABC):
   min_count: int
     Minimum token occurrence counts.  Tokens have occurrence counts less than ``min_count`` will not be added to
     tokenizer's vocabulary.  Mainly used by :py:meth:`lmp.tknzr.BaseTknzr.build_vocab`.
-  tk2id: Dict[str, int], default: None
+  tk2id: dict[str, int], default: None
     Token-to-id lookup table.  If ``tk2id`` is given, then initialize token-to-id lookup table with ``tk2id``.
     Otherwise initialize lookup table with special tokens only.
-  kwargs: Dict, optional
+  kwargs: dict, optional
     Useless parameter.  Intently left for subclass inheritance.
 
   Attributes
   ----------
-  bos_tk: ClassVar[str]
+  bos_tk: typing.ClassVar[str]
     A special token which represents the begining of a text.
-  bos_tkid: ClassVar[int]
+  bos_tkid: typing.ClassVar[int]
     Token id of :py:attr:`lmp.tknzr.BaseTknzr.bos_tk`.
-  eos_tk: ClassVar[str]
+  eos_tk: typing.ClassVar[str]
     A special token which represents the end of a text.
-  eos_tkid: ClassVar[int]
+  eos_tkid: typing.ClassVar[int]
     Token id of :py:attr:`lmp.tknzr.BaseTknzr.eos_tk`.
-  file_name: ClassVar[str]
+  file_name: typing.ClassVar[str]
     Tokenizer's configuration file name.
-  id2tk: Dict[int, str]
+  id2tk: dict[int, str]
     Token-to-id inverse lookup table.
   is_uncased: bool
     Convert text into lower cases if set to ``True``.
@@ -64,17 +64,17 @@ class BaseTknzr(abc.ABC):
     Tokenizer's maximum vocabulary size.
   min_count: int
     Minimum token occurrence counts.
-  pad_tk: ClassVar[str]
+  pad_tk: typing.ClassVar[str]
     A special token which represents paddings of a text.
-  pad_tkid: ClassVar[int]
+  pad_tkid: typing.ClassVar[int]
     Token id of :py:attr:`lmp.tknzr.BaseTknzr.pad_tk`.
-  tk2id: Dict[str, int]
+  tk2id: dict[str, int]
     Token-to-id lookup table.
-  tknzr_name: ClassVar[str]
+  tknzr_name: typing.ClassVar[str]
     CLI Display name of the tokenizer.  Only used to parse CLI arguments.
-  unk_tk: ClassVar[str]
+  unk_tk: typing.ClassVar[str]
     A special token which represents unknown tokens in a text.
-  unk_tkid: ClassVar[int]
+  unk_tkid: typing.ClassVar[int]
     Token id of :py:attr:`lmp.tknzr.BaseTknzr.unk_tk`.
 
   See Also
@@ -294,7 +294,7 @@ class BaseTknzr(abc.ABC):
 
     Returns
     -------
-    List[str]
+    list[str]
       List of normalized tokens.
 
     See Also
@@ -315,7 +315,7 @@ class BaseTknzr(abc.ABC):
 
     Parameters
     ----------
-    tks: List[str]
+    tks: list[str]
       List of tokens to be detokenized.
 
     Returns
@@ -341,14 +341,14 @@ class BaseTknzr(abc.ABC):
 
     Arguments
     ---------
-    seq: List[SEQ_ITEM]
+    seq: list[SEQ_ITEM]
       Sequence to be truncated.
     max_seq_len: int, default: -1
       Maximum sequence length constraint.
 
     Returns
     -------
-    List[SEQ_ITEM]
+    list[SEQ_ITEM]
       Truncated sequence.
 
     See Also
@@ -390,7 +390,7 @@ class BaseTknzr(abc.ABC):
 
     Arguments
     ---------
-    seq: List[SEQ_ITEM]
+    seq: list[SEQ_ITEM]
       Sequence to be padded.
     pad: SEQ_ITEM
       Padding item to be appended at the end of sequence.
@@ -399,7 +399,7 @@ class BaseTknzr(abc.ABC):
 
     Returns
     -------
-    List[SEQ_ITEM]
+    list[SEQ_ITEM]
       Padded sequence.
 
     See Also
@@ -463,7 +463,7 @@ class BaseTknzr(abc.ABC):
 
     Returns
     -------
-    List[int]
+    list[int]
       Encoded token ids list.
 
     See Also
@@ -513,9 +513,9 @@ class BaseTknzr(abc.ABC):
 
     Parameters
     ----------
-    tkids : List[int]
+    tkids: list[int]
       Token id list to be decoded.
-    rm_sp_tks : bool, default: False
+    rm_sp_tks: bool, default: False
       Set to ``True`` to remove ``[bos]``, ``[eos]`` and ``[pad]``.
 
     Returns
@@ -569,14 +569,14 @@ class BaseTknzr(abc.ABC):
 
     Parameters
     ----------
-    batch_txt: List[str],
+    batch_txt: list[str],
       Batch of text to be encoded.
     max_seq_len: int, default: -1
       Maximum length of token id lists in the batch.
 
     Returns
     -------
-    List[List[int]]
+    list[list[int]]
       Encoded batch of token id lists.
 
     See Also
@@ -618,14 +618,14 @@ class BaseTknzr(abc.ABC):
 
     Parameters
     ----------
-    batch_tkids: List[List[int]]
+    batch_tkids: list[list[int]]
       Batch of token id lists to be decoded.
     rm_sp_tks: bool, default: False
       Whether to remove special tokens.  See :py:meth:`lmp.tknzr.BaseTknzr.dec` for ``rm_sp_tks`` usage.
 
     Returns
     -------
-    List[str]
+    list[str]
       Batch of decoded text.
 
     See Also
@@ -641,7 +641,7 @@ class BaseTknzr(abc.ABC):
     # Decode each sequence of token ids in the batch.
     return [self.dec(tkids, rm_sp_tks=rm_sp_tks) for tkids in batch_tkids]
 
-  def build_vocab(self, batch_txt: List[str]) -> None:
+  def build_vocab(self, batch_txt: Iterable[str]) -> None:
     """Build vocabulary for tokenizer.
 
     Build :term:`vocabulary` based on :term:`token` occurrence counts.  Each text in ``batch_txt`` will first be
@@ -655,7 +655,7 @@ class BaseTknzr(abc.ABC):
 
     Parameters
     ----------
-    batch_txt: List[str]
+    batch_txt: collections.abc.Iterable[str]
       Source of text to build vocabulary.
 
     Returns
@@ -730,7 +730,7 @@ class BaseTknzr(abc.ABC):
 
     See Also
     --------
-    lmp.script.train_tokenizer
+    lmp.script.train_tknzr
       Tokenizer training script.
 
     Examples
@@ -767,7 +767,7 @@ class BaseTknzr(abc.ABC):
     group.add_argument(
       '--dset_name',
       choices=lmp.dset.DSET_OPTS.keys(),
-      help='Name of the datasets tokenizer can be trained on.',
+      help='Name of the dataset which will be used to train tokenizer.',
       required=True,
       type=str,
     )
@@ -785,7 +785,7 @@ class BaseTknzr(abc.ABC):
     )
     group.add_argument(
       '--min_count',
-      help='Minimum token occurrence count.',
+      help='Minimum token occurrence count.  Set to `0` to disable.',
       required=True,
       type=int,
     )

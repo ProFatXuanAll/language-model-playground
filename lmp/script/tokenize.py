@@ -4,7 +4,7 @@ Pre-trained tokenizer must exist, i.e., perform tokenizer training first then us
 
 See Also
 --------
-lmp.script.train_tokenizer
+lmp.script.train_tknzr
   Train tokenizer.
 lmp.tknzr
   All available tokenizers.
@@ -23,7 +23,7 @@ Use ``-h`` or ``--help`` options to get list of available options.
 
 .. code-block:: shell
 
-   python -m lmp.script.train_tokenizer -h
+   python -m lmp.script.train_tknzr -h
 """
 
 import argparse
@@ -34,7 +34,7 @@ import lmp.util.cfg
 import lmp.util.tknzr
 
 
-def parse_arg() -> argparse.Namespace:
+def parse_args() -> argparse.Namespace:
   """Parse arguments from CLI.
 
   Parse pre-trained tokenizer experiment name and text to be tokenized.
@@ -74,8 +74,8 @@ def parse_arg() -> argparse.Namespace:
 
 def main() -> None:
   """Script entry point."""
-  # Parse command-line argument.
-  args = parse_arg()
+  # Parse CLI arguments.
+  args = parse_args()
 
   # Load pre-trained tokenizer configuration.
   tknzr_cfg = lmp.util.cfg.load(exp_name=args.exp_name)

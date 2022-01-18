@@ -33,20 +33,20 @@ class WikiText2Dset(BaseDset):
 
   Parameters
   ----------
-  ver: str, default: None
+  ver: Optional[str], default: None
     Version of the dataset.   Set ``ver = ''`` to use default version.
 
   Attributes
   ----------
-  df_ver: ClassVar[str]
+  df_ver: typing.ClassVar[str]
     Default version is ``'train'``.
-  dset_name: ClassVar[str]
+  dset_name: typing.ClassVar[str]
     Wiki-Text-2 dataset's name is ``wiki-text-2``.
-  spls: List[str]
+  spls: list[str]
     All samples in the dataset.
   ver: str
     Version of the dataset.
-  vers: ClassVar[List[str]]
+  vers: typing.ClassVar[list[str]]
     Supported versions including ``'train'``, ``'test'`` and ``'valid'``.
 
   See Also

@@ -42,7 +42,7 @@ import lmp.util.model
 import lmp.util.tknzr
 
 
-def parse_arg() -> argparse.Namespace:
+def parse_args() -> argparse.Namespace:
   """Parse arguments from CLI.
 
   Parse pre-trained language model experiment name and text to be evaluated.
@@ -90,8 +90,8 @@ def parse_arg() -> argparse.Namespace:
 
 def main() -> None:
   """Script entry point."""
-  # Parse command-line argument.
-  args = parse_arg()
+  # Parse CLI arguments.
+  args = parse_args()
 
   # Load pre-trained model configuration.
   model_cfg = lmp.util.cfg.load(exp_name=args.exp_name)

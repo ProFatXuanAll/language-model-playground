@@ -19,14 +19,14 @@ class CharTknzr(BaseTknzr):
     Maximum vocabulary size.
   min_count: int
     Minimum token occurrence counts.
-  tk2id: Dict[str, int], default: None
+  tk2id: dict[str, int], default: None
     Token-to-id lookup table.
-  kwargs: Dict, optional
+  kwargs: dict, optional
     Useless parameter.  Intently left for subclass inheritance.
 
   Attributes
   ----------
-  tknzr_name: ClassVar[str]
+  tknzr_name: typing.ClassVar[str]
     Character tokenizer's name is ``character``.
 
   See Also
@@ -61,7 +61,7 @@ class CharTknzr(BaseTknzr):
 
     Returns
     -------
-    List[str]
+    list[str]
       List of normalized characters.
 
     See Also
@@ -118,7 +118,7 @@ class CharTknzr(BaseTknzr):
 
     Parameters
     ----------
-    tks: List[str]
+    tks: list[str]
       Token list to be joint.
 
     Returns

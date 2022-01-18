@@ -48,3 +48,11 @@ Run the following command in project root directory::
   .. code-block:: shell
 
      pipenv run doc-coverage
+
+TODOs
+~~~~~
+We list some of the todos in the follow:
+
+- Add ``pandas`` typeshed (mainly used by :py:class:`lmp.dset.ChPoemDset`) if it is stable.
+- Remove ``# type: ignore`` on ``**kwargs`` if ``mypy`` can handle those checking (which may no happen forever).
+

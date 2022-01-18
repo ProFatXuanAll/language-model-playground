@@ -161,7 +161,7 @@ import lmp.util.rand
 import lmp.util.tknzr
 
 
-def parse_arg() -> argparse.Namespace:
+def parse_args() -> argparse.Namespace:
   """Parse arguments from CLI.
 
   Argument must begin with a model name ``model_name``.  All arguments are added with model's static method
@@ -190,8 +190,8 @@ def parse_arg() -> argparse.Namespace:
 
 def main() -> None:
   """Script entry point."""
-  # Parse command-line argument.
-  args = parse_arg()
+  # Parse CLI arguments.
+  args = parse_args()
 
   # Save training configuration.
   lmp.util.cfg.save(args=args, exp_name=args.exp_name)

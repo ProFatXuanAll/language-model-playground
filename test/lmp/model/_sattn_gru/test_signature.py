@@ -4,8 +4,7 @@ import inspect
 from inspect import Parameter, Signature
 from typing import Dict, Optional
 
-from lmp.model._sattn_gru import (SAttnGRUBlock, SAttnGRUModel, SAttnRNNBlock,
-                                  SAttnRNNModel)
+from lmp.model._sattn_gru import (SAttnGRUBlock, SAttnGRUModel, SAttnRNNBlock, SAttnRNNModel)
 from lmp.tknzr._base import BaseTknzr
 
 

@@ -5,7 +5,9 @@ import os
 import zipfile
 from typing import ClassVar, List, Optional
 
-import pandas as pd
+# Typeshed for `pandas` is under development, we will ignore type check on `pandas` until `pandas` typeshed finish its
+# development and release stable version.
+import pandas as pd  # type: ignore
 
 import lmp.util.path
 from lmp.dset._base import BaseDset
@@ -81,20 +83,20 @@ class ChPoemDset(BaseDset):
 
   Parameters
   ----------
-  ver: str, default: None
+  ver: Optional[str], default: None
     Version of the dataset.   Set ``ver = ''`` to use default version.
 
   Attributes
   ----------
-  df_ver: ClassVar[str]
+  df_ver: typing.ClassVar[str]
     Default version is ``'唐'``.
-  dset_name: ClassVar[str]
+  dset_name: typing.ClassVar[str]
     Chinese poem dataset's name is ``chinese-poem``.
-  spls: List[str]
+  spls: list[str]
     All samples in the dataset.
   ver: str
     Version of the dataset.
-  vers: ClassVar[List[str]]
+  vers: typing.ClassVar[list[str]]
     All available versions of the dataset.  Versions are named after their appearing times, including ``元``,
     ``元末明初``, ``先秦``, ``南北朝``, ``唐``, ``唐末宋初``, ``宋``, ``宋末元初``, ``宋末金初``, ``明``, ``明末清初``,
     ``民國末當代初``, ``清``, ``清末民國初``, ``清末近現代初``, ``漢``, ``當代``, ``秦``, ``近現代``,

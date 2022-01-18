@@ -38,9 +38,9 @@ using training script :py:mod:`lmp.script.train_model`.
 We have written serveral **scripts** to demostrate training pipline of :term:`language models` and furthur usage on
 :term:`language models`:
 
-- Use :py:mod:`lmp.script.sample_from_dataset` to take a look at dataset we provided.
+- Use :py:mod:`lmp.script.sample_dset` to take a look at dataset we provided.
   (e.g. :py:class:`lmp.dset.WikiText2Dset`)
-- Use :py:mod:`lmp.script.train_tokenizer` to train :term:`tokenizers`.
+- Use :py:mod:`lmp.script.train_tknzr` to train :term:`tokenizers`.
   (e.g. :py:class:`lmp.tknzr.WsTknzr`)
 - Use :py:mod:`lmp.script.tokenize` to :term:`tokenize` text with pre-trained :term:`tokenizers`.
 - Use :py:mod:`lmp.script.train_model` to train :term:`language models`.

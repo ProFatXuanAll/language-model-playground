@@ -11,7 +11,7 @@
    evaluate_model_on_dataset.py
    evaluate_model_on_sample.py
    generate_text.py
-   sample_from_dataset.py
+   sample_dset.py
    tokenize.py
    train_model.py
-   train_tokenizer.py
+   train_tknzr.py

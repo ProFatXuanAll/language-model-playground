@@ -3,7 +3,7 @@
 import argparse
 import inspect
 from inspect import Parameter, Signature
-from typing import ClassVar, Dict, List, Optional, get_type_hints
+from typing import ClassVar, Dict, Iterable, List, Optional, get_type_hints
 
 from lmp.tknzr import BaseTknzr
 from lmp.tknzr._base import SEQ_ITEM, TKNZR
@@ -177,7 +177,7 @@ def test_instance_method() -> None:
         name='batch_txt',
         kind=Parameter.POSITIONAL_OR_KEYWORD,
         default=Parameter.empty,
-        annotation=List[str],
+        annotation=Iterable[str],
       ),
     ],
     return_annotation=None,

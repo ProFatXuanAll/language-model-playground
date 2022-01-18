@@ -2,9 +2,9 @@
 
 Attributes
 ----------
-ALL_TKNZRS: List[:py:class:`lmp.tknzr.BaseTknzr`]
+ALL_TKNZRS: list[lmp.tknzr.BaseTknzr]
   All available tokenizers.
-TKNZR_OPTS: Final[Dict[str, :py:class:`lmp.tknzr.BaseTknzr`]]
+TKNZR_OPTS: typing.Final[dict[str, lmp.tknzr.BaseTknzr]]
   Mapping tokenizer's name ``tknzr_name`` to tokenizer's class.
 
 Examples

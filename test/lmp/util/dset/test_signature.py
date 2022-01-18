@@ -2,13 +2,13 @@
 
 import inspect
 from inspect import Parameter, Signature
-from typing import Optional
+from typing import Dict, Optional
 
 import lmp.util.dset
 from lmp.dset import BaseDset
 
 
-def test_module_function():
+def test_module_function() -> None:
   """Ensure module function's signatures."""
   assert inspect.isfunction(lmp.util.dset.load)
   assert inspect.signature(lmp.util.dset.load) == Signature(
@@ -22,27 +22,15 @@ def test_module_function():
       Parameter(
         name='ver',
         kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=None,
-        annotation=Optional[str],
+        default=Parameter.empty,
+        annotation=str,
+      ),
+      Parameter(
+        name='kwargs',
+        kind=Parameter.VAR_KEYWORD,
+        default=Parameter.empty,
+        annotation=Optional[Dict],
       ),
     ],
     return_annotation=BaseDset,
-  )
-  assert inspect.isfunction(lmp.util.dset.download)
-  assert inspect.signature(lmp.util.dset.download) == Signature(
-    parameters=[
-      Parameter(
-        name='url',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=Parameter.empty,
-        annotation=str,
-      ),
-      Parameter(
-        name='file_path',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=Parameter.empty,
-        annotation=str,
-      ),
-    ],
-    return_annotation=None,
   )

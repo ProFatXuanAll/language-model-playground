@@ -5,32 +5,27 @@ Test target:
 """
 
 import lmp.util.tknzr
-from lmp.tknzr import BaseTknzr, CharTknzr, WsTknzr
+from lmp.tknzr import CharTknzr, WsTknzr
 
 
-def test_create_char_tknzr():
+def test_create_char_tknzr(is_uncased: bool, max_vocab: int, min_count: int) -> None:
   """Test construction for character tokenizer."""
-  is_uncased = False
-  max_vocab = -1
-  min_count = 1
   tk2id = {
-    BaseTknzr.bos_tk: BaseTknzr.bos_tkid,
-    BaseTknzr.eos_tk: BaseTknzr.eos_tkid,
-    BaseTknzr.pad_tk: BaseTknzr.pad_tkid,
-    BaseTknzr.unk_tk: BaseTknzr.unk_tkid,
-    'a': 4,
-    'b': 5,
-    'c': 6,
+    CharTknzr.bos_tk: CharTknzr.bos_tkid,
+    CharTknzr.eos_tk: CharTknzr.eos_tkid,
+    CharTknzr.pad_tk: CharTknzr.pad_tkid,
+    CharTknzr.unk_tk: CharTknzr.unk_tkid,
+    'a': max(CharTknzr.bos_tkid, CharTknzr.eos_tkid, CharTknzr.pad_tkid, CharTknzr.unk_tkid) + 1,
+    'b': max(CharTknzr.bos_tkid, CharTknzr.eos_tkid, CharTknzr.pad_tkid, CharTknzr.unk_tkid) + 2,
+    'c': max(CharTknzr.bos_tkid, CharTknzr.eos_tkid, CharTknzr.pad_tkid, CharTknzr.unk_tkid) + 3,
   }
-
   tknzr = lmp.util.tknzr.create(
     is_uncased=is_uncased,
     max_vocab=max_vocab,
     min_count=min_count,
-    tknzr_name=CharTknzr.tknzr_name,
     tk2id=tk2id,
+    tknzr_name=CharTknzr.tknzr_name,
   )
-
   assert isinstance(tknzr, CharTknzr)
   assert tknzr.is_uncased == is_uncased
   assert tknzr.max_vocab == max_vocab
@@ -38,29 +33,24 @@ def test_create_char_tknzr():
   assert tknzr.tk2id == tk2id
 
 
-def test_create_ws_tknzr():
+def test_create_ws_tknzr(is_uncased: bool, max_vocab: int, min_count: int) -> None:
   """Test construction for whitespace tokenizer."""
-  is_uncased = False
-  max_vocab = -1
-  min_count = 1
   tk2id = {
-    BaseTknzr.bos_tk: BaseTknzr.bos_tkid,
-    BaseTknzr.eos_tk: BaseTknzr.eos_tkid,
-    BaseTknzr.pad_tk: BaseTknzr.pad_tkid,
-    BaseTknzr.unk_tk: BaseTknzr.unk_tkid,
-    'a': 4,
-    'b': 5,
-    'c': 6,
+    WsTknzr.bos_tk: WsTknzr.bos_tkid,
+    WsTknzr.eos_tk: WsTknzr.eos_tkid,
+    WsTknzr.pad_tk: WsTknzr.pad_tkid,
+    WsTknzr.unk_tk: WsTknzr.unk_tkid,
+    'a': max(WsTknzr.bos_tkid, WsTknzr.eos_tkid, WsTknzr.pad_tkid, WsTknzr.unk_tkid) + 1,
+    'b': max(WsTknzr.bos_tkid, WsTknzr.eos_tkid, WsTknzr.pad_tkid, WsTknzr.unk_tkid) + 2,
+    'c': max(WsTknzr.bos_tkid, WsTknzr.eos_tkid, WsTknzr.pad_tkid, WsTknzr.unk_tkid) + 3,
   }
-
   tknzr = lmp.util.tknzr.create(
     is_uncased=is_uncased,
     max_vocab=max_vocab,
     min_count=min_count,
-    tknzr_name=WsTknzr.tknzr_name,
     tk2id=tk2id,
+    tknzr_name=WsTknzr.tknzr_name,
   )
-
   assert isinstance(tknzr, WsTknzr)
   assert tknzr.is_uncased == is_uncased
   assert tknzr.max_vocab == max_vocab

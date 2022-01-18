@@ -2,27 +2,26 @@
 
 from typing import Dict, Optional
 
+import lmp.util.validate
 from lmp.tknzr import TKNZR_OPTS, BaseTknzr
 
 
 def create(tknzr_name: str, **kwargs: Optional[Dict]) -> BaseTknzr:
-  """Create new tokenizer.
+  """Create tokenizer instance by tokenizer's name.
 
-  Create new tokenizer based on ``tknzr_name``.
-  All keyword arguments are collected in ``**kwargs`` and are passed directly
-  to tokenizer's ``__init__`` method.
+  Tokenizer's arguments are collected in ``**kwargs`` and are passed directly to tokenizer's constructor.
 
   Parameters
   ----------
   tknzr_name: str
     Name of the tokenizer to create.
   kwargs: Dict, optional
-    Tokenizer specific parameters.  All tokenizer specific parameters must be passed in as keyword arguments.
+    Tokenizer's parameters.
 
   Returns
   -------
   lmp.tknzr.BaseTknzr
-    New tokenizer instance.
+    Tokenizer instance.
 
   See Also
   --------
@@ -33,23 +32,39 @@ def create(tknzr_name: str, **kwargs: Optional[Dict]) -> BaseTknzr:
   --------
   >>> from lmp.tknzr import WsTknzr
   >>> import lmp.util.tknzr
-  >>> isinstance(lmp.util.tknzr.create('whitespace'), WsTknzr)
+  >>> isinstance(
+  ...   lmp.util.tknzr.create(
+  ...     is_uncased=False,
+  ...     max_vocab=-1,
+  ...     min_count=0,
+  ...     tknzr_name=WsTknzr.tknzr_name,
+  ...   ),
+  ...   WsTknzr,
+  ... )
   True
   """
-  return TKNZR_OPTS[tknzr_name](**kwargs)
+  # `tknzr_name` validation.
+  lmp.util.validate.raise_if_not_instance(val=tknzr_name, val_name='tknzr_name', val_type=str)
+  lmp.util.validate.raise_if_not_in(val=tknzr_name, val_name='tknzr_name', val_range=list(TKNZR_OPTS.keys()))
+
+  # `kwargs` validation will be performed in `BaseTknzr.__init__`.
+  # Currently `mypy` cannot perform static type check on `**kwargs`, and I think it can only be check by runtime and
+  # therefore `mypy` may no be able to solve this issue forever.  So we use `# type: ingore` to silence error.
+  return TKNZR_OPTS[tknzr_name](**kwargs)  # type: ignore
 
 
 def load(exp_name: str, tknzr_name: str) -> BaseTknzr:
-  """Load pre-trained tokenizer.
+  """Load pre-trained tokenizer instance by experiment name.
 
-  Load pre-trained tokenizer from experiment ``exp_name``.  Tokenizer instance is load based on ``tknzr_name``.
+  Load pre-trained tokenizer from path ``root/exp/exp_name``.  Here ``root`` refers to
+  :py:attr:`lmp.util.path.PROJECT_ROOT`.  The type of tokenizer instance is based on ``tknzr_name``.
 
   Parameters
   ----------
   exp_name: str
     Pre-trained tokenizer experiment name.
   tknzr_name: str
-    Name of the tokenizer to load.
+    Name of the tokenizer to be loaded.
 
   Returns
   -------
@@ -66,14 +81,25 @@ def load(exp_name: str, tknzr_name: str) -> BaseTknzr:
   >>> from lmp.tknzr import WsTknzr
   >>> import lmp.util.tknzr
   >>> tknzr = lmp.util.tknzr.create(
-  ...   tknzr_name='whitespace', is_uncased=True, max_vocab=10,
+  ...   is_uncased=True,
+  ...   max_vocab=10,
   ...   min_count=2,
+  ...   tknzr_name=WsTknzr.tknzr_name,
   ... )
   >>> tknzr.save(exp_name='my_exp')
-  >>> isinstance(
-  ...   lmp.util.tknzr.load(exp_name='my_exp', tknzr_name='whitespace'),
-  ...   WsTknzr,
-  ... )
+  >>> load_tknzr = lmp.util.tknzr.load(exp_name='my_exp', tknzr_name=WsTknzr.tknzr_name)
+  >>> isinstance(load_tknzr, WsTknzr)
+  True
+  >>> load_tknzr.is_uncased == load_tknzr.is_uncased
+  True
+  >>> load_tknzr.max_vocab == load_tknzr.max_vocab
+  True
+  >>> load_tknzr.min_count == load_tknzr.min_count
   True
   """
+  # `tknzr_name` validation.
+  lmp.util.validate.raise_if_not_instance(val=tknzr_name, val_name='tknzr_name', val_type=str)
+  lmp.util.validate.raise_if_not_in(val=tknzr_name, val_name='tknzr_name', val_range=list(TKNZR_OPTS.keys()))
+
+  # `exp_name` will be validated in `BaseTknzr.load`.
   return TKNZR_OPTS[tknzr_name].load(exp_name=exp_name)

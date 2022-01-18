@@ -8,7 +8,7 @@ import lmp.util.tknzr
 from lmp.tknzr import BaseTknzr
 
 
-def test_module_function():
+def test_module_function() -> None:
   """Ensure module function's signatures."""
   assert inspect.isfunction(lmp.util.tknzr.create)
   assert inspect.signature(lmp.util.tknzr.create) == Signature(
@@ -28,7 +28,6 @@ def test_module_function():
     ],
     return_annotation=BaseTknzr,
   )
-
   assert inspect.isfunction(lmp.util.tknzr.load)
   assert inspect.signature(lmp.util.tknzr.load) == Signature(
     parameters=[

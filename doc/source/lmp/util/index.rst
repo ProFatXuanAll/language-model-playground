@@ -16,3 +16,4 @@
    path.py
    rand.py
    tknzr.py
+   validate.py

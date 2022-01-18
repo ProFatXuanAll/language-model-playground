@@ -66,7 +66,7 @@ def raise_if_not_in(*, val: Any, val_name: str, val_range: List) -> None:
     Test target.
   val_name: str
     Test target name.  Mainly used to create error message.
-  val_range: List
+  val_range: list
     Expected value range.
 
   Raises
@@ -106,9 +106,9 @@ def raise_if_wrong_ordered(*, vals: List[Union[float, int]], val_names: List[str
 
   Parameters
   ----------
-  vals: List[Union[float, int]]
+  vals: list[Union[float, int]]
     Test targets.
-  val_names: List[str]
+  val_names: list[str]
     Test targets' names.  Mainly used to create error message.
 
   Raises
