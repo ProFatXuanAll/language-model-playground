@@ -42,7 +42,7 @@ We have written serveral **scripts** to demostrate training pipline of :term:`la
   (e.g. :py:class:`lmp.dset.WikiText2Dset`)
 - Use :py:mod:`lmp.script.train_tknzr` to train :term:`tokenizers`.
   (e.g. :py:class:`lmp.tknzr.WsTknzr`)
-- Use :py:mod:`lmp.script.tokenize` to :term:`tokenize` text with pre-trained :term:`tokenizers`.
+- Use :py:mod:`lmp.script.tknz_txt` to :term:`tokenize` text with pre-trained :term:`tokenizers`.
 - Use :py:mod:`lmp.script.train_model` to train :term:`language models`.
 - Use :py:mod:`lmp.script.evaluate_model_on_sample` to calculate :term:`perplexity` on given sample with pre-trained
   :term:`language model` checkpoint.

@@ -8,7 +8,7 @@ lmp.dset
   All available datasets.
 lmp.script.sample_dset
   Get a glimpse on all available datasets.
-lmp.script.tokenize
+lmp.script.tknz_txt
   Use pre-trained tokenizer to perform tokenization on given text.
 lmp.tknzr
   All available tokenizers.
@@ -22,13 +22,13 @@ The following example script train a whitespace tokenizer :py:class:`lmp.tknzr.W
 
    python -m lmp.script.train_tknzr whitespace \
      --dset_name wiki-text-2 \
-     --exp_name my_exp \
+     --exp_name my_tknzr_exp \
      --max_vocab 10 \
      --min_count 2 \
      --ver train
 
-The training result will be save at path ``root/exp/my_exp`` and can be reused by other scripts.  Here ``root`` refers
-to :py:attr:`lmp.util.path.PROJECT_ROOT`.
+The training result will be save at path ``root/exp/my_tknzr_exp`` and can be reused by other scripts.  Here ``root``
+refers to :py:attr:`lmp.util.path.PROJECT_ROOT`.
 
 One can increase ``--max_vocab`` to allow tokenizer to include more tokens into its vocabulary:
 
@@ -36,7 +36,7 @@ One can increase ``--max_vocab`` to allow tokenizer to include more tokens into 
 
    python -m lmp.script.train_tknzr whitespace \
      --dset_name wiki-text-2 \
-     --exp_name my_exp \
+     --exp_name my_tknzr_exp \
      --max_vocab 10000 \
      --min_count 2 \
      --ver train
@@ -47,7 +47,7 @@ Set ``--max_vocab`` to ``-1`` to include all tokens in :py:class:`lmp.dset.WikiT
 
    python -m lmp.script.train_tknzr whitespace \
      --dset_name wiki-text-2 \
-     --exp_name my_exp \
+     --exp_name my_tknzr_exp \
      --max_vocab -1 \
      --min_count 2 \
      --ver train
@@ -60,7 +60,7 @@ counts.  Use ``--min_count`` to filter out tokens have occurrence counts lower t
 
    python -m lmp.script.train_tknzr whitespace \
      --dset_name wiki-text-2 \
-     --exp_name my_exp \
+     --exp_name my_tknzr_exp \
      --max_vocab 10000 \
      --min_count 5 \
      --ver train
@@ -81,7 +81,7 @@ same as lower cases.
 
    python -m lmp.script.train_tknzr whitespace
      --dset_name wiki-text-2 \
-     --exp_name my_exp \
+     --exp_name my_tknzr_exp \
      --is_uncased \
      --max_vocab 10000 \
      --min_count 5 \

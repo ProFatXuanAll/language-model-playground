@@ -12,6 +12,6 @@
    evaluate_model_on_sample.py
    generate_text.py
    sample_dset.py
-   tokenize.py
+   tknz_txt.py
    train_model.py
    train_tknzr.py

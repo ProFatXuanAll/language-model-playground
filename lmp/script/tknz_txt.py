@@ -1,6 +1,6 @@
-"""Use pre-trained tokenizer to tokenize text.
+r"""Use pre-trained tokenizer to tokenize text.
 
-Pre-trained tokenizer must exist, i.e., perform tokenizer training first then use this script.
+One must first run the script :py:mod:`lmp.script.train_tknzr` before running this script.
 
 See Also
 --------
@@ -11,22 +11,24 @@ lmp.tknzr
 
 Examples
 --------
-The following example used pre-trained tokenizer under experiment ``my_exp`` to tokenize text ``'hello world'``.
+The following example used pre-trained tokenizer under experiment ``my_tknzr_exp`` to tokenize text ``'hello world'``.
 
 .. code-block:: shell
 
-   python -m lmp.script.tokenize \
-     --exp_name my_exp \
+   python -m lmp.script.tknz_txt \
+     --exp_name my_tknzr_exp \
      --txt "Hello World"
 
-Use ``-h`` or ``--help`` options to get list of available options.
+You can use ``-h`` or ``--help`` options to get a list of supported CLI arguments.
 
 .. code-block:: shell
 
-   python -m lmp.script.train_tknzr -h
+   python -m lmp.script.tknz_txt -h
 """
 
 import argparse
+import sys
+from typing import List
 
 import lmp.dset
 import lmp.tknzr
@@ -34,24 +36,27 @@ import lmp.util.cfg
 import lmp.util.tknzr
 
 
-def parse_args() -> argparse.Namespace:
-  """Parse arguments from CLI.
+def parse_args(argv: List[str]) -> argparse.Namespace:
+  """Parse CLI arguments.
 
-  Parse pre-trained tokenizer experiment name and text to be tokenized.
+  Parameters
+  ----------
+  argv: list[str]
+    List of CLI arguments.
 
-  --exp_name
-    Pre-trained tokenizer experiment name.
-  --txt
-    Text to be tokenized.
+  See Also
+  --------
+  sys.argv
+    Python CLI arguments interface.
 
   Returns
   -------
   argparse.Namespace
-    Arguments from CLI.
+    Parsed CLI arguments.
   """
   # Create parser.
   parser = argparse.ArgumentParser(
-    'python -m lmp.script.tokenize',
+    'python -m lmp.script.tknz_txt',
     description='Use pre-trained tokenizer to tokenize text.',
   )
 
@@ -69,13 +74,23 @@ def parse_args() -> argparse.Namespace:
     type=str,
   )
 
-  return parser.parse_args()
+  return parser.parse_args(argv)
 
 
-def main() -> None:
-  """Script entry point."""
+def main(argv: List[str]) -> None:
+  """Script entry point.
+
+  Parameters
+  ----------
+  argv: list[str]
+    List of CLI arguments.
+
+  Returns
+  -------
+  None
+  """
   # Parse CLI arguments.
-  args = parse_args()
+  args = parse_args(argv=argv)
 
   # Load pre-trained tokenizer configuration.
   tknzr_cfg = lmp.util.cfg.load(exp_name=args.exp_name)
@@ -88,4 +103,4 @@ def main() -> None:
 
 
 if __name__ == '__main__':
-  main()
+  main(argv=sys.argv[1:])

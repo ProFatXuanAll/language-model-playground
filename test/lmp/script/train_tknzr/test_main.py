@@ -4,14 +4,14 @@ Test target:
 - :py:meth:`lmp.script.train_tknzr.main`.
 """
 
-from typing import List
 import os
+from typing import List
 
 import lmp.script.train_tknzr
-from lmp.dset import WikiText2Dset
-from lmp.tknzr import CharTknzr
 import lmp.util.cfg
 import lmp.util.tknzr
+from lmp.dset import WikiText2Dset
+from lmp.tknzr import CharTknzr
 
 
 def test_train_char_tknzr_on_wiki_text_2(

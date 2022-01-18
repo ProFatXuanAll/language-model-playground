@@ -139,11 +139,11 @@ All arguments we used are just a mather of choice for pre-processing.  You can c
 After training :term:`tokenizer`, you can now use your pre-trained :term:`tokenizer` to :term:`tokenize` arbitrary
 text.
 
-For example, you can try to :term:`tokenize` ``hello world`` with script :py:mod:`lmp.script.tokenize`:
+For example, you can try to :term:`tokenize` ``hello world`` with script :py:mod:`lmp.script.tknz_txt`:
 
 .. code-block:: shell
 
-   python -m lmp.script.tokenize \
+   python -m lmp.script.tknz_txt \
      --exp_name my_tknzr_exp \
      --txt "hello world"
 
