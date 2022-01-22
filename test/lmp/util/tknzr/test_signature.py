@@ -2,7 +2,7 @@
 
 import inspect
 from inspect import Parameter, Signature
-from typing import Dict, Optional
+from typing import Any
 
 import lmp.util.tknzr
 from lmp.tknzr import BaseTknzr
@@ -23,7 +23,7 @@ def test_module_function() -> None:
         name='kwargs',
         kind=Parameter.VAR_KEYWORD,
         default=Parameter.empty,
-        annotation=Optional[Dict],
+        annotation=Any,
       ),
     ],
     return_annotation=BaseTknzr,

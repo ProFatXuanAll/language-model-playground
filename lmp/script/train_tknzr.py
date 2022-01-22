@@ -135,10 +135,10 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
   # Use tokenizer name to create subparser for all tokenizers.
   subparsers = parser.add_subparsers(dest='tknzr_name', required=True)
   for tknzr_name, tknzr_type in lmp.tknzr.TKNZR_OPTS.items():
-    tknzr_parser = subparsers.add_parser(tknzr_name, description=f'Training {tknzr_name} tokenizer.')
+    tknzr_subparser = subparsers.add_parser(tknzr_name, description=f'Training {tknzr_type.__name__} tokenizer.')
 
     # Add tokenizer specific arguments.
-    tknzr_type.train_parser(tknzr_parser)
+    tknzr_type.train_parser(parser=tknzr_subparser)
 
   return parser.parse_args(argv)
 

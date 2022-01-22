@@ -206,18 +206,18 @@ def main() -> None:
       batch_tkids = tknzr.batch_enc(batch_txt=batch_txt, max_seq_len=model_cfg.max_seq_len)
 
       # Convert batch of token ids to `torch.Tensor` with
-      # `dtype == torch.int64`.
-      batch_tkids = torch.LongTensor(batch_tkids)
+      # `dtype == torch.int`.
+      batch_tkids = torch.IntTensor(batch_tkids)
 
       # Move tensors to model running device.
       batch_tkids = batch_tkids.to(device)
 
       # Format batch token ids to satisfy language model training format.
-      batch_prev_tkids = batch_tkids[..., :-1]
+      batch_cur_tkids = batch_tkids[..., :-1]
       batch_next_tkids = batch_tkids[..., 1:]
 
       # Calculate perplexity.
-      batch_avg_ppl = model.ppl(batch_next_tkids=batch_next_tkids, batch_prev_tkids=batch_prev_tkids)
+      batch_avg_ppl = model.ppl(batch_next_tkids=batch_next_tkids, batch_cur_tkids=batch_cur_tkids)
 
       # Accumulate average perplexity.
       avg_ppl += batch_avg_ppl * len(batch_txt) / len(dset)

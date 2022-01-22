@@ -4,20 +4,18 @@ import os
 
 import pytest
 
-import lmp.path
+import lmp.util.path
 
 
 @pytest.fixture
-def clean_logger(exp_name: str, request):
+def log_dir_path(exp_name: str, request) -> str:
   r"""Clean up tensorboard loggings."""
+  abs_dir_path = os.path.join(lmp.util.path.LOG_PATH, exp_name)
 
-  def remove():
-    file_dir = os.path.join(lmp.path.LOG_PATH, exp_name)
+  def fin() -> None:
+    for log_file in os.listdir(abs_dir_path):
+      os.remove(os.path.join(abs_dir_path, log_file))
+    os.removedirs(abs_dir_path)
 
-    for event_file in os.listdir(file_dir):
-      os.remove(os.path.join(file_dir, event_file))
-
-    if os.path.exists(file_dir):
-      os.removedirs(file_dir)
-
-  request.addfinalizer(remove)
+  request.addfinalizer(fin)
+  return abs_dir_path

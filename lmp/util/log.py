@@ -2,9 +2,11 @@
 
 import os
 
-import tensorboardX
+# Typeshed for `tensorboardX` is not available, we ignore type check on `tensorboardX`.
+import tensorboardX  # type: ignore
 
-import lmp
+import lmp.util.path
+import lmp.util.validate
 
 
 def get_tb_logger(exp_name: str) -> tensorboardX.SummaryWriter:
@@ -23,11 +25,15 @@ def get_tb_logger(exp_name: str) -> tensorboardX.SummaryWriter:
   tensorboardX.SummaryWriter
     Tensorboard logger instance.
   """
-  file_dir = os.path.join(lmp.util.path.LOG_PATH, exp_name)
+  # `exp_name` validation.
+  lmp.util.validate.raise_if_not_instance(val=exp_name, val_name='exp_name', val_type=str)
+  lmp.util.validate.raise_if_empty_str(val=exp_name, val_name='exp_name')
 
-  if not os.path.exists:
-    os.makedirs(file_dir)
-  elif os.path.isfile(file_dir):
-    raise FileExistsError(f'{file_dir} is a file.')
+  # `log_dir` validation.
+  log_dir = os.path.join(lmp.util.path.LOG_PATH, exp_name)
+  lmp.util.validate.raise_if_is_file(path=log_dir)
 
-  return tensorboardX.SummaryWriter(log_dir=file_dir)
+  if not os.path.exists(log_dir):
+    os.makedirs(log_dir)
+
+  return tensorboardX.SummaryWriter(log_dir=log_dir)

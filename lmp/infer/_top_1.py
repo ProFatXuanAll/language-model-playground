@@ -65,81 +65,81 @@ class Top1Infer(BaseInfer):
       Generated text.
     """
     # Encode as 1 sample batch.
-    batch_prev_tkids = tknzr.batch_enc(batch_txt=[txt], max_seq_len=-1)
+    batch_cur_tkids = tknzr.batch_enc(batch_txt=[txt], max_seq_len=-1)
 
-    # Convert to tensor with `dtype == torch.int64`.
+    # Convert to tensor with `dtype == torch.int`.
     # Tensor shape: `(1, S')`.
-    # Tensor dtype: `torch.int64`.
-    batch_prev_tkids = torch.LongTensor(batch_prev_tkids)
+    # Tensor dtype: `torch.int`.
+    batch_cur_tkids = torch.IntTensor(batch_cur_tkids)
 
     # Remove `[eos]` token id since model is not trained to predict tokens
     # after seeing `[eos]`.
     # Tensor shape: `(1, S'-1)` or `(1, S)`.
-    # Tensor dtype: `torch.int64`.
-    batch_prev_tkids = batch_prev_tkids[..., :-1]
+    # Tensor dtype: `torch.int`.
+    batch_cur_tkids = batch_cur_tkids[..., :-1]
 
     # Satisty maximum sequence length constraint.
     # If sequence length is longer than constraint, then truncate tensor
     # to have shape `(1, self.max_seq_len)`.
     # Otherwise tensor shape remain the same.
-    batch_prev_tkids = batch_prev_tkids[..., :self.max_seq_len]
+    batch_cur_tkids = batch_cur_tkids[..., :self.max_seq_len]
 
     # Get model running device.
     device = next(model.parameters()).device
 
     # Move tensors to model running device.
-    batch_prev_tkids = batch_prev_tkids.to(device)
+    batch_cur_tkids = batch_cur_tkids.to(device)
 
     # Calculate how many token can be generate at most.
     # `out_seq_len` satisfy `0 <= out_seq_len <= self.max_seq_len`.
-    out_seq_len = self.max_seq_len - batch_prev_tkids.size(1)
+    out_seq_len = self.max_seq_len - batch_cur_tkids.size(1)
 
     # Generate tokens.
     for _ in range(out_seq_len):
       # Get probability distribution with current token ids.
       # Input tensor : Current token ids.
       # Input shape  : `(1, S)`.
-      # Input dtype  : `torch.int64`.
+      # Input dtype  : `torch.int`.
       # Output tensor: Next token ids probability distribution.
-      # Output shape : `(1, S, V)`.
-      # Output dtype : `torch.float32`.
-      batch_next_tkids_probs = model.pred(batch_prev_tkids=batch_prev_tkids)
+      # Out shape : `(1, S, V)`.
+      # Output dtype : `torch.float`.
+      batch_next_tkids_probs = model.pred(batch_cur_tkids=batch_cur_tkids)
 
       # Get the last token id probability distribution.
       # Only need the last token since we already know every previous
       # token ids.
       # Input tensor : Next token ids probability distribution.
       # Input shape  : `(1, S, V)`.
-      # Input dtype  : `torch.float32`.
+      # Input dtype  : `torch.float`.
       # Output tensor: The last next token id probability distribution.
-      # Output shape : `(1, V)`.
-      # Output dtype : `torch.float32`.
+      # Out shape : `(1, V)`.
+      # Output dtype : `torch.float`.
       batch_next_tkid_probs = batch_next_tkids_probs[:, -1]
 
       # Use token id with the largest probability among the rest as
       # next token prediction result.
       # Input tensor : The last next token id probability distribution.
       # Input shape  : `(1, V)`.
-      # Input dtype  : `torch.float32`.
+      # Input dtype  : `torch.float`.
       # Output tensor: The last next token id prediction result.
-      # Output shape : `(1, 1)`.
-      # Output dtype : `torch.int64`.
+      # Out shape : `(1, 1)`.
+      # Output dtype : `torch.int`.
       batch_next_tkid = batch_next_tkid_probs.argmax(dim=-1, keepdim=True)
 
       # Concate the last next token id prediction result with previous
       # token ids prediction result and use to perform further
       # prediction.
-      # `batch_prev_tkids` shape: `(1, S)`.
-      # `batch_prev_tkids` dtype: `torch.int64`.
+      # `batch_cur_tkids` shape: `(1, S)`.
+      # `batch_cur_tkids` dtype: `torch.int`.
       # `batch_next_tkid`  shape: `(1, 1)`.
-      # `batch_next_tkid`  dtype: `torch.int64`.
-      # Output shape            : `(1, S+1)`.
-      # Output dtype            : `torch.int64`.
-      batch_prev_tkids = torch.cat([batch_prev_tkids, batch_next_tkid], dim=-1)
+      # `batch_next_tkid`  dtype: `torch.int`.
+      # Out shape            : `(1, S+1)`.
+      # Output dtype            : `torch.int`.
+      batch_cur_tkids = torch.cat([batch_cur_tkids, batch_next_tkid], dim=-1)
 
       # If the prediction token id is `[eos]`, then stop prediction.
       if batch_next_tkid[0, 0].item() == tknzr.eos_tkid:
         break
 
     # Output generated text.
-    return tknzr.batch_dec(batch_tkids=batch_prev_tkids.tolist(), rm_sp_tks=True)[0]
+    return tknzr.batch_dec(batch_tkids=batch_cur_tkids.tolist(), rm_sp_tks=True)[0]

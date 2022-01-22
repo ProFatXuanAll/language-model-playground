@@ -2,7 +2,7 @@
 
 import inspect
 from inspect import Parameter, Signature
-from typing import Dict, Optional
+from typing import Any
 
 import lmp.util.infer
 from lmp.infer import BaseInfer
@@ -22,7 +22,7 @@ def test_module_function() -> None:
       Parameter(
         name='kwargs',
         kind=Parameter.VAR_KEYWORD,
-        annotation=Optional[Dict],
+        annotation=Any,
       ),
     ],
     return_annotation=BaseInfer,

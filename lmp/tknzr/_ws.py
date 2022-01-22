@@ -21,13 +21,13 @@ class WsTknzr(BaseTknzr):
     Minimum token occurrence counts.
   tk2id: dict[str, int], default: None
     Token-to-id lookup table.
-  kwargs: dict, optional
-    Useless parameter.  Intently left for subclass inheritance.
+  kwargs: typing.Any, optional
+    Useless parameter.  Intently left for subclasses inheritance.
 
   Attributes
   ----------
   tknzr_name: typing.ClassVar[str]
-    Whitespace tokenizer's name is ``whitespace``.
+    CLI name of whitespace tokenizer is ``whitespace``.
 
   See Also
   --------

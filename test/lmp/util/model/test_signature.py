@@ -2,7 +2,7 @@
 
 import inspect
 from inspect import Parameter, Signature
-from typing import Dict, List, Optional
+from typing import Any, List
 
 import lmp.util.model
 from lmp.model import BaseModel
@@ -22,42 +22,11 @@ def test_module_function() -> None:
       Parameter(
         name='kwargs',
         kind=Parameter.VAR_KEYWORD,
-        annotation=Optional[Dict],
+        annotation=Any,
       ),
     ],
     return_annotation=BaseModel,
   )
-
-  assert inspect.isfunction(lmp.util.model.load)
-  assert inspect.signature(lmp.util.model.load) == Signature(
-    parameters=[
-      Parameter(
-        name='ckpt',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=Parameter.empty,
-        annotation=int,
-      ),
-      Parameter(
-        name='exp_name',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=Parameter.empty,
-        annotation=str,
-      ),
-      Parameter(
-        name='model_name',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=Parameter.empty,
-        annotation=str,
-      ),
-      Parameter(
-        name='kwargs',
-        kind=Parameter.VAR_KEYWORD,
-        annotation=Optional[Dict],
-      ),
-    ],
-    return_annotation=BaseModel,
-  )
-
   assert inspect.isfunction(lmp.util.model.list_ckpts)
   assert inspect.signature(lmp.util.model.list_ckpts) == Signature(
     parameters=[
@@ -81,4 +50,50 @@ def test_module_function() -> None:
       ),
     ],
     return_annotation=List[int],
+  )
+  assert inspect.isfunction(lmp.util.model.load)
+  assert inspect.signature(lmp.util.model.load) == Signature(
+    parameters=[
+      Parameter(
+        name='ckpt',
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        default=Parameter.empty,
+        annotation=int,
+      ),
+      Parameter(
+        name='exp_name',
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        default=Parameter.empty,
+        annotation=str,
+      ),
+      Parameter(
+        name='kwargs',
+        kind=Parameter.VAR_KEYWORD,
+        annotation=Any,
+      ),
+    ],
+    return_annotation=BaseModel,
+  )
+  assert inspect.isfunction(lmp.util.model.save)
+  assert inspect.signature(lmp.util.model.save) == Signature(
+    parameters=[
+      Parameter(
+        name='ckpt',
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        default=Parameter.empty,
+        annotation=int,
+      ),
+      Parameter(
+        name='exp_name',
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        default=Parameter.empty,
+        annotation=str,
+      ),
+      Parameter(
+        name='model',
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        annotation=BaseModel,
+      ),
+    ],
+    return_annotation=None,
   )

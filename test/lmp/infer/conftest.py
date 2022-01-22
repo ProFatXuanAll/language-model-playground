@@ -3,7 +3,7 @@
 import pytest
 import torch
 
-from lmp.model import BaseModel, RNNModel
+from lmp.model import BaseModel, ElmanNet
 from lmp.tknzr import BaseTknzr, CharTknzr
 
 
@@ -31,7 +31,7 @@ def tknzr() -> BaseTknzr:
 def model(tknzr: BaseTknzr) -> BaseModel:
   """Example language model instance."""
 
-  class ExampleModel(RNNModel):
+  class ExampleModel(ElmanNet):
     """Dummy model.
 
         Only used in inference testing.
@@ -40,12 +40,12 @@ def model(tknzr: BaseTknzr) -> BaseModel:
         Thus only implement :py:meth:`lmp.model.BaseModel.pred` method.
         """
 
-    def pred(self, batch_prev_tkids: torch.Tensor) -> torch.Tensor:
+    def pred(self, batch_cur_tkids: torch.Tensor) -> torch.Tensor:
       """Predict largest token id in tokenizer's vocabulary."""
-      batch_size = batch_prev_tkids.shape[0]
-      seq_len = batch_prev_tkids.shape[1]
+      batch_size = batch_cur_tkids.shape[0]
+      seq_len = batch_cur_tkids.shape[1]
 
-      # Output shape: (B, S, V).
+      # Out shape: (B, S, V).
       out = []
 
       for _ in range(batch_size):

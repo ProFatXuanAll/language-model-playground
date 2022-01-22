@@ -1,11 +1,11 @@
 """Inference method utilities."""
 
-from typing import Dict, Optional
+from typing import Any
 
 from lmp.infer import INFER_OPTS, BaseInfer
 
 
-def create(infer_name: str, **kwargs: Optional[Dict]) -> BaseInfer:
+def create(infer_name: str, **kwargs: Any) -> BaseInfer:
   """Create inference method instance.
 
   Create inference method instance based on ``infer_name``.  All keyword arguments are collected in ``**kwargs`` and
@@ -15,7 +15,7 @@ def create(infer_name: str, **kwargs: Optional[Dict]) -> BaseInfer:
   ----------
   infer_name: str
     Name of the inference method to create.
-  kwargs: Dict, optional
+  kwargs: typing.Any, optional
     Inference method specific parameters.  All inference method specific parameters must be passed in as keyword
     arguments.
 

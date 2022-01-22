@@ -3,6 +3,9 @@ Glossary
 
 .. glossary::
 
+   batch size
+     Number of samples in a batch.
+
    checkpoint
    checkpoints
      In the process of training :term:`language models`, we need to save our training results (model parameters) for
@@ -52,25 +55,19 @@ Glossary
      be useful for lots of downstream NLP tasks including Natural Lanugage Understanding (NLU), Natural Language
      Generation (NLG), Question Answering (QA), cloze test, etc.
 
-    .. _GPT: https://s3-us-west-2.amazonaws.com/openai-assets/research-covers/language-unsupervised/
-       language_understanding_paper.pdf
-    .. _BERT: https://arxiv.org/abs/1810.04805
+     In this project we have provided script for training language model (:py:mod:`lmp.script.train_model`), evaluating
+     language model (:py:mod:`lmp.script.evaluate_model_on_dataset`) and generate text using language model
+     (:py:mod:`lmp.script.generate_text`).
 
-    In this project we have provided script for training language model (:py:mod:`lmp.script.train_model`), evaluating
-    language model (:py:mod:`lmp.script.evaluate_model_on_dataset`) and generate text using language model
-    (:py:mod:`lmp.script.generate_text`).
-
-    .. seealso::
-       lmp.script
-         All available scripts related to language model.
-       lmp.model
-         All available language model.
+     .. seealso::
+        lmp.script
+          All available scripts related to language model.
+        lmp.model
+          All available language model.
 
    NN
    neural network
      In this project we use famous deep learning framework PyTorch_ to implement our language models.
-
-     .. _PyTorch: https://pytorch.org/
 
      .. seealso::
 
@@ -139,8 +136,6 @@ Glossary
      How to tokenize is a research problem, and there are many statistic-based tokenization models (which we call them
      :term:`tokenizer`) have been proposed.  One such famous example is STANZA_ proposed by Stanford.
 
-     .. _STANZA: https://stanfordnlp.github.io/stanza/tokenize.html
-
    token id
      Since :term:`token` (a string) cannot be directly used to compute, we assign each token a **id** and replace
      tokens with their own ids to perform furthur calculation.  Sometimes we also need a mechaism to convert token id
@@ -161,3 +156,9 @@ Glossary
      size.  Those chosen tokens are referred as **known tokens**, and are collectivly called **vocabulary**.  For the
      rest of the tokens (there are a lot of such tokens out there) not in the vocabulary are thus called
      :term:`out-of-vocabulary` tokens.
+
+.. _BERT: https://arxiv.org/abs/1810.04805
+.. _GPT: https://s3-us-west-2.amazonaws.com/openai-assets/research-covers/language-unsupervised/
+   language_understanding_paper.pdf
+.. _PyTorch: https://pytorch.org/
+.. _STANZA: https://stanfordnlp.github.io/stanza/tokenize.html

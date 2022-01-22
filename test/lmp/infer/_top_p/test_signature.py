@@ -2,7 +2,7 @@
 
 import inspect
 from inspect import Parameter, Signature
-from typing import Dict, Optional, get_type_hints
+from typing import Any, get_type_hints
 
 from lmp.infer import BaseInfer, TopPInfer
 
@@ -46,7 +46,7 @@ def test_instance_method() -> None:
       Parameter(
         name='kwargs',
         kind=Parameter.VAR_KEYWORD,
-        annotation=Optional[Dict],
+        annotation=Any,
       ),
     ],
     return_annotation=Signature.empty,

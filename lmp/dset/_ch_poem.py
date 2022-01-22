@@ -91,7 +91,7 @@ class ChPoemDset(BaseDset):
   df_ver: typing.ClassVar[str]
     Default version is ``'唐'``.
   dset_name: typing.ClassVar[str]
-    Chinese poem dataset's name is ``chinese-poem``.
+    CLI name of Chinese poem dataset is ``chinese-poem``.
   spls: list[str]
     All samples in the dataset.
   ver: str

@@ -3,7 +3,7 @@
 import argparse
 import inspect
 from inspect import Parameter, Signature
-from typing import ClassVar, Dict, Iterable, List, Optional, get_type_hints
+from typing import Any, ClassVar, Dict, Iterable, List, Optional, get_type_hints
 
 from lmp.tknzr import BaseTknzr
 from lmp.tknzr._base import SEQ_ITEM, TKNZR
@@ -111,7 +111,7 @@ def test_instance_method() -> None:
       Parameter(
         name='kwargs',
         kind=Parameter.VAR_KEYWORD,
-        annotation=Optional[Dict],
+        annotation=Any,
       ),
     ],
     return_annotation=Signature.empty,
@@ -208,6 +208,7 @@ def test_instance_method() -> None:
   )
   assert hasattr(BaseTknzr, 'dtknz')
   assert inspect.isfunction(BaseTknzr.dtknz)
+  assert 'dtknz' in BaseTknzr.__abstractmethods__
   assert inspect.signature(BaseTknzr.dtknz) == Signature(
     parameters=[
       Parameter(
@@ -286,6 +287,7 @@ def test_instance_method() -> None:
   )
   assert hasattr(BaseTknzr, 'tknz')
   assert inspect.isfunction(BaseTknzr.tknz)
+  assert 'tknz' in BaseTknzr.__abstractmethods__
   assert inspect.signature(BaseTknzr.tknz) == Signature(
     parameters=[
       Parameter(
@@ -304,12 +306,6 @@ def test_instance_method() -> None:
   )
   assert hasattr(BaseTknzr, 'vocab_size')
   assert isinstance(BaseTknzr.vocab_size, property)
-
-
-def test_abstract_method() -> None:
-  """Ensure abstract method's signatures."""
-  assert 'dtknz' in BaseTknzr.__abstractmethods__
-  assert 'tknz' in BaseTknzr.__abstractmethods__
 
 
 def test_static_method() -> None:

@@ -32,11 +32,9 @@ def tknzr_file_path(exp_name: str, request) -> str:
   abs_dir_path = os.path.join(lmp.util.path.EXP_PATH, exp_name)
   abs_file_path = os.path.join(abs_dir_path, BaseTknzr.file_name)
 
-  def fin():
+  def fin() -> None:
     for file_name in os.listdir(abs_dir_path):
-      abs_file_path = os.path.join(abs_dir_path, file_name)
-      os.remove(abs_file_path)
-
+      os.remove(os.path.join(abs_dir_path, file_name))
     os.removedirs(abs_dir_path)
 
   request.addfinalizer(fin)

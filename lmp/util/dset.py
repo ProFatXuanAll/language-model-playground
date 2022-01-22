@@ -1,12 +1,12 @@
 """Dataset utilities."""
 
-from typing import Dict, Optional
+from typing import Any
 
 import lmp.util.validate
 from lmp.dset import DSET_OPTS, BaseDset
 
 
-def load(dset_name: str, ver: str, **kwargs: Optional[Dict]) -> BaseDset:
+def load(dset_name: str, ver: str, **kwargs: Any) -> BaseDset:
   """Load dataset.
 
   Parameters

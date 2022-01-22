@@ -1,111 +1,108 @@
 """Setup fixtures for testing :py:mod:`lmp.model`."""
 
-import os
-
 import pytest
 
-import lmp.util.path
-from lmp.model import BaseModel
 from lmp.tknzr import BaseTknzr, CharTknzr
 
 
-@pytest.fixture(params=[
-  1,
-  2,
-])
+@pytest.fixture
+def batch_size() -> int:
+  """Batch size."""
+  return 32
+
+
+@pytest.fixture
+def beta1() -> float:
+  """Beta 1 coefficient of AdamW."""
+  return 0.9
+
+
+@pytest.fixture
+def beta2() -> float:
+  """Beta 2 coefficient of AdamW."""
+  return 0.999
+
+
+@pytest.fixture
+def ckpt_step() -> int:
+  """Checkpoint step."""
+  return 500
+
+
+@pytest.fixture(params=[10, 20])
 def d_emb(request) -> int:
+  """Embedding dimension."""
   return request.param
 
 
-@pytest.fixture(params=[
-  1,
-  2,
-])
-def d_hid(request) -> int:
-  return request.param
+@pytest.fixture
+def eps() -> float:
+  """Epsilon."""
+  return 1e-8
 
 
-@pytest.fixture(params=[
-  1,
-  2,
-])
-def n_hid_lyr(request) -> int:
-  return request.param
+@pytest.fixture
+def log_step() -> int:
+  """Log step."""
+  return 1000
 
 
-@pytest.fixture(params=[
-  1,
-  2,
-])
-def n_pre_hid_lyr(request) -> int:
-  return request.param
+@pytest.fixture
+def lr() -> float:
+  """Learning rate."""
+  return 5e-5
 
 
-@pytest.fixture(params=[
-  1,
-  2,
-])
-def n_post_hid_lyr(request) -> int:
-  return request.param
+@pytest.fixture
+def max_norm() -> float:
+  """Gradient clipping max norm."""
+  return 1.0
 
 
-@pytest.fixture(params=[
-  0.0,
-  0.5,
-  1.0,
-])
-def p_emb(request) -> float:
-  return request.param
+@pytest.fixture
+def max_seq_len() -> int:
+  """Maximum sequence length."""
+  return 128
 
 
-@pytest.fixture(params=[
-  0.0,
-  0.5,
-  1.0,
-])
-def p_hid(request) -> float:
-  return request.param
+@pytest.fixture
+def n_epoch() -> int:
+  """Number of training epochs."""
+  return 10
 
 
-@pytest.fixture(params=[
-  0,
-  1000,
-])
-def ckpt(request) -> int:
-  """Test experiment checkpoint."""
-  return request.param
+@pytest.fixture
+def seed() -> int:
+  """Random seed."""
+  return 42
 
 
 @pytest.fixture
 def tknzr() -> BaseTknzr:
-  """Example tokenizer instance."""
+  """:py:class:`lmp.tknzr.BaseTknzr` instance."""
   return CharTknzr(
     is_uncased=True,
     max_vocab=-1,
-    min_count=1,
+    min_count=0,
     tk2id={
-      '[bos]': 0,
-      '[eos]': 1,
-      '[pad]': 2,
-      '[unk]': 3,
-      'a': 4,
-      'b': 5,
-      'c': 6,
-    }
+      CharTknzr.bos_tk: CharTknzr.bos_tkid,
+      CharTknzr.eos_tk: CharTknzr.eos_tkid,
+      CharTknzr.pad_tk: CharTknzr.pad_tkid,
+      CharTknzr.unk_tk: CharTknzr.unk_tkid,
+      'a': max(CharTknzr.bos_tkid, CharTknzr.eos_tkid, CharTknzr.pad_tkid, CharTknzr.unk_tkid) + 1,
+      'b': max(CharTknzr.bos_tkid, CharTknzr.eos_tkid, CharTknzr.pad_tkid, CharTknzr.unk_tkid) + 2,
+      'c': max(CharTknzr.bos_tkid, CharTknzr.eos_tkid, CharTknzr.pad_tkid, CharTknzr.unk_tkid) + 3,
+    },
   )
 
 
 @pytest.fixture
-def clean_model(request, ckpt: int, exp_name: str) -> str:
-  """Clean model parameters output file and directories."""
-  abs_dir_path = os.path.join(lmp.util.path.EXP_PATH, exp_name)
-  abs_file_path = os.path.join(abs_dir_path, BaseModel.file_name.format(ckpt))
+def tknzr_exp_name(exp_name: str) -> str:
+  """Tokenizer experiment name."""
+  return f'{exp_name}-tokenizer'
 
-  def remove():
-    if os.path.exists(abs_file_path):
-      os.remove(abs_file_path)
 
-    if os.path.exists(abs_dir_path):
-      os.removedirs(abs_dir_path)
-
-  request.addfinalizer(remove)
+@pytest.fixture
+def wd() -> float:
+  """Weight decay coefficient of AdamW."""
+  return 1e-2

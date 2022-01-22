@@ -13,6 +13,7 @@
    infer.py
    log.py
    model.py
+   metric.py
    path.py
    rand.py
    tknzr.py

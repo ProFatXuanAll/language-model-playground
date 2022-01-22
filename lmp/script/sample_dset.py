@@ -75,16 +75,16 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
   # Use dataset name to create subparser for all datasets.
   subparsers = parser.add_subparsers(dest='dset_name', required=True)
   for dset_name, dset_type in lmp.dset.DSET_OPTS.items():
-    dset_parser = subparsers.add_parser(dset_name, description=f'Sample `lmp.dset.{dset_type.__name__}`.')
+    dset_subparser = subparsers.add_parser(dset_name, description=f'Sample `lmp.dset.{dset_type.__name__}`.')
 
     # Optional arguments.
-    dset_parser.add_argument(
+    dset_subparser.add_argument(
       '--idx',
       default=0,
       help='Index of targeting sample.  Default is ``0``.',
       type=int,
     )
-    dset_parser.add_argument(
+    dset_subparser.add_argument(
       '--ver',
       default=dset_type.df_ver,
       help=f'Dataset version of `lmp.dset.{dset_type.__name__}`.  Default version is `{dset_type.df_ver}`.',

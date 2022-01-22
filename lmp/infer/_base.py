@@ -2,7 +2,7 @@
 
 import abc
 import argparse
-from typing import ClassVar, Dict, Optional
+from typing import Any, ClassVar
 
 import torch
 
@@ -25,8 +25,8 @@ class BaseInfer(abc.ABC):
 
   Parameters
   ----------
-  kwargs: Dict, optional
-    Useless parameter.  Intently left for subclass inheritance.
+  kwargs: typing.Any, optional
+    Useless parameter.  Intently left for subclasses inheritance.
   max_seq_len: str
     Generated sequence of tokens maximum sequence length constraint.  Must satisfy
     ``-1 <= max_seq_len <= BaseInfer.hard_max_seq_len``.  If ``max_seq_len == -1``, then replace ``max_seq_len`` with
@@ -52,7 +52,7 @@ class BaseInfer(abc.ABC):
   hard_max_seq_len: ClassVar[int] = 512
   infer_name: ClassVar[str] = 'base'
 
-  def __init__(self, max_seq_len: int, **kwargs: Optional[Dict]):
+  def __init__(self, max_seq_len: int, **kwargs: Any):
     if not isinstance(max_seq_len, int):
       raise TypeError('`max_seq_len` must be an instance of `int`.')
 

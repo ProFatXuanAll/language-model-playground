@@ -8,7 +8,7 @@ import re
 import typing
 import unicodedata
 from collections import Counter
-from typing import ClassVar, Dict, Iterable, List, Optional, Type, TypeVar
+from typing import Any, ClassVar, Dict, Iterable, List, Optional, Type, TypeVar
 
 import lmp.dset
 import lmp.util.path
@@ -41,8 +41,8 @@ class BaseTknzr(abc.ABC):
   tk2id: dict[str, int], default: None
     Token-to-id lookup table.  If ``tk2id`` is given, then initialize token-to-id lookup table with ``tk2id``.
     Otherwise initialize lookup table with special tokens only.
-  kwargs: dict, optional
-    Useless parameter.  Intently left for subclass inheritance.
+  kwargs: typing.Any, optional
+    Useless parameter.  Intently left for subclasses inheritance.
 
   Attributes
   ----------
@@ -101,7 +101,7 @@ class BaseTknzr(abc.ABC):
     min_count: int,
     *,
     tk2id: Optional[Dict[str, int]] = None,
-    **kwargs: Optional[Dict],
+    **kwargs: Any,
   ):
     # `is_uncased` validation.
     lmp.util.validate.raise_if_not_instance(val=is_uncased, val_name='is_uncased', val_type=bool)
@@ -153,7 +153,7 @@ class BaseTknzr(abc.ABC):
 
     .. danger::
 
-      This method overwrite existed files.  Make sure you know what you are doing before calling this method.
+       This method overwrite existed files.  Make sure you know what you are doing before calling this method.
 
     Parameters
     ----------
@@ -727,6 +727,10 @@ class BaseTknzr(abc.ABC):
     ----------
     parser: argparse.ArgumentParser
       CLI arguments parser.
+
+    Returns
+    -------
+    None
 
     See Also
     --------

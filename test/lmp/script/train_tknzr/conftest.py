@@ -51,7 +51,7 @@ def cfg_file_path(exp_name: str, request) -> str:
   abs_dir_path = os.path.join(lmp.util.path.EXP_PATH, exp_name)
   abs_file_path = os.path.join(abs_dir_path, lmp.util.cfg.CFG_NAME)
 
-  def fin():
+  def fin() -> None:
     if os.path.exists(abs_file_path):
       os.remove(abs_file_path)
     if os.path.exists(abs_dir_path) and not os.listdir(abs_dir_path):

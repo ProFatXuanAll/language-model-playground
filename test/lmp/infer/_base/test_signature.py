@@ -3,7 +3,7 @@
 import argparse
 import inspect
 from inspect import Parameter, Signature
-from typing import ClassVar, Dict, Optional, get_type_hints
+from typing import Any, ClassVar, get_type_hints
 
 from lmp.infer import BaseInfer
 
@@ -44,7 +44,7 @@ def test_instance_method() -> None:
       Parameter(
         name='kwargs',
         kind=Parameter.VAR_KEYWORD,
-        annotation=Optional[Dict],
+        annotation=Any,
       ),
     ],
     return_annotation=Signature.empty,

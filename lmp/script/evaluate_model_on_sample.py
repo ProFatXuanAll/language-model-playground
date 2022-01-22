@@ -121,18 +121,18 @@ def main() -> None:
   # Wrap as batch with only one sample since `model.ppl` only accept batch.
   batch_tkids = tknzr.batch_enc(batch_txt=[args.txt], max_seq_len=model_cfg.max_seq_len)
 
-  # Convert token ids to `torch.Tensor` with `dtype == torch.int64`.
-  batch_tkids = torch.LongTensor(batch_tkids)
+  # Convert token ids to `torch.Tensor` with `dtype == torch.int`.
+  batch_tkids = torch.IntTensor(batch_tkids)
 
   # Move tensors to model running device.
   batch_tkids = batch_tkids.to(device)
 
   # Format batch token ids to satisfy language model training format.
-  batch_prev_tkids = batch_tkids[..., :-1]
+  batch_cur_tkids = batch_tkids[..., :-1]
   batch_next_tkids = batch_tkids[..., 1:]
 
   # Calculate perplexity.
-  ppl = model.ppl(batch_next_tkids=batch_next_tkids, batch_prev_tkids=batch_prev_tkids)
+  ppl = model.ppl(batch_next_tkids=batch_next_tkids, batch_cur_tkids=batch_cur_tkids)
 
   # Output perplexity on given sample.
   print(ppl)

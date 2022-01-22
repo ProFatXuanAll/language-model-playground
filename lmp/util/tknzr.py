@@ -1,12 +1,12 @@
 """Tokenizer utilities."""
 
-from typing import Dict, Optional
+from typing import Any
 
 import lmp.util.validate
 from lmp.tknzr import TKNZR_OPTS, BaseTknzr
 
 
-def create(tknzr_name: str, **kwargs: Optional[Dict]) -> BaseTknzr:
+def create(tknzr_name: str, **kwargs: Any) -> BaseTknzr:
   """Create tokenizer instance by tokenizer's name.
 
   Tokenizer's arguments are collected in ``**kwargs`` and are passed directly to tokenizer's constructor.
@@ -15,7 +15,7 @@ def create(tknzr_name: str, **kwargs: Optional[Dict]) -> BaseTknzr:
   ----------
   tknzr_name: str
     Name of the tokenizer to create.
-  kwargs: Dict, optional
+  kwargs: typing.Any, optional
     Tokenizer's parameters.
 
   Returns

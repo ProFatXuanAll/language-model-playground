@@ -35,7 +35,7 @@ doc-coverage = "sphinx-build -b coverage doc/source doc/build"
 # Lint with yapf.
 ly = "yapf --in-place --recursive --exclude **/*/.venv lmp test"
 # Lint with isort.
-li = "isort lmp test"
+li = "isort --settings-path .isort.cfg lmp test"
 # Lint with flake8.
 lf = "flake8 --config=.flake8 lmp test"
 tensorboard = "tensorboard --logdir exp/log"

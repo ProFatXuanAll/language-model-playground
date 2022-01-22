@@ -9,6 +9,4 @@
    :caption: All available models:
 
    BaseModel.py
-   GRUModel.py
-   LSTMModel.py
-   RNNModel.py
+   ElmanNet.py

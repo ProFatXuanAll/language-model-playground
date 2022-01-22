@@ -9,11 +9,11 @@ Welcome to Language Model Playground's documentation!
 We have implemented several :term:`language models` including:
 
 - RNN only models.
-  (e.g. :py:mod:`lmp.model.RNNModel`)
+  (e.g. :py:mod:`lmp.model.ElmanNet`)
 - RNN models with residual connections.
-  (e.g. :py:mod:`lmp.model.ResRNNModel`)
+  (e.g. :py:mod:`lmp.model.ResElmanNet`)
 - RNN models with self attention mechanism.
-  (e.g. :py:mod:`lmp.model.SAttnRNNModel`)
+  (e.g. :py:mod:`lmp.model.SAttnElmanNet`)
 - Transformer models.
 - And more to come!
 
@@ -24,7 +24,7 @@ using training script :py:mod:`lmp.script.train_model`.
 
    import lmp.model
 
-   model = lmp.model.RNNModel(...)      # parameters go in here.
+   model = lmp.model.ElmanNet(...)      # parameters go in here.
 
 .. seealso::
 

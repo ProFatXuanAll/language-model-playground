@@ -13,11 +13,11 @@ from lmp.dset._base import BaseDset
 class WikiText2Dset(BaseDset):
   """Wiki-Text-2 dataset.
 
-  [Wiki-Text-2]_ is an English dataset which is part of the WikiText Long Term Dependency Language Modeling Dataset.
+  Wiki-Text-2 [1]_ is an English dataset which is part of the WikiText Long Term Dependency Language Modeling Dataset.
   See WikiText_ for more details on dataset.
 
-  .. _WikiText: https://www.salesforce.com/products/einstein/ai-research/
-    the-wikitext-dependency-language-modeling-dataset/
+  .. _WikiText:
+     https://www.salesforce.com/products/einstein/ai-research/the-wikitext-dependency-language-modeling-dataset/
 
   Here are supported versions and number of tokens informations.
 
@@ -41,7 +41,7 @@ class WikiText2Dset(BaseDset):
   df_ver: typing.ClassVar[str]
     Default version is ``'train'``.
   dset_name: typing.ClassVar[str]
-    Wiki-Text-2 dataset's name is ``wiki-text-2``.
+    CLI name of Wiki-Text-2 dataset is ``wiki-text-2``.
   spls: list[str]
     All samples in the dataset.
   ver: str
@@ -58,8 +58,7 @@ class WikiText2Dset(BaseDset):
 
   References
   ----------
-  .. [Wiki-Text-2] Stephen Merity, Caiming Xiong, James Bradbury, and Richard Socher. 2016. Pointer Sentinel Mixture
-    Models
+  .. [1] Stephen Merity, Caiming Xiong, James Bradbury, and Richard Socher. 2016. Pointer Sentinel Mixture Models
 
   Examples
   --------

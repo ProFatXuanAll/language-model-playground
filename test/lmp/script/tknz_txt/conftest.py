@@ -17,7 +17,7 @@ def tknzr_and_cfg_file_path(exp_name: str, request) -> None:
   abs_cfg_file_path = os.path.join(abs_dir_path, lmp.util.cfg.CFG_NAME)
   abs_tknzr_file_path = os.path.join(abs_dir_path, BaseTknzr.file_name)
 
-  def fin():
+  def fin() -> None:
     if os.path.exists(abs_cfg_file_path):
       os.remove(abs_cfg_file_path)
     if os.path.exists(abs_tknzr_file_path):
