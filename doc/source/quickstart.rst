@@ -247,7 +247,7 @@ whether our model is **underfitting**.
 
 .. code-block:: shell
 
-   python -m lmp.script.evaluate_model_on_dataset wiki-text-2 \
+   python -m lmp.script.eval_dset_ppl wiki-text-2 \
      --batch_size 32 \
      --first_ckpt 0 \
      --exp_name my_model_exp \
@@ -255,8 +255,8 @@ whether our model is **underfitting**.
 
 We use **training** version of Wiki-Text-2 dataset (as specified in ``--ver train``) to check our performance.  The
 script above will evaluate all :term:`checkpoints` we have saved starting from :term:`checkpoint` ``0`` all the way to
-last :term:`checkpoint`.  We use :term:`perplexity` as our evaluation metric.  See :py:meth:`lmp.model.BaseModel.ppl`
-for :term:`perplexity` details.
+last :term:`checkpoint`.  We use :term:`perplexity` as our evaluation metric.  See :py:meth:`lmp.util.metric.ppl` for
+:term:`perplexity` details.
 
 Again you can use browser to see your evaluation logs by the following script:
 
@@ -279,7 +279,7 @@ We should now check whether our model is **overfitting**.
 
 .. code-block:: shell
 
-   python -m lmp.script.evaluate_model_on_dataset wiki-text-2 \
+   python -m lmp.script.eval_dset_ppl wiki-text-2 \
      --batch_size 32 \
      --first_ckpt 0 \
      --exp_name my_model_exp \
@@ -295,7 +295,7 @@ hypothesis, we should now use **test** version of Wiki-Text-2 dataset to check o
 
 .. code-block:: shell
 
-   python -m lmp.script.evaluate_model_on_dataset wiki-text-2 \
+   python -m lmp.script.eval_dset_ppl wiki-text-2 \
      --batch_size 32 \
      --first_ckpt 0 \
      --exp_name my_model_exp \

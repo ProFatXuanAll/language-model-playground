@@ -8,8 +8,8 @@
    :maxdepth: 1
    :caption: Available scripts:
 
-   evaluate_model_on_dataset.py
-   evaluate_model_on_sample.py
+   eval_dset_ppl.py
+   eval_txt_ppl.py
    generate_text.py
    sample_dset.py
    tknz_txt.py

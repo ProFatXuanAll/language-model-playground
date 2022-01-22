@@ -8,6 +8,7 @@ import pytest
 import torch
 
 import lmp.util.metric
+from lmp.tknzr import BaseTknzr
 
 
 @pytest.fixture
@@ -48,7 +49,12 @@ def test_calculate_result(batch_ppl: torch.Tensor, batch_tkids: torch.Tensor, ba
   """Test perplexity calcuation result."""
   assert torch.all(
     torch.isclose(
-      input=lmp.util.metric.ppl(batch_tkids=batch_tkids, batch_tkids_pd=batch_tkids_pd),
+      input=lmp.util.metric.ppl(
+        batch_tkids=batch_tkids,
+        batch_tkids_pd=batch_tkids_pd,
+        eos_tkid=BaseTknzr.eos_tkid,
+        pad_tkid=BaseTknzr.pad_tkid,
+      ),
       other=batch_ppl,
     )
   )

@@ -1,4 +1,4 @@
-"""Test sample result.
+"""Test tokenization result.
 
 Test target:
 - :py:meth:`lmp.script.tknz_txt.main`.

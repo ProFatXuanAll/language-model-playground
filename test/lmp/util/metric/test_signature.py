@@ -24,6 +24,16 @@ def test_module_function() -> None:
         kind=Parameter.POSITIONAL_OR_KEYWORD,
         annotation=torch.Tensor,
       ),
+      Parameter(
+        name='eos_tkid',
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        annotation=int,
+      ),
+      Parameter(
+        name='pad_tkid',
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        annotation=int,
+      ),
     ],
     return_annotation=torch.Tensor,
   )

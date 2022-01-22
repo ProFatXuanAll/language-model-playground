@@ -29,7 +29,7 @@ using training script :py:mod:`lmp.script.train_model`.
 .. seealso::
 
    :py:mod:`lmp.model`
-      All available models are put under :py:mod:`lmp.model`.
+      All available language models are put under :py:mod:`lmp.model`.
 
 .. todo::
 
@@ -44,9 +44,9 @@ We have written serveral **scripts** to demostrate training pipline of :term:`la
   (e.g. :py:class:`lmp.tknzr.WsTknzr`)
 - Use :py:mod:`lmp.script.tknz_txt` to :term:`tokenize` text with pre-trained :term:`tokenizers`.
 - Use :py:mod:`lmp.script.train_model` to train :term:`language models`.
-- Use :py:mod:`lmp.script.evaluate_model_on_sample` to calculate :term:`perplexity` on given sample with pre-trained
+- Use :py:mod:`lmp.script.eval_txt_ppl` to calculate :term:`perplexity` on given sample with pre-trained
   :term:`language model` checkpoint.
-- Use :py:mod:`lmp.script.evaluate_model_on_dataset` to calculate :term:`perplexity` on dataset with range of
+- Use :py:mod:`lmp.script.eval_dset_ppl` to calculate :term:`perplexity` on dataset with range of
   pre-trained :term:`language model` :term:`checkpoints`.
 - Use :py:mod:`lmp.script.generate_text` to generate text with pre-trained :term:`language model` :term:`checkpoint`.
 - And more to come!

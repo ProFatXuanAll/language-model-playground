@@ -56,7 +56,7 @@ Glossary
      Generation (NLG), Question Answering (QA), cloze test, etc.
 
      In this project we have provided script for training language model (:py:mod:`lmp.script.train_model`), evaluating
-     language model (:py:mod:`lmp.script.evaluate_model_on_dataset`) and generate text using language model
+     language model (:py:mod:`lmp.script.eval_dset_ppl`) and generate text using language model
      (:py:mod:`lmp.script.generate_text`).
 
      .. seealso::
@@ -72,7 +72,7 @@ Glossary
      .. seealso::
 
         lmp.model
-          All available models.
+          All available language models.
 
    NFKC
      **Unicode normalization** is a process which convert full-width character into half-width, convert same glyph into

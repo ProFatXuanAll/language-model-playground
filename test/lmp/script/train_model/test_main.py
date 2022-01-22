@@ -1,4 +1,4 @@
-"""Test sample result.
+"""Test training model script.
 
 Test target:
 - :py:meth:`lmp.script.train_tknzr.main`.

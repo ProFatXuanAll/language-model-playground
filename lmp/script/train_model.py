@@ -7,7 +7,7 @@ and open browser with URL http://localhost:6006/ to see training performance.
 See Also
 --------
 lmp.model
-  All available models.
+  All available language models.
 lmp.script.train_tknzr
   Tokenizer training script.
 

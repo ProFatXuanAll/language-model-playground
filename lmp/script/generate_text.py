@@ -6,7 +6,7 @@ used to generate text.  This script serve as model validation, and it is usually
 See Also
 --------
 lmp.model
-  All available models.
+  All available language models.
 lmp.infer
   All available inference methods.
 lmp.script.train_model

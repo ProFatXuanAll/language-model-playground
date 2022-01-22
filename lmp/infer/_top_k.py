@@ -108,7 +108,7 @@ class TopKInfer(BaseInfer):
     # Convert to tensor with `dtype == torch.int`.
     # Tensor shape: `(1, S')`.
     # Tensor dtype: `torch.int`.
-    batch_cur_tkids = torch.IntTensor(batch_cur_tkids)
+    batch_cur_tkids = torch.LongTensor(batch_cur_tkids)
 
     # Remove `[eos]` token id since model is not trained to predict tokens
     # after seeing `[eos]`.

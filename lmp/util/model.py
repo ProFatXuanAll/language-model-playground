@@ -133,7 +133,7 @@ def load(ckpt: int, exp_name: str, **kwargs: Any) -> BaseModel:
   See Also
   --------
   lmp.model
-    All available models.
+    All available language models.
 
   Examples
   --------

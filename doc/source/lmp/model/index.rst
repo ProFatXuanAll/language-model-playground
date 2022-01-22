@@ -6,7 +6,7 @@
 
 .. toctree::
    :maxdepth: 1
-   :caption: All available models:
+   :caption: All available language models:
 
    BaseModel.py
    ElmanNet.py
