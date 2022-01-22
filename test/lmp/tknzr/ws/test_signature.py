@@ -31,6 +31,8 @@ def test_class_attribute() -> None:
 def test_inherent_class_method() -> None:
   """Ensure inherent class methods are same as baseclass."""
   assert inspect.signature(WsTknzr.load) == inspect.signature(BaseTknzr.load)
+  assert inspect.signature(WsTknzr.pad_to_max) == inspect.signature(BaseTknzr.pad_to_max)
+  assert inspect.signature(WsTknzr.trunc_to_max) == inspect.signature(BaseTknzr.trunc_to_max)
   assert inspect.signature(WsTknzr.train_parser) == inspect.signature(BaseTknzr.train_parser)
 
 
@@ -45,12 +47,6 @@ def test_inherent_instance_method() -> None:
   assert WsTknzr.save == BaseTknzr.save
   assert WsTknzr.norm == BaseTknzr.norm
   assert WsTknzr.vocab_size == BaseTknzr.vocab_size
-
-
-def test_inherent_static_method() -> None:
-  """Ensure inherent static methods are same as baseclass."""
-  assert WsTknzr.pad_to_max == BaseTknzr.pad_to_max
-  assert WsTknzr.trunc_to_max == BaseTknzr.trunc_to_max
 
 
 def test_instance_method() -> None:

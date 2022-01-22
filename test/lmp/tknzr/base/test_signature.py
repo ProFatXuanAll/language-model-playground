@@ -6,7 +6,7 @@ from inspect import Parameter, Signature
 from typing import Any, ClassVar, Dict, Iterable, List, Optional, get_type_hints
 
 from lmp.tknzr import BaseTknzr
-from lmp.tknzr._base import SEQ_ITEM, TKNZR
+from lmp.tknzr._base import TKNZR
 
 
 def test_class() -> None:
@@ -56,6 +56,46 @@ def test_class_method() -> None:
       ),
     ],
     return_annotation=TKNZR,
+  )
+  assert hasattr(BaseTknzr, 'pad_to_max')
+  assert inspect.ismethod(BaseTknzr.pad_to_max)
+  assert BaseTknzr.pad_to_max.__self__ == BaseTknzr
+  assert inspect.signature(BaseTknzr.pad_to_max) == Signature(
+    parameters=[
+      Parameter(
+        name='tkids',
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        default=Parameter.empty,
+        annotation=List[int],
+      ),
+      Parameter(
+        name='max_seq_len',
+        kind=Parameter.KEYWORD_ONLY,
+        default=-1,
+        annotation=int,
+      ),
+    ],
+    return_annotation=List[int],
+  )
+  assert hasattr(BaseTknzr, 'trunc_to_max')
+  assert inspect.ismethod(BaseTknzr.trunc_to_max)
+  assert BaseTknzr.trunc_to_max.__self__ == BaseTknzr
+  assert inspect.signature(BaseTknzr.trunc_to_max) == Signature(
+    parameters=[
+      Parameter(
+        name='tkids',
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        default=Parameter.empty,
+        annotation=List[int],
+      ),
+      Parameter(
+        name='max_seq_len',
+        kind=Parameter.KEYWORD_ONLY,
+        default=-1,
+        annotation=int,
+      ),
+    ],
+    return_annotation=List[int],
   )
   assert hasattr(BaseTknzr, 'train_parser')
   assert inspect.ismethod(BaseTknzr.train_parser)
@@ -306,51 +346,3 @@ def test_instance_method() -> None:
   )
   assert hasattr(BaseTknzr, 'vocab_size')
   assert isinstance(BaseTknzr.vocab_size, property)
-
-
-def test_static_method() -> None:
-  """Ensure static methods' signatures."""
-  assert hasattr(BaseTknzr, 'pad_to_max')
-  assert inspect.isfunction(BaseTknzr.pad_to_max)
-  assert inspect.signature(BaseTknzr.pad_to_max) == Signature(
-    parameters=[
-      Parameter(
-        name='seq',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=Parameter.empty,
-        annotation=List[SEQ_ITEM],
-      ),
-      Parameter(
-        name='pad',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=Parameter.empty,
-        annotation=SEQ_ITEM,
-      ),
-      Parameter(
-        name='max_seq_len',
-        kind=Parameter.KEYWORD_ONLY,
-        default=-1,
-        annotation=int,
-      ),
-    ],
-    return_annotation=List[SEQ_ITEM],
-  )
-  assert hasattr(BaseTknzr, 'trunc_to_max')
-  assert inspect.isfunction(BaseTknzr.trunc_to_max)
-  assert inspect.signature(BaseTknzr.trunc_to_max) == Signature(
-    parameters=[
-      Parameter(
-        name='seq',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=Parameter.empty,
-        annotation=List[SEQ_ITEM],
-      ),
-      Parameter(
-        name='max_seq_len',
-        kind=Parameter.KEYWORD_ONLY,
-        default=-1,
-        annotation=int,
-      ),
-    ],
-    return_annotation=List[SEQ_ITEM],
-  )

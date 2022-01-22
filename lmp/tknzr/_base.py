@@ -14,7 +14,6 @@ import lmp.dset
 import lmp.util.path
 import lmp.util.validate
 
-SEQ_ITEM = TypeVar('SEQ_ITEM', int, str)
 TKNZR = TypeVar('TKNZR', bound='BaseTknzr')
 
 
@@ -332,41 +331,33 @@ class BaseTknzr(abc.ABC):
     """
     raise NotImplementedError
 
-  @staticmethod
-  def trunc_to_max(seq: List[SEQ_ITEM], *, max_seq_len: int = -1) -> List[SEQ_ITEM]:
-    """Truncate sequence when sequence is longer than allowed.
+  @classmethod
+  def trunc_to_max(cls, tkids: List[int], *, max_seq_len: int = -1) -> List[int]:
+    """Truncate token id list when token id list is longer than allowed.
 
-    If ``len(seq) > max_seq_len``, then truncate ``seq`` to have length equals to ``max_seq_len``.  Do nothing when
-    ``max_seq_len == -1`` or ``len(seq) <= max_seq_len``.
+    If ``len(tkids) > max_seq_len``, then truncate ``tkids`` to have length equals to ``max_seq_len``.  Do nothing when
+    ``max_seq_len == -1`` or ``len(tkids) <= max_seq_len``.
 
     Arguments
     ---------
-    seq: list[SEQ_ITEM]
-      Sequence to be truncated.
+    tkids: list[int]
+      Token id list to be truncated.
     max_seq_len: int, default: -1
-      Maximum sequence length constraint.
+      Maximum length constraint.
 
     Returns
     -------
-    list[SEQ_ITEM]
-      Truncated sequence.
+    list[int]
+      Truncated token id list.
 
     See Also
     --------
     lmp.tknzr.BaseTknzr.pad_to_max
-      Pad sequence when sequence is shorter than required.
+      Pad token id list when token id list is shorter than required.
 
     Examples
     --------
     >>> from lmp.tknzr import BaseTknzr
-    >>> BaseTknzr.trunc_to_max(['a', 'b', 'c'], max_seq_len=2)
-    ['a', 'b']
-    >>> BaseTknzr.trunc_to_max(['a', 'b', 'c'], max_seq_len=3)
-    ['a', 'b', 'c']
-    >>> BaseTknzr.trunc_to_max(['a', 'b', 'c'], max_seq_len=4)
-    ['a', 'b', 'c']
-    >>> BaseTknzr.trunc_to_max(['a', 'b', 'c'], max_seq_len=-1)
-    ['a', 'b', 'c']
     >>> BaseTknzr.trunc_to_max([1, 2, 3], max_seq_len=1)
     [1]
     >>> BaseTknzr.trunc_to_max([1, 2, 3], max_seq_len=-1)
@@ -377,48 +368,39 @@ class BaseTknzr(abc.ABC):
     lmp.util.validate.raise_if_wrong_ordered(vals=[-1, max_seq_len], val_names=['-1', 'max_seq_len'])
 
     if max_seq_len == -1:
-      return seq
-    # Truncate sequence to maximum sequence length.
-    return seq[:max_seq_len]
+      return tkids
 
-  @staticmethod
-  def pad_to_max(seq: List[SEQ_ITEM], pad: SEQ_ITEM, *, max_seq_len: int = -1) -> List[SEQ_ITEM]:
-    """Pad sequence when sequence is shorter than required.
+    # Truncate token id list to maximum sequence length.
+    return tkids[:max_seq_len]
 
-    If ``len(seq) < max_seq_len``, then append padding item ``pad`` at the end of ``seq`` until ``seq`` has length
-    equal to ``max_seq_len``.  Do nothing when ``max_seq_len == -1`` or ``len(seq) >= max_seq_len``.
+  @classmethod
+  def pad_to_max(cls, tkids: List[int], *, max_seq_len: int = -1) -> List[int]:
+    """Pad token id list when token id list is shorter than required.
+
+    If ``len(tkids) < max_seq_len``, then append padding token id at the end of ``tkids`` until ``tkids`` has length
+    equal to ``max_seq_len``.  Do nothing when ``max_seq_len == -1`` or ``len(tkids) >= max_seq_len``.
 
     Arguments
     ---------
-    seq: list[SEQ_ITEM]
-      Sequence to be padded.
-    pad: SEQ_ITEM
-      Padding item to be appended at the end of sequence.
+    tkids: list[int]
+      Token id list to be padded.
     max_seq_len: int, default: -1
-      Maximum sequence length constraint.
+      Maximum length constraint.
 
     Returns
     -------
-    list[SEQ_ITEM]
-      Padded sequence.
+    list[int]
+      Padded token id list.
 
     See Also
     --------
     lmp.tknzr.BaseTknzr.trunc_to_max
-      Truncate sequence when sequence is longer than allowed.
+      Truncate token id list when token id list is longer than allowed.
 
     Examples
     --------
     >>> from lmp.tknzr import BaseTknzr
-    >>> BaseTknzr.pad_to_max(['a', 'b', 'c'], 'p', max_seq_len=4)
-    ['a', 'b', 'c', 'p']
-    >>> BaseTknzr.pad_to_max(['a', 'b', 'c'], 'p', max_seq_len=3)
-    ['a', 'b', 'c']
-    >>> BaseTknzr.pad_to_max(['a', 'b', 'c'], 'p', max_seq_len=2)
-    ['a', 'b', 'c']
-    >>> BaseTknzr.pad_to_max(['a', 'b', 'c'], max_seq_len=-1)
-    ['a', 'b', 'c']
-    >>> BaseTknzr.pad_to_max([1, 2, 3], 0, max_seq_len=5)
+    >>> BaseTknzr.pad_to_max([1, 2, 3], max_seq_len=5)
     [1, 2, 3, 0, 0]
     >>> BaseTknzr.pad_to_max([1, 2, 3], max_seq_len=-1)
     [1, 2, 3]
@@ -428,13 +410,13 @@ class BaseTknzr(abc.ABC):
     lmp.util.validate.raise_if_wrong_ordered(vals=[-1, max_seq_len], val_names=['-1', 'max_seq_len'])
 
     if max_seq_len == -1:
-      return seq
+      return tkids
 
     # Calculate padding length.
-    pad_len = max(0, max_seq_len - len(seq))
+    pad_len = max(0, max_seq_len - len(tkids))
 
     # Pad to maximum sequence length.
-    return seq + [pad] * pad_len
+    return tkids + [cls.pad_tkid] * pad_len
 
   def enc(self, txt: str, *, max_seq_len: int = -1) -> List[int]:
     """Encode text into token id list.
@@ -497,11 +479,7 @@ class BaseTknzr(abc.ABC):
     tkids.append(self.__class__.eos_tkid)
 
     # First truncate sequence to maximum sequence length, then pad sequence to maximum sequence length.
-    return self.pad_to_max(
-      self.trunc_to_max(tkids, max_seq_len=max_seq_len),
-      self.__class__.pad_tkid,
-      max_seq_len=max_seq_len,
-    )
+    return self.pad_to_max(self.trunc_to_max(tkids, max_seq_len=max_seq_len), max_seq_len=max_seq_len)
 
   def dec(self, tkids: List[int], *, rm_sp_tks: bool = False) -> str:
     """Decode token id list back to text.
@@ -611,7 +589,7 @@ class BaseTknzr(abc.ABC):
     batch_tkids = [self.trunc_to_max(tkids, max_seq_len=max_seq_len) for tkids in batch_tkids]
 
     # Pad each token ids sequence in batch to maximum sequence length.
-    return [self.pad_to_max(tkids, self.__class__.pad_tkid, max_seq_len=max_seq_len) for tkids in batch_tkids]
+    return [self.pad_to_max(tkids, max_seq_len=max_seq_len) for tkids in batch_tkids]
 
   def batch_dec(self, batch_tkids: List[List[int]], *, rm_sp_tks: bool = False) -> List[str]:
     """Decode batch of token id lists back to batch of text.
