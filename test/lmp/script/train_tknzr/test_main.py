@@ -20,6 +20,7 @@ def test_train_char_tknzr_on_wiki_text_2(
   is_uncased: bool,
   max_vocab: int,
   min_count: int,
+  seed: int,
   wiki_text_2_file_paths: List[str],
   tknzr_file_path: str,
 ) -> None:
@@ -34,6 +35,8 @@ def test_train_char_tknzr_on_wiki_text_2(
     str(max_vocab),
     '--min_count',
     str(min_count),
+    '--seed',
+    str(seed),
     '--ver',
     WikiText2Dset.df_ver,
   ]
@@ -50,6 +53,7 @@ def test_train_char_tknzr_on_wiki_text_2(
   assert cfg.is_uncased == is_uncased
   assert cfg.max_vocab == max_vocab
   assert cfg.min_count == min_count
+  assert cfg.seed == seed
   assert cfg.ver == WikiText2Dset.df_ver
 
   tknzr = lmp.util.tknzr.load(exp_name=exp_name, tknzr_name=CharTknzr.tknzr_name)

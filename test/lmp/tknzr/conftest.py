@@ -27,6 +27,12 @@ def min_count(request) -> int:
   return request.param
 
 
+@pytest.fixture()
+def seed() -> int:
+  """Random seed."""
+  return 42
+
+
 @pytest.fixture(params=[
   {
     'input': 'ABC',

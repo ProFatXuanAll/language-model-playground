@@ -14,21 +14,26 @@ def test_default_values() -> None:
     args = lmp.script.sample_dset.parse_args(argv=[dset_type.dset_name])
     assert args.dset_name == dset_type.dset_name
     assert args.idx == 0
+    assert args.seed == 42
     assert args.ver == dset_type.df_ver
 
 
-def test_parse_results() -> None:
+def test_parse_results(idx: int, seed: int) -> None:
   """Must correctly parse all arguments."""
   for dset_type in ALL_DSETS:
     for ver in dset_type.vers:
-      for idx in range(0, 10):
-        args = lmp.script.sample_dset.parse_args(argv=[
+      args = lmp.script.sample_dset.parse_args(
+        argv=[
           dset_type.dset_name,
           '--idx',
           str(idx),
+          '--seed',
+          str(seed),
           '--ver',
           ver,
-        ])
-        assert args.dset_name == dset_type.dset_name
-        assert args.idx == idx
-        assert args.ver == ver
+        ]
+      )
+      assert args.dset_name == dset_type.dset_name
+      assert args.idx == idx
+      assert args.seed == seed
+      assert args.ver == ver

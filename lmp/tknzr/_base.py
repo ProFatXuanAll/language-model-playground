@@ -749,3 +749,9 @@ class BaseTknzr(abc.ABC):
       action='store_true',
       help='Convert all text and tokens into lower cases if given.',
     )
+    group.add_argument(
+      '--seed',
+      default=42,
+      help='Random seed.',
+      type=int,
+    )

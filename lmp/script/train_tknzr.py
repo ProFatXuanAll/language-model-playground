@@ -108,6 +108,7 @@ import lmp.dset
 import lmp.tknzr
 import lmp.util.cfg
 import lmp.util.dset
+import lmp.util.rand
 import lmp.util.tknzr
 
 
@@ -160,6 +161,9 @@ def main(argv: List[str]) -> None:
 
   # Save training configuration.
   lmp.util.cfg.save(args=args, exp_name=args.exp_name)
+
+  # Set random seed for reproducibility.
+  lmp.util.rand.set_seed(seed=args.seed)
 
   # Get dataset instance with specified version.
   dset = lmp.util.dset.load(dset_name=args.dset_name, ver=args.ver)

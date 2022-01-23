@@ -26,6 +26,12 @@ def min_count(request) -> int:
   return request.param
 
 
+@pytest.fixture()
+def seed() -> int:
+  """Random seed."""
+  return 42
+
+
 @pytest.fixture
 def tknzr_file_path(exp_name: str, request) -> str:
   """Tokenizer save file path.

@@ -49,6 +49,7 @@ from typing import List
 
 import lmp.dset
 import lmp.util.dset
+import lmp.util.rand
 
 
 def parse_args(argv: List[str]) -> argparse.Namespace:
@@ -85,6 +86,12 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
       type=int,
     )
     dset_subparser.add_argument(
+      '--seed',
+      default=42,
+      help='Random seed.',
+      type=int,
+    )
+    dset_subparser.add_argument(
       '--ver',
       default=dset_type.df_ver,
       help=f'Dataset version of `lmp.dset.{dset_type.__name__}`.  Default version is `{dset_type.df_ver}`.',
@@ -109,6 +116,9 @@ def main(argv: List[str]) -> None:
   """
   # Parse CLI arguments.
   args = parse_args(argv=argv)
+
+  # Set random seed for reproducibility.
+  lmp.util.rand.set_seed(seed=args.seed)
 
   # Get dataset instance with specified version.
   dset = lmp.util.dset.load(**args.__dict__)
