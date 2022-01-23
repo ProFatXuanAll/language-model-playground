@@ -13,6 +13,7 @@ mypy = "*"
 pytest = "*"
 sphinx = "*"
 sphinx-autobuild = "*"
+sphinx-copybutton = "*"
 types-requests = "*"
 yapf = "*"
 
