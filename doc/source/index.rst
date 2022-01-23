@@ -48,7 +48,7 @@ We have written serveral **scripts** to demostrate training pipline of :term:`la
   :term:`language model` checkpoint.
 - Use :py:mod:`lmp.script.eval_dset_ppl` to calculate :term:`perplexity` on dataset with range of
   pre-trained :term:`language model` :term:`checkpoints`.
-- Use :py:mod:`lmp.script.generate_text` to generate text with pre-trained :term:`language model` :term:`checkpoint`.
+- Use :py:mod:`lmp.script.gen_txt` to generate text with pre-trained :term:`language model` :term:`checkpoint`.
 - And more to come!
 
 Get started with :doc:`Quick start <quickstart>` or jump directly to contents you are interesting in!

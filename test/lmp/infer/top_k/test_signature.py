@@ -18,8 +18,17 @@ def test_class_attribute() -> None:
   """Ensure class attributes' signatures."""
   print(get_type_hints(TopKInfer))
   assert get_type_hints(TopKInfer) == get_type_hints(BaseInfer)
-  assert TopKInfer.hard_max_seq_len == BaseInfer.hard_max_seq_len
   assert TopKInfer.infer_name == 'top-k'
+
+
+def test_inherent_class_method():
+  """Ensure inherent class methods are the same as base class."""
+  assert inspect.signature(TopKInfer.infer_parser) == inspect.signature(BaseInfer.infer_parser)
+
+
+def test_inherent_instance_method():
+  """Ensure inherent instance methods are the same as base class."""
+  assert inspect.signature(TopKInfer.gen) == inspect.signature(BaseInfer.gen)
 
 
 def test_instance_method() -> None:
@@ -51,9 +60,3 @@ def test_instance_method() -> None:
     ],
     return_annotation=Signature.empty,
   )
-
-
-def test_inherent_method():
-  """Ensure inherent methods are the same as base class."""
-  assert (inspect.signature(TopKInfer.gen) == inspect.signature(BaseInfer.gen))
-  assert (inspect.signature(TopKInfer.infer_parser) == inspect.signature(BaseInfer.infer_parser))

@@ -6,6 +6,8 @@ from inspect import Parameter, Signature
 from typing import Any, ClassVar, get_type_hints
 
 from lmp.infer import BaseInfer
+from lmp.model import BaseModel
+from lmp.tknzr import BaseTknzr
 
 
 def test_class() -> None:
@@ -18,11 +20,27 @@ def test_class_attribute() -> None:
   """Ensure class attributes' signatures."""
   print(get_type_hints(BaseInfer))
   assert get_type_hints(BaseInfer) == {
-    'hard_max_seq_len': ClassVar[int],
     'infer_name': ClassVar[str],
   }
-  assert BaseInfer.hard_max_seq_len == 512
   assert BaseInfer.infer_name == 'base'
+
+
+def test_class_method() -> None:
+  """Ensure class methods' signatures."""
+  assert hasattr(BaseInfer, 'infer_parser')
+  assert inspect.ismethod(BaseInfer.infer_parser)
+  assert BaseInfer.infer_parser.__self__ == BaseInfer
+  assert inspect.signature(BaseInfer.infer_parser) == Signature(
+    parameters=[
+      Parameter(
+        name='parser',
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        default=Parameter.empty,
+        annotation=argparse.ArgumentParser,
+      ),
+    ],
+    return_annotation=None,
+  )
 
 
 def test_instance_method() -> None:
@@ -49,25 +67,31 @@ def test_instance_method() -> None:
     ],
     return_annotation=Signature.empty,
   )
-
-
-def test_abstract_method() -> None:
-  """Ensure abstract method's signatures."""
+  assert hasattr(BaseInfer, 'gen')
   assert 'gen' in BaseInfer.__abstractmethods__
-
-
-def test_static_method() -> None:
-  """Ensure static methods' signatures."""
-  assert hasattr(BaseInfer, 'infer_parser')
-  assert inspect.isfunction(BaseInfer.infer_parser)
-  assert inspect.signature(BaseInfer.infer_parser) == Signature(
+  assert inspect.signature(BaseInfer.gen) == Signature(
     parameters=[
       Parameter(
-        name='parser',
+        name='self',
         kind=Parameter.POSITIONAL_OR_KEYWORD,
         default=Parameter.empty,
-        annotation=argparse.ArgumentParser,
+      ),
+      Parameter(
+        name='model',
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        default=Parameter.empty,
+        annotation=BaseModel,
+      ),
+      Parameter(
+        name='tknzr',
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        annotation=BaseTknzr,
+      ),
+      Parameter(
+        name='txt',
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        annotation=str,
       ),
     ],
-    return_annotation=None,
+    return_annotation=str,
   )

@@ -10,7 +10,7 @@
 
    eval_dset_ppl.py
    eval_txt_ppl.py
-   generate_text.py
+   gen_txt.py
    sample_dset.py
    tknz_txt.py
    train_model.py

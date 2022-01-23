@@ -117,11 +117,17 @@ gradient explosion.
      --d_emb 100 \
      --wd 1e-2
 
-You can use ``-h`` or ``--help`` options on a specific language model to get a list of supported CLI arguments.
+You can use ``-h`` or ``--help`` options to get a list of available language models.
 
 .. code-block:: shell
 
    python -m lmp.script.train_model -h
+
+You can use ``-h`` or ``--help`` options on a specific language model to get a list of supported CLI arguments.
+
+.. code-block:: shell
+
+   python -m lmp.script.train_model Elman-Net -h
 """
 
 import argparse
@@ -178,7 +184,17 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
 
 
 def main(argv: List[str]) -> None:
-  """Script entry point."""
+  """Script entry point.
+
+  Parameters
+  ----------
+  argv: list[str]
+    List of CLI arguments.
+
+  Returns
+  -------
+  None
+  """
   # Parse CLI arguments.
   args = parse_args(argv=argv)
 

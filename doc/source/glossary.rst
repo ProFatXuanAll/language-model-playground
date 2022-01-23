@@ -57,7 +57,7 @@ Glossary
 
      In this project we have provided script for training language model (:py:mod:`lmp.script.train_model`), evaluating
      language model (:py:mod:`lmp.script.eval_dset_ppl`) and generate text using language model
-     (:py:mod:`lmp.script.generate_text`).
+     (:py:mod:`lmp.script.gen_txt`).
 
      .. seealso::
         lmp.script

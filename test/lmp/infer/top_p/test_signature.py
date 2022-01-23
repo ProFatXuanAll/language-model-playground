@@ -18,8 +18,17 @@ def test_class_attribute() -> None:
   """Ensure class attributes' signatures."""
   print(get_type_hints(TopPInfer))
   assert get_type_hints(TopPInfer) == get_type_hints(BaseInfer)
-  assert TopPInfer.hard_max_seq_len == BaseInfer.hard_max_seq_len
   assert TopPInfer.infer_name == 'top-p'
+
+
+def test_inherent_class_method():
+  """Ensure inherent class methods are the same as base class."""
+  assert inspect.signature(TopPInfer.infer_parser) == inspect.signature(BaseInfer.infer_parser)
+
+
+def test_inherent_intance_method():
+  """Ensure inherent intance methods are the same as base class."""
+  assert inspect.signature(TopPInfer.gen) == inspect.signature(BaseInfer.gen)
 
 
 def test_instance_method() -> None:
@@ -32,16 +41,16 @@ def test_instance_method() -> None:
         default=Parameter.empty,
       ),
       Parameter(
-        name='p',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=Parameter.empty,
-        annotation=float,
-      ),
-      Parameter(
         name='max_seq_len',
         kind=Parameter.POSITIONAL_OR_KEYWORD,
         default=Parameter.empty,
         annotation=int,
+      ),
+      Parameter(
+        name='p',
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        default=Parameter.empty,
+        annotation=float,
       ),
       Parameter(
         name='kwargs',
@@ -51,9 +60,3 @@ def test_instance_method() -> None:
     ],
     return_annotation=Signature.empty,
   )
-
-
-def test_inherent_method():
-  """Ensure inherent methods are the same as base class."""
-  assert (inspect.signature(TopPInfer.gen) == inspect.signature(BaseInfer.gen))
-  assert (inspect.signature(TopPInfer.infer_parser) == inspect.signature(BaseInfer.infer_parser))

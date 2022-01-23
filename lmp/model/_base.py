@@ -230,7 +230,7 @@ class BaseModel(abc.ABC, torch.nn.Module):
     )
     group.add_argument(
       '--max_seq_len',
-      help=' '.join(['Maximum sequence length constraint.', 'Set to `-1` to allow arbitrary token sequence length.']),
+      help='Maximum sequence length constraint.',
       required=True,
       type=int,
     )

@@ -24,11 +24,11 @@ def ppl(batch_tkids: torch.Tensor, batch_tkids_pd: torch.Tensor, eos_tkid: int, 
   Parameters
   ----------
   batch_tkids: torch.Tensor
-    Batch of token ids which represent prediction targets.  ``batch_tkids`` has shape ``(B, S)`` and
+    Batch of token ids which represent prediction targets.  ``batch_tkids`` has shape ``(batch_size, seq_len)`` and
     ``dtype == torch.int``.
   batch_tkids_pd: torch.Tensor
-    Batch of token ids prediction probability distribution.  ``batch_tkids_pd`` has shape ``(B, S, V)`` and
-    ``dtype == torch.float``.
+    Batch of token ids prediction probability distribution.  ``batch_tkids_pd`` has shape
+    ``(batch_size, seq_len, vocab_size)`` and ``dtype == torch.float``.
   eos_tkid: int
     End of sentence token id which will not be included in perplexity calculation results.
   pad_tkid: int
@@ -37,12 +37,12 @@ def ppl(batch_tkids: torch.Tensor, batch_tkids_pd: torch.Tensor, eos_tkid: int, 
   Returns
   -------
   torch.Tensor
-    Perplexity per sequence in the batch.  Returned tensor has shape ``(B,)`` and ``dtype == torch.float``.
+    Perplexity per sequence in the batch.  Returned tensor has shape ``(batch_size)`` and ``dtype == torch.float``.
   """
   # Get target token id's probabilities.  Use `batch_tkids` as indices to gather values from probability distribution.
   # Since prediction has shape `(batch_size, seq_len, vocab_size)`, we need to gather along the `vocab_size` dimension.
   # shape: (batch_size, seq_len).
-  batch_tkids_p = torch.gather(batch_tkids_pd, -1, batch_tkids.unsqueeze(-1)).squeeze(-1)
+  batch_tkids_p = torch.gather(input=batch_tkids_pd, dim=2, index=batch_tkids.unsqueeze(2)).squeeze(2)
 
   # Mask `pad_tkid` and `eos` with probability `1.0`.  Since `log(1)` is `0` the calculation result will not get
   # affected by these tokens.
@@ -54,4 +54,5 @@ def ppl(batch_tkids: torch.Tensor, batch_tkids_pd: torch.Tensor, eos_tkid: int, 
 
   # Calculate perplexity for each token ids sequence in batch.  Convert to log space for numerically save computation.
   # Exponentiate calculated result to convert back from log space.
-  return (-batch_tkids_p.log().sum(dim=-1) / batch_seq_len).exp()
+  # shape: (batch_size)
+  return (-batch_tkids_p.log().sum(dim=1) / batch_seq_len).exp()

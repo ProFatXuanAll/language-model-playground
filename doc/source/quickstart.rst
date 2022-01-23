@@ -304,11 +304,11 @@ hypothesis, we should now use **test** version of Wiki-Text-2 dataset to check o
 6. Generate Text
 ~~~~~~~~~~~~~~~~
 Finally we can use our well-trained :term:`language model` to generate text.  In this example we use
-:py:mod:`lmp.script.generate_text` to generate text:
+:py:mod:`lmp.script.gen_txt` to generate text:
 
 .. code-block:: shell
 
-   python -m lmp.script.generate_text top-1 \
+   python -m lmp.script.gen_txt top-1 \
      --ckpt 5000 \
      --exp_name my_model_exp \
      --txt "We are"

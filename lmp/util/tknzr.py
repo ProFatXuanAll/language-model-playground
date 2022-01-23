@@ -49,7 +49,7 @@ def create(tknzr_name: str, **kwargs: Any) -> BaseTknzr:
 
   # `kwargs` validation will be performed in `BaseTknzr.__init__`.
   # Currently `mypy` cannot perform static type check on `**kwargs`, and I think it can only be check by runtime and
-  # therefore `mypy` may no be able to solve this issue forever.  So we use `# type: ingore` to silence error.
+  # therefore `mypy` may no be able to solve this issue forever.  So we use `# type: ignore` to silence error.
   return TKNZR_OPTS[tknzr_name](**kwargs)  # type: ignore
 
 

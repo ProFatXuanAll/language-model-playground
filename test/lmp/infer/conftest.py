@@ -8,9 +8,14 @@ from lmp.tknzr import BaseTknzr, CharTknzr
 
 
 @pytest.fixture
-def tknzr() -> BaseTknzr:
-  """Example tokenizer instance."""
+def max_seq_len() -> int:
+  """Maximum sequence length."""
+  return 16
 
+
+@pytest.fixture
+def tknzr() -> BaseTknzr:
+  """Max non special token is ``c``."""
   return CharTknzr(
     is_uncased=True,
     max_vocab=-1,
@@ -20,55 +25,30 @@ def tknzr() -> BaseTknzr:
       CharTknzr.eos_tk: CharTknzr.eos_tkid,
       CharTknzr.pad_tk: CharTknzr.pad_tkid,
       CharTknzr.unk_tk: CharTknzr.unk_tkid,
-      'a': 4,
-      'b': 5,
-      'c': 6,
+      'a': max(CharTknzr.bos_tkid, CharTknzr.eos_tkid, CharTknzr.pad_tkid, CharTknzr.unk_tkid) + 1,
+      'b': max(CharTknzr.bos_tkid, CharTknzr.eos_tkid, CharTknzr.pad_tkid, CharTknzr.unk_tkid) + 2,
+      'c': max(CharTknzr.bos_tkid, CharTknzr.eos_tkid, CharTknzr.pad_tkid, CharTknzr.unk_tkid) + 3,
     },
   )
 
 
 @pytest.fixture
-def model(tknzr: BaseTknzr) -> BaseModel:
-  """Example language model instance."""
+def max_non_sp_tk(tknzr: BaseTknzr) -> str:
+  """Max non special token (in the sense of unicode value) in tokenizer's vocabulary."""
+  sp_tks = [tknzr.bos_tk, tknzr.eos_tk, tknzr.pad_tk, tknzr.unk_tk]
+  return max(set(tknzr.tk2id.keys()) - set(sp_tks))
 
-  class ExampleModel(ElmanNet):
-    """Dummy model.
 
-        Only used in inference testing.
-        Designed to always predict token with largest token id in tokenizer's
-        vocabulary.
-        Thus only implement :py:meth:`lmp.model.BaseModel.pred` method.
-        """
+@pytest.fixture
+def gen_max_non_sp_tk_model(max_non_sp_tk: str, tknzr: BaseTknzr) -> BaseModel:
+  """Language model which only generate `max_non_sp_tk`."""
+  model = ElmanNet(d_emb=10, tknzr=tknzr)
 
-    def pred(self, batch_cur_tkids: torch.Tensor) -> torch.Tensor:
-      """Predict largest token id in tokenizer's vocabulary."""
-      batch_size = batch_cur_tkids.shape[0]
-      seq_len = batch_cur_tkids.shape[1]
+  for tk in tknzr.tk2id.keys():
+    tkid = tknzr.tk2id[tk]
+    if tk == max_non_sp_tk:
+      torch.nn.init.ones_(model.emb.weight[tkid])
+    else:
+      torch.nn.init.zeros_(model.emb.weight[tkid])
 
-      # Out shape: (B, S, V).
-      out = []
-
-      for _ in range(batch_size):
-        seq_tmp = []
-        for _ in range(seq_len):
-          vocab_tmp = []
-          for _ in range(tknzr.vocab_size - 1):
-            vocab_tmp.append(0.0)
-
-          # Always predict largest token id in tokenizer's vocabuary.
-          vocab_tmp.append(1.0)
-          seq_tmp.append(vocab_tmp)
-        out.append(seq_tmp)
-
-      return torch.Tensor(out)
-
-  return ExampleModel(
-    d_emb=1,
-    d_hid=1,
-    n_hid_lyr=1,
-    n_post_hid_lyr=1,
-    n_pre_hid_lyr=1,
-    p_emb=0.0,
-    p_hid=0.0,
-    tknzr=tknzr,
-  )
+  return model
