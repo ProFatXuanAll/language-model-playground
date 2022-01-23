@@ -49,6 +49,7 @@ import lmp.model
 import lmp.util.cfg
 import lmp.util.metric
 import lmp.util.model
+import lmp.util.rand
 import lmp.util.tknzr
 
 
@@ -96,6 +97,14 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
     type=str,
   )
 
+  # Optional arguments.
+  parser.add_argument(
+    '--seed',
+    default=42,
+    help='Random seed.',
+    type=int,
+  )
+
   return parser.parse_args(argv)
 
 
@@ -113,6 +122,9 @@ def main(argv: List[str]) -> None:
   """
   # Parse CLI arguments.
   args = parse_args(argv=argv)
+
+  # Set random seed for reproducibility.
+  lmp.util.rand.set_seed(seed=args.seed)
 
   # Load pre-trained model configuration.
   model_cfg = lmp.util.cfg.load(exp_name=args.exp_name)

@@ -21,6 +21,7 @@ def batch_size() -> int:
 
 @pytest.fixture
 def ckpts() -> List[int]:
+  """Model checkpoints."""
   return [0, 1, 2]
 
 
@@ -28,6 +29,12 @@ def ckpts() -> List[int]:
 def max_seq_len() -> int:
   """Maximum sequence length."""
   return 128
+
+
+@pytest.fixture
+def seed() -> int:
+  """Random seed."""
+  return 42
 
 
 @pytest.fixture

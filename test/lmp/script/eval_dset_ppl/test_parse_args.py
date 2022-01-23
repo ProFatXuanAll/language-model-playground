@@ -8,7 +8,7 @@ import lmp.script.eval_dset_ppl
 from lmp.dset import DSET_OPTS
 
 
-def test_parse_results(batch_size: int, exp_name: str) -> None:
+def test_parse_results(batch_size: int, exp_name: str, seed: int) -> None:
   """Must correctly parse all arguments."""
   for dset_name, dset_type in DSET_OPTS.items():
     for ver in dset_type.vers:
@@ -25,6 +25,8 @@ def test_parse_results(batch_size: int, exp_name: str) -> None:
               str(first_ckpt),
               '--last_ckpt',
               str(last_ckpt),
+              '--seed',
+              str(seed),
               '--ver',
               ver,
             ]
@@ -34,4 +36,5 @@ def test_parse_results(batch_size: int, exp_name: str) -> None:
           assert args.exp_name == exp_name
           assert args.first_ckpt == first_ckpt
           assert args.last_ckpt == last_ckpt
+          assert args.seed == seed
           assert args.ver == ver

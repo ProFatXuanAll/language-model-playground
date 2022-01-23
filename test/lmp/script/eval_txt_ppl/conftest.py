@@ -25,6 +25,12 @@ def max_seq_len() -> int:
 
 
 @pytest.fixture
+def seed() -> int:
+  """Random seed."""
+  return 42
+
+
+@pytest.fixture
 def tknzr() -> BaseTknzr:
   """:py:class:`lmp.tknzr.BaseTknzr` instance."""
   return CharTknzr(
@@ -68,7 +74,14 @@ def model(tknzr: BaseTknzr) -> BaseModel:
 
 
 @pytest.fixture
-def model_exp_name(ckpt: int, exp_name: str, max_seq_len: int, model: BaseModel, request, tknzr_exp_name: str) -> str:
+def model_exp_name(
+  ckpt: int,
+  exp_name: str,
+  max_seq_len: int,
+  model: BaseModel,
+  request,
+  tknzr_exp_name: str,
+) -> str:
   """Language model experiment name."""
   exp_name = f'{exp_name}-model'
   lmp.util.model.save(ckpt=ckpt, exp_name=exp_name, model=model)

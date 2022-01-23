@@ -11,6 +11,12 @@ from lmp.tknzr import BaseTknzr, CharTknzr, WsTknzr
 
 
 @pytest.fixture
+def seed() -> int:
+  """Random seed."""
+  return 42
+
+
+@pytest.fixture
 def tknzr_and_cfg_file_path(exp_name: str, request) -> None:
   """Clean up saved tokenizer and its configuration file."""
   abs_dir_path = os.path.join(lmp.util.path.EXP_PATH, exp_name)

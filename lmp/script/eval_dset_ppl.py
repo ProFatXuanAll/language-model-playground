@@ -81,6 +81,7 @@ import lmp.util.dset
 import lmp.util.log
 import lmp.util.metric
 import lmp.util.model
+import lmp.util.rand
 import lmp.util.tknzr
 
 
@@ -144,6 +145,12 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
       type=int,
     )
     dset_subparser.add_argument(
+      '--seed',
+      default=42,
+      help='Random seed.',
+      type=int,
+    )
+    dset_subparser.add_argument(
       '--ver',
       default=None,
       help=f'Version of the {dset_type.__name__} dataset.  Defaults to {dset_type.df_ver}.',
@@ -168,6 +175,9 @@ def main(argv: List[str]) -> None:
   """
   # Parse CLI arguments.
   args = parse_args(argv=argv)
+
+  # Set random seed for reproducibility.
+  lmp.util.rand.set_seed(seed=args.seed)
 
   # Get dataset instance with specified version.
   dset = lmp.util.dset.load(dset_name=args.dset_name, ver=args.ver)

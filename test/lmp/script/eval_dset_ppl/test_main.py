@@ -13,7 +13,14 @@ import lmp.script.eval_dset_ppl
 from lmp.dset import WikiText2Dset
 
 
-def test_ppl_output(batch_size: int, capsys, ckpts: List[int], log_dir_path: str, model_exp_name: str) -> None:
+def test_ppl_output(
+  batch_size: int,
+  capsys,
+  ckpts: List[int],
+  log_dir_path: str,
+  model_exp_name: str,
+  seed: int,
+) -> None:
   """Must correctly output perplexity."""
   lmp.script.eval_dset_ppl.main(
     argv=[
@@ -26,6 +33,8 @@ def test_ppl_output(batch_size: int, capsys, ckpts: List[int], log_dir_path: str
       str(min(ckpts)),
       '--last_ckpt',
       str(max(ckpts)),
+      '--seed',
+      str(seed),
       '--ver',
       'valid',
     ]
