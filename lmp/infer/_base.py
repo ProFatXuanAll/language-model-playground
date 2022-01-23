@@ -18,11 +18,6 @@ class BaseInfer(abc.ABC):
   For comments throughout this class and its subclasses, we use the following
   symbols to denote the shape of tensors:
 
-  - ``B``: Batch size.
-  - ``S'``: Length of original sequence of tokens.
-  - ``S``: Length of truncated sequence of tokens.
-  - ``V``: Vocabulary size.
-
   Parameters
   ----------
   kwargs: typing.Any, optional

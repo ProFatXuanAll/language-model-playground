@@ -30,7 +30,7 @@ The following example script train Elman Net model :py:class:`lmp.model.ElmanNet
      --log_step 200 \
      --lr 1e-4 \
      --max_norm 1 \
-     --max_seq_len -1 \
+     --max_seq_len 128 \
      --n_epoch 10 \
      --tknzr_exp_name my_tknzr_exp \
      --ver train \
@@ -57,7 +57,7 @@ with too many epochs.
      --log_step 200 \
      --lr 1e-4 \
      --max_norm 1 \
-     --max_seq_len -1 \
+     --max_seq_len 128 \
      --n_epoch 20 \
      --tknzr_exp_name my_tknzr_exp \
      --ver train \
@@ -87,7 +87,7 @@ One can reduce overfitting with the following ways:
      --log_step 200 \
      --lr 1e-4 \
      --max_norm 1 \
-     --max_seq_len -1 \
+     --max_seq_len 128 \
      --n_epoch 10 \
      --tknzr_exp_name my_tknzr_exp \
      --ver train \
@@ -110,7 +110,7 @@ gradient explosion.
      --log_step 200 \
      --lr 5e-4 \
      --max_norm 0.1 \
-     --max_seq_len -1 \
+     --max_seq_len 128 \
      --n_epoch 10 \
      --tknzr_exp_name my_tknzr_exp \
      --ver train \

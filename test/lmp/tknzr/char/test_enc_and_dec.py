@@ -25,19 +25,19 @@ def test_cased_enc() -> None:
     tk2id=tk2id,
   )
   # Return `[bos] [eos]` when given empty input.
-  assert tknzr.enc('') == [
+  assert tknzr.enc(max_seq_len=2, txt='') == [
     CharTknzr.bos_tkid,
     CharTknzr.eos_tkid,
   ]
   # Encoding format.
-  assert tknzr.enc('aA') == [
+  assert tknzr.enc(max_seq_len=4, txt='aA') == [
     CharTknzr.bos_tkid,
     tk2id['a'],
     tk2id['A'],
     CharTknzr.eos_tkid,
   ]
   # Padding.
-  assert tknzr.enc('aA', max_seq_len=5) == [
+  assert tknzr.enc(max_seq_len=5, txt='aA') == [
     CharTknzr.bos_tkid,
     tk2id['a'],
     tk2id['A'],
@@ -45,20 +45,20 @@ def test_cased_enc() -> None:
     CharTknzr.pad_tkid,
   ]
   # Truncate.
-  assert tknzr.enc('aA', max_seq_len=3) == [
+  assert tknzr.enc(max_seq_len=3, txt='aA') == [
     CharTknzr.bos_tkid,
     tk2id['a'],
     tk2id['A'],
   ]
   # Unknown tokens.
-  assert tknzr.enc('bB') == [
+  assert tknzr.enc(max_seq_len=4, txt='bB') == [
     CharTknzr.bos_tkid,
     CharTknzr.unk_tkid,
     CharTknzr.unk_tkid,
     CharTknzr.eos_tkid,
   ]
   # Unknown tokens with padding.
-  assert tknzr.enc('bB', max_seq_len=5) == [
+  assert tknzr.enc(max_seq_len=5, txt='bB') == [
     CharTknzr.bos_tkid,
     CharTknzr.unk_tkid,
     CharTknzr.unk_tkid,
@@ -66,7 +66,7 @@ def test_cased_enc() -> None:
     CharTknzr.pad_tkid,
   ]
   # Unknown tokens with truncation.
-  assert tknzr.enc('bB', max_seq_len=2) == [
+  assert tknzr.enc(max_seq_len=2, txt='bB') == [
     CharTknzr.bos_tkid,
     CharTknzr.unk_tkid,
   ]
@@ -88,19 +88,19 @@ def test_uncased_enc() -> None:
     tk2id=tk2id,
   )
   # Return `[bos] [eos]` when given empty input.
-  assert tknzr.enc('') == [
+  assert tknzr.enc(max_seq_len=2, txt='') == [
     CharTknzr.bos_tkid,
     CharTknzr.eos_tkid,
   ]
   # Encoding format.
-  assert tknzr.enc('aA') == [
+  assert tknzr.enc(max_seq_len=4, txt='aA') == [
     CharTknzr.bos_tkid,
     tk2id['a'],
     tk2id['a'],
     CharTknzr.eos_tkid,
   ]
   # Padding.
-  assert tknzr.enc('aA', max_seq_len=5) == [
+  assert tknzr.enc(max_seq_len=5, txt='aA') == [
     CharTknzr.bos_tkid,
     tk2id['a'],
     tk2id['a'],
@@ -108,20 +108,20 @@ def test_uncased_enc() -> None:
     CharTknzr.pad_tkid,
   ]
   # Truncate.
-  assert tknzr.enc('aA', max_seq_len=3) == [
+  assert tknzr.enc(max_seq_len=3, txt='aA') == [
     CharTknzr.bos_tkid,
     tk2id['a'],
     tk2id['a'],
   ]
   # Unknown tokens.
-  assert tknzr.enc('bB') == [
+  assert tknzr.enc(max_seq_len=4, txt='bB') == [
     CharTknzr.bos_tkid,
     CharTknzr.unk_tkid,
     CharTknzr.unk_tkid,
     CharTknzr.eos_tkid,
   ]
   # Unknown tokens with padding.
-  assert tknzr.enc('bB', max_seq_len=5) == [
+  assert tknzr.enc(max_seq_len=5, txt='bB') == [
     CharTknzr.bos_tkid,
     CharTknzr.unk_tkid,
     CharTknzr.unk_tkid,
@@ -129,7 +129,7 @@ def test_uncased_enc() -> None:
     CharTknzr.pad_tkid,
   ]
   # Unknown tokens with truncation.
-  assert tknzr.enc('bB', max_seq_len=2) == [
+  assert tknzr.enc(max_seq_len=2, txt='bB') == [
     CharTknzr.bos_tkid,
     CharTknzr.unk_tkid,
   ]
@@ -152,10 +152,10 @@ def test_dec() -> None:
     tk2id=tk2id,
   )
   # Return empty string when given empty list.
-  assert tknzr.dec([]) == ''
+  assert tknzr.dec(tkids=[]) == ''
   # Decoding format.
   assert tknzr.dec(
-    [
+    tkids=[
       CharTknzr.bos_tkid,
       tk2id['a'],
       CharTknzr.unk_tkid,
@@ -167,7 +167,7 @@ def test_dec() -> None:
   ) == f'{CharTknzr.bos_tk}a{CharTknzr.unk_tk}A{CharTknzr.eos_tk}{CharTknzr.pad_tk}'
   # Remove special tokens but not unknown tokens.
   assert tknzr.dec(
-    [
+    tkids=[
       CharTknzr.bos_tkid,
       tk2id['a'],
       CharTknzr.unk_tkid,
@@ -180,7 +180,7 @@ def test_dec() -> None:
   ) == f'a{CharTknzr.unk_tk}A{CharTknzr.unk_tk}'
   # Convert unknown id to unknown tokens.
   assert tknzr.dec(
-    [
+    tkids=[
       CharTknzr.bos_tkid,
       max(tk2id.values()) + 1,
       max(tk2id.values()) + 2,

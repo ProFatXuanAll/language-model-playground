@@ -8,42 +8,16 @@ Test target:
 from lmp.tknzr import WsTknzr
 
 
-def test_default() -> None:
-  """Don't do anything when `max_seq_len == -1`."""
-  assert WsTknzr.pad_to_max([]) == []
-  assert WsTknzr.pad_to_max([]) == []
-  assert WsTknzr.pad_to_max([
-    WsTknzr.bos_tkid,
-    WsTknzr.unk_tkid,
-    WsTknzr.eos_tkid,
-  ]) == [
-    WsTknzr.bos_tkid,
-    WsTknzr.unk_tkid,
-    WsTknzr.eos_tkid,
-  ]
-  assert WsTknzr.trunc_to_max([]) == []
-  assert WsTknzr.trunc_to_max([]) == []
-  assert WsTknzr.trunc_to_max([
-    WsTknzr.bos_tkid,
-    WsTknzr.unk_tkid,
-    WsTknzr.eos_tkid,
-  ]) == [
-    WsTknzr.bos_tkid,
-    WsTknzr.unk_tkid,
-    WsTknzr.eos_tkid,
-  ]
-
-
 def test_padding() -> None:
   """Pad to specified length."""
-  assert WsTknzr.pad_to_max([], max_seq_len=2) == [WsTknzr.pad_tkid, WsTknzr.pad_tkid]
+  assert WsTknzr.pad_to_max(max_seq_len=2, tkids=[]) == [WsTknzr.pad_tkid, WsTknzr.pad_tkid]
   assert WsTknzr.pad_to_max(
-    [
+    max_seq_len=5,
+    tkids=[
       WsTknzr.bos_tkid,
       WsTknzr.unk_tkid,
       WsTknzr.eos_tkid,
     ],
-    max_seq_len=5,
   ) == [
     WsTknzr.bos_tkid,
     WsTknzr.unk_tkid,
@@ -55,16 +29,16 @@ def test_padding() -> None:
 
 def test_truncate() -> None:
   """Truncate to specified length."""
-  assert WsTknzr.trunc_to_max([], max_seq_len=5) == []
+  assert WsTknzr.trunc_to_max(max_seq_len=5, tkids=[]) == []
   assert WsTknzr.trunc_to_max(
-    [
+    max_seq_len=2,
+    tkids=[
       WsTknzr.bos_tkid,
       WsTknzr.unk_tkid,
       WsTknzr.eos_tkid,
       WsTknzr.pad_tkid,
       WsTknzr.pad_tkid,
     ],
-    max_seq_len=2,
   ) == [
     WsTknzr.bos_tkid,
     WsTknzr.unk_tkid,

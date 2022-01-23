@@ -63,16 +63,16 @@ def test_class_method() -> None:
   assert inspect.signature(BaseTknzr.pad_to_max) == Signature(
     parameters=[
       Parameter(
+        name='max_seq_len',
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        default=Parameter.empty,
+        annotation=int,
+      ),
+      Parameter(
         name='tkids',
         kind=Parameter.POSITIONAL_OR_KEYWORD,
         default=Parameter.empty,
         annotation=List[int],
-      ),
-      Parameter(
-        name='max_seq_len',
-        kind=Parameter.KEYWORD_ONLY,
-        default=-1,
-        annotation=int,
       ),
     ],
     return_annotation=List[int],
@@ -83,16 +83,16 @@ def test_class_method() -> None:
   assert inspect.signature(BaseTknzr.trunc_to_max) == Signature(
     parameters=[
       Parameter(
+        name='max_seq_len',
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        default=Parameter.empty,
+        annotation=int,
+      ),
+      Parameter(
         name='tkids',
         kind=Parameter.POSITIONAL_OR_KEYWORD,
         default=Parameter.empty,
         annotation=List[int],
-      ),
-      Parameter(
-        name='max_seq_len',
-        kind=Parameter.KEYWORD_ONLY,
-        default=-1,
-        annotation=int,
       ),
     ],
     return_annotation=List[int],
@@ -197,8 +197,8 @@ def test_instance_method() -> None:
       ),
       Parameter(
         name='max_seq_len',
-        kind=Parameter.KEYWORD_ONLY,
-        default=-1,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        default=Parameter.empty,
         annotation=int,
       ),
     ],
@@ -275,16 +275,16 @@ def test_instance_method() -> None:
         default=Parameter.empty,
       ),
       Parameter(
+        name='max_seq_len',
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        default=Parameter.empty,
+        annotation=int,
+      ),
+      Parameter(
         name='txt',
         kind=Parameter.POSITIONAL_OR_KEYWORD,
         default=Parameter.empty,
         annotation=str,
-      ),
-      Parameter(
-        name='max_seq_len',
-        kind=Parameter.KEYWORD_ONLY,
-        default=-1,
-        annotation=int,
       ),
     ],
     return_annotation=List[int],

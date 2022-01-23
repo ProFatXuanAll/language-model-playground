@@ -261,7 +261,7 @@ class ElmanNet(BaseModel):
     ...   '--log_step', '200',
     ...   '--lr', '1e-4',
     ...   '--max_norm', '1',
-    ...   '--max_seq_len', '-1',
+    ...   '--max_seq_len', '128',
     ...   '--n_epoch', '10',
     ...   '--tknzr_exp_name', 'my_tknzr_exp',
     ...   '--ver', 'train',
@@ -289,7 +289,7 @@ class ElmanNet(BaseModel):
     True
     >>> args.max_norm == 1
     True
-    >>> args.max_seq_len == -1
+    >>> args.max_seq_len == 128
     True
     >>> args.n_epoch == 10
     True

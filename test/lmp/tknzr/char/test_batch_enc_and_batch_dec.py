@@ -25,9 +25,9 @@ def test_cased_batch_enc() -> None:
     tk2id=tk2id,
   )
   # Return empty list when given empty list.
-  assert tknzr.batch_enc([]) == []
+  assert tknzr.batch_enc(batch_txt=[], max_seq_len=100) == []
   # Batch encoding format.
-  assert tknzr.batch_enc(['aA', 'Aa']) == [
+  assert tknzr.batch_enc(batch_txt=['aA', 'Aa'], max_seq_len=4) == [
     [
       CharTknzr.bos_tkid,
       tk2id['a'],
@@ -37,36 +37,12 @@ def test_cased_batch_enc() -> None:
     [
       CharTknzr.bos_tkid,
       tk2id['A'],
-      tk2id['a'],
-      CharTknzr.eos_tkid,
-    ],
-  ]
-  # Automatically calculate `max_seq_len`.
-  assert tknzr.batch_enc(['a', 'aa', 'aaa']) == [
-    [
-      CharTknzr.bos_tkid,
-      tk2id['a'],
-      CharTknzr.eos_tkid,
-      CharTknzr.pad_tkid,
-      CharTknzr.pad_tkid,
-    ],
-    [
-      CharTknzr.bos_tkid,
-      tk2id['a'],
-      tk2id['a'],
-      CharTknzr.eos_tkid,
-      CharTknzr.pad_tkid,
-    ],
-    [
-      CharTknzr.bos_tkid,
-      tk2id['a'],
-      tk2id['a'],
       tk2id['a'],
       CharTknzr.eos_tkid,
     ],
   ]
   # Truncate and pad to specified length.
-  assert tknzr.batch_enc(['a', 'aA', 'aAA'], max_seq_len=4) == [
+  assert tknzr.batch_enc(batch_txt=['a', 'aA', 'aAA'], max_seq_len=4) == [
     [
       CharTknzr.bos_tkid,
       tk2id['a'],
@@ -87,7 +63,7 @@ def test_cased_batch_enc() -> None:
     ],
   ]
   # Unknown tokens.
-  assert tknzr.batch_enc(['a', 'ab', 'abc'], max_seq_len=4) == [
+  assert tknzr.batch_enc(batch_txt=['a', 'ab', 'abc'], max_seq_len=4) == [
     [
       CharTknzr.bos_tkid,
       tk2id['a'],
@@ -125,9 +101,9 @@ def test_uncased_batch_enc() -> None:
     tk2id=tk2id,
   )
   # Return empty list when given empty list.
-  assert tknzr.batch_enc([]) == []
+  assert tknzr.batch_enc(batch_txt=[], max_seq_len=100) == []
   # Batch encoding format.
-  assert tknzr.batch_enc(['aA', 'Aa']) == [
+  assert tknzr.batch_enc(batch_txt=['aA', 'Aa'], max_seq_len=4) == [
     [
       CharTknzr.bos_tkid,
       tk2id['a'],
@@ -136,37 +112,13 @@ def test_uncased_batch_enc() -> None:
     ],
     [
       CharTknzr.bos_tkid,
-      tk2id['a'],
-      tk2id['a'],
-      CharTknzr.eos_tkid,
-    ],
-  ]
-  # Automatically calculate `max_seq_len`.
-  assert tknzr.batch_enc(['a', 'aa', 'aaa']) == [
-    [
-      CharTknzr.bos_tkid,
-      tk2id['a'],
-      CharTknzr.eos_tkid,
-      CharTknzr.pad_tkid,
-      CharTknzr.pad_tkid,
-    ],
-    [
-      CharTknzr.bos_tkid,
-      tk2id['a'],
-      tk2id['a'],
-      CharTknzr.eos_tkid,
-      CharTknzr.pad_tkid,
-    ],
-    [
-      CharTknzr.bos_tkid,
-      tk2id['a'],
       tk2id['a'],
       tk2id['a'],
       CharTknzr.eos_tkid,
     ],
   ]
   # Truncate and pad to specified length.
-  assert tknzr.batch_enc(['a', 'aA', 'aAA'], max_seq_len=4) == [
+  assert tknzr.batch_enc(batch_txt=['a', 'aA', 'aAA'], max_seq_len=4) == [
     [
       CharTknzr.bos_tkid,
       tk2id['a'],
@@ -187,7 +139,7 @@ def test_uncased_batch_enc() -> None:
     ],
   ]
   # Unknown tokens.
-  assert tknzr.batch_enc(['a', 'ab', 'abc'], max_seq_len=4) == [
+  assert tknzr.batch_enc(batch_txt=['a', 'ab', 'abc'], max_seq_len=4) == [
     [
       CharTknzr.bos_tkid,
       tk2id['a'],
@@ -226,10 +178,10 @@ def test_batch_dec() -> None:
     tk2id=tk2id,
   )
   # Return empty list when given empty list.
-  assert tknzr.batch_dec([]) == []
+  assert tknzr.batch_dec(batch_tkids=[]) == []
   # Decoding format.
   assert tknzr.batch_dec(
-    [
+    batch_tkids=[
       [
         CharTknzr.bos_tkid,
         tk2id['a'],
@@ -254,7 +206,7 @@ def test_batch_dec() -> None:
   ]
   # Remove special tokens but not unknown tokens.
   assert tknzr.batch_dec(
-    [
+    batch_tkids=[
       [
         CharTknzr.bos_tkid,
         tk2id['a'],
@@ -279,7 +231,7 @@ def test_batch_dec() -> None:
   ]
   # Convert unknown id to unknown tokens.
   assert tknzr.batch_dec(
-    [
+    batch_tkids=[
       [
         CharTknzr.bos_tkid,
         max(tk2id.values()) + 1,

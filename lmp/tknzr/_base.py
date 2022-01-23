@@ -332,18 +332,18 @@ class BaseTknzr(abc.ABC):
     raise NotImplementedError
 
   @classmethod
-  def trunc_to_max(cls, tkids: List[int], *, max_seq_len: int = -1) -> List[int]:
+  def trunc_to_max(cls, max_seq_len: int, tkids: List[int]) -> List[int]:
     """Truncate token id list when token id list is longer than allowed.
 
     If ``len(tkids) > max_seq_len``, then truncate ``tkids`` to have length equals to ``max_seq_len``.  Do nothing when
-    ``max_seq_len == -1`` or ``len(tkids) <= max_seq_len``.
+    ``len(tkids) <= max_seq_len``.
 
     Arguments
     ---------
+    max_seq_len: int
+      Maximum length constraint.
     tkids: list[int]
       Token id list to be truncated.
-    max_seq_len: int, default: -1
-      Maximum length constraint.
 
     Returns
     -------
@@ -360,32 +360,27 @@ class BaseTknzr(abc.ABC):
     >>> from lmp.tknzr import BaseTknzr
     >>> BaseTknzr.trunc_to_max([1, 2, 3], max_seq_len=1)
     [1]
-    >>> BaseTknzr.trunc_to_max([1, 2, 3], max_seq_len=-1)
-    [1, 2, 3]
     """
     # `max_seq_len` validation.
     lmp.util.validate.raise_if_not_instance(val=max_seq_len, val_name='max_seq_len', val_type=int)
-    lmp.util.validate.raise_if_wrong_ordered(vals=[-1, max_seq_len], val_names=['-1', 'max_seq_len'])
-
-    if max_seq_len == -1:
-      return tkids
+    lmp.util.validate.raise_if_wrong_ordered(vals=[1, max_seq_len], val_names=['1', 'max_seq_len'])
 
     # Truncate token id list to maximum sequence length.
     return tkids[:max_seq_len]
 
   @classmethod
-  def pad_to_max(cls, tkids: List[int], *, max_seq_len: int = -1) -> List[int]:
+  def pad_to_max(cls, max_seq_len: int, tkids: List[int]) -> List[int]:
     """Pad token id list when token id list is shorter than required.
 
     If ``len(tkids) < max_seq_len``, then append padding token id at the end of ``tkids`` until ``tkids`` has length
-    equal to ``max_seq_len``.  Do nothing when ``max_seq_len == -1`` or ``len(tkids) >= max_seq_len``.
+    equal to ``max_seq_len``.  Do nothing when ``len(tkids) >= max_seq_len``.
 
     Arguments
     ---------
+    max_seq_len: int
+      Maximum length constraint.
     tkids: list[int]
       Token id list to be padded.
-    max_seq_len: int, default: -1
-      Maximum length constraint.
 
     Returns
     -------
@@ -402,15 +397,10 @@ class BaseTknzr(abc.ABC):
     >>> from lmp.tknzr import BaseTknzr
     >>> BaseTknzr.pad_to_max([1, 2, 3], max_seq_len=5)
     [1, 2, 3, 0, 0]
-    >>> BaseTknzr.pad_to_max([1, 2, 3], max_seq_len=-1)
-    [1, 2, 3]
     """
     # `max_seq_len` validation.
     lmp.util.validate.raise_if_not_instance(val=max_seq_len, val_name='max_seq_len', val_type=int)
-    lmp.util.validate.raise_if_wrong_ordered(vals=[-1, max_seq_len], val_names=['-1', 'max_seq_len'])
-
-    if max_seq_len == -1:
-      return tkids
+    lmp.util.validate.raise_if_wrong_ordered(vals=[1, max_seq_len], val_names=['1', 'max_seq_len'])
 
     # Calculate padding length.
     pad_len = max(0, max_seq_len - len(tkids))
@@ -418,7 +408,7 @@ class BaseTknzr(abc.ABC):
     # Pad to maximum sequence length.
     return tkids + [cls.pad_tkid] * pad_len
 
-  def enc(self, txt: str, *, max_seq_len: int = -1) -> List[int]:
+  def enc(self, max_seq_len: int, txt: str) -> List[int]:
     """Encode text into token id list.
 
     Text will be tokenized into token list (``tk_0, tk_1, tk_2, ..., tk_n``) and formatted as follow::
@@ -433,15 +423,14 @@ class BaseTknzr(abc.ABC):
       token list will be truncated to have length equals to ``max_seq_len``.
     - After prepending ``[bos]`` and appending ``[eos]`` tokens, if token list is shorter than ``max_seq_len``, then
       padding token ``[pad]`` will be appended to token list util token list has length equals to ``max_seq_len``.
-    - If ``max_seq_len == -1``, then token list will not be truncated or padded.
     - All tokens in token list are converted to token ids and returned.
 
     Parameters
     ----------
+    max_seq_len: int
+      Maximum length of token id list.
     txt: str
       Text to be encoded.
-    max_seq_len: int, default: -1
-      Maimum length of token id list.
 
     Returns
     -------
@@ -459,10 +448,6 @@ class BaseTknzr(abc.ABC):
     lmp.tknzr.BaseTknzr.trunc_to_max
       Truncate token id list when token id list is longer than allowed.
     """
-    # `max_seq_len` validation.
-    lmp.util.validate.raise_if_not_instance(val=max_seq_len, val_name='max_seq_len', val_type=int)
-    lmp.util.validate.raise_if_wrong_ordered(vals=[-1, max_seq_len], val_names=['-1', 'max_seq_len'])
-
     # Prepend `[bos]` token id.
     tkids = [self.__class__.bos_tkid]
 
@@ -479,7 +464,7 @@ class BaseTknzr(abc.ABC):
     tkids.append(self.__class__.eos_tkid)
 
     # First truncate sequence to maximum sequence length, then pad sequence to maximum sequence length.
-    return self.pad_to_max(self.trunc_to_max(tkids, max_seq_len=max_seq_len), max_seq_len=max_seq_len)
+    return self.pad_to_max(max_seq_len=max_seq_len, tkids=self.trunc_to_max(max_seq_len=max_seq_len, tkids=tkids))
 
   def dec(self, tkids: List[int], *, rm_sp_tks: bool = False) -> str:
     """Decode token id list back to text.
@@ -538,19 +523,18 @@ class BaseTknzr(abc.ABC):
 
     return self.dtknz(tks)
 
-  def batch_enc(self, batch_txt: List[str], *, max_seq_len: int = -1) -> List[List[int]]:
+  def batch_enc(self, batch_txt: List[str], max_seq_len: int) -> List[List[int]]:
     """Encode batch of text into batch of token id lists.
 
     Each text in ``batch_txt`` will be encoded with :py:meth:`lmp.tknzr.BaseTknzr.enc`.  All encoded token id lists
-    will have the same length (``= max_seq_len``).  If ``max_seq_len == -1``, then ``max_seq_len`` will be set to the
-    length of the longest token id list.
+    will have the same length (``= max_seq_len``).
 
     Parameters
     ----------
     batch_txt: list[str],
       Batch of text to be encoded.
-    max_seq_len: int, default: -1
-      Maximum length of token id lists in the batch.
+    max_seq_len: int
+      Maximum length of all token id lists in the batch.
 
     Returns
     -------
@@ -570,26 +554,7 @@ class BaseTknzr(abc.ABC):
     """
     # `batch_txt` validation.
     lmp.util.validate.raise_if_not_instance(val=batch_txt, val_name='batch_txt', val_type=list)
-    # `max_seq_len` validation.
-    lmp.util.validate.raise_if_not_instance(val=max_seq_len, val_name='max_seq_len', val_type=int)
-    lmp.util.validate.raise_if_wrong_ordered(vals=[-1, max_seq_len], val_names=['-1', 'max_seq_len'])
-
-    # Return empty list when input empty batch.
-    if not batch_txt:
-      return []
-
-    batch_tkids = [self.enc(txt, max_seq_len=-1) for txt in batch_txt]
-
-    # If `max_seq_len == -1`, then `max_seq_len` is the longest sequence
-    # length in the batch.
-    if max_seq_len == -1:
-      max_seq_len = max(map(len, batch_tkids))
-
-    # Truncate each token ids sequence in batch to maximum sequence length.
-    batch_tkids = [self.trunc_to_max(tkids, max_seq_len=max_seq_len) for tkids in batch_tkids]
-
-    # Pad each token ids sequence in batch to maximum sequence length.
-    return [self.pad_to_max(tkids, max_seq_len=max_seq_len) for tkids in batch_tkids]
+    return [self.enc(max_seq_len=max_seq_len, txt=txt) for txt in batch_txt]
 
   def batch_dec(self, batch_tkids: List[List[int]], *, rm_sp_tks: bool = False) -> List[str]:
     """Decode batch of token id lists back to batch of text.
@@ -655,7 +620,7 @@ class BaseTknzr(abc.ABC):
     # Count each token's occurrence.
     c: typing.Counter[str] = Counter()
     for txt in batch_txt:
-      c.update(self.tknz(self.norm(txt)))
+      c.update(self.tknz(txt=self.norm(txt=txt)))
 
     max_id = max(self.tk2id.values()) + 1
     for tk, tk_count in c.most_common():
