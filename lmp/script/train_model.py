@@ -132,6 +132,7 @@ You can use ``-h`` or ``--help`` options on a specific language model to get a l
 
 import argparse
 import sys
+import gc
 from typing import List
 
 import torch
@@ -299,6 +300,13 @@ def main(argv: List[str]) -> None:
         # Refresh log performance.
         pre_avg_loss = avg_loss
         avg_loss = 0.0
+
+      # Free memory.
+      del batch_cur_tkids
+      del batch_next_tkids
+      del batch_tkids
+      torch.cuda.empty_cache()
+      gc.collect()
 
   # Save last checkpoint.
   lmp.util.model.save(ckpt=step, exp_name=args.exp_name, model=model)

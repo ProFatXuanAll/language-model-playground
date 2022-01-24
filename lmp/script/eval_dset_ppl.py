@@ -73,7 +73,7 @@ import torch
 import torch.utils.data
 # Typeshed for `tqdm` is not available, we ignore type check on `tqdm`.
 from tqdm import tqdm  # type: ignore
-
+import gc
 import lmp.dset
 import lmp.model
 import lmp.util.cfg
@@ -246,6 +246,22 @@ def main(argv: List[str]) -> None:
 
       # Accumulate average perplexity.
       avg_ppl += (batch_ppl / dset_size).sum().item()
+
+      # Free memory.
+      del batch_cur_tkids
+      del batch_next_tkids
+      del batch_next_tkids_pd
+      del batch_ppl
+      del batch_prev_states
+      del batch_tkids
+      del batch_tkids_pd
+      torch.cuda.empty_cache()
+      gc.collect()
+
+    # Free memory.
+    del model
+    torch.cuda.empty_cache()
+    gc.collect()
 
     # Log average perplexity on dataset to CLI and tensorboard.
     writer.add_scalar(f'ppl/{args.dset_name}/{args.ver}', avg_ppl, ckpt)
