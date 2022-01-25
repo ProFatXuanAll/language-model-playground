@@ -65,7 +65,13 @@ def ckpt_dir_path(exp_name: str, request) -> str:
 @pytest.fixture
 def ckpt_step() -> int:
   """Checkpoint step."""
-  return 100
+  return 10
+
+
+@pytest.fixture(params=[2, 4])
+def d_cell(request) -> int:
+  """Memory cell dimension."""
+  return request.param
 
 
 @pytest.fixture(params=[10, 20])
@@ -101,7 +107,7 @@ def log_dir_path(exp_name: str, request) -> str:
 @pytest.fixture
 def log_step() -> int:
   """Log step."""
-  return 200
+  return 10
 
 
 @pytest.fixture
@@ -120,6 +126,12 @@ def max_norm() -> float:
 def max_seq_len() -> int:
   """Maximum sequence length."""
   return 128
+
+
+@pytest.fixture(params=[2, 4])
+def n_cell(request) -> int:
+  """Number of memory cells."""
+  return request.param
 
 
 @pytest.fixture

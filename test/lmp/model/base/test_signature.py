@@ -3,7 +3,7 @@
 import argparse
 import inspect
 from inspect import Parameter, Signature
-from typing import Any, ClassVar, Optional, Tuple, get_type_hints
+from typing import Any, ClassVar, List, Optional, Tuple, get_type_hints
 
 import torch
 
@@ -102,9 +102,9 @@ def test_instance_method() -> None:
       Parameter(
         name='batch_prev_states',
         kind=Parameter.POSITIONAL_OR_KEYWORD,
-        annotation=Optional[torch.Tensor],
+        annotation=Optional[List[torch.Tensor]],
         default=None,
       ),
     ],
-    return_annotation=Tuple[torch.Tensor, torch.Tensor],
+    return_annotation=Tuple[torch.Tensor, List[torch.Tensor]],
   )

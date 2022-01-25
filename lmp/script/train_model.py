@@ -131,8 +131,8 @@ You can use ``-h`` or ``--help`` options on a specific language model to get a l
 """
 
 import argparse
-import sys
 import gc
+import sys
 from typing import List
 
 import torch
@@ -305,6 +305,8 @@ def main(argv: List[str]) -> None:
       del batch_cur_tkids
       del batch_next_tkids
       del batch_tkids
+      del batch_txt
+      del loss
       torch.cuda.empty_cache()
       gc.collect()
 
@@ -313,6 +315,25 @@ def main(argv: List[str]) -> None:
 
   # Close tensorboard logger.
   writer.close()
+
+  # Free memory.  This is only need for unit test.
+  del args
+  del avg_loss
+  del data_loader
+  del device
+  del dset
+  del tknzr
+  del tknzr_cfg
+  del model
+  del no_decay
+  del optim
+  del optim_group_params
+  del pre_avg_loss
+  del step
+  del tqdm_data_loader
+  del writer
+  torch.cuda.empty_cache()
+  gc.collect()
 
 
 if __name__ == '__main__':

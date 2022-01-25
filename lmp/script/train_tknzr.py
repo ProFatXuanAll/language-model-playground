@@ -101,6 +101,7 @@ You can use ``-h`` or ``--help`` options on a specific tokenizer to get a list o
 """
 
 import argparse
+import gc
 import sys
 from typing import List
 
@@ -176,6 +177,12 @@ def main(argv: List[str]) -> None:
 
   # Save training result.
   tknzr.save(exp_name=args.exp_name)
+
+  # Free memory.  This is only need for unit test.
+  del args
+  del dset
+  del tknzr
+  gc.collect()
 
 
 if __name__ == '__main__':

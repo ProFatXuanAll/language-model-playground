@@ -40,6 +40,7 @@ You can use ``-h`` or ``--help`` options to get a list of supported CLI argument
 """
 
 import argparse
+import gc
 import sys
 from typing import List
 
@@ -178,6 +179,23 @@ def main(argv: List[str]) -> None:
 
   # Output perplexity on given sample.
   print(ppl.item())
+
+  # Free memory.  This is only need for unit test.
+  del args
+  del batch_cur_tkids
+  del batch_next_tkids
+  del batch_next_tkids_pd
+  del batch_prev_states
+  del batch_tkids
+  del batch_tkids_pd
+  del device
+  del i
+  del model
+  del model_cfg
+  del ppl
+  del tknzr
+  del tknzr_cfg
+  gc.collect()
 
 
 if __name__ == '__main__':

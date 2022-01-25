@@ -1,7 +1,7 @@
 """Elman Net language model."""
 
 import argparse
-from typing import Any, ClassVar, Optional, Tuple, Union
+from typing import Any, ClassVar, List, Optional, Tuple, Union
 
 import torch
 import torch.nn as nn
@@ -15,27 +15,53 @@ from lmp.tknzr._base import BaseTknzr
 class ElmanNet(BaseModel):
   r"""Elman Net [1]_ language model.
 
-  Implement RNN model in the paper `Finding Structure in Time`_.  Elman Net is defined as follow:
+  Implement RNN model in the paper `Finding Structure in Time`_.
+
+  - Let :math:`x[t]` be the :math:`t`-th token id in the input token id list :math:`x` as defined in
+    :py:class:`lmp.model.BaseModel`.
+  - Let ``d_emb`` be the dimension of token embeddings and let ``vocab_size`` be the vocabulary size of tokenizer.
+
+  Then Elman Net is defined as follow:
 
   .. math::
 
+     \newcommand{\pa}[1]{\left( #1 \right)}
+     \newcommand{\set}[1]{\left\lbrace #1 \right\rbrace}
+     \newcommand{\sigmoid}[1]{\operatorname{sigmoid}\pa{#1}}
+     \newcommand{\softmax}[1]{\operatorname{softmax}\pa{#1}}
      \begin{align*}
-       t    & \in \left\lbrace 1, 2, \dots, S \right\rbrace                 \\
-       e(t) & = x(t)\text{-th column of the embedding matrix } E            \\
-       h(t) & = \operatorname{sigmoid}(W \cdot e(t) + U \cdot h(t - 1) + b) \\
-       y(t) & = \operatorname{softmax}(E^{\top} \cdot h(t))
+       e[t]     & = (x[t])\text{-th column of } E             \\
+       h[t + 1] & = \sigmoid{W \cdot e[t] + U \cdot h[t] + b} \\
+       y[t + 1] & = \softmax{E^{\top} \cdot h[t + 1]}
      \end{align*}
 
-  - :math:`S` is the length of token id list and :math:`t` is the looping index of token id list.
-  - :math:`x(t)` is the token id at the position :math:`t`.
-  - :math:`E` is token embedding lookup table.  Token embeddings are trainable parameters and used as input units.
-  - :math:`W, U, b` are trainable parameters.
-  - The hidden state :math:`h(t)`, i.e., the output of recurrent layer at time step :math:`t`, is calculated based on
-    the current input token embedding :math:`e(t)` and the previous hidden state :math:`h(t - 1)`.  The initial hidden
-    state :math:`h(0)` is a trainable parameter.
-  - The final output :math:`y(t)` is the probability distribution of next token id.  We use inner product to calculate
-    similarity scores over all token ids, and then use softmax to normalize similarity scores into probability range
-    :math:`[0, 1]`.
+  +----------------------------------------+----------------------------------------+
+  | Trainable Parameters                   | Nodes                                  |
+  +--------------+-------------------------+------------------+---------------------+
+  | Parameter    | Shape                   | Symbol           | Shape               |
+  +==============+=========================+==================+=====================+
+  | :math:`E`    | ``(d_emb, vocab_size)`` | :math:`e[t]`     | ``(d_emb, 1)``      |
+  +--------------+-------------------------+------------------+---------------------+
+  | :math:`h[0]` | ``(d_emb, 1)``          |                                        |
+  +--------------+-------------------------+------------------+---------------------+
+  | :math:`W`    | ``(d_emb, d_emb)``      | :math:`h[t + 1]` | ``(d_emb, 1)``      |
+  +--------------+-------------------------+------------------+---------------------+
+  | :math:`U`    | ``(d_emb, d_emb)``      | :math:`y[t + 1]` | ``(vocab_size, 1)`` |
+  +--------------+-------------------------+------------------+---------------------+
+  | :math:`b`    | ``(d_emb, 1)``          |                                        |
+  +--------------+-------------------------+------------------+---------------------+
+
+  - :math:`E` is the token embedding lookup table and :math:`e[t]` is the token embedding of :math:`x[t]`.
+
+    - Note that the weight of :py:class:`torch.nn.Embedding` has shape ``(vocab_size, d_emb)``, which is different from
+      the formula above.  The difference only affect the implementation details.
+
+  - :math:`h[t + 1]` is the hidden state at time step :math:`t + 1`.  The initial hidden state :math:`h[0]` is a
+    pre-defined column vector.
+
+  - The final output :math:`y[t + 1]` is the next token id prediction probability distribution.  We use inner product
+    to calculate similarity scores over all token ids, and then use softmax to normalize similarity scores into
+    probability range :math:`[0, 1]`.
 
   Parameters
   ----------
@@ -50,8 +76,8 @@ class ElmanNet(BaseModel):
   ----------
   emb: torch.nn.Embedding
     Token embedding lookup table.
-  h_0: torch.nn.Linear
-    Initial hidden state.
+  h_0: torch.nn.Parameter
+    Initial hidden states.
   loss_fn: torch.nn.CrossEntropyLoss
     Loss function to be optimized.
   model_name: ClassVar[str]
@@ -90,7 +116,7 @@ class ElmanNet(BaseModel):
     # `self.proj_e2h` layer.
     self.proj_h2h = nn.Linear(in_features=d_emb, out_features=d_emb, bias=False)
 
-    # Initial hidden state.  First dimension is set to `1` to broadcast along batch dimension.
+    # Initial hidden states.  First dimension is set to `1` to broadcast along batch dimension.
     self.h_0 = nn.Parameter(torch.zeros(1, d_emb))
 
     # Calculate cross entropy loss for all non-padding tokens.
@@ -140,9 +166,9 @@ class ElmanNet(BaseModel):
     for i in range(seq_len):
       # `e[:, i, :]` is the current input.  We use teacher forcing.
       # shape: (batch_size, d_emb).
-      # `h_prev` is the previous hidden state.
+      # `h_prev` is the previous hidden states.
       # shape: (batch_size, d_emb).
-      # `h_cur` is the current hidden state.
+      # `h_cur` is the current hidden states.
       # shape: (batch_size, d_emb).
       h_cur = torch.sigmoid(e[:, i, :] + self.proj_h2h(h_prev))
 
@@ -174,8 +200,8 @@ class ElmanNet(BaseModel):
   def pred(
     self,
     batch_cur_tkids: torch.Tensor,
-    batch_prev_states: Optional[torch.Tensor] = None,
-  ) -> Tuple[torch.Tensor, torch.Tensor]:
+    batch_prev_states: Optional[List[torch.Tensor]] = None,
+  ) -> Tuple[torch.Tensor, List[torch.Tensor]]:
     """Calculate next token id probability distribution given previous hidden states and current input token id.
 
     This method must only be used for inference.  For training use :py:meth:`lmp.model.ElmanNet.forward` instead.  No
@@ -185,20 +211,21 @@ class ElmanNet(BaseModel):
     ----------
     batch_cur_tkids: torch.Tensor
       Batch of current input token ids.  ``batch_cur_tkids`` has shape ``(batch_size)`` and ``dtype == torch.int``.
-    batch_prev_states: typing.Optional[torch.Tensor], default: None
-      Batch of previous calculation results.  Set to ``None`` to use initial hidden state.  ``batch_prev_states`` has
-      shape ``(batch_size, d_emb)`` and ``dtype == torch.float``.
+    batch_prev_states: typing.Optional[list[torch.Tensor]], default: None
+      Batch of previous calculation results.  Set to ``None`` to use initial hidden states.  ``batch_prev_states`` must
+      only has one item with shape ``(batch_size, d_emb)`` and ``dtype == torch.float``.
 
     Returns
     -------
-    tuple[torch.Tensor, torch.Tensor]
-      The first tensor is the batch of next token id probability distribution.  The first tensor has shape
-      ``(batch_size, vocab_size)`` and ``dtype == torch.float``.  The second tensor is the current hiddent state.  The
-      second tensor has shape ``(batch_size, d_emb)`` and ``dtype == torch.float``.
+    tuple[torch.Tensor, list[torch.Tensor]]
+      The first item in the tuple is the tensor of batch of next token id probability distribution with shape
+      ``(batch_size, vocab_size)`` and ``dtype == torch.float``.  The second item in the tuple is a list of tensor
+      which represent current hiddent states.  There is only one tensor in the list, and it has shape
+      ``(batch_size, d_emb)`` and ``dtype == torch.float``.
     """
     # Use initial hidden state if `batch_prev_state is None`.
     if batch_prev_states is None:
-      batch_prev_states = self.h_0
+      batch_prev_states = [self.h_0]
 
     # Token embedding lookup.
     # In  shape: (batch_size).
@@ -211,7 +238,8 @@ class ElmanNet(BaseModel):
 
     # Perform recurrent calculation.
     # shape: (batch_size, d_emb).
-    h_cur = torch.sigmoid(e + self.proj_h2h(batch_prev_states))
+    h_prev = batch_prev_states[0]
+    h_cur = torch.sigmoid(e + self.proj_h2h(h_prev))
 
     # Calculate similarity scores by calculating inner product over all token embeddings.
     # shape: (batch_size, vocab_size).
@@ -221,7 +249,7 @@ class ElmanNet(BaseModel):
     # shape: (batch_size, vocab_size).
     batch_next_tkids_pd = F.softmax(sim, dim=-1)
 
-    return (batch_next_tkids_pd, h_cur)
+    return (batch_next_tkids_pd, [h_cur])
 
   @classmethod
   def train_parser(cls, parser: argparse.ArgumentParser) -> None:

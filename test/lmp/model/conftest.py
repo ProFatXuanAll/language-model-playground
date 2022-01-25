@@ -35,6 +35,12 @@ def d_emb(request) -> int:
   return request.param
 
 
+@pytest.fixture(params=[2, 4])
+def d_cell(request) -> int:
+  """Memory cell dimension."""
+  return request.param
+
+
 @pytest.fixture
 def eps() -> float:
   """Epsilon."""
@@ -63,6 +69,12 @@ def max_norm() -> float:
 def max_seq_len() -> int:
   """Maximum sequence length."""
   return 128
+
+
+@pytest.fixture(params=[2, 4])
+def n_cell(request) -> int:
+  """Number of memory cells."""
+  return request.param
 
 
 @pytest.fixture

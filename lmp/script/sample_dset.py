@@ -44,6 +44,7 @@ all available versions of a dataset.
 """
 
 import argparse
+import gc
 import sys
 from typing import List
 
@@ -125,6 +126,11 @@ def main(argv: List[str]) -> None:
 
   # Output sample result.
   print(dset[args.idx])
+
+  # Free memory.  This is only need for unit test.
+  del args
+  del dset
+  gc.collect()
 
 
 if __name__ == '__main__':

@@ -51,6 +51,7 @@ You can use ``-h`` or ``--help`` options on a specific inference method to get a
 """
 
 import argparse
+import gc
 import sys
 from typing import List
 
@@ -149,6 +150,17 @@ def main(argv: List[str]) -> None:
 
   # Output generate text.
   print(txt)
+
+  # Free memory.  This is only need for unit test.
+  del args
+  del device
+  del infer
+  del model
+  del model_cfg
+  del tknzr
+  del tknzr_cfg
+  del txt
+  gc.collect()
 
 
 if __name__ == '__main__':

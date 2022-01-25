@@ -27,6 +27,7 @@ You can use ``-h`` or ``--help`` options to get a list of supported CLI argument
 """
 
 import argparse
+import gc
 import sys
 from typing import List
 
@@ -112,6 +113,12 @@ def main(argv: List[str]) -> None:
 
   # Tokenize text.
   print(tknzr.tknz(args.txt))
+
+  # Free memory.  This is only need for unit test.
+  del args
+  del tknzr
+  del tknzr_cfg
+  gc.collect()
 
 
 if __name__ == '__main__':

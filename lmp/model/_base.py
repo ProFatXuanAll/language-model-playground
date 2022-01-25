@@ -2,7 +2,7 @@
 
 import abc
 import argparse
-from typing import Any, ClassVar, Optional, Tuple
+from typing import Any, ClassVar, List, Optional, Tuple
 
 import torch
 
@@ -11,10 +11,30 @@ import lmp.util.path
 
 
 class BaseModel(abc.ABC, torch.nn.Module):
-  """Language model abstract base class.
+  r"""Language model abstract base class.
 
   Implement basic functionalities for language model, including training loss calculation, next token id prediction
   and parsing training arguments.
+
+  We define the input token id list :math:`x` with length equal to :math:`S + 2` as follow:
+
+  .. math::
+
+     \newcommand{\pa}[1]{\left( #1 \right)}
+     \newcommand{\set}[1]{\left\lbrace #1 \right\rbrace}
+     x = \pa{x[0], x[1], x[2], \dots, x[S - 1], x[S], x[S + 1]}.
+
+  - :math:`x[0]` is the token id of ``[bos]``.
+  - :math:`x[S + 1]` is the token id of ``[eos]``.
+
+  Let :math:`x[t]` be the :math:`t`-th time step of :math:`x` where :math:`t \in \set{0, 1, \dots, S}`.  The training
+  goal of a language model with parameter :math:`\theta` is to find a optimal parameter :math:`\theta^{\star}` such
+  that when replace  :math:`\theta` with :math:`\theta^{\star}` it maximize the prediction probability of next token id
+  :math:`x[t + 1]` given :math:`x[0], x[1], \dots, x[t]`:
+
+  .. math::
+
+     \theta^{\star} = \arg\max_{\theta} \prod_{t = 0}^S P(x[t + 1] | x[0], x[1], \dots, x[t] ; \theta)
 
   Parameters
   ----------
@@ -64,8 +84,8 @@ class BaseModel(abc.ABC, torch.nn.Module):
   def pred(
     self,
     batch_cur_tkids: torch.Tensor,
-    batch_prev_states: Optional[torch.Tensor] = None,
-  ) -> Tuple[torch.Tensor, torch.Tensor]:
+    batch_prev_states: Optional[List[torch.Tensor]] = None,
+  ) -> Tuple[torch.Tensor, List[torch.Tensor]]:
     """Calculate next token id probability distribution given previous hidden states and current input token id.
 
     This method must only be used for inference.  For training use :py:meth:`lmp.model.BaseModel.forward` instead.  No
@@ -75,16 +95,16 @@ class BaseModel(abc.ABC, torch.nn.Module):
     ----------
     batch_cur_tkids: torch.Tensor
       Batch of current input token ids.  ``batch_cur_tkids`` has shape ``(batch_size)`` and ``dtype == torch.int``.
-    batch_prev_states: typing.Optional[torch.Tensor], default: None
-      Batch of previous calculation results.  Set to ``None`` to use initial hidden state.  Different models have
-      different hidden state structure.
+    batch_prev_states: typing.Optional[list[torch.Tensor]], default: None
+      Batch of previous calculation results.  Set to ``None`` to use initial hidden states.  Different models have
+      different hidden states structure.
 
     Returns
     -------
-    tuple[torch.Tensor, torch.Tensor]
-      The first tensor is the batch of next token id probability distribution.  The first tensor has shape
-      ``(batch_size, vocab_size)`` and ``dtype == torch.float``.  The second tensor is the current hiddent state.
-      Different models have different hidden state structure.
+    tuple[torch.Tensor, list[torch.Tensor]]
+      The first item in the tuple is the tensor of batch of next token id probability distribution with shape
+      ``(batch_size, vocab_size)`` and ``dtype == torch.float``.  The second item in the tuple is a list of tensor
+      which represent current hiddent states.  Different models have different hidden states structure.
     """
     raise NotImplementedError
 

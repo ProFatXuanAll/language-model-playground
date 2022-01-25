@@ -66,6 +66,7 @@ You can use ``-h`` or ``--help`` options to get a list of supported CLI argument
 """
 
 import argparse
+import gc
 import sys
 from typing import List
 
@@ -73,7 +74,7 @@ import torch
 import torch.utils.data
 # Typeshed for `tqdm` is not available, we ignore type check on `tqdm`.
 from tqdm import tqdm  # type: ignore
-import gc
+
 import lmp.dset
 import lmp.model
 import lmp.util.cfg
@@ -266,6 +267,20 @@ def main(argv: List[str]) -> None:
     # Log average perplexity on dataset to CLI and tensorboard.
     writer.add_scalar(f'ppl/{args.dset_name}/{args.ver}', avg_ppl, ckpt)
     print(f'checkpoint: {ckpt}, avg ppl: {avg_ppl}')
+
+  # Free memory.  This is only need for unit test.
+  del args
+  del avg_ppl
+  del ckpt
+  del data_loader
+  del device
+  del dset
+  del dset_size
+  del model_cfg
+  del tknzr
+  del tknzr_cfg
+  del writer
+  gc.collect()
 
 
 if __name__ == '__main__':
