@@ -53,6 +53,16 @@ class BaseModel(abc.ABC, torch.nn.Module):
     super().__init__()
 
   @abc.abstractmethod
+  def params_init(self) -> None:
+    """Initialize model parameters.
+
+    Returns
+    -------
+    None
+    """
+    raise NotImplementedError
+
+  @abc.abstractmethod
   def forward(self, batch_cur_tkids: torch.Tensor, batch_next_tkids: torch.Tensor) -> torch.Tensor:
     """Calculate language model training loss.
 

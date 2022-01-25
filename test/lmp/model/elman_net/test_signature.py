@@ -96,6 +96,18 @@ def test_instance_method() -> None:
     ],
     return_annotation=torch.Tensor,
   )
+  assert hasattr(ElmanNet, 'params_init')
+  assert inspect.isfunction(ElmanNet.params_init)
+  assert inspect.signature(ElmanNet.params_init) == Signature(
+    parameters=[
+      Parameter(
+        name='self',
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        default=Parameter.empty,
+      ),
+    ],
+    return_annotation=None,
+  )
   assert hasattr(ElmanNet, 'pred')
   assert inspect.isfunction(ElmanNet.pred)
   assert inspect.signature(ElmanNet.pred) == Signature(

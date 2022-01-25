@@ -1,6 +1,7 @@
 """LSTM (1997 version) language model."""
 
 import argparse
+import math
 from typing import Any, ClassVar, List, Optional, Tuple, Union
 
 import torch
@@ -185,6 +186,36 @@ class LSTM1997(BaseModel):
 
     # Calculate cross entropy loss for all non-padding tokens.
     self.loss_fn = nn.CrossEntropyLoss(ignore_index=tknzr.pad_tkid)
+
+    # Initialize model parameters.
+    self.params_init()
+
+  def params_init(self) -> None:
+    r"""Initialize model parameters.
+
+    All weights and non-gate units's biases are initialized with uniform distribution
+    :math:`\mathcal{U}\pa{\frac{-1}{\sqrt{v}}, \frac{1}{\sqrt{v}}}` where :math:`v =` ``max(d_emb, n_cell x d_cell)``.
+    Gate units' biases are initialized with uniform distribution :math:`\mathcal{U}\pa{\frac{-1}{\sqrt{v}}, 0}`.
+
+    Returns
+    -------
+    None
+    """
+    # Initialize weights and biases with uniform distribution.
+    d_hid = self.n_cell * self.d_cell
+    inv_sqrt_dim = 1 / math.sqrt(max(self.emb.embedding_dim, d_hid))
+    nn.init.uniform_(self.emb.weight, -inv_sqrt_dim, inv_sqrt_dim)
+    nn.init.uniform_(self.proj_e2c.weight, -inv_sqrt_dim, inv_sqrt_dim)
+    nn.init.uniform_(self.proj_e2c.bias[:d_hid], -inv_sqrt_dim, inv_sqrt_dim)
+    nn.init.uniform_(self.proj_h2c.weight, -inv_sqrt_dim, inv_sqrt_dim)
+    nn.init.uniform_(self.h_0, -inv_sqrt_dim, inv_sqrt_dim)
+    nn.init.uniform_(self.c_0, -inv_sqrt_dim, inv_sqrt_dim)
+    nn.init.uniform_(self.proj_h2e.weight, -inv_sqrt_dim, inv_sqrt_dim)
+    nn.init.uniform_(self.proj_h2e.bias, -inv_sqrt_dim, inv_sqrt_dim)
+
+    # Gate units' biases are initialized to negative values.
+    nn.init.uniform_(self.proj_e2c.bias[d_hid:d_hid + self.n_cell], -inv_sqrt_dim, 0.0)
+    nn.init.uniform_(self.proj_e2c.bias[d_hid + self.n_cell:], -inv_sqrt_dim, 0.0)
 
   def forward(self, batch_cur_tkids: torch.Tensor, batch_next_tkids: torch.Tensor) -> torch.Tensor:
     """Calculate language model training loss.

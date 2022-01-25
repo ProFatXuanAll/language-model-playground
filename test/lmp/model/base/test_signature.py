@@ -84,6 +84,19 @@ def test_instance_method() -> None:
     ],
     return_annotation=torch.Tensor,
   )
+  assert hasattr(BaseModel, 'params_init')
+  assert inspect.isfunction(BaseModel.params_init)
+  assert 'params_init' in BaseModel.__abstractmethods__
+  assert inspect.signature(BaseModel.params_init) == Signature(
+    parameters=[
+      Parameter(
+        name='self',
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        default=Parameter.empty,
+      ),
+    ],
+    return_annotation=None,
+  )
   assert hasattr(BaseModel, 'pred')
   assert inspect.isfunction(BaseModel.pred)
   assert 'pred' in BaseModel.__abstractmethods__

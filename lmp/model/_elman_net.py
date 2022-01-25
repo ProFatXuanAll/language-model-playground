@@ -1,6 +1,7 @@
 """Elman Net language model."""
 
 import argparse
+import math
 from typing import Any, ClassVar, List, Optional, Tuple, Union
 
 import torch
@@ -121,6 +122,27 @@ class ElmanNet(BaseModel):
 
     # Calculate cross entropy loss for all non-padding tokens.
     self.loss_fn = nn.CrossEntropyLoss(ignore_index=tknzr.pad_tkid)
+
+    # Initialize model parameters.
+    self.params_init()
+
+  def params_init(self) -> None:
+    r"""Initialize model parameters.
+
+    All weights and biases are initialized with uniform distribution
+    :math:`\mathcal{U}\pa{\frac{-1}{\sqrt{v}}, \frac{1}{\sqrt{v}}}` where :math:`v =` ``d_emb``.
+
+    Returns
+    -------
+    None
+    """
+    # Initialize weights and biases with uniform distribution.
+    inv_sqrt_dim = 1 / math.sqrt(self.emb.embedding_dim)
+    nn.init.uniform_(self.emb.weight, -inv_sqrt_dim, inv_sqrt_dim)
+    nn.init.uniform_(self.proj_e2h.weight, -inv_sqrt_dim, inv_sqrt_dim)
+    nn.init.uniform_(self.proj_e2h.bias, -inv_sqrt_dim, inv_sqrt_dim)
+    nn.init.uniform_(self.proj_h2h.weight, -inv_sqrt_dim, inv_sqrt_dim)
+    nn.init.uniform_(self.h_0, -inv_sqrt_dim, inv_sqrt_dim)
 
   def forward(self, batch_cur_tkids: torch.Tensor, batch_next_tkids: torch.Tensor) -> torch.Tensor:
     """Calculate language model training loss.

@@ -108,6 +108,18 @@ def test_instance_method() -> None:
     ],
     return_annotation=torch.Tensor,
   )
+  assert hasattr(LSTM1997, 'params_init')
+  assert inspect.isfunction(LSTM1997.params_init)
+  assert inspect.signature(LSTM1997.params_init) == Signature(
+    parameters=[
+      Parameter(
+        name='self',
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        default=Parameter.empty,
+      ),
+    ],
+    return_annotation=None,
+  )
   assert hasattr(LSTM1997, 'pred')
   assert inspect.isfunction(LSTM1997.pred)
   assert inspect.signature(LSTM1997.pred) == Signature(
