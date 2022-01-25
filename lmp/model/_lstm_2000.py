@@ -1,4 +1,4 @@
-"""LSTM (1997 version) language model."""
+"""LSTM (2000 version) language model."""
 
 import argparse
 import math
@@ -13,17 +13,17 @@ from lmp.model._base import BaseModel
 from lmp.tknzr._base import BaseTknzr
 
 
-class LSTM1997(BaseModel):
-  r"""LSTM (1997 version) [1]_ language model.
+class LSTM2000(BaseModel):
+  r"""LSTM (2000 version) [1]_ language model.
 
-  Implement RNN model in the paper `Long Short-Term Memory`_.
+  Implement RNN model in the paper `Learning to Forget: Continual Prediction with LSTM`_.
 
   - Let :math:`x[t]` be the :math:`t`-th token id in the input token id list :math:`x` as defined in
     :py:class:`lmp.model.BaseModel`.
   - Let ``d_emb`` be the dimension of token embeddings and let ``vocab_size`` be the vocabulary size of tokenizer.
   - Let ``n_cell`` be the number of memory cells and let ``d_cell`` be the dimension of each memory cell.
 
-  Then LSTM (1997 version) is defined as follow:
+  Then LSTM (2000 version) is defined as follow:
 
   .. math::
 
@@ -35,15 +35,16 @@ class LSTM1997(BaseModel):
      \newcommand{\sigmoid}[1]{\operatorname{sigmoid}\pa{#1}}
      \newcommand{\softmax}[1]{\operatorname{softmax}\pa{#1}}
      \begin{align*}
-       e[t]           & = (x[t])\text{-th column of } E                                          \\
-       i[t + 1]       & = \sigmoid{W^i \cdot e[t] + U^i \cdot h[t] + b^i}                        \\
-       o[t + 1]       & = \sigmoid{W^o \cdot e[t] + U^o \cdot h[t] + b^o}                        \\
-       k              & \in \set{1, 2, \dots, \ncell}                                            \\
-       g^k[t + 1]     & = 4 \cdot \sigmoid{W^k \cdot e[t] + U^k \cdot h[t] + b^k} - 2            \\
-       c^k[t + 1]     & = c^k[t] + i_k[t + 1] \cdot g^k[t + 1]                                   \\
-       \hbar^k[t + 1] & = o_k[t + 1] \cdot \pa{2 \cdot \sigmoid{c^k[t + 1]} - 1}                 \\
-       h[t + 1]       & = \concate{\hbar^1[t + 1], \hbar^2[t + 1], \dots, \hbar^{\ncell}[t + 1]} \\
-       z[t + 1]       & = \sigmoid{W^z \cdot h[t + 1] + b^z}                                     \\
+       e[t]           & = (x[t])\text{-th column of } E                                                     \\
+       i[t + 1]       & = \sigmoid{W^i \cdot e[t] + U^i \cdot h[t] + b^i}                                   \\
+       f[t + 1]       & = \sigmoid{W^f \cdot e[t] + U^f \cdot h[t] + b^f}                        && \tag{1}\label{1} \\
+       o[t + 1]       & = \sigmoid{W^o \cdot e[t] + U^o \cdot h[t] + b^o}                                   \\
+       k              & \in \set{1, 2, \dots, \ncell}                                                       \\
+       g^k[t + 1]     & = 4 \cdot \sigmoid{W^k \cdot e[t] + U^k \cdot h[t] + b^k} - 2                       \\
+       c^k[t + 1]     & = f_k[t + 1] \cdot c^k[t] + i_k[t + 1] \cdot g^k[t + 1]                  && \tag{2}\label{2} \\
+       \hbar^k[t + 1] & = o_k[t + 1] \cdot \pa{2 \cdot \sigmoid{c^k[t + 1]} - 1}                            \\
+       h[t + 1]       & = \concate{\hbar^1[t + 1], \hbar^2[t + 1], \dots, \hbar^{\ncell}[t + 1]}            \\
+       z[t + 1]       & = \sigmoid{W^z \cdot h[t + 1] + b^z}                                                \\
        y[t + 1]       & = \softmax{E^{\top} \cdot z[t + 1]}
      \end{align*}
 
@@ -57,12 +58,15 @@ class LSTM1997(BaseModel):
   | :math:`h[0]`   | ``(n_cell x d_cell, 1)``      |                                                   |
   +----------------+-------------------------------+------------------------+--------------------------+
   | :math:`W^i`,   | ``(n_cell, d_emb)``           | :math:`i[t + 1]`,      | ``(n_cell, 1)``          |
+  | :math:`W^f`,   |                               | :math:`f[t + 1]`       |                          |
   | :math:`W^o`    |                               | :math:`o[t + 1]`       |                          |
   +----------------+-------------------------------+------------------------+--------------------------+
   | :math:`U^i`,   | ``(n_cell, n_cell x d_cell)`` |                                                   |
+  | :math:`U^f`,   |                               |                                                   |
   | :math:`U^o`    |                               |                                                   |
   +----------------+-------------------------------+                                                   |
   | :math:`b^i`,   | ``(n_cell, 1)``               |                                                   |
+  | :math:`b^f`,   |                               |                                                   |
   | :math:`b^o`    |                               |                                                   |
   +----------------+-------------------------------+------------------------+--------------------------+
   | :math:`W^k`    | ``(d_cell, d_emb)``           | :math:`g^k[t + 1]`,    | ``(d_cell, 1)``          |
@@ -78,18 +82,10 @@ class LSTM1997(BaseModel):
   | :math:`b^z`    | ``(d_emb, 1)``                | :math:`y[t + 1]`       | ``(vocab_size, 1)``      |
   +----------------+-------------------------------+------------------------+--------------------------+
 
-  - :math:`E` is the token embedding lookup table as defined in :py:class:`lmp.model.ElmanNet`.
-  - :math:`i[t + 1], o[t + 1]` are input gates and output gates at time step :math:`t + 1`, respectively.
-  - :math:`g^k[t + 1]` is the :math:`k`-th memory cell's input activation at time step :math:`t + 1`.  There are
-    ``n_cell`` different memory cell's activations, i.e., :math:`g^1[t + 1], \dots, g^{\ncell}[t + 1]`.
-  - :math:`c^k[t + 1]` is the :math:`k`-th memory cell's internal state at time step :math:`t + 1`.  The initial
-    internal state :math:`c^k[0]` is a pre-defined column vector.
-  - The hidden state :math:`h[t + 1]` at time step :math:`t + 1` is based on the output of all LSTM cells at time step
-    :math:`t + 1`, i.e., :math:`\hbar^1[t + 1], \dots \hbar^{\ncell}[t + 1]`.  The initial hidden state :math:`h[0]` is
-    a pre-defined column vector.
-  - After performing another sigmoid-activated affine transformation, the final output :math:`y[t + 1]`, i.e., the next
-    token id prediction probability distribution can be calculated.  We use the same calculation as
-    :py:class:`lmp.model.ElmanNet`.
+  - The only differences between :py:class:`lmp.model.LSTM1997` and :py:class:`lmp.model.LSTM2000` are equations
+    :math:`\eqref{1}\eqref{2}`.
+  - :math:`f[t + 1]` are forget gates at time step :math:`t + 1`.  All other symbols have the exact same meaning as
+    defined in :py:class:`lmp.model.LSTM1997`.
 
   Parameters
   ----------
@@ -117,15 +113,15 @@ class LSTM1997(BaseModel):
   loss_fn: torch.nn.CrossEntropyLoss
     Loss function to be optimized.
   model_name: ClassVar[str]
-    CLI name of LSTM (1997 version) is ``LSTM-1997``.
+    CLI name of LSTM (2000 version) is ``LSTM-2000``.
   n_cell: int
     Number of memory cells.
   proj_e2c: torch.nn.Linear
     Fully connected layer which connects input units to memory cells.  Input dimension is ``d_emb``.  Output dimension
-    is ``n_cell * (2 + d_cell)``.
+    is ``n_cell * (3 + d_cell)``.
   proj_h2c: torch.nn.Linear
     Fully connected layer which connects hidden states to memory cells.  Input dimension is ``n_cell * d_cell``.
-    Output dimension is ``n_cell * (2 + d_cell)``.
+    Output dimension is ``n_cell * (3 + d_cell)``.
   proj_h2e: torch.nn.Linear
     Fully connected layer which connects hidden states to embedding dimension.  Input dimension is ``n_cell * d_cell``.
     Output dimension is ``d_emb``.
@@ -135,18 +131,18 @@ class LSTM1997(BaseModel):
   lmp.model.BaseModel
     Language model utilities.
   lmp.model.ElmanNet
-    LSTM (1997 version) language model.
+    LSTM (2000 version) language model.
 
   References
   ----------
-  .. [1] S. Hochreiter and J. Schmidhuber, "`Long Short-Term Memory`_," in Neural Computation, vol. 9, no. 8,
-     pp. 1735-1780, 15 Nov. 1997, doi: 10.1162/neco.1997.9.8.1735.
+  .. [1] Felix A. Gers, Jürgen Schmidhuber, Fred Cummins; `Learning to Forget: Continual Prediction with LSTM`_.
+         Neural Comput 2000; 12 (10): 2451--2471. doi: https://doi.org/10.1162/089976600300015015
 
-  .. _`Long Short-Term Memory`:
-     https://ieeexplore.ieee.org/abstract/document/6795963
+  .. _`Learning to Forget: Continual Prediction with LSTM`:
+     https://direct.mit.edu/neco/article-abstract/12/10/2451/6415/Learning-to-Forget-Continual-Prediction-with-LSTM
   """
 
-  model_name: ClassVar[str] = 'LSTM-1997'
+  model_name: ClassVar[str] = 'LSTM-2000'
 
   def __init__(self, *, d_cell: int, d_emb: int, n_cell: int, tknzr: BaseTknzr, **kwargs: Any):
     super().__init__(**kwargs)
@@ -171,10 +167,10 @@ class LSTM1997(BaseModel):
     self.emb = nn.Embedding(num_embeddings=tknzr.vocab_size, embedding_dim=d_emb, padding_idx=tknzr.pad_tkid)
 
     # Fully connected layer which connects input units to memory cells.
-    self.proj_e2c = nn.Linear(in_features=d_emb, out_features=n_cell * (2 + d_cell))
+    self.proj_e2c = nn.Linear(in_features=d_emb, out_features=n_cell * (3 + d_cell))
 
     # Fully connected layer which connects hidden states to memory cells.
-    self.proj_h2c = nn.Linear(in_features=n_cell * d_cell, out_features=n_cell * (2 + d_cell), bias=False)
+    self.proj_h2c = nn.Linear(in_features=n_cell * d_cell, out_features=n_cell * (3 + d_cell), bias=False)
 
     # Initial hidden states and initial memory cell internal states.  First dimension is set to `1` to broadcast along
     # batch dimension.
@@ -195,7 +191,9 @@ class LSTM1997(BaseModel):
 
     All weights and non-gate units's biases are initialized with uniform distribution
     :math:`\mathcal{U}\pa{\frac{-1}{\sqrt{v}}, \frac{1}{\sqrt{v}}}` where :math:`v =` ``max(d_emb, n_cell x d_cell)``.
-    Gate units' biases are initialized with uniform distribution :math:`\mathcal{U}\pa{\frac{-1}{\sqrt{v}}, 0}`.
+    Input gate and output gate units' biases are initialized with uniform distribution
+    :math:`\mathcal{U}\pa{\frac{-1}{\sqrt{v}}, 0}`.  Forget gate units' biases are initialized with uniform
+    distribution :math:`\mathcal{U}\pa{0, \frac{1}{\sqrt{v}}}`.
 
     Returns
     -------
@@ -213,9 +211,12 @@ class LSTM1997(BaseModel):
     nn.init.uniform_(self.proj_h2e.weight, -inv_sqrt_dim, inv_sqrt_dim)
     nn.init.uniform_(self.proj_h2e.bias, -inv_sqrt_dim, inv_sqrt_dim)
 
-    # Gate units' biases are initialized to negative values.
+    # Input gate and output gate units' biases are initialized to negative values.
     nn.init.uniform_(self.proj_e2c.bias[d_hid:d_hid + self.n_cell], -inv_sqrt_dim, 0.0)
-    nn.init.uniform_(self.proj_e2c.bias[d_hid + self.n_cell:], -inv_sqrt_dim, 0.0)
+    nn.init.uniform_(self.proj_e2c.bias[d_hid + 2 * self.n_cell:], -inv_sqrt_dim, 0.0)
+
+    # Forget gate units' biases are initialized to positive values.
+    nn.init.uniform_(self.proj_e2c.bias[d_hid + self.n_cell:d_hid + 2 * self.n_cell], 0.0, inv_sqrt_dim)
 
   def forward(self, batch_cur_tkids: torch.Tensor, batch_next_tkids: torch.Tensor) -> torch.Tensor:
     """Calculate language model training loss.
@@ -249,7 +250,7 @@ class LSTM1997(BaseModel):
 
     # Token embedding lookup and project from embedding layer to memory cells.
     # In  shape: (batch_size, seq_len).
-    # Out shape: (batch_size, seq_len, n_cell x (2 + d_cell)).
+    # Out shape: (batch_size, seq_len, n_cell x (3 + d_cell)).
     cells_and_gates_input_by_emb = self.proj_e2c(self.emb(batch_cur_tkids))
 
     # Perform recurrent calculation for `seq_len` steps.  We use teacher forcing, i.e., the current input `e[:, i, :]`
@@ -260,7 +261,7 @@ class LSTM1997(BaseModel):
     h_prev: Union[torch.Tensor, nn.Parameter] = self.h_0
     for i in range(seq_len):
       # Project `h_prev` from hidden states to memory cells.  Then calculate memory cells and gates input activation.
-      # shape: (batch_size, n_cell x (2 + d_cell)).
+      # shape: (batch_size, n_cell x (3 + d_cell)).
       cells_and_gates_input_act = torch.sigmoid(cells_and_gates_input_by_emb[:, i, :] + self.proj_h2c(h_prev))
 
       # Calculate memory cells input activation and reshape to separate memory cells.
@@ -272,13 +273,17 @@ class LSTM1997(BaseModel):
       # shape: (batch_size, n_cell, 1)
       input_gates = cells_and_gates_input_act[:, d_hid:d_hid + self.n_cell].unsqueeze(2)
 
+      # Get forget gates.
+      # shape: (batch_size, n_cell, 1)
+      forget_gates = cells_and_gates_input_act[:, d_hid + self.n_cell:d_hid + 2 * self.n_cell].unsqueeze(2)
+
       # Calculate current memory cells' internal states.
       # shape: (batch_size, n_cell, d_cell)
-      c_cur = c_prev + input_gates * cells_input_act
+      c_cur = forget_gates * c_prev + input_gates * cells_input_act
 
       # Get output gates.
       # shape: (batch_size, n_cell, 1)
-      output_gates = cells_and_gates_input_act[:, d_hid + self.n_cell:].unsqueeze(2)
+      output_gates = cells_and_gates_input_act[:, d_hid + 2 * self.n_cell:].unsqueeze(2)
 
       # Calculate current memory cells' outputs and reshape to fit the shape of hidden state.
       # shape: (batch_size, n_cell x d_cell)
@@ -350,11 +355,11 @@ class LSTM1997(BaseModel):
 
     # Token embedding lookup and project from embedding layer to memory cells.
     # In  shape: (batch_size).
-    # Out shape: (batch_size, n_cell x (2 + d_cell)).
+    # Out shape: (batch_size, n_cell x (3 + d_cell)).
     cells_and_gates_input_by_emb = self.proj_e2c(self.emb(batch_cur_tkids))
 
     # Project `h_prev` from hidden states to memory cells.  Then calculate memory cells and gates input activation.
-    # shape: (batch_size, n_cell x (2 + d_cell)).
+    # shape: (batch_size, n_cell x (3 + d_cell)).
     cells_and_gates_input_act = torch.sigmoid(cells_and_gates_input_by_emb + self.proj_h2c(h_prev))
 
     # Calculate memory cells input activation and reshape to separate memory cells.
@@ -367,13 +372,17 @@ class LSTM1997(BaseModel):
     # shape: (batch_size, n_cell, 1)
     input_gates = cells_and_gates_input_act[:, d_hid:d_hid + self.n_cell].unsqueeze(2)
 
+    # Get forget gates.
+    # shape: (batch_size, n_cell, 1)
+    forget_gates = cells_and_gates_input_act[:, d_hid + self.n_cell:d_hid + 2 * self.n_cell].unsqueeze(2)
+
     # Calculate current memory cells' internal states.
     # shape: (batch_size, n_cell, d_cell)
-    c_cur = c_prev + input_gates * cells_input_act
+    c_cur = forget_gates * c_prev + input_gates * cells_input_act
 
     # Get output gates.
     # shape: (batch_size, n_cell, 1)
-    output_gates = cells_and_gates_input_act[:, d_hid + self.n_cell:].unsqueeze(2)
+    output_gates = cells_and_gates_input_act[:, d_hid + 2 * self.n_cell:].unsqueeze(2)
 
     # Calculate current memory cells' outputs and reshape to fit the shape of hidden state.
     # shape: (batch_size, n_cell x d_cell)
@@ -396,7 +405,7 @@ class LSTM1997(BaseModel):
 
   @classmethod
   def train_parser(cls, parser: argparse.ArgumentParser) -> None:
-    """CLI arguments parser for training LSTM (1997 version) language model.
+    """CLI arguments parser for training LSTM (2000 version) language model.
 
     Parameters
     ----------
@@ -417,9 +426,9 @@ class LSTM1997(BaseModel):
     Examples
     --------
     >>> import argparse
-    >>> from lmp.model import LSTM1997
+    >>> from lmp.model import LSTM2000
     >>> parser = argparse.ArgumentParser()
-    >>> LSTM1997.train_parser(parser)
+    >>> LSTM2000.train_parser(parser)
     >>> args = parser.parse_args([
     ...   '--batch_size', '32',
     ...   '--beta1', '0.9',
@@ -483,7 +492,7 @@ class LSTM1997(BaseModel):
     super().train_parser(parser=parser)
 
     # Required arguments.
-    group = parser.add_argument_group('LSTM (1997 version) training arguments')
+    group = parser.add_argument_group('LSTM (2000 version) training arguments')
     group.add_argument(
       '--d_cell',
       help='Memory cell dimension.',
