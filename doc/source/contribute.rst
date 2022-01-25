@@ -2,10 +2,8 @@ Contributing to Language Model Playground
 =========================================
 
 We welcome all sorts of contributions to language model playground.  Please read the `Before You Commit`_ section
-**before** you do anything.  See `Need Helps`_ section for some know issues we currently need help the most.  For other
-issues such as **bugs** or **features request** see `our GitHub issues`_.
-
-.. _`our GitHub issues`: https://github.com/ProFatXuanAll/language-model-playground/issues
+first.  See `Need Helps`_ section for some known issues we currently need the most help.  For other issues such as
+**bugs** or **features request** see `our GitHub issues`_.
 
 .. note::
 
@@ -33,42 +31,38 @@ Before You Commit
       We aware that some types in :py:mod:`typing` is **deprecated** in favor of built-in syntax.  For example,
       :py:mod:`typing.List` is deprecated in favor of built-in :py:class:`list`.  However, those deprecated types will
       be in effect only after 2025 (See details in `PEP 585`_).  Thus we will continue using :py:mod:`typing` instead
-      built-in syntax since the :py:mod:`typing` namespace provide more hint for type annotation purpose.
+      of built-in syntax.  Also we are using Python_ version ``3.8`` which do not support built-in syntax.  We will
+      switch to built-in syntax once PyTorch_ support Python_ version ``3.9``.
 
-   .. note::
-
-      You will see lots of error after running ``mypy`` script.  This is expected since ``mypy`` can only do static
-      type checking.  False positive errors and warnings should be ignored.
-
-#. Write docstring for every class, function and method.  See :doc:`how_to_doc` for detailed docstring guide line.
+#. Write docstring for every modules, classes, functions and methods.  See :doc:`how_to_doc` for detailed docstring
+   guide line.
 #. Run the following script to lint your code to conform `PEP 8`_.
 
    .. code-block:: shell
 
-      autopep8 -i -r -a -a -a lmp test
-      flake8 lmp test
+      pipenv run ly
+      pipenv run li
+      pipenv run lf
 
    Fix any error/warning messages showed on CLI.  If you find some rule is not possible to be fix, please **open
    issue**.
 
-#. Run tests and get test coverage report.  Make sure your code do not break existing code.  See :doc:`how_to_test` for
-   detailed testing guide line.
-
-#. Write tests for your code and make them maintainable.  See :doc:`how_to_test` for detailed testing guide line.
-
-.. _`PEP 8`: https://www.python.org/dev/peps/pep-0008/
-.. _`PEP 484`: https://www.python.org/dev/peps/pep-0484/
-.. _`PEP 585`: https://www.python.org/dev/peps/pep-0585/
+#. Run tests and get test coverage report.  Make sure your codes do not break existing code.  See :doc:`how_to_test`
+   for detailed testing guide line.
+#. Write tests for your codes and make them maintainable.  See :doc:`how_to_test` for detailed testing guide line.
 
 Need Helps
 ~~~~~~~~~~
 The following list of items are the helps we needed.
 
-- Unittest on functions.
-- Unittest on classes.
-- Unittest on scripts.
-- Documentation translation to traditional Chinese.  We also need to separate English documents from traditional
-  Chinese.
+- Translate documents into traditional Chinese.
 - Require installation script.  Currently python is undergone throught some major change on their package management
   system.  But we think its better to stick to ``setup.py`` solution and change to better solution after the change of
   package management system.
+
+.. _`our GitHub issues`: https://github.com/ProFatXuanAll/language-model-playground/issues
+.. _`PEP 8`: https://www.python.org/dev/peps/pep-0008/
+.. _`PEP 484`: https://www.python.org/dev/peps/pep-0484/
+.. _`PEP 585`: https://www.python.org/dev/peps/pep-0585/
+.. _PyTorch: https://pytorch.org/
+.. _Python: https://www.python.org/

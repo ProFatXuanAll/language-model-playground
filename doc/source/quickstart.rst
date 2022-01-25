@@ -77,33 +77,34 @@ Installation
 
 Training Language Model Pipline
 -------------------------------
-We now demonstrate a basic :term:`language model` training pipline.
+We now demonstrate a typical :term:`language model` training pipline.
 
 .. note::
 
    Throughout this tutorial you might see the symbol ``\`` appear several times.  ``\`` are only used to format our
-   CLI codes to avoid long lines.  All CLI codes should be able to fit-in one line, but this would make your code
-   unreadable and should be considered as a bad choice.
+   CLI codes to avoid lenthy lines.  All CLI codes can in practice be fit into one line, but that would make your codes
+   unreadable and should be considered as bad choices.
 
 1. Choose a Dataset
 ~~~~~~~~~~~~~~~~~~~
 Choose a dataset to train.
 
-In this example we use :py:class:`lmp.dset.WikiText2Dset` as our dataset.
+In this example we use :py:class:`lmp.dset.WikiText2Dset` as our demo dataset.
 
 .. seealso::
 
    :py:mod:`lmp.dset`
      All available dataset.
 
-2. Choose a Tokenizer
-~~~~~~~~~~~~~~~~~~~~~
-Choose a :term:`tokenizer` and train :term:`tokenizer` on dataset we already choose.
+2. Choose a Tokenizer and Train it
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Choose your :term:`tokenizer` and train your tokenizer on a dataset.
 
-In this example we use :py:class:`lmp.tknzr.WsTknzr` since all samples in :py:class:`lmp.dset.WikiText2Dset` are
-whitespace separated.
+The following example use whitespace tokenizer :py:class:`lmp.tknzr.WsTknzr` to train on
+:py:class:`lmp.dset.WikiText2Dset` dataset since samples in :py:class:`lmp.dset.WikiText2Dset` are English and thus
+tokens (words) are separated by whitespace.
 
-We use :py:mod:`lmp.script.train_tknzr` to train :term:`tokenizer` given following arguments:
+We use :py:mod:`lmp.script.train_tknzr` to train our whitespace tokenizer:
 
 .. code-block:: shell
 
@@ -115,31 +116,32 @@ We use :py:mod:`lmp.script.train_tknzr` to train :term:`tokenizer` given followi
      --min_count 10 \
      --ver train
 
-We use ``whitespace`` to specify we want to use :py:class:`lmp.tknzr.WsTknzr` as our :term:`tokenizer`, and we train
-our :term:`tokenizer` on Wiki-text-2 dataset using ``--dset_name wiki-text-2`` arguments.  We use ``--ver train`` since
-our :term:`language model` will be trained on training version of Wiki-text-2, and we simply treat :term:`OOV` in both
-validation and test versions as unknown words.
+We pass ``whitespace`` as the first argument to specify that we will use :py:class:`lmp.tknzr.WsTknzr` as our
+tokenizer, and we train our tokenizer on :py:class:`lmp.dset.WikiText2Dset` dataset using ``--dset_name wiki-text-2``
+arguments.  We use ``--ver train`` since our :term:`language model` will be trained on the same training version of
+:py:class:`lmp.dset.WikiText2Dset` dataset.
 
-We use ``--max_vocab -1`` to include all :term:`tokens` in Wiki-text-2.  This results in :term:`vocabulary` size
-around ``30000``, which is a little bit too much.  Thus we also use ``--min_count 10`` to filter out all :term:`tokens`
-whose frequency are lower than ``10``.  Here we simply assume that all :term:`tokens` occur less than ``10`` times
-might be typos, name entities, digits, or something else that we believe are not useful.  We also use ``--is_uncased``
-to convert all uppercase letters into lowercase, this also help to reducing :term:`vocabulary` size.  (for example,
-``You`` and ``you`` are now treated as same words)
+We use ``--max_vocab -1`` to include all tokens in Wiki-text-2.  This results in :term:`vocabulary` size around
+``30000``, which is a little bit too much.  Thus we use ``--min_count 10`` in conjunction to filter out tokens with
+occurrence counts less than ``10``.  Here our assumption is that tokens occur less than ``10`` times are likely to be
+typos, or name entities, or something else that we believe are not useful.  We use ``--is_uncased`` to convert
+uppercase letters into lowercase which helps on reducing vocabulary size.  (for example, ``You`` and ``you`` are now
+treated as same words.)
 
-All arguments we used are just a mather of choice for pre-processing.  You can change them to any values you want.
+All arguments we used are just a mather of choice of pre-processing.  You can change them to any values you think the
+best.
 
 .. seealso::
 
    :py:mod:`lmp.tknzr`
-     All available :term:`tokenizers`.
+     All available tokenizers.
 
-3. Evaluate Tokenizer
-~~~~~~~~~~~~~~~~~~~~~
-After training :term:`tokenizer`, you can now use your pre-trained :term:`tokenizer` to :term:`tokenize` arbitrary
-text.
+3. Evaluate Tokenizer Training Results
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Following the previous step, you can now use your previously trained (or pre-trained) :term:`tokenizer` to perform
+:term:`tokenization` on arbitrary text you want.
 
-For example, you can try to :term:`tokenize` ``hello world`` with script :py:mod:`lmp.script.tknz_txt`:
+In the following example it tokenize the sentence ``hello world`` into string list ``['hello', 'world']``:
 
 .. code-block:: shell
 
@@ -147,103 +149,101 @@ For example, you can try to :term:`tokenize` ``hello world`` with script :py:mod
      --exp_name my_tknzr_exp \
      --txt "hello world"
 
-You should see something like ``['hello', 'world']``.
-
-4. Choose a Language Model
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+4. Choose a Language Model and Train it
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Now we can train our :term:`language model` with the help of pre-trained :term:`tokenizer`.
 
-In this example we use :py:mod:`lmp.model.LSTM` as our training target.  We use :py:mod:`lmp.script.train_model` to
-train :term:`language model` as follow:
+This example use :py:mod:`lmp.model.LSTM2000` as our training language model:
 
 .. code-block:: shell
 
-   python -m lmp.script.train_model LSTM \
+   python -m lmp.script.train_model LSTM-2000 \
      --batch_size 32 \
      --beta1 0.9 \
      --beta2 0.99 \
-     --ckpt_step 1000 \
+     --ckpt_step 500 \
+     --d_cell 64 \
+     --d_emb 100 \
      --dset_name wiki-text-2 \
      --eps 1e-8 \
      --exp_name my_model_exp \
      --log_step 200 \
      --lr 1e-4 \
      --max_norm 1 \
-     --max_seq_len -1 \
+     --max_seq_len 128 \
+     --n_cell 8 \
      --n_epoch 10 \
      --tknzr_exp_name my_tknzr_exp \
      --ver train \
-     --d_emb 100 \
-     --d_hid 300 \
-     --n_hid_lyr 2 \
-     --n_post_hid_lyr 2 \
-     --n_pre_hid_lyr 2 \
-     --p_emb 0.1 \
-     --p_hid 0.1 \
      --wd 1e-2
 
-:py:mod:`lmp.script.train_model` have similar structure as :py:mod:`lmp.script.train_tknzr`;  We use ``LSTM`` to
-specify we want to use :py:class:`lmp.model.LSTMModel` as our :term:`language model`, and train our model on
-Wiki-text-2 dataset using ``--dset_name wiki-text-2`` arguments.  We use ``--ver train`` to specify we want to use
-training version of Wiki-text-2 which is also used to train our :term:`tokenizer`.
+We pass ``LSTM-2000`` as the first argument to specify that we will use :py:class:`lmp.model.LSTM2000` as our language
+model, and we train our model on :py:class:`lmp.dset.WikiText2Dset` dataset using ``--dset_name wiki-text-2``
+arguments.  We use ``--ver train`` just as we did to our tokenizer.
 
-We will train on Wiki-text-2 dataset for ``10`` **epochs**, which means we will repeatly train on sample dataset for
-``10`` times.  (This is specified in ``--n_epoch 10``.)  Each time we group all samples in Wiki-text-2 with group size
-``32``, and sequentially feed them to model.  (This is specified in ``--batch_size 32``.)  We call one such group as a
-**mini-batch**.  All samples in mini-batch are randomly gathered in every epoch, and the order to feed mini-batches to
-model are randomly purmuted.  Thus when we train ``10`` epochs we might have ``10`` different mini-batches training
-order and hundreds of thousands of different mini-batches.
+We will train on Wiki-text-2 dataset for ``10`` epochs, which means our model will be trained on the same samples for
+``10`` times.  (This is specified in ``--n_epoch 10``.)  We group samples with ``32`` samples in each group and we fed
+groups to model one-by-one.  (This is specified in ``--batch_size 32``.)  We call each group a **mini-batch**.  Samples
+in mini-batch are randomly grouped together in each training epoch, and the order of feeding mini-batches to model is
+randomly purmuted.  Thus for ``10`` epochs we might have ``10`` different mini-batches training order and hundreds of
+thousands of different mini-batches.
 
-All samples in mini-batch are first pre-processed by our pre-train :term:`tokenizer` (as specified in
-``--tknzr_exp_name my_tknzr_exp``) and then fed into model.  If you think you need a different :term:`tokenizer`, you
-can go back to previous step to see how you can obtain a pre-trained :term:`tokenizer`.
+Samples in mini-batch are first pre-processed by our pre-train :term:`tokenizer` (as specified in
+``--tknzr_exp_name my_tknzr_exp``), then the processed results are fed into model.  To use a different tokenizer, you
+can go back to the previous step to see how you can obtain a pre-trained tokenizer.
 
-We will output our model training result and save them as files (more precisely, compressed pickle files).  Save will
-trigger every ``1000`` updates (as specified in ``--ckpt_step``).  We call these saved files as :term:`checkpoint`, all
-they saved are model parameters.  Later we will reuse these model parameters to perform further operation such as
-:term:`perplexity` evaluation or text generation.  We save these files with name ``model-\d+.pt``, where ``\d+`` means
-digits.  (For example we might save at :term:`checkpoint` ``5000`` as ``model-5000.pt``.)
+The training script will save our model training results.  Saving will be triggered every ``500`` updates (as specified
+in ``--ckpt_step``).  We call these saved files as :term:`checkpoints`.  In the next step we will use these model
+checkpoints to perform evaluation.  Checkpoint files are named with the format ``model-\d+.pt``, where ``\d+`` is a
+integer representing the checkpoint saving step.  (For example we might save a checkpoint at step ``5000``, and we
+would have a file with name ``model-5000.pt``.)
 
-We also log our model performance during training, i.e., **loss function** output.  Log will trigger every ``200``
-updates (as specified in ``--log_step``).  You can see performance logs on your CLI, or you can use browser to see your
-performance logs by the following script:
+The training script will log model training performance, i.e., the output of a **loss function**.  Log will be
+triggered every ``200`` updates (as specified in ``--log_step``).  You can see the performance logs on CLI.  You can
+also use browser to see your performance logs using the following script:
 
 .. code-block::
 
    pipenv run tensorboard
 
-After launch the command, you should open your **browser** and type http://localhost:6006/ to see your performance logs.
+After launch the command, you can open your **browser** with URL http://localhost:6006/ to see your performance logs.
 
-For the rest arguments, we split them into two categories:
+We split the rest of arguments into two groups:
 
 - :term:`Optimization` hyperparameters.
+- Regularization tricks for optimization.
 - **Model architecture** hyperparameters.
 
-For :term:`optimization`, we only provide you with one :term:`optimization` method, namely
-:py:class:`torch.optim.Adam`.  We use :py:class:`torch.optim.Adam` to perform :term:`gradient descent` on
-:term:`language model`.  Our :term:`optimization` target is to minimize token prediction negative log-likelihood, or
-simply cross-entropy.  (This is equivalent to maximize log-likelihood, or just likelihood.)  See
-:py:class:`torch.nn.CrossEntropyLoss` for loss function.  Arguments including ``--beta1``, ``--beta2``, ``--eps``,
-``--lr`` and ``--wd`` are directly passed to :py:class:`torch.optim.Adam`.
+For **optimization**, we use :py:class:`torch.optim.AdamW` as our optimization algorithm.  After performing
+:term:`gradient descent` on :term:`language model`, we use :py:class:`torch.optim.AdamW` to update our models'
+parameters.  The goal of optimization is to maximize the next token prediction log-likelihood, or equivalently to
+minimize token prediction negative log-likelihood, or simply cross-entropy.  See :py:class:`torch.nn.CrossEntropyLoss`
+for details.  Arguments including ``--beta1``, ``--beta2``, ``--eps``, ``--lr`` and ``--wd`` are directly passed to
+:py:class:`torch.optim.AdamW`.
 
-For **model architecture**, you can simply checkt the model's constructor to see what parameters the model needed. Or
-you can use ``python -m lmp.script.train_model model_name -h`` to see parameters on CLI.  For the meaning of those
-model architecture hyperparameters, we recommend you to see their documents for more details.
+For **regularization tricks**, one usually incorporate them to prevent irregular behaviors of model optimization.  One
+of the tricks we used is called gradient clipping, which is used to avoid gradient become to large (in the sense of
+norm) which make parameters value become extremely positive or negative.  Argument ``--max_norm`` is served as gradient
+clipping boundary.
 
-Just like training :term:`tokenizer`, all arguments we used are just a mather of choice for training.  You can change
-them to any values you want.
+For **model architecture**, you can simply check a model's constructor (for example,
+:py:meth:`lmp.model.LSTM1997.__init__`) to see what parameters are passed to model.  Or you can use
+``python -m lmp.script.train_model model_name -h`` to see required arguments on CLI help text.  For the meaning of
+those model architecture hyperparameters, we recommend you to see models' documents for details.
+
+Just like training :term:`tokenizer`, you can choose any values you think the best.
 
 .. seealso::
 
    :py:mod:`lmp.model`
-     All available :term:`language models`.
+     All available language models.
 
-5. Evaluate Language Model
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-Its time to check whether our :term:`language model` is successfully trained!
+5. Evaluate Language Model Training Results
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Now we check whether our :term:`language model` is successfully trained.
 
-In this example we use Wiki-text-2 dataset to perform **validation** and **testing**.  But before that we should check
-whether our model is **underfitting**.
+The following example use :py:class:`lmp.dset.WikiText2Dset` dataset to perform evaluation.  First we check whether our
+model is **underfitting** or not by running evalution on the training set.
 
 .. code-block:: shell
 
@@ -253,29 +253,24 @@ whether our model is **underfitting**.
      --exp_name my_model_exp \
      --ver train
 
-We use **training** version of Wiki-Text-2 dataset (as specified in ``--ver train``) to check our performance.  The
-script above will evaluate all :term:`checkpoints` we have saved starting from :term:`checkpoint` ``0`` all the way to
-last :term:`checkpoint`.  We use :term:`perplexity` as our evaluation metric.  See :py:meth:`lmp.util.metric.ppl` for
-:term:`perplexity` details.
+The script above will evaluate all :term:`checkpoints` we saved during training (start from ``0`` to last).  We use
+:term:`perplexity` as evaluation metric.  See :py:meth:`lmp.util.metric.ppl` for perplexity calculation details.
 
-Again you can use browser to see your evaluation logs by the following script:
+Like model training script, you can use the following script and then use browser to open URL http://localhost:6006/ to
+see performance logs for evaluation:
 
 .. code-block::
 
    pipenv run tensorboard
 
-After launch the command, you should open your **browser** and type http://localhost:6006/ to see your evaluation logs.
-We will not write this script again later on.
+In general, perplexity is the lower the better.  If you don't see perplexity goes down, then your model is
+**underfitting**.  You should go back to the previous step to re-train your language model.  Try using different batch
+size, number of epochs, and all sorts of hyperparameters combination.
 
-If you didn't see the :term:`perplexity` goes down, this means your model is **underfitting**.  You should go back to
-re-train your :term:`language model`.  Try using different batch size, number of epochs, and all sorts of
-hyperparameters combination.
+If you see perplexity goes down, that is good!  But how low should the perplexity be?  Typically perplexity lower than
+``100`` is a good sign of well-trained language models.  We recommed you to see papers paired with the dataset.
 
-If you see the :term:`perplexity` goes down, that is good!  But how low should the :term:`perplexity` be?  To answer
-that question, we recommed you to see the paper paired with the dataset (in some dataset they might not have papers to
-reference).  But overall, lower than ``100`` might be a good indicator for a well-trained :term:`language model`.
-
-We should now check whether our model is **overfitting**.
+We now check whether our model is **overfitting** or not by running evaluation on validation set.
 
 .. code-block:: shell
 
@@ -285,13 +280,12 @@ We should now check whether our model is **overfitting**.
      --exp_name my_model_exp \
      --ver valid
 
-We use **validation** version of Wiki-Text-2 dataset (as specified in ``--ver valid``) to check our performance.
-
-If :term:`perplexity` on validation set does not do well, then we should go back to re-train our model, then validate
-again, then re-train our model again, and so on.  The loop goes on and on until we reach a point where we get good
-:term:`perplexity` on both training and validation dataset.  This means we might have a :term:`language model` which is
-able to generalize on dataset we have never used to train (validation set in this case).  To further verify our
-hypothesis, we should now use **test** version of Wiki-Text-2 dataset to check our performance.
+If perplexity on validation set does not do well, then its a sign of overfitting, which means our model do not
+generalize outside the training set.  We should go back to re-train our model, then validate again.  If out model still
+overfitting, then we will re-train again and validate again, and so on.  This process goes on until we reach a point
+where we get good perplexity on both training and validation dataset.  This means we might have a language model which
+is able to generalize on dataset we have never used to train (validation set in this case).  To further verify our
+hypothesis, we can use another dataset check our model's performance.
 
 .. code-block:: shell
 
@@ -301,10 +295,10 @@ hypothesis, we should now use **test** version of Wiki-Text-2 dataset to check o
      --exp_name my_model_exp \
      --ver test
 
-6. Generate Text
-~~~~~~~~~~~~~~~~
-Finally we can use our well-trained :term:`language model` to generate text.  In this example we use
-:py:mod:`lmp.script.gen_txt` to generate text:
+6. Generate Continual Text
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+Now we can use our well-trained :term:`language model` to generate continual text given some text segment.  For
+example:
 
 .. code-block:: shell
 
@@ -313,12 +307,11 @@ Finally we can use our well-trained :term:`language model` to generate text.  In
      --exp_name my_model_exp \
      --txt "We are"
 
-We use ``top-1`` to specify we want to use :py:class:`lmp.infer.Top1Infer` as inference method to generate text.  We
-use ``"We are"`` as condition text and generate text to complete the sentence or paragraph.
+We use ``top-1`` to specify we want to use :py:class:`lmp.infer.Top1Infer` as inference method to generate continual
+text.  We pass ``"We are"`` as conditional text segment to let model generate continual text.
 
-You can use different :term:`checkpoint` by changing the ``--ckpt 5000`` argument.  All available :term:`checkpoints`
-is under :term:`experiment path` ``exp/my_model_exp``.  If :term:`checkpoint` does not exist then it will cause error.
-Also if the models paired :term:`tokenizer` does not exist then it will cause error as well.
+You can use different :term:`checkpoint` by changing the ``--ckpt 5000`` argument.  All available checkpoints is under
+the :term:`experiment path` ``exp/my_model_exp``.
 
 .. seealso::
 
@@ -327,7 +320,7 @@ Also if the models paired :term:`tokenizer` does not exist then it will cause er
 
 7. Record Experiment Results
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Now you have done the experiment, you can record them and compare experiments performed by others.  See
+Now you have finished your experiments, you can record your results and compare results done by others.  See
 :doc:`Experiment Results <experiment/index>` for others' experiment and record yours!
 
 Documents
@@ -335,22 +328,19 @@ Documents
 You can read documents on `this website`_ or use the following steps to build documents locally.  We use Sphinx_ to
 build our documents.
 
-.. _`this website`: https://language-model-playground.readthedocs.io/en/latest/index.html
-.. _Sphinx: https://www.sphinx-doc.org/en/master/
-
 1. Install documentation dependencies.
 
    .. code-block:: shell
 
       pipenv install --dev
 
-2. Compile documents.
+2. Build documents.
 
    .. code-block:: shell
 
       pipenv run doc
 
-3. Open in the browser.
+3. Open the root document in your browser.
 
    .. code-block:: shell
 
@@ -359,6 +349,8 @@ build our documents.
 
 Testing
 -------
+
+This is for developer only.
 
 1. Install testing dependencies.
 
@@ -383,3 +375,5 @@ Testing
 .. _CUDA: https://developer.nvidia.com/cuda-toolkit/
 .. _pipenv: https://pipenv.pypa.io/en/latest/
 .. _project: https://github.com/ProFatXuanAll/language-model-playground.git
+.. _Sphinx: https://www.sphinx-doc.org/en/master/
+.. _`this website`: https://language-model-playground.readthedocs.io/en/latest/index.html
