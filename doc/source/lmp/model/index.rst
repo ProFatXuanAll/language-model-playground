@@ -12,3 +12,4 @@
    ElmanNet.py
    LSTM1997.py
    LSTM2000.py
+   LSTM2002.py

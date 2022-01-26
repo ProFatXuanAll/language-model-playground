@@ -18,8 +18,7 @@ class ElmanNet(BaseModel):
 
   Implement RNN model in the paper `Finding Structure in Time`_.
 
-  - Let :math:`x[t]` be the :math:`t`-th token id in the input token id list :math:`x` as defined in
-    :py:class:`lmp.model.BaseModel`.
+  - Let :math:`x` be the input token id list as defined in :py:class:`lmp.model.BaseModel`.
   - Let ``d_emb`` be the dimension of token embeddings and let ``vocab_size`` be the vocabulary size of tokenizer.
 
   Then Elman Net is defined as follow:
@@ -28,39 +27,42 @@ class ElmanNet(BaseModel):
 
      \newcommand{\pa}[1]{\left( #1 \right)}
      \newcommand{\set}[1]{\left\lbrace #1 \right\rbrace}
-     \newcommand{\sigmoid}[1]{\operatorname{sigmoid}\pa{#1}}
-     \newcommand{\softmax}[1]{\operatorname{softmax}\pa{#1}}
+     \newcommand{\t}{[t]}
+     \newcommand{\tn}{[t + 1]}
+     \newcommand{\tz}{[0]}
+     \newcommand{\sig}[1]{\operatorname{sigmoid}\pa{#1}}
+     \newcommand{\sof}[1]{\operatorname{softmax}\pa{#1}}
      \begin{align*}
-       e[t]     & = (x[t])\text{-th column of } E             \\
-       h[t + 1] & = \sigmoid{W \cdot e[t] + U \cdot h[t] + b} \\
-       y[t + 1] & = \softmax{E^{\top} \cdot h[t + 1]}
+       e\t     & = (x\t)\text{-th column of } E             \\
+       h\tn & = \sig{W \cdot e\t + U \cdot h\t + b} \\
+       y\tn & = \sof{E^{\top} \cdot h\tn}
      \end{align*}
 
-  +----------------------------------------+----------------------------------------+
-  | Trainable Parameters                   | Nodes                                  |
-  +--------------+-------------------------+------------------+---------------------+
-  | Parameter    | Shape                   | Symbol           | Shape               |
-  +==============+=========================+==================+=====================+
-  | :math:`E`    | ``(d_emb, vocab_size)`` | :math:`e[t]`     | ``(d_emb, 1)``      |
-  +--------------+-------------------------+------------------+---------------------+
-  | :math:`h[0]` | ``(d_emb, 1)``          |                                        |
-  +--------------+-------------------------+------------------+---------------------+
-  | :math:`W`    | ``(d_emb, d_emb)``      | :math:`h[t + 1]` | ``(d_emb, 1)``      |
-  +--------------+-------------------------+------------------+---------------------+
-  | :math:`U`    | ``(d_emb, d_emb)``      | :math:`y[t + 1]` | ``(vocab_size, 1)`` |
-  +--------------+-------------------------+------------------+---------------------+
-  | :math:`b`    | ``(d_emb, 1)``          |                                        |
-  +--------------+-------------------------+------------------+---------------------+
+  +----------------------------------------+---------------------------------+
+  | Trainable Parameters                   | Nodes                           |
+  +--------------+-------------------------+--------------+------------------+
+  | Parameter    | Shape                   | Symbol       | Shape            |
+  +==============+=========================+==============+==================+
+  | :math:`E`    | ``(d_emb, vocab_size)`` | :math:`e\t`  | ``(d_emb)``      |
+  +--------------+-------------------------+--------------+------------------+
+  | :math:`h\tz` | ``(d_emb)``             | :math:`h\tn` | ``(d_emb)``      |
+  +--------------+-------------------------+--------------+------------------+
+  | :math:`W`    | ``(d_emb, d_emb)``      | :math:`y\tn` | ``(vocab_size)`` |
+  +--------------+-------------------------+--------------+------------------+
+  | :math:`U`    | ``(d_emb, d_emb)``      |                                 |
+  +--------------+-------------------------+                                 |
+  | :math:`b`    | ``(d_emb)``             |                                 |
+  +--------------+-------------------------+--------------+------------------+
 
-  - :math:`E` is the token embedding lookup table and :math:`e[t]` is the token embedding of :math:`x[t]`.
+  - :math:`E` is the token embedding lookup table and :math:`e\t` is the token embedding of :math:`x\t`.
 
     - Note that the weight of :py:class:`torch.nn.Embedding` has shape ``(vocab_size, d_emb)``, which is different from
       the formula above.  The difference only affect the implementation details.
 
-  - :math:`h[t + 1]` is the hidden state at time step :math:`t + 1`.  The initial hidden state :math:`h[0]` is a
+  - :math:`h\tn` is the hidden state at time step :math:`t + 1`.  The initial hidden state :math:`h[0]` is a
     pre-defined column vector.
 
-  - The final output :math:`y[t + 1]` is the next token id prediction probability distribution.  We use inner product
+  - The final output :math:`y\tn` is the next token id prediction probability distribution.  We use inner product
     to calculate similarity scores over all token ids, and then use softmax to normalize similarity scores into
     probability range :math:`[0, 1]`.
 

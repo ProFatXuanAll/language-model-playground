@@ -271,6 +271,9 @@ def main(argv: List[str]) -> None:
       # Perform backward pass / back propagation.
       loss.backward()
 
+      if step >= 2000:
+        break
+
       # Perform gradient clipping to avoid gradient explosion.
       torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=args.max_norm)
 
@@ -309,6 +312,9 @@ def main(argv: List[str]) -> None:
       del loss
       torch.cuda.empty_cache()
       gc.collect()
+
+    if step >= 2000:
+      break
 
   # Save last checkpoint.
   lmp.util.model.save(ckpt=step, exp_name=args.exp_name, model=model)

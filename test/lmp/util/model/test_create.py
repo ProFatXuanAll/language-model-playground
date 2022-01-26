@@ -5,7 +5,7 @@ Test target:
 """
 
 import lmp.util.model
-from lmp.model import LSTM1997, LSTM2000, ElmanNet
+from lmp.model import LSTM1997, LSTM2000, LSTM2002, ElmanNet
 from lmp.tknzr import BaseTknzr
 
 
@@ -29,6 +29,15 @@ def test_create_lstm_2000(tknzr: BaseTknzr) -> None:
   """Test construction for :py:class:`lmp.model.LSTM2000`."""
   model = lmp.util.model.create(d_cell=8, d_emb=10, model_name=LSTM2000.model_name, n_cell=4, tknzr=tknzr)
   assert isinstance(model, LSTM2000)
+  assert model.d_cell == 8
+  assert model.emb.embedding_dim == 10
+  assert model.n_cell == 4
+
+
+def test_create_lstm_2002(tknzr: BaseTknzr) -> None:
+  """Test construction for :py:class:`lmp.model.LSTM2002`."""
+  model = lmp.util.model.create(d_cell=8, d_emb=10, model_name=LSTM2002.model_name, n_cell=4, tknzr=tknzr)
+  assert isinstance(model, LSTM2002)
   assert model.d_cell == 8
   assert model.emb.embedding_dim == 10
   assert model.n_cell == 4

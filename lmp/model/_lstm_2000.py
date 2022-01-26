@@ -18,8 +18,7 @@ class LSTM2000(BaseModel):
 
   Implement RNN model in the paper `Learning to Forget: Continual Prediction with LSTM`_.
 
-  - Let :math:`x[t]` be the :math:`t`-th token id in the input token id list :math:`x` as defined in
-    :py:class:`lmp.model.BaseModel`.
+  - Let :math:`x` be the input token id list as defined in :py:class:`lmp.model.BaseModel`.
   - Let ``d_emb`` be the dimension of token embeddings and let ``vocab_size`` be the vocabulary size of tokenizer.
   - Let ``n_cell`` be the number of memory cells and let ``d_cell`` be the dimension of each memory cell.
 
@@ -29,62 +28,68 @@ class LSTM2000(BaseModel):
 
      \newcommand{\pa}[1]{\left( #1 \right)}
      \newcommand{\set}[1]{\left\lbrace #1 \right\rbrace}
-     \newcommand{\concate}[1]{\operatorname{concate}\pa{#1}}
-     \newcommand{\ncell}{n_{\operatorname{cell}}}
+     \newcommand{\t}{[t]}
+     \newcommand{\tn}{[t + 1]}
+     \newcommand{\tz}{[0]}
+     \newcommand{\c}{\operatorname{cell}}
+     \newcommand{\cn}[1]{{\c[#1]}}
+     \newcommand{\ck}{{\cn{k}}}
+     \newcommand{\nc}{{n_{\c}}}
      \newcommand{\hbar}{\overline{h}}
-     \newcommand{\sigmoid}[1]{\operatorname{sigmoid}\pa{#1}}
-     \newcommand{\softmax}[1]{\operatorname{softmax}\pa{#1}}
+     \newcommand{\cat}[1]{\operatorname{concate}\pa{#1}}
+     \newcommand{\sig}[1]{\operatorname{sigmoid}\pa{#1}}
+     \newcommand{\sof}[1]{\operatorname{softmax}\pa{#1}}
      \begin{align*}
-       e[t]           & = (x[t])\text{-th column of } E                                                     \\
-       i[t + 1]       & = \sigmoid{W^i \cdot e[t] + U^i \cdot h[t] + b^i}                                   \\
-       f[t + 1]       & = \sigmoid{W^f \cdot e[t] + U^f \cdot h[t] + b^f}                        && \tag{1}\label{1} \\
-       o[t + 1]       & = \sigmoid{W^o \cdot e[t] + U^o \cdot h[t] + b^o}                                   \\
-       k              & \in \set{1, 2, \dots, \ncell}                                                       \\
-       g^k[t + 1]     & = 4 \cdot \sigmoid{W^k \cdot e[t] + U^k \cdot h[t] + b^k} - 2                       \\
-       c^k[t + 1]     & = f_k[t + 1] \cdot c^k[t] + i_k[t + 1] \cdot g^k[t + 1]                  && \tag{2}\label{2} \\
-       \hbar^k[t + 1] & = o_k[t + 1] \cdot \pa{2 \cdot \sigmoid{c^k[t + 1]} - 1}                            \\
-       h[t + 1]       & = \concate{\hbar^1[t + 1], \hbar^2[t + 1], \dots, \hbar^{\ncell}[t + 1]}            \\
-       z[t + 1]       & = \sigmoid{W^z \cdot h[t + 1] + b^z}                                                \\
-       y[t + 1]       & = \softmax{E^{\top} \cdot z[t + 1]}
+       e\t          & = (x\t)\text{-th column of } E                                                         \\
+       i\tn         & = \sig{W^i \cdot e\t + U^i \cdot h\t + b^i}                                            \\
+       f\tn         & = \sig{W^f \cdot e\t + U^f \cdot h\t + b^f}                        && \tag{1}\label{1} \\
+       o\tn         & = \sig{W^o \cdot e\t + U^o \cdot h\t + b^o}                                            \\
+       k            & \in \set{1, 2, \dots, \nc}                                                             \\
+       g^\ck\tn     & = 4 \cdot \sig{W^\ck \cdot e\t + U^\ck \cdot h\t + b^\ck} - 2                          \\
+       c^\ck\tn     & = f_k\tn \cdot c^\ck\t + i_k\tn \cdot g^\ck\tn                     && \tag{2}\label{2} \\
+       \hbar^\ck\tn & = o_k\tn \cdot \pa{2 \cdot \sig{c^\ck\tn} - 1}                                         \\
+       h\tn         & = \cat{\hbar^\cn{1}\tn, \hbar^\cn{2}\tn, \dots, \hbar^\cn{\nc}\tn}                     \\
+       z\tn         & = \sig{W^z \cdot h\tn + b^z}                                                           \\
+       y\tn         & = \sof{E^{\top} \cdot z\tn}
      \end{align*}
 
-  +------------------------------------------------+---------------------------------------------------+
-  | Trainable Parameters                           | Nodes                                             |
-  +----------------+-------------------------------+------------------------+--------------------------+
-  | Parameter      | Shape                         | Symbol                 | Shape                    |
-  +================+===============================+========================+==========================+
-  | :math:`E`      | ``(d_emb, vocab_size)``       | :math:`e[t]`           | ``(d_emb, 1)``           |
-  +----------------+-------------------------------+------------------------+--------------------------+
-  | :math:`h[0]`   | ``(n_cell x d_cell, 1)``      |                                                   |
-  +----------------+-------------------------------+------------------------+--------------------------+
-  | :math:`W^i`,   | ``(n_cell, d_emb)``           | :math:`i[t + 1]`,      | ``(n_cell, 1)``          |
-  | :math:`W^f`,   |                               | :math:`f[t + 1]`       |                          |
-  | :math:`W^o`    |                               | :math:`o[t + 1]`       |                          |
-  +----------------+-------------------------------+------------------------+--------------------------+
-  | :math:`U^i`,   | ``(n_cell, n_cell x d_cell)`` |                                                   |
-  | :math:`U^f`,   |                               |                                                   |
-  | :math:`U^o`    |                               |                                                   |
-  +----------------+-------------------------------+                                                   |
-  | :math:`b^i`,   | ``(n_cell, 1)``               |                                                   |
-  | :math:`b^f`,   |                               |                                                   |
-  | :math:`b^o`    |                               |                                                   |
-  +----------------+-------------------------------+------------------------+--------------------------+
-  | :math:`W^k`    | ``(d_cell, d_emb)``           | :math:`g^k[t + 1]`,    | ``(d_cell, 1)``          |
-  +----------------+-------------------------------+ :math:`c^k[t + 1]`,    |                          |
-  | :math:`U^k`    | ``(d_cell, n_cell x d_cell)`` | :math:`\hbar^k[t + 1]` |                          |
-  +----------------+-------------------------------+------------------------+--------------------------+
-  | :math:`b^k`    | ``(d_cell, 1)``               |                                                   |
-  +----------------+-------------------------------+------------------------+--------------------------+
-  | :math:`c^k[0]` | ``(d_cell, 1)``               | :math:`h[t + 1]`       | ``(n_cell x d_cell, 1)`` |
-  +----------------+-------------------------------+------------------------+--------------------------+
-  | :math:`W^z`    | ``(d_emb, n_cell x d_cell)``  | :math:`z[t + 1]`       | ``(d_emb, 1)``           |
-  +----------------+-------------------------------+------------------------+--------------------------+
-  | :math:`b^z`    | ``(d_emb, 1)``                | :math:`y[t + 1]`       | ``(vocab_size, 1)``      |
-  +----------------+-------------------------------+------------------------+--------------------------+
+  +--------------------------------------------------+----------------------------------------------+
+  | Trainable Parameters                             | Nodes                                        |
+  +------------------+-------------------------------+----------------------+-----------------------+
+  | Parameter        | Shape                         | Symbol               | Shape                 |
+  +==================+===============================+======================+=======================+
+  | :math:`E`        | ``(d_emb, vocab_size)``       | :math:`e\t`          | ``(d_emb)``           |
+  +------------------+-------------------------------+----------------------+-----------------------+
+  | :math:`h\tz`     | ``(n_cell x d_cell)``         | :math:`i\tn`,        | ``(n_cell)``          |
+  +------------------+-------------------------------+ :math:`f\tn`,        |                       |
+  | :math:`W^i`,     | ``(n_cell, d_emb)``           | :math:`o\tn`         |                       |
+  | :math:`W^f`,     |                               |                      |                       |
+  | :math:`W^o`      |                               |                      |                       |
+  +------------------+-------------------------------+----------------------+-----------------------+
+  | :math:`U^i`,     | ``(n_cell, n_cell x d_cell)`` | :math:`i_k\tn`,      | ``(1)``               |
+  | :math:`U^f`,     |                               | :math:`f_k\tn`,      |                       |
+  | :math:`U^o`      |                               | :math:`o_k\tn`       |                       |
+  +------------------+-------------------------------+----------------------+-----------------------+
+  | :math:`b^i`,     | ``(n_cell)``                  | :math:`g^\ck\tn`,    | ``(d_cell)``          |
+  | :math:`b^f`,     |                               | :math:`c^\ck\tn`,    |                       |
+  | :math:`b^o`      |                               | :math:`\hbar^\ck\tn` |                       |
+  +------------------+-------------------------------+----------------------+-----------------------+
+  | :math:`W^\ck`    | ``(d_cell, d_emb)``           | :math:`h\tn`         | ``(n_cell x d_cell)`` |
+  +------------------+-------------------------------+----------------------+-----------------------+
+  | :math:`U^\ck`    | ``(d_cell, n_cell x d_cell)`` | :math:`z\tn`         | ``(d_emb)``           |
+  +------------------+-------------------------------+----------------------+-----------------------+
+  | :math:`b^\ck`    | ``(d_cell)``                  | :math:`y\tn`         | ``(vocab_size)``      |
+  +------------------+-------------------------------+----------------------+-----------------------+
+  | :math:`c^\ck\tz` | ``(d_cell)``                  |                                              |
+  +------------------+-------------------------------+                                              |
+  | :math:`W^z`      | ``(d_emb, n_cell x d_cell)``  |                                              |
+  +------------------+-------------------------------+                                              |
+  | :math:`b^z`      | ``(d_emb)``                   |                                              |
+  +------------------+-------------------------------+----------------------+-----------------------+
 
   - The only differences between :py:class:`lmp.model.LSTM1997` and :py:class:`lmp.model.LSTM2000` are equations
     :math:`\eqref{1}\eqref{2}`.
-  - :math:`f[t + 1]` are forget gates at time step :math:`t + 1`.  All other symbols have the exact same meaning as
+  - :math:`f\tn` are forget gates at time step :math:`t + 1`.  All other symbols have the exact same meaning as
     defined in :py:class:`lmp.model.LSTM1997`.
 
   Parameters
@@ -103,7 +108,7 @@ class LSTM2000(BaseModel):
   Attributes
   ----------
   c_0: torch.nn.Parameter
-    Initial memory cell's internal states.
+    Initial internal states of memory cells.
   d_cell: int
     Memory cell dimension.
   emb: torch.nn.Embedding
@@ -335,9 +340,9 @@ class LSTM2000(BaseModel):
     batch_cur_tkids: torch.Tensor
       Batch of current input token ids.  ``batch_cur_tkids`` has shape ``(batch_size)`` and ``dtype == torch.int``.
     batch_prev_states: typing.Optional[list[torch.Tensor]], default: None
-      Batch of previous calculation results.  Set to ``None`` to use initial hidden states and memory cells' internal
-      states.  ``batch_prev_states`` must has two items, the first item will be used as hidden states and the second
-      item will be used as memory cells' internal states.
+      Batch of previous calculation results.  Set to ``None`` to use ``[self.h_0, self.c_0]``.  ``batch_prev_states``
+      must has two items, the first item will be used as hidden states and the second item will be used as memory
+      cells' internal states.
 
     Returns
     -------

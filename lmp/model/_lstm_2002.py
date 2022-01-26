@@ -1,4 +1,4 @@
-"""LSTM (1997 version) language model."""
+"""LSTM (2002 version) language model."""
 
 import argparse
 import math
@@ -13,16 +13,16 @@ from lmp.model._base import BaseModel
 from lmp.tknzr._base import BaseTknzr
 
 
-class LSTM1997(BaseModel):
-  r"""LSTM (1997 version) [1]_ language model.
+class LSTM2002(BaseModel):
+  r"""LSTM (2002 version) [1]_ language model.
 
-  Implement RNN model in the paper `Long Short-Term Memory`_.
+  Implement RNN model in the paper `Learning Precise Timing with LSTM Recurrent Networks`_.
 
   - Let :math:`x` be the input token id list as defined in :py:class:`lmp.model.BaseModel`.
   - Let ``d_emb`` be the dimension of token embeddings and let ``vocab_size`` be the vocabulary size of tokenizer.
   - Let ``n_cell`` be the number of memory cells and let ``d_cell`` be the dimension of each memory cell.
 
-  Then LSTM (1997 version) is defined as follow:
+  Then LSTM (2002 version) is defined as follow:
 
   .. math::
 
@@ -40,15 +40,24 @@ class LSTM1997(BaseModel):
      \newcommand{\sig}[1]{\operatorname{sigmoid}\pa{#1}}
      \newcommand{\sof}[1]{\operatorname{softmax}\pa{#1}}
      \begin{align*}
-       e\t          & = (x\t)\text{-th column of } E                                     \\
-       i\tn         & = \sig{W^i \cdot e\t + U^i \cdot h\t + b^i}                        \\
-       o\tn         & = \sig{W^o \cdot e\t + U^o \cdot h\t + b^o}                        \\
-       k            & \in \set{1, 2, \dots, \nc}                                         \\
-       g^\ck\tn     & = 4 \sig{W^\ck \cdot e\t + U^\ck \cdot h\t + b^\ck} - 2            \\
-       c^\ck\tn     & = c^\ck\t + i_k\tn \cdot g^\ck\tn                                  \\
-       \hbar^\ck\tn & = o_k\tn \cdot \pa{2 \sig{c^\ck\tn} - 1}                           \\
-       h\tn         & = \cat{\hbar^\cn{1}\tn, \hbar^\cn{2}\tn, \dots, \hbar^\cn{\nc}\tn} \\
-       z\tn         & = \sig{W^z \cdot h\tn + b^z}                                       \\
+       e\t          & = (x\t)\text{-th column of } E                                               \\
+       k            & \in \set{1, 2, \dots, \nc}                                                   \\
+       i\tn         & = \cat{i_1\tn, \dots, i_\nc\tn}                                              \\
+       i_k\tn       & = \sig{W^{ik} \cdot e\t + U^{ik} \cdot h\t + V^{ik} \cdot c^\ck\t + b^{ik}}
+                    && \tag{1}\label{1}                                                            \\
+       f\tn         & = \cat{f_1\tn, \dots, f_\nc\tn}                                              \\
+       f_k\tn       & = \sig{W^{fk} \cdot e\t + U^{fk} \cdot h\t + V^{fk} \cdot c^\ck\t + b^{fk}}
+                    && \tag{2}\label{2}                                                            \\
+       g^\ck\tn     & = W^\ck \cdot e\t + U^\ck \cdot h\t + b^\ck
+                    && \tag{3}\label{3}                                                            \\
+       c^\ck\tn     & = f_k\tn \cdot c^\ck\t + i_k\tn \cdot g^\ck\tn                               \\
+       o\tn         & = \cat{o_1\tn, \dots, o_\nc\tn}                                              \\
+       o_k\tn       & = \sig{W^{ok} \cdot e\t + U^{ok} \cdot h\t + V^{ok} \cdot c^\ck\tn + b^{ok}}
+                    && \tag{4}\label{4}                                                            \\
+       \hbar^\ck\tn & = o_k\tn \cdot c^\ck\tn
+                    && \tag{5}\label{5}                                                            \\
+       h\tn         & = \cat{\hbar^\cn{1}\tn, \hbar^\cn{2}\tn, \dots, \hbar^\cn{\nc}\tn}           \\
+       z\tn         & = \sig{W^z \cdot h\tn + b^z}                                                 \\
        y\tn         & = \sof{E^{\top} \cdot z\tn}
      \end{align*}
 
@@ -60,43 +69,45 @@ class LSTM1997(BaseModel):
   | :math:`E`        | ``(d_emb, vocab_size)``       | :math:`e\t`          | ``(d_emb)``           |
   +------------------+-------------------------------+----------------------+-----------------------+
   | :math:`h\tz`     | ``(n_cell x d_cell)``         | :math:`i\tn`,        | ``(n_cell)``          |
-  |                  |                               | :math:`o\tn`         |                       |
+  |                  |                               | :math:`f\tn`         |                       |
   +------------------+-------------------------------+----------------------+-----------------------+
-  | :math:`W^i`,     | ``(n_cell, d_emb)``           | :math:`i_k\tn`,      | ``(1)``               |
-  | :math:`W^o`      |                               | :math:`o_k\tn`,      |                       |
+  | :math:`c^\ck\tz` | ``(d_cell)``                  | :math:`i_k\tn`,      | ``(1)``               |
+  |                  |                               | :math:`f_k\tn`,      |                       |
   +------------------+-------------------------------+----------------------+-----------------------+
-  | :math:`U^i`,     | ``(n_cell, n_cell x d_cell)`` | :math:`g^\ck\tn`,    | ``(d_cell)``          |
-  | :math:`U^o`      |                               | :math:`c^\ck\tn`,    |                       |
-  +------------------+-------------------------------+ :math:`\hbar^\ck\tn` |                       |
-  | :math:`b^i`,     | ``(n_cell)``                  |                      |                       |
-  | :math:`b^o`      |                               |                      |                       |
+  | :math:`W^{ik}`,  | ``(1, d_emb)``                | :math:`g^\ck\tn`,    | ``(d_cell)``          |
+  | :math:`W^{fk}`,  |                               | :math:`c^\ck\tn`,    |                       |
+  | :math:`W^{ok}`   |                               |                      |                       |
   +------------------+-------------------------------+----------------------+-----------------------+
-  | :math:`W^\ck`    | ``(d_cell, d_emb)``           | :math:`h\tn`         | ``(n_cell x d_cell)`` |
+  | :math:`U^{ik}`,  | ``(1, n_cell x d_cell)``      | :math:`o\tn`         | ``(n_cell)``          |
+  | :math:`U^{fk}`,  |                               +----------------------+-----------------------+
+  | :math:`U^{ok}`   |                               | :math:`o_k\tn`       | ``(1)``               |
   +------------------+-------------------------------+----------------------+-----------------------+
-  | :math:`U^\ck`    | ``(d_cell, n_cell x d_cell)`` | :math:`z\tn`         | ``(d_emb)``           |
+  | :math:`V^{ik}`,  | ``(1, d_cell)``               | :math:`h\tn`         | ``(n_cell x d_cell)`` |
+  | :math:`V^{fk}`,  |                               +----------------------+-----------------------+
+  | :math:`V^{ok}`   |                               | :math:`z\tn`         | ``(d_emb)``           |
   +------------------+-------------------------------+----------------------+-----------------------+
-  | :math:`b^\ck`    | ``(d_cell)``                  | :math:`y\tn`         | ``(vocab_size)``      |
+  | :math:`b^{ik}`,  | ``(1)``                       | :math:`y\tn`         | ``(vocab_size)``      |
+  | :math:`b^{fk}`,  |                               |                      |                       |
+  | :math:`b^{ok}`   |                               |                      |                       |
   +------------------+-------------------------------+----------------------+-----------------------+
-  | :math:`c^\ck\tz` | ``(d_cell)``                  |                                              |
+  | :math:`W^\ck`    | ``(d_cell, d_emb)``           |                                              |
+  +------------------+-------------------------------+                                              |
+  | :math:`U^\ck`    | ``(d_cell, n_cell x d_cell)`` |                                              |
+  +------------------+-------------------------------+                                              |
+  | :math:`b^\ck`    | ``(d_cell)``                  |                                              |
   +------------------+-------------------------------+                                              |
   | :math:`W^z`      | ``(d_emb, n_cell x d_cell)``  |                                              |
   +------------------+-------------------------------+                                              |
   | :math:`b^z`      | ``(d_emb)``                   |                                              |
-  +------------------+-------------------------------+----------------------+-----------------------+
+  +------------------+-------------------------------+----------------------------------------------+
 
-  - :math:`E` is the token embedding lookup table as defined in :py:class:`lmp.model.ElmanNet`.
-  - :math:`i\tn, o\tn` are input gates and output gates at time step :math:`t + 1`, respectively.
-    :math:`i_k\tn, o_k\tn` are their :math:`k`-th coordinates, respectively.
-  - :math:`g^\ck\tn` is the :math:`k`-th memory cell's input activation at time step :math:`t + 1`.  There are
-    ``n_cell`` different memory cell's activations, i.e., :math:`g^\cn{1}\tn, \dots, g^\cn{\nc}\tn`.
-  - :math:`c^\ck\tn` is the :math:`k`-th memory cell's internal state at time step :math:`t + 1`.  The initial
-    internal state :math:`c^\ck\tz` is a pre-defined column vector.
-  - The hidden state :math:`h\tn` at time step :math:`t + 1` is based on the output of all LSTM cells at time step
-    :math:`t + 1`, i.e., :math:`\hbar^\cn{1}\tn, \dots \hbar^\cn{\nc}\tn`.  The initial hidden state :math:`h\tz`
-    is a pre-defined column vector.
-  - After performing another sigmoid-activated affine transformation, the final output :math:`y\tn`, i.e., the next
-    token id prediction probability distribution can be calculated.  We use the same calculation as
-    :py:class:`lmp.model.ElmanNet`.
+  - The differences between :py:class:`lmp.model.LSTM2000` and :py:class:`lmp.model.LSTM2002` are list as follow:
+
+    - Input gate, forget gate and output gate units have peephole connections connect to memory cells' internal states.
+      See :math:`\eqref{1}\eqref{2}\eqref{4}`.
+    - The activation functions of memory cells' input and output are identity mappings instead of sigmoid functions.
+      See :math:`\eqref{3}\eqref{5}`.
+    - Output gate can only be calculated after updating memory cells' internal states.  See :math:`\eqref{4}`.
 
   Parameters
   ----------
@@ -124,15 +135,15 @@ class LSTM1997(BaseModel):
   loss_fn: torch.nn.CrossEntropyLoss
     Loss function to be optimized.
   model_name: ClassVar[str]
-    CLI name of LSTM (1997 version) is ``LSTM-1997``.
+    CLI name of LSTM (2002 version) is ``LSTM-2002``.
   n_cell: int
     Number of memory cells.
   proj_e2c: torch.nn.Linear
     Fully connected layer which connects input units to memory cells.  Input dimension is ``d_emb``.  Output dimension
-    is ``n_cell * (2 + d_cell)``.
+    is ``n_cell * (3 + d_cell)``.
   proj_h2c: torch.nn.Linear
     Fully connected layer which connects hidden states to memory cells.  Input dimension is ``n_cell * d_cell``.
-    Output dimension is ``n_cell * (2 + d_cell)``.
+    Output dimension is ``n_cell * (3 + d_cell)``.
   proj_h2e: torch.nn.Linear
     Fully connected layer which connects hidden states to embedding dimension.  Input dimension is ``n_cell * d_cell``.
     Output dimension is ``d_emb``.
@@ -142,18 +153,17 @@ class LSTM1997(BaseModel):
   lmp.model.BaseModel
     Language model utilities.
   lmp.model.ElmanNet
-    LSTM (1997 version) language model.
+    LSTM (2002 version) language model.
 
   References
   ----------
-  .. [1] S. Hochreiter and J. Schmidhuber, "`Long Short-Term Memory`_," in Neural Computation, vol. 9, no. 8,
-     pp. 1735-1780, 15 Nov. 1997, doi: 10.1162/neco.1997.9.8.1735.
+  .. [1] Gers, F. A., Schraudolph, N. N., & Schmidhuber, J. (2002). `Learning precise timing with LSTM recurrent
+         networks`_. Journal of machine learning research, 3(Aug), 115-143.
 
-  .. _`Long Short-Term Memory`:
-     https://ieeexplore.ieee.org/abstract/document/6795963
+  .. _`Learning Precise Timing with LSTM Recurrent Networks`: https://www.jmlr.org/papers/v3/gers02a.html
   """
 
-  model_name: ClassVar[str] = 'LSTM-1997'
+  model_name: ClassVar[str] = 'LSTM-2002'
 
   def __init__(self, *, d_cell: int, d_emb: int, n_cell: int, tknzr: BaseTknzr, **kwargs: Any):
     super().__init__(**kwargs)
@@ -178,15 +188,20 @@ class LSTM1997(BaseModel):
     self.emb = nn.Embedding(num_embeddings=tknzr.vocab_size, embedding_dim=d_emb, padding_idx=tknzr.pad_tkid)
 
     # Fully connected layer which connects input units to memory cells.
-    self.proj_e2c = nn.Linear(in_features=d_emb, out_features=n_cell * (2 + d_cell))
+    self.proj_e2c = nn.Linear(in_features=d_emb, out_features=n_cell * (3 + d_cell))
 
     # Fully connected layer which connects hidden states to memory cells.
-    self.proj_h2c = nn.Linear(in_features=n_cell * d_cell, out_features=n_cell * (2 + d_cell), bias=False)
+    self.proj_h2c = nn.Linear(in_features=n_cell * d_cell, out_features=n_cell * (3 + d_cell), bias=False)
 
     # Initial hidden states and initial memory cell internal states.  First dimension is set to `1` to broadcast along
     # batch dimension.
     self.h_0 = nn.Parameter(torch.zeros(1, n_cell * d_cell))
     self.c_0 = nn.Parameter(torch.zeros(1, n_cell, d_cell))
+
+    # Peephole connections for gate units.  First dimension is set to `1` to broadcast along batch dimension.
+    self.proj_c2ig = nn.Parameter(torch.zeros(1, n_cell, d_cell))
+    self.proj_c2fg = nn.Parameter(torch.zeros(1, n_cell, d_cell))
+    self.proj_c2og = nn.Parameter(torch.zeros(1, n_cell, d_cell))
 
     # Fully connected layer which project hidden states to embedding dimension.
     self.proj_h2e = nn.Linear(in_features=n_cell * d_cell, out_features=d_emb)
@@ -202,7 +217,9 @@ class LSTM1997(BaseModel):
 
     All weights and non-gate units's biases are initialized with uniform distribution
     :math:`\mathcal{U}\pa{\frac{-1}{\sqrt{v}}, \frac{1}{\sqrt{v}}}` where :math:`v =` ``max(d_emb, n_cell x d_cell)``.
-    Gate units' biases are initialized with uniform distribution :math:`\mathcal{U}\pa{\frac{-1}{\sqrt{v}}, 0}`.
+    Input gate and output gate units' biases are initialized with uniform distribution
+    :math:`\mathcal{U}\pa{\frac{-1}{\sqrt{v}}, 0}`.  Forget gate units' biases are initialized with uniform
+    distribution :math:`\mathcal{U}\pa{0, \frac{1}{\sqrt{v}}}`.
 
     Returns
     -------
@@ -219,10 +236,16 @@ class LSTM1997(BaseModel):
     nn.init.uniform_(self.c_0, -inv_sqrt_dim, inv_sqrt_dim)
     nn.init.uniform_(self.proj_h2e.weight, -inv_sqrt_dim, inv_sqrt_dim)
     nn.init.uniform_(self.proj_h2e.bias, -inv_sqrt_dim, inv_sqrt_dim)
+    nn.init.uniform_(self.proj_c2ig, -inv_sqrt_dim, inv_sqrt_dim)
+    nn.init.uniform_(self.proj_c2fg, -inv_sqrt_dim, inv_sqrt_dim)
+    nn.init.uniform_(self.proj_c2og, -inv_sqrt_dim, inv_sqrt_dim)
 
-    # Gate units' biases are initialized to negative values.
+    # Input gate and output gate units' biases are initialized to negative values.
     nn.init.uniform_(self.proj_e2c.bias[d_hid:d_hid + self.n_cell], -inv_sqrt_dim, 0.0)
-    nn.init.uniform_(self.proj_e2c.bias[d_hid + self.n_cell:], -inv_sqrt_dim, 0.0)
+    nn.init.uniform_(self.proj_e2c.bias[d_hid + 2 * self.n_cell:], -inv_sqrt_dim, 0.0)
+
+    # Forget gate units' biases are initialized to positive values.
+    nn.init.uniform_(self.proj_e2c.bias[d_hid + self.n_cell:d_hid + 2 * self.n_cell], 0.0, inv_sqrt_dim)
 
   def forward(self, batch_cur_tkids: torch.Tensor, batch_next_tkids: torch.Tensor) -> torch.Tensor:
     """Calculate language model training loss.
@@ -256,7 +279,7 @@ class LSTM1997(BaseModel):
 
     # Token embedding lookup and project from embedding layer to memory cells.
     # In  shape: (batch_size, seq_len).
-    # Out shape: (batch_size, seq_len, n_cell x (2 + d_cell)).
+    # Out shape: (batch_size, seq_len, n_cell x (3 + d_cell)).
     cells_and_gates_input_by_emb = self.proj_e2c(self.emb(batch_cur_tkids))
 
     # Perform recurrent calculation for `seq_len` steps.  We use teacher forcing, i.e., the current input `e[:, i, :]`
@@ -266,30 +289,51 @@ class LSTM1997(BaseModel):
     c_prev: Union[torch.Tensor, nn.Parameter] = self.c_0
     h_prev: Union[torch.Tensor, nn.Parameter] = self.h_0
     for i in range(seq_len):
-      # Project `h_prev` from hidden states to memory cells.  Then calculate memory cells and gates input activation.
-      # shape: (batch_size, n_cell x (2 + d_cell)).
-      cells_and_gates_input_act = torch.sigmoid(cells_and_gates_input_by_emb[:, i, :] + self.proj_h2c(h_prev))
+      # Project `h_prev` from hidden states to memory cells, then calculate memory cells and gates input activation.
+      # shape: (batch_size, n_cell x (3 + d_cell)).
+      cells_and_gates_common_input = cells_and_gates_input_by_emb[:, i, :] + self.proj_h2c(h_prev)
 
-      # Calculate memory cells input activation and reshape to separate memory cells.
+      # Get memory cells.
       # shape: (batch_size, n_cell, d_cell)
-      cells_input_act = 4 * cells_and_gates_input_act[:, :d_hid] - 2
-      cells_input_act = cells_input_act.reshape(-1, self.n_cell, self.d_cell)
+      cells_input = cells_and_gates_common_input[:, :d_hid].reshape(-1, self.n_cell, self.d_cell)
+
+      # Calculate input gates and forget gates peephole connections.
+      # shape: (batch_size, n_cell)
+      input_gates_peephole_connection = (self.proj_c2ig * c_prev).sum(dim=2)
+      forget_gates_peephole_connection = (self.proj_c2fg * c_prev).sum(dim=2)
 
       # Get input gates.
       # shape: (batch_size, n_cell, 1)
-      input_gates = cells_and_gates_input_act[:, d_hid:d_hid + self.n_cell].unsqueeze(2)
+      input_gates = torch.sigmoid(
+        cells_and_gates_common_input[:, d_hid:d_hid + self.n_cell] + input_gates_peephole_connection
+      )
+      input_gates = input_gates.unsqueeze(2)
+
+      # Get forget gates.
+      # shape: (batch_size, n_cell, 1)
+      forget_gates = torch.sigmoid(
+        cells_and_gates_common_input[:, d_hid + self.n_cell:d_hid + 2 * self.n_cell] + forget_gates_peephole_connection
+      )
+      forget_gates = forget_gates.unsqueeze(2)
 
       # Calculate current memory cells' internal states.
       # shape: (batch_size, n_cell, d_cell)
-      c_cur = c_prev + input_gates * cells_input_act
+      c_cur = forget_gates * c_prev + input_gates * cells_input
+
+      # Calculate output gates peephole connections.
+      # shape: (batch_size, n_cell)
+      output_gates_peephole_connection = (self.proj_c2og * c_cur).sum(dim=2)
 
       # Get output gates.
       # shape: (batch_size, n_cell, 1)
-      output_gates = cells_and_gates_input_act[:, d_hid + self.n_cell:].unsqueeze(2)
+      output_gates = torch.sigmoid(
+        cells_and_gates_common_input[:, d_hid + 2 * self.n_cell:] + output_gates_peephole_connection
+      )
+      output_gates = output_gates.unsqueeze(2)
 
       # Calculate current memory cells' outputs and reshape to fit the shape of hidden state.
       # shape: (batch_size, n_cell x d_cell)
-      h_cur = output_gates * (2 * torch.sigmoid(c_cur) - 1)
+      h_cur = output_gates * c_cur
       h_cur = h_cur.reshape(-1, d_hid)
 
       # Project from hidden states to embedding dimension.
@@ -355,36 +399,53 @@ class LSTM1997(BaseModel):
     h_prev = batch_prev_states[0]
     c_prev = batch_prev_states[1]
 
-    # Token embedding lookup and project from embedding layer to memory cells.
+    # Calculate memory cells and gate units common input, which consist of embeddings and previous hidden states.
     # In  shape: (batch_size).
-    # Out shape: (batch_size, n_cell x (2 + d_cell)).
-    cells_and_gates_input_by_emb = self.proj_e2c(self.emb(batch_cur_tkids))
-
-    # Project `h_prev` from hidden states to memory cells.  Then calculate memory cells and gates input activation.
-    # shape: (batch_size, n_cell x (2 + d_cell)).
-    cells_and_gates_input_act = torch.sigmoid(cells_and_gates_input_by_emb + self.proj_h2c(h_prev))
+    # Out shape: (batch_size, n_cell x (3 + d_cell)).
+    cells_and_gates_common_input = self.proj_e2c(self.emb(batch_cur_tkids)) + self.proj_h2c(h_prev)
 
     # Calculate memory cells input activation and reshape to separate memory cells.
     # shape: (batch_size, n_cell, d_cell)
     d_hid = self.n_cell * self.d_cell
-    cells_input_act = 4 * cells_and_gates_input_act[:, :d_hid] - 2
-    cells_input_act = cells_input_act.reshape(-1, self.n_cell, self.d_cell)
+    cells_input = cells_and_gates_common_input[:, :d_hid].reshape(-1, self.n_cell, self.d_cell)
+
+    # Calculate input gates and forget gates peephole connections.
+    # shape: (batch_size, n_cell)
+    input_gates_peephole_connection = (self.proj_c2ig * c_prev).sum(dim=2)
+    forget_gates_peephole_connection = (self.proj_c2fg * c_prev).sum(dim=2)
 
     # Get input gates.
     # shape: (batch_size, n_cell, 1)
-    input_gates = cells_and_gates_input_act[:, d_hid:d_hid + self.n_cell].unsqueeze(2)
+    input_gates = torch.sigmoid(
+      cells_and_gates_common_input[:, d_hid:d_hid + self.n_cell] + input_gates_peephole_connection
+    )
+    input_gates = input_gates.unsqueeze(2)
+
+    # Get forget gates.
+    # shape: (batch_size, n_cell, 1)
+    forget_gates = torch.sigmoid(
+      cells_and_gates_common_input[:, d_hid + self.n_cell:d_hid + 2 * self.n_cell] + forget_gates_peephole_connection
+    )
+    forget_gates = forget_gates.unsqueeze(2)
 
     # Calculate current memory cells' internal states.
     # shape: (batch_size, n_cell, d_cell)
-    c_cur = c_prev + input_gates * cells_input_act
+    c_cur = forget_gates * c_prev + input_gates * cells_input
+
+    # Calculate output gates peephole connections.
+    # shape: (batch_size, n_cell)
+    output_gates_peephole_connection = (self.proj_c2og * c_cur).sum(dim=2)
 
     # Get output gates.
     # shape: (batch_size, n_cell, 1)
-    output_gates = cells_and_gates_input_act[:, d_hid + self.n_cell:].unsqueeze(2)
+    output_gates = torch.sigmoid(
+      cells_and_gates_common_input[:, d_hid + 2 * self.n_cell:] + output_gates_peephole_connection
+    )
+    output_gates = output_gates.unsqueeze(2)
 
     # Calculate current memory cells' outputs and reshape to fit the shape of hidden state.
     # shape: (batch_size, n_cell x d_cell)
-    h_cur = output_gates * (2 * torch.sigmoid(c_cur) - 1)
+    h_cur = output_gates * c_cur
     h_cur = h_cur.reshape(-1, d_hid)
 
     # Project from hidden states to embedding dimension.
@@ -403,7 +464,7 @@ class LSTM1997(BaseModel):
 
   @classmethod
   def train_parser(cls, parser: argparse.ArgumentParser) -> None:
-    """CLI arguments parser for training LSTM (1997 version) language model.
+    """CLI arguments parser for training LSTM (2002 version) language model.
 
     Parameters
     ----------
@@ -424,9 +485,9 @@ class LSTM1997(BaseModel):
     Examples
     --------
     >>> import argparse
-    >>> from lmp.model import LSTM1997
+    >>> from lmp.model import LSTM2002
     >>> parser = argparse.ArgumentParser()
-    >>> LSTM1997.train_parser(parser)
+    >>> LSTM2002.train_parser(parser)
     >>> args = parser.parse_args([
     ...   '--batch_size', '32',
     ...   '--beta1', '0.9',
@@ -490,7 +551,7 @@ class LSTM1997(BaseModel):
     super().train_parser(parser=parser)
 
     # Required arguments.
-    group = parser.add_argument_group('LSTM (1997 version) training arguments')
+    group = parser.add_argument_group('LSTM (2002 version) training arguments')
     group.add_argument(
       '--d_cell',
       help='Memory cell dimension.',

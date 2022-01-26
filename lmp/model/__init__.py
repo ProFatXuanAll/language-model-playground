@@ -24,10 +24,12 @@ from lmp.model._base import BaseModel
 from lmp.model._elman_net import ElmanNet
 from lmp.model._lstm_1997 import LSTM1997
 from lmp.model._lstm_2000 import LSTM2000
+from lmp.model._lstm_2002 import LSTM2002
 
 ALL_MODELS: Final[List[Type[BaseModel]]] = [
   ElmanNet,
   LSTM1997,
   LSTM2000,
+  LSTM2002,
 ]
 MODEL_OPTS: Final[Dict[str, Type[BaseModel]]] = {m.model_name: m for m in ALL_MODELS}

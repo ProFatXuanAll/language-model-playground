@@ -1,0 +1,5 @@
+:py:class:`lmp.model.LSTM2002`
+==============================
+
+.. autoclass:: lmp.model.LSTM2002
+   :members:

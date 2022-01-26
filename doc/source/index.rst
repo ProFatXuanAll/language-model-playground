@@ -6,8 +6,9 @@ Welcome to Language Model Playground's documentation!
 
 We have implemented several :term:`language models` including:
 
-- Elman Net. (See :py:mod:`lmp.model.ElmanNet`.)
-- LSTM and its variations.  (See :py:mod:`lmp.model.LSTM1997`, :py:mod:`lmp.model.LSTM2000`.)
+- Elman Net. (See :py:class:`lmp.model.ElmanNet`.)
+- LSTM and its variations.  (See :py:class:`lmp.model.LSTM1997`, :py:class:`lmp.model.LSTM2000` and
+  :py:class:`lmp.model.LSTM2002`.)
 - And more to come!
 
 You can easily create these models instance using module :py:mod:`lmp.model`.  You can also train these models directly
