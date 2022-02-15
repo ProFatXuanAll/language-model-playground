@@ -20,7 +20,7 @@ def seed() -> int:
 def tknzr_and_cfg_file_path(exp_name: str, request) -> None:
   """Clean up saved tokenizer and its configuration file."""
   abs_dir_path = os.path.join(lmp.util.path.EXP_PATH, exp_name)
-  abs_cfg_file_path = os.path.join(abs_dir_path, lmp.util.cfg.CFG_NAME)
+  abs_cfg_file_path = os.path.join(abs_dir_path, lmp.util.cfg.FILE_NAME)
   abs_tknzr_file_path = os.path.join(abs_dir_path, BaseTknzr.file_name)
 
   def fin() -> None:

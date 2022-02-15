@@ -2,11 +2,13 @@
 
 import os
 import pickle
-from typing import Any
+from typing import Any, Final
 
 import lmp.util.path
 import lmp.util.validate
 from lmp.tknzr import TKNZR_OPTS, BaseTknzr
+
+FILE_NAME: Final[str] = 'tknzr.pkl'
 
 
 def create(tknzr_name: str, **kwargs: Any) -> BaseTknzr:
@@ -48,14 +50,11 @@ def create(tknzr_name: str, **kwargs: Any) -> BaseTknzr:
   lmp.util.validate.raise_if_not_instance(val=tknzr_name, val_name='tknzr_name', val_type=str)
   lmp.util.validate.raise_if_not_in(val=tknzr_name, val_name='tknzr_name', val_range=list(TKNZR_OPTS.keys()))
 
-  # `kwargs` validation will be performed in `BaseTknzr.__init__`.
-  # Currently `mypy` cannot perform static type check on `**kwargs`, and I think it can only be check by runtime and
-  # therefore `mypy` may no be able to solve this issue forever.  So we use `# type: ignore` to silence error.
-  return TKNZR_OPTS[tknzr_name](**kwargs)  # type: ignore
+  return TKNZR_OPTS[tknzr_name](**kwargs)
 
 
 def load(exp_name: str) -> BaseTknzr:
-  """Load pre-trained tokenizer instance by experiment name.
+  """Load pre-trained tokenizer from pickle file.
 
   Load pre-trained tokenizer from path ``project_root/exp/exp_name``.
 
@@ -100,7 +99,7 @@ def load(exp_name: str) -> BaseTknzr:
   lmp.util.validate.raise_if_empty_str(val=exp_name, val_name='exp_name')
 
   # `file_path` validation
-  file_path = os.path.join(lmp.util.path.EXP_PATH, exp_name, 'tknzr.pkl')
+  file_path = os.path.join(lmp.util.path.EXP_PATH, exp_name, FILE_NAME)
   lmp.util.validate.raise_if_is_directory(path=file_path)
 
   # Load tokenizer from pickle.
@@ -152,9 +151,9 @@ def save(exp_name: str, tknzr: BaseTknzr) -> None:
     os.makedirs(dir_path)
 
   # `file_path` validation.
-  file_path = os.path.join(dir_path, 'tknzr.pkl')
+  file_path = os.path.join(dir_path, FILE_NAME)
   lmp.util.validate.raise_if_is_directory(path=file_path)
 
-  # Save tokenizer as pickle.
+  # Save tokenizer as pickle file.
   with open(file_path, 'wb') as f:
     pickle.dump(tknzr, f)

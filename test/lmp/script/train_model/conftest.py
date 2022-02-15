@@ -32,7 +32,7 @@ def beta2() -> float:
 def cfg_file_path(exp_name: str, request) -> str:
   """Clean up saved configuration file."""
   abs_dir_path = os.path.join(lmp.util.path.EXP_PATH, exp_name)
-  abs_file_path = os.path.join(abs_dir_path, lmp.util.cfg.CFG_NAME)
+  abs_file_path = os.path.join(abs_dir_path, lmp.util.cfg.FILE_NAME)
 
   def fin() -> None:
     if os.path.exists(abs_file_path):

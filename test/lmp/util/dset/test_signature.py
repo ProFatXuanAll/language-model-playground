@@ -8,8 +8,9 @@ import lmp.util.dset
 from lmp.dset import BaseDset
 
 
-def test_module_function() -> None:
-  """Ensure module function's signatures."""
+def test_module_method() -> None:
+  """Ensure module methods' signatures."""
+  assert hasattr(lmp.util.dset, 'load')
   assert inspect.isfunction(lmp.util.dset.load)
   assert inspect.signature(lmp.util.dset.load) == Signature(
     parameters=[

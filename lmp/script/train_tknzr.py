@@ -23,6 +23,7 @@ The following example script train a whitespace tokenizer :py:class:`lmp.tknzr.W
    python -m lmp.script.train_tknzr whitespace \
      --dset_name wiki-text-2 \
      --exp_name my_tknzr_exp \
+     --max_seq_len 128 \
      --max_vocab 10 \
      --min_count 2 \
      --ver train
@@ -36,6 +37,7 @@ One can increase ``--max_vocab`` to allow tokenizer to include more tokens into 
    python -m lmp.script.train_tknzr whitespace \
      --dset_name wiki-text-2 \
      --exp_name my_tknzr_exp \
+     --max_seq_len 128 \
      --max_vocab 10000 \
      --min_count 2 \
      --ver train
@@ -47,6 +49,7 @@ Set ``--max_vocab`` to ``-1`` to include all tokens in :py:class:`lmp.dset.WikiT
    python -m lmp.script.train_tknzr whitespace \
      --dset_name wiki-text-2 \
      --exp_name my_tknzr_exp \
+     --max_seq_len 128 \
      --max_vocab -1 \
      --min_count 2 \
      --ver train
@@ -60,6 +63,7 @@ counts.  Use ``--min_count`` to filter out tokens have occurrence counts lower t
    python -m lmp.script.train_tknzr whitespace \
      --dset_name wiki-text-2 \
      --exp_name my_tknzr_exp \
+     --max_seq_len 128 \
      --max_vocab 10000 \
      --min_count 5 \
      --ver train
@@ -82,6 +86,7 @@ same as lower cases.
      --dset_name wiki-text-2 \
      --exp_name my_tknzr_exp \
      --is_uncased \
+     --max_seq_len 128 \
      --max_vocab 10000 \
      --min_count 5 \
      --ver train
@@ -205,7 +210,7 @@ def main(argv: List[str]) -> None:
   tknzr.build_vocab(batch_txt=dset)
 
   # Save training result.
-  tknzr.save(exp_name=args.exp_name)
+  lmp.util.tknzr.save(exp_name=args.exp_name, tknzr=tknzr)
 
   # Free memory.  This is only need for unit test.
   del args

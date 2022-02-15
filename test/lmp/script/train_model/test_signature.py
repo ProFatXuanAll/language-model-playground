@@ -8,8 +8,9 @@ from typing import List
 import lmp.script.train_model
 
 
-def test_module_function() -> None:
-  """Ensure module function's signatures."""
+def test_module_method() -> None:
+  """Ensure module methods' signatures."""
+  assert hasattr(lmp.script.train_model, 'parse_args')
   assert inspect.isfunction(lmp.script.train_model.parse_args)
   assert inspect.signature(lmp.script.train_model.parse_args) == Signature(
     parameters=[
@@ -22,6 +23,7 @@ def test_module_function() -> None:
     ],
     return_annotation=argparse.Namespace,
   )
+  assert hasattr(lmp.script.train_model, 'main')
   assert inspect.isfunction(lmp.script.train_model.main)
   assert inspect.signature(lmp.script.train_model.main) == Signature(
     parameters=[

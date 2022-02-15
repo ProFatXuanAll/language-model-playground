@@ -4,7 +4,8 @@ import os
 
 import pytest
 
-import lmp
+import lmp.util.path
+import lmp.util.tknzr
 
 
 @pytest.fixture(params=[False, True])
@@ -33,14 +34,18 @@ def min_count(request) -> int:
 
 @pytest.fixture
 def tknzr_file_path(exp_name: str, request) -> str:
-  """Clean up tokenizer file."""
+  """Tokenizer save file path.
+
+  After testing, clean up files and directories created during test.
+  """
   abs_dir_path = os.path.join(lmp.util.path.EXP_PATH, exp_name)
-  abs_file_path = os.path.join(abs_dir_path, 'tknzr.pkl')
+  abs_file_path = os.path.join(abs_dir_path, lmp.util.tknzr.FILE_NAME)
 
   def fin() -> None:
-    for file_name in os.listdir(abs_dir_path):
-      os.remove(os.path.join(abs_dir_path, file_name))
-    os.removedirs(abs_dir_path)
+    if os.path.exists(abs_file_path):
+      os.remove(abs_file_path)
+    if os.path.exists(abs_dir_path) and not os.listdir(abs_dir_path):
+      os.removedirs(abs_dir_path)
 
   request.addfinalizer(fin)
   return abs_file_path

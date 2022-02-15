@@ -4,13 +4,20 @@ import os
 
 import pytest
 
+import lmp.util.cfg
 import lmp.util.path
-from lmp.tknzr import BaseTknzr
+import lmp.util.tknzr
 
 
 @pytest.fixture(params=[False, True])
 def is_uncased(request) -> bool:
   """Respect cases if set to ``False``."""
+  return request.param
+
+
+@pytest.fixture(params=[1, 128])
+def max_seq_len(request) -> int:
+  """Maximum length constraint."""
   return request.param
 
 
@@ -34,12 +41,12 @@ def seed() -> int:
 
 @pytest.fixture
 def tknzr_file_path(exp_name: str, request) -> str:
-  """Tokenizer save file path.
+  """Tokenizer pickle file path.
 
   After testing, clean up files and directories created during test.
   """
   abs_dir_path = os.path.join(lmp.util.path.EXP_PATH, exp_name)
-  abs_file_path = os.path.join(abs_dir_path, BaseTknzr.file_name)
+  abs_file_path = os.path.join(abs_dir_path, lmp.util.tknzr.FILE_NAME)
 
   def fin() -> None:
     if os.path.exists(abs_file_path):
@@ -53,9 +60,12 @@ def tknzr_file_path(exp_name: str, request) -> str:
 
 @pytest.fixture
 def cfg_file_path(exp_name: str, request) -> str:
-  """Clean up saved configuration file."""
+  """Tokenizer configuration file path.
+
+  After testing, clean up files and directories created during test.
+  """
   abs_dir_path = os.path.join(lmp.util.path.EXP_PATH, exp_name)
-  abs_file_path = os.path.join(abs_dir_path, lmp.util.cfg.CFG_NAME)
+  abs_file_path = os.path.join(abs_dir_path, lmp.util.cfg.FILE_NAME)
 
   def fin() -> None:
     if os.path.exists(abs_file_path):

@@ -8,8 +8,15 @@ import lmp.util.tknzr
 from lmp.tknzr import BaseTknzr
 
 
-def test_module_function() -> None:
-  """Ensure module function's signatures."""
+def test_module_attribute() -> None:
+  """Ensure module attributes' signatures."""
+  assert hasattr(lmp.util.tknzr, 'FILE_NAME')
+  assert lmp.util.tknzr.FILE_NAME == 'tknzr.pkl'
+
+
+def test_module_method() -> None:
+  """Ensure module functions' signatures."""
+  assert hasattr(lmp.util.tknzr, 'create')
   assert inspect.isfunction(lmp.util.tknzr.create)
   assert inspect.signature(lmp.util.tknzr.create) == Signature(
     parameters=[
@@ -28,6 +35,7 @@ def test_module_function() -> None:
     ],
     return_annotation=BaseTknzr,
   )
+  assert hasattr(lmp.util.tknzr, 'load')
   assert inspect.isfunction(lmp.util.tknzr.load)
   assert inspect.signature(lmp.util.tknzr.load) == Signature(
     parameters=[
@@ -40,6 +48,7 @@ def test_module_function() -> None:
     ],
     return_annotation=BaseTknzr,
   )
+  assert hasattr(lmp.util.tknzr, 'save')
   assert inspect.isfunction(lmp.util.tknzr.save)
   assert inspect.signature(lmp.util.tknzr.save) == Signature(
     parameters=[

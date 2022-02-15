@@ -8,8 +8,9 @@ import torch
 import lmp.util.metric
 
 
-def test_module_function() -> None:
-  """Ensure module function's signatures."""
+def test_module_method() -> None:
+  """Ensure module methods' signatures."""
+  assert hasattr(lmp.util.metric, 'ppl')
   assert inspect.isfunction(lmp.util.metric.ppl)
   assert inspect.signature(lmp.util.metric.ppl) == Signature(
     parameters=[

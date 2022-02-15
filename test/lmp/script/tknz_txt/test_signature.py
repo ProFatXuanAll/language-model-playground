@@ -8,8 +8,9 @@ from typing import List
 import lmp.script.tknz_txt
 
 
-def test_module_function() -> None:
-  """Ensure module function's signatures."""
+def test_module_method() -> None:
+  """Ensure module methods' signatures."""
+  assert hasattr(lmp.script.tknz_txt, 'parse_args')
   assert inspect.isfunction(lmp.script.tknz_txt.parse_args)
   assert inspect.signature(lmp.script.tknz_txt.parse_args) == Signature(
     parameters=[
@@ -22,6 +23,7 @@ def test_module_function() -> None:
     ],
     return_annotation=argparse.Namespace,
   )
+  assert hasattr(lmp.script.tknz_txt, 'main')
   assert inspect.isfunction(lmp.script.tknz_txt.main)
   assert inspect.signature(lmp.script.tknz_txt.main) == Signature(
     parameters=[

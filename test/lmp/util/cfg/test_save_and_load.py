@@ -17,5 +17,6 @@ def test_save_and_load(exp_name: str, cfg_file_path: str) -> None:
   args = argparse.Namespace(a=1, b=2, c=3)
   lmp.util.cfg.save(args, exp_name)
   assert os.path.exists(cfg_file_path)
+
   load_args = lmp.util.cfg.load(exp_name)
   assert args == load_args

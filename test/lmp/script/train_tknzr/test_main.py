@@ -18,19 +18,22 @@ def test_train_char_tknzr_on_wiki_text_2(
   cfg_file_path: str,
   exp_name: str,
   is_uncased: bool,
+  max_seq_len: int,
   max_vocab: int,
   min_count: int,
   seed: int,
-  wiki_text_2_file_paths: List[str],
   tknzr_file_path: str,
+  wiki_text_2_file_paths: List[str],
 ) -> None:
-  """Successfully train tokenizer :py:class:`lmp.tknzr.CharTknzr` on :py:class:`lmp.dset.WikiText2Dset` dataset."""
+  """Must successfully train :py:class:`lmp.tknzr.CharTknzr` on :py:class:`lmp.dset.WikiText2Dset`."""
   argv = [
     CharTknzr.tknzr_name,
     '--dset_name',
     WikiText2Dset.dset_name,
     '--exp_name',
     exp_name,
+    '--max_seq_len',
+    str(max_seq_len),
     '--max_vocab',
     str(max_vocab),
     '--min_count',
@@ -40,26 +43,25 @@ def test_train_char_tknzr_on_wiki_text_2(
     '--ver',
     WikiText2Dset.df_ver,
   ]
+
   if is_uncased:
     argv.append('--is_uncased')
 
+  # Train tokenizer.
   lmp.script.train_tknzr.main(argv=argv)
+
+  # Ensure configuration consistency.
   assert os.path.exists(cfg_file_path)
+  assert lmp.util.cfg.load(exp_name=exp_name) == lmp.script.train_tknzr.parse_args(argv=argv)
+
+  # Ensure tokenizer consistency.
   assert os.path.exists(tknzr_file_path)
-
-  cfg = lmp.util.cfg.load(exp_name=exp_name)
-  assert cfg.dset_name == WikiText2Dset.dset_name
-  assert cfg.exp_name == exp_name
-  assert cfg.is_uncased == is_uncased
-  assert cfg.max_vocab == max_vocab
-  assert cfg.min_count == min_count
-  assert cfg.seed == seed
-  assert cfg.ver == WikiText2Dset.df_ver
-
-  tknzr = lmp.util.tknzr.load(exp_name=exp_name, tknzr_name=CharTknzr.tknzr_name)
+  tknzr = lmp.util.tknzr.load(exp_name=exp_name)
   assert tknzr.is_uncased == is_uncased
+  assert tknzr.max_seq_len == max_seq_len
   assert tknzr.max_vocab == max_vocab
   assert tknzr.min_count == min_count
+
   # Must include most frequent alphabets.
   assert 't' in tknzr.tk2id
   assert 'h' in tknzr.tk2id

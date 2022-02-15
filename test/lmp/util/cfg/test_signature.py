@@ -8,12 +8,14 @@ import lmp.util.cfg
 
 
 def test_module_attribute():
-  """Ensure module attribute's signatures."""
-  assert lmp.util.cfg.CFG_NAME == 'cfg.json'
+  """Ensure module attributes' signatures."""
+  assert hasattr(lmp.util.cfg, 'FILE_NAME')
+  assert lmp.util.cfg.FILE_NAME == 'cfg.json'
 
 
-def test_module_function() -> None:
-  """Ensure module function's signatures."""
+def test_module_method() -> None:
+  """Ensure module methods' signatures."""
+  assert hasattr(lmp.util.cfg, 'load')
   assert inspect.isfunction(lmp.util.cfg.load)
   assert inspect.signature(lmp.util.cfg.load) == Signature(
     parameters=[
@@ -26,6 +28,7 @@ def test_module_function() -> None:
     ],
     return_annotation=argparse.Namespace,
   )
+  assert hasattr(lmp.util.cfg, 'save')
   assert inspect.isfunction(lmp.util.cfg.save)
   assert inspect.signature(lmp.util.cfg.save) == Signature(
     parameters=[

@@ -8,8 +8,9 @@ import lmp.util.model
 from lmp.model import BaseModel
 
 
-def test_module_function() -> None:
-  """Ensure module function's signatures."""
+def test_module_method() -> None:
+  """Ensure module methods' signatures."""
+  assert hasattr(lmp.util.model, 'create')
   assert inspect.isfunction(lmp.util.model.create)
   assert inspect.signature(lmp.util.model.create) == Signature(
     parameters=[
@@ -27,6 +28,7 @@ def test_module_function() -> None:
     ],
     return_annotation=BaseModel,
   )
+  assert hasattr(lmp.util.model, 'list_ckpts')
   assert inspect.isfunction(lmp.util.model.list_ckpts)
   assert inspect.signature(lmp.util.model.list_ckpts) == Signature(
     parameters=[
@@ -51,6 +53,7 @@ def test_module_function() -> None:
     ],
     return_annotation=List[int],
   )
+  assert hasattr(lmp.util.model, 'load')
   assert inspect.isfunction(lmp.util.model.load)
   assert inspect.signature(lmp.util.model.load) == Signature(
     parameters=[
@@ -74,6 +77,7 @@ def test_module_function() -> None:
     ],
     return_annotation=BaseModel,
   )
+  assert hasattr(lmp.util.model, 'save')
   assert inspect.isfunction(lmp.util.model.save)
   assert inspect.signature(lmp.util.model.save) == Signature(
     parameters=[

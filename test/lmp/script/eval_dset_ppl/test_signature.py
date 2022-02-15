@@ -8,8 +8,9 @@ from typing import List
 import lmp.script.eval_dset_ppl
 
 
-def test_module_function() -> None:
-  """Ensure module function's signatures."""
+def test_module_method() -> None:
+  """Ensure module methods' signatures."""
+  assert hasattr(lmp.script.eval_dset_ppl, 'parse_args')
   assert inspect.isfunction(lmp.script.eval_dset_ppl.parse_args)
   assert inspect.signature(lmp.script.eval_dset_ppl.parse_args) == Signature(
     parameters=[
@@ -22,6 +23,7 @@ def test_module_function() -> None:
     ],
     return_annotation=argparse.Namespace,
   )
+  assert hasattr(lmp.script.eval_dset_ppl, 'main')
   assert inspect.isfunction(lmp.script.eval_dset_ppl.main)
   assert inspect.signature(lmp.script.eval_dset_ppl.main) == Signature(
     parameters=[
