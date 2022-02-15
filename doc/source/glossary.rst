@@ -60,9 +60,9 @@ Glossary
      (:py:mod:`lmp.script.gen_txt`).
 
      .. seealso::
-        lmp.script
+        :doc:`lmp.script </script/index>`
           All available scripts related to language model.
-        lmp.model
+        :doc:`lmp.model </model/index>`
           All available language model.
 
    NN

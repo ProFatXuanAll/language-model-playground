@@ -25,7 +25,7 @@ class Top1Infer(BaseInfer):
 
   See Also
   --------
-  lmp.infer
+  :doc:`lmp.infer </infer/index>`
     All available inference methods.
   lmp.script.gen_txt
     Use pre-trained language model checkpoint to generate continual text of given text segment.

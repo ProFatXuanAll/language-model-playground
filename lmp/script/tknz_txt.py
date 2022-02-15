@@ -4,9 +4,9 @@ One must first run the script :py:mod:`lmp.script.train_tknzr` before running th
 
 See Also
 --------
-lmp.script.train_tknzr
+:doc:`lmp.script.train_tknzr </script/train_tknzr>`
   Train tokenizer.
-lmp.tknzr
+:doc:`lmp.tknzr </tknzr/index>`
   All available tokenizers.
 
 Examples

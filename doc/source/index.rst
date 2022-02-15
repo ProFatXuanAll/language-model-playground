@@ -23,8 +23,8 @@ using CLI script :py:mod:`lmp.script.train_model`.
 
 .. seealso::
 
-   :py:mod:`lmp.model`
-      All available language models are put under :py:mod:`lmp.model`.
+   :doc:`lmp.model </model/index>`
+      All available language models.
 
 .. todo::
 

@@ -6,11 +6,11 @@ stochastic process, only some are deterministic.
 
 See Also
 --------
-lmp.infer
+:doc:`lmp.infer </infer/index>`
   All available inference methods.
-lmp.model
+:doc:`lmp.model </model/index>`
   All available language models.
-lmp.script.train_model
+:doc:`lmp.script.train_model </script/train_model>`
   Train language model.
 
 Examples

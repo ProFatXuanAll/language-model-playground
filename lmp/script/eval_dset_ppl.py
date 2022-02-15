@@ -6,11 +6,11 @@ results over selected model checkpoints.
 
 See Also
 --------
-lmp.model
+:doc:`lmp.model </model/index>`
   All available language models.
-lmp.script.eval_txt_ppl
+:doc:`lmp.script.eval_txt_ppl </script/eval_txt_ppl>`
   Use pre-trained language model to calculate perplexity on given text.
-lmp.script.train_model
+:doc:`lmp.script.train_model </script/train_model>`
   Train language model.
 
 Examples

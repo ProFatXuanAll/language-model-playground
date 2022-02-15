@@ -37,7 +37,7 @@ class TopKInfer(BaseInfer):
 
   See Also
   --------
-  lmp.infer
+  :doc:`lmp.infer </infer/index>`
     All available inference methods.
   lmp.infer.Top1Infer
     Top-1 inference method.
@@ -171,7 +171,7 @@ class TopKInfer(BaseInfer):
     ...   '--ckpt', '5000',
     ...   '--exp_name', 'my_exp',
     ...   '--k', '10',
-    ...   '--max_seq_len', '512',
+    ...   '--max_seq_len', '128',
     ...   '--txt', 'Hello world',
     ... ])
     >>> args.ckpt == 5000
@@ -180,7 +180,7 @@ class TopKInfer(BaseInfer):
     True
     >>> args.k == 10
     True
-    >>> args.max_seq_len == 512
+    >>> args.max_seq_len == 128
     True
     >>> args.txt == 'Hello world'
     True

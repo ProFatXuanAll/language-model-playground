@@ -37,7 +37,7 @@ class TopPInfer(BaseInfer):
 
   See Also
   --------
-  lmp.infer
+  :doc:`lmp.infer </infer/index>`
     All available inference methods.
   lmp.infer.TopKInfer
     Top-k inference method.
@@ -194,7 +194,7 @@ class TopPInfer(BaseInfer):
     >>> args = parser.parse_args([
     ...   '--ckpt', '5000',
     ...   '--exp_name', 'my_exp',
-    ...   '--max_seq_len', '512',
+    ...   '--max_seq_len', '128',
     ...   '--p', '0.9',
     ...   '--txt', 'Hello world',
     ... ])
@@ -202,7 +202,7 @@ class TopPInfer(BaseInfer):
     True
     >>> args.exp_name == 'my_exp'
     True
-    >>> args.max_seq_len == 512
+    >>> args.max_seq_len == 128
     True
     >>> args.p == 0.9
     True

@@ -1,16 +1,16 @@
-r"""Train tokenizer.
+r"""Use this script to train tokenizer on a dataset.
 
-Use this script to train tokenizer on particular dataset.  This script is usually run before training model.
+This script is usually run before training language model.
 
 See Also
 --------
-lmp.dset
+:doc:`lmp.dset </dset/index>`
   All available datasets.
-lmp.script.sample_dset
+:doc:`lmp.script.sample_dset </script/sample_dset>`
   Get a glimpse on all available datasets.
-lmp.script.tknz_txt
+:doc:`lmp.script.tknz_txt </script/tknz_txt>`
   Use pre-trained tokenizer to perform tokenization on given text.
-lmp.tknzr
+:doc:`lmp.tknzr </tknzr/index>`
   All available tokenizers.
 
 Examples
@@ -27,8 +27,7 @@ The following example script train a whitespace tokenizer :py:class:`lmp.tknzr.W
      --min_count 2 \
      --ver train
 
-The training result will be save at path ``root/exp/my_tknzr_exp`` and can be reused by other scripts.  Here ``root``
-refers to :py:attr:`lmp.util.path.PROJECT_ROOT`.
+The training result will be saved at path ``project_root/exp/my_tknzr_exp`` and can be reused by other scripts.
 
 One can increase ``--max_vocab`` to allow tokenizer to include more tokens into its vocabulary:
 
@@ -139,8 +138,38 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
   for tknzr_name, tknzr_type in lmp.tknzr.TKNZR_OPTS.items():
     tknzr_subparser = subparsers.add_parser(tknzr_name, description=f'Training {tknzr_type.__name__} tokenizer.')
 
+    # Required arguments.
+    group = tknzr_subparser.add_argument_group('tokenizer training arguments')
+    group.add_argument(
+      '--dset_name',
+      choices=lmp.dset.DSET_OPTS.keys(),
+      help='Name of the dataset which will be used to train tokenizer.',
+      required=True,
+      type=str,
+    )
+    group.add_argument(
+      '--exp_name',
+      help='Name of the tokenizer training experiment.',
+      required=True,
+      type=str,
+    )
+    group.add_argument(
+      '--ver',
+      help='Version of the dataset.',
+      required=True,
+      type=str,
+    )
+
+    # Optional arguments.
+    group.add_argument(
+      '--seed',
+      default=42,
+      help='Random seed.',
+      type=int,
+    )
+
     # Add tokenizer specific arguments.
-    tknzr_type.train_parser(parser=tknzr_subparser)
+    tknzr_type.add_CLI_args(parser=tknzr_subparser)
 
   return parser.parse_args(argv)
 

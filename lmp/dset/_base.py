@@ -39,7 +39,7 @@ class BaseDset(torch.utils.data.Dataset):
 
   See Also
   --------
-  lmp.dset
+  :doc:`lmp.dset </dset/index>`
     All available datasets.
   """
 

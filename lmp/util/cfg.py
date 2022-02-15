@@ -13,9 +13,8 @@ CFG_NAME = 'cfg.json'
 def save(args: argparse.Namespace, exp_name: str) -> None:
   """Save training configurations into JSON file.
 
-  Save training configuration in to path ``root/exp/exp_name/cfg.json``.  Here ``root`` refers to
-  :py:attr:`lmp.util.path.PROJECT_ROOT`.  All successfully parsed CLI arguments will be saved.  If folders along the
-  saving path do not exist, then this method will create folders recursively.
+  Save training configuration in to path ``project_root/exp/exp_name/cfg.json``.  All successfully parsed CLI arguments
+  will be saved.  If folders along the saving path do not exist, then this method will create folders recursively.
 
   .. danger::
 
@@ -72,9 +71,8 @@ def save(args: argparse.Namespace, exp_name: str) -> None:
 def load(exp_name: str) -> argparse.Namespace:
   """Load training configuration from JSON file.
 
-  Load training configuration from path ``root/exp/exp_name/cfg.json``.  Here ``root`` refers to
-  :py:attr:`lmp.util.path.PROJECT_ROOT`.  Loaded configurations will be wrapped in :py:class:`argparse.Namespace` for
-  convenience.
+  Load training configuration from path ``project_root/exp/exp_name/cfg.json``.  Loaded configurations will be wrapped
+  in :py:class:`argparse.Namespace` for convenience.
 
   Parameters
   ----------

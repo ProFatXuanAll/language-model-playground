@@ -104,7 +104,7 @@ class ChPoemDset(BaseDset):
 
   See Also
   --------
-  lmp.dset
+  :doc:`lmp.dset </dset/index>`
     All available datasets.
   lmp.dset.BaseDset
     Dataset utilities.

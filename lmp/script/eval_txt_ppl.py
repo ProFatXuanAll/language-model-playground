@@ -4,11 +4,11 @@ One must first run the script :py:mod:`lmp.script.train_model` before running th
 
 See Also
 --------
-lmp.model
+:doc:`lmp.model </model/index>`
   All available language models.
-lmp.script.eval_dset_ppl
+:doc:`lmp.script.eval_dset_ppl </script/eval_dset_ppl>`
   Use pre-trained language model to calculate average perplexity on a particular dataset.
-lmp.script.train_model
+:doc:`lmp.script.train_model </script/train_model>`
   Train language model.
 
 Examples

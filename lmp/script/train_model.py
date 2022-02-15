@@ -6,9 +6,9 @@ and open browser with URL http://localhost:6006/ to see training performance.
 
 See Also
 --------
-lmp.model
+:doc:`lmp.model </model/index>`
   All available language models.
-lmp.script.train_tknzr
+:doc:`lmp.script.train_tknzr </script/train_tknzr>`
   Tokenizer training script.
 
 Examples
@@ -36,9 +36,8 @@ The following example script train Elman Net model :py:class:`lmp.model.ElmanNet
      --ver train \
      --wd 1e-2
 
-The training result will be save at path ``root/exp/my_model_exp`` and can be reused by other scripts.  Here ``root``
-refers to :py:attr:`lmp.util.path.PROJECT_ROOT`.  We only save checkpoints for each ``--ckpt_step`` step and log
-performance for each ``--log_step`` step.
+The training result will be save at path ``project_root/exp/my_model_exp`` and can be reused by other scripts.  We only
+save checkpoints for each ``--ckpt_step`` step and log performance for each ``--log_step`` step.
 
 One can increase ``--n_epoch`` to train more epochs.  Be careful model might overfit on datasets if model were trained
 with too many epochs.

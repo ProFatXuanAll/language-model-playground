@@ -4,8 +4,8 @@ Use this script to sample and observe data points in specified dataset.
 
 See Also
 --------
-lmp.dset
-  All available dataset.
+:doc:`lmp.dset </dset/index>`
+  All available datasets.
 
 Examples
 --------

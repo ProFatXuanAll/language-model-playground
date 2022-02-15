@@ -5,12 +5,17 @@ import os
 import pytest
 
 import lmp
-from lmp.tknzr import BaseTknzr
 
 
 @pytest.fixture(params=[False, True])
 def is_uncased(request) -> bool:
   """Respect cases if set to ``False``."""
+  return request.param
+
+
+@pytest.fixture(params=[1, 128])
+def max_seq_len(request) -> int:
+  """Maximum length constraint."""
   return request.param
 
 
@@ -28,9 +33,9 @@ def min_count(request) -> int:
 
 @pytest.fixture
 def tknzr_file_path(exp_name: str, request) -> str:
-  """Clean up saving tokenizers."""
+  """Clean up tokenizer file."""
   abs_dir_path = os.path.join(lmp.util.path.EXP_PATH, exp_name)
-  abs_file_path = os.path.join(abs_dir_path, BaseTknzr.file_name)
+  abs_file_path = os.path.join(abs_dir_path, 'tknzr.pkl')
 
   def fin() -> None:
     for file_name in os.listdir(abs_dir_path):

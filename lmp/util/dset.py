@@ -23,7 +23,7 @@ def load(dset_name: str, ver: str, **kwargs: Any) -> BaseDset:
 
   See Also
   --------
-  lmp.dset
+  :doc:`lmp.dset </dset/index>`
     All available datasets.
 
   Examples

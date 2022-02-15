@@ -30,9 +30,9 @@ def create(model_name: str, **kwargs: Any) -> BaseModel:
 
   See Also
   --------
-  lmp.model
+  :doc:`lmp.model </model/index>`
     All available language models.
-  lmp.tknzr
+  :doc:`lmp.tknzr </tknzr/index>`
     All available tokenizers.
 
   Examples
@@ -40,15 +40,18 @@ def create(model_name: str, **kwargs: Any) -> BaseModel:
   >>> from lmp.model import ElmanNet
   >>> from lmp.tknzr import CharTknzr
   >>> import lmp.util.model
-  >>> tknzr = CharTknzr(is_uncased=False, max_vocab=10, min_count=2)
+  >>> tknzr = CharTknzr(is_uncased=False, max_seq_len=128, max_vocab=10, min_count=2)
   >>> model = lmp.util.model.create(
   ...   d_emb=10,
   ...   model_name='Elman-Net',
   ...   tknzr=tknzr,
   ... )
-  >>> isinstance(model, ElmanNet)
-  True
+  >>> assert isinstance(model, ElmanNet)
   """
+  # `model_name` validation.
+  lmp.util.validate.raise_if_not_instance(val=model_name, val_name='model_name', val_type=str)
+  lmp.util.validate.raise_if_not_in(val=model_name, val_name='model_name', val_range=list(MODEL_OPTS.keys()))
+
   return MODEL_OPTS[model_name](**kwargs)
 
 
@@ -110,11 +113,10 @@ def save(ckpt: int, exp_name: str, model: BaseModel) -> None:
   torch.save(model, save_file_path)
 
 
-def load(ckpt: int, exp_name: str, **kwargs: Any) -> BaseModel:
+def load(ckpt: int, exp_name: str) -> BaseModel:
   """Load pre-trained language model instance by checkpoint and experiment name.
 
-  Load pre-trained language model from path ``root/exp/exp_name``.  Here ``root`` refers to
-  :py:attr:`lmp.util.path.PROJECT_ROOT`.
+  Load pre-trained language model from path ``project_root/exp/exp_name``.
 
   Parameters
   ----------
@@ -122,8 +124,6 @@ def load(ckpt: int, exp_name: str, **kwargs: Any) -> BaseModel:
     Saving checkpoint number.  Set to ``-1`` to load the last checkpoint.
   exp_name: str
     Pre-trained language model experiment name.
-  kwargs: typing.Any, optional
-    Useless parameter.
 
   Returns
   -------
@@ -132,7 +132,7 @@ def load(ckpt: int, exp_name: str, **kwargs: Any) -> BaseModel:
 
   See Also
   --------
-  lmp.model
+  :doc:`lmp.model </model/index>`
     All available language models.
 
   Examples

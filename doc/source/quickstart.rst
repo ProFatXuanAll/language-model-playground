@@ -93,8 +93,8 @@ In this example we use :py:class:`lmp.dset.WikiText2Dset` as our demo dataset.
 
 .. seealso::
 
-   :py:mod:`lmp.dset`
-     All available dataset.
+   :doc:`lmp.dset </dset/index>`
+     All available datasets.
 
 2. Choose a Tokenizer and Train it
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -133,7 +133,7 @@ best.
 
 .. seealso::
 
-   :py:mod:`lmp.tknzr`
+   :doc:`lmp.tknzr </tknzr/index>`
      All available tokenizers.
 
 3. Evaluate Tokenizer Training Results
@@ -235,7 +235,7 @@ Just like training :term:`tokenizer`, you can choose any values you think the be
 
 .. seealso::
 
-   :py:mod:`lmp.model`
+   :doc:`lmp.model </model/index>`
      All available language models.
 
 5. Evaluate Language Model Training Results
@@ -315,7 +315,7 @@ the :term:`experiment path` ``exp/my_model_exp``.
 
 .. seealso::
 
-   :py:mod:`lmp.infer`
+   :doc:`lmp.infer </infer/index>`
      All available inference methods.
 
 7. Record Experiment Results

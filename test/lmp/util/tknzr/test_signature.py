@@ -37,12 +37,24 @@ def test_module_function() -> None:
         default=Parameter.empty,
         annotation=str,
       ),
+    ],
+    return_annotation=BaseTknzr,
+  )
+  assert inspect.isfunction(lmp.util.tknzr.save)
+  assert inspect.signature(lmp.util.tknzr.save) == Signature(
+    parameters=[
       Parameter(
-        name='tknzr_name',
+        name='exp_name',
         kind=Parameter.POSITIONAL_OR_KEYWORD,
         default=Parameter.empty,
         annotation=str,
       ),
+      Parameter(
+        name='tknzr',
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        default=Parameter.empty,
+        annotation=BaseTknzr,
+      ),
     ],
-    return_annotation=BaseTknzr,
+    return_annotation=None,
   )

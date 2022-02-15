@@ -33,7 +33,7 @@ class BaseInfer(abc.ABC):
 
   See Also
   --------
-  lmp.infer
+  :doc:`lmp.infer </infer/index>`
     All available inference methods.
   """
 
@@ -94,14 +94,14 @@ class BaseInfer(abc.ABC):
     >>> args = parser.parse_args([
     ...   '--ckpt', '5000',
     ...   '--exp_name', 'my_exp',
-    ...   '--max_seq_len', '512',
+    ...   '--max_seq_len', '128',
     ...   '--txt', 'Hello world',
     ... ])
     >>> args.ckpt == 5000
     True
     >>> args.exp_name == 'my_exp'
     True
-    >>> args.max_seq_len == 512
+    >>> args.max_seq_len == 128
     True
     >>> args.txt == 'Hello world'
     True

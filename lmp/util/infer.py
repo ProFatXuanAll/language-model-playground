@@ -25,15 +25,14 @@ def create(infer_name: str, **kwargs: Any) -> BaseInfer:
 
   See Also
   --------
-  lmp.infer
+  :doc:`lmp.infer </infer/index>`
     All available inference methods.
 
   Examples
   --------
   >>> from lmp.infer import TopKInfer
   >>> import lmp.util.infer
-  >>> isinstance(lmp.util.infer.create(infer_name=TopKInfer.infer_name, k=5), TopKInfer)
-  True
+  >>> assert isinstance(lmp.util.infer.create(infer_name=TopKInfer.infer_name, k=5), TopKInfer)
   """
   # `infer_name` validation.
   lmp.util.validate.raise_if_not_instance(val=infer_name, val_name='infer_name', val_type=str)
