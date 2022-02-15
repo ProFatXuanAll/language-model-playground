@@ -8,9 +8,9 @@ from lmp.tknzr import BaseTknzr
 
 
 @pytest.fixture
-def lstm_2000(d_cell: int, d_emb: int, n_cell: int, tknzr: BaseTknzr) -> LSTM2000:
+def lstm_2000(d_blk: int, d_emb: int, n_blk: int, tknzr: BaseTknzr) -> LSTM2000:
   """:py:class:`lmp.model.LSTM2000` instance."""
-  return LSTM2000(d_cell=d_cell, d_emb=d_emb, n_cell=n_cell, tknzr=tknzr)
+  return LSTM2000(d_blk=d_blk, d_emb=d_emb, n_blk=n_blk, tknzr=tknzr)
 
 
 @pytest.fixture

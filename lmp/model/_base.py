@@ -16,7 +16,7 @@ class BaseModel(abc.ABC, torch.nn.Module):
   Implement basic functionalities for language model, including training loss calculation, next token id prediction
   and parsing training arguments.
 
-  We define the input token id list :math:`x` with length equal to :math:`S + 2` as follow:
+  We define the input token id list :math:`x` as follow:
 
   .. math::
 
@@ -24,13 +24,14 @@ class BaseModel(abc.ABC, torch.nn.Module):
      \newcommand{\set}[1]{\left\lbrace #1 \right\rbrace}
      x = \pa{x[0], x[1], x[2], \dots, x[S - 1], x[S], x[S + 1]}.
 
+  - :math:`x` has length :math:`S + 2`.
   - :math:`x[0]` is the token id of ``[bos]``.
   - :math:`x[S + 1]` is the token id of ``[eos]``.
 
-  Let :math:`x[t]` be the :math:`t`-th time step of :math:`x` where :math:`t \in \set{0, 1, \dots, S}`.  The training
-  goal of a language model with parameter :math:`\theta` is to find a optimal parameter :math:`\theta^{\star}` such
-  that when replace  :math:`\theta` with :math:`\theta^{\star}` it maximize the prediction probability of next token id
-  :math:`x[t + 1]` given :math:`x[0], x[1], \dots, x[t]`:
+  Let :math:`x[t]` be the :math:`t`-th time step of :math:`x` where :math:`t \in \set{0, 1, \dots, S, S + 1}`.  The
+  training goal of a language model with parameter :math:`\theta` is to find an optimal parameter
+  :math:`\theta^{\star}` such that when replace  :math:`\theta` with :math:`\theta^{\star}` it maximizes the prediction
+  probability of next token id :math:`x[t + 1]` given :math:`x[0], x[1], \dots, x[t]`:
 
   .. math::
 
@@ -72,7 +73,7 @@ class BaseModel(abc.ABC, torch.nn.Module):
     ----------
     batch_cur_tkids: torch.Tensor
       Batch of token ids which represent input token ids of all time steps.  ``batch_cur_tkids`` has shape
-      ``(batch_size, seq_len)`` and ``dtype == torch.int``.
+      ``(batch_size, seq_len)`` and ``dtype == torch.long``.
     batch_next_tkids: torch.Tensor
       Batch of token ids which represent prediction targets of all time steps.  ``batch_next_tkids`` has the same shape
       and ``dtype`` as ``batch_cur_tkids``.
@@ -104,7 +105,7 @@ class BaseModel(abc.ABC, torch.nn.Module):
     Parameters
     ----------
     batch_cur_tkids: torch.Tensor
-      Batch of current input token ids.  ``batch_cur_tkids`` has shape ``(batch_size)`` and ``dtype == torch.int``.
+      Batch of current input token ids.  ``batch_cur_tkids`` has shape ``(batch_size)`` and ``dtype == torch.long``.
     batch_prev_states: typing.Optional[list[torch.Tensor]], default: None
       Batch of previous calculation results.  Set to ``None`` to use initial hidden states.  Different models have
       different hidden states structure.

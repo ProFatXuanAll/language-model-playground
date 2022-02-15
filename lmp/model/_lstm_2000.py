@@ -20,9 +20,9 @@ class LSTM2000(BaseModel):
 
   - Let :math:`x` be the input token id list as defined in :py:class:`lmp.model.BaseModel`.
   - Let ``d_emb`` be the dimension of token embeddings and let ``vocab_size`` be the vocabulary size of tokenizer.
-  - Let ``n_cell`` be the number of memory cells and let ``d_cell`` be the dimension of each memory cell.
+  - Let ``n_blk`` be the number of memory cell blocks and let ``d_blk`` be the dimension of each memory cell block.
 
-  Then LSTM (2000 version) is defined as follow:
+  LSTM (2000 version) is defined as follow:
 
   .. math::
 
@@ -31,7 +31,7 @@ class LSTM2000(BaseModel):
      \newcommand{\t}{[t]}
      \newcommand{\tn}{[t + 1]}
      \newcommand{\tz}{[0]}
-     \newcommand{\c}{\operatorname{cell}}
+     \newcommand{\c}{\operatorname{block}}
      \newcommand{\cn}[1]{{\c[#1]}}
      \newcommand{\ck}{{\cn{k}}}
      \newcommand{\nc}{{n_{\c}}}
@@ -53,39 +53,39 @@ class LSTM2000(BaseModel):
        y\tn         & = \sof{E^{\top} \cdot z\tn}
      \end{align*}
 
-  +--------------------------------------------------+----------------------------------------------+
-  | Trainable Parameters                             | Nodes                                        |
-  +------------------+-------------------------------+----------------------+-----------------------+
-  | Parameter        | Shape                         | Symbol               | Shape                 |
-  +==================+===============================+======================+=======================+
-  | :math:`E`        | ``(d_emb, vocab_size)``       | :math:`e\t`          | ``(d_emb)``           |
-  +------------------+-------------------------------+----------------------+-----------------------+
-  | :math:`h\tz`     | ``(n_cell x d_cell)``         | :math:`i\tn`,        | ``(n_cell)``          |
-  +------------------+-------------------------------+ :math:`f\tn`,        |                       |
-  | :math:`W^i`,     | ``(n_cell, d_emb)``           | :math:`o\tn`         |                       |
-  | :math:`W^f`,     |                               |                      |                       |
-  | :math:`W^o`      |                               |                      |                       |
-  +------------------+-------------------------------+----------------------+-----------------------+
-  | :math:`U^i`,     | ``(n_cell, n_cell x d_cell)`` | :math:`i_k\tn`,      | ``(1)``               |
-  | :math:`U^f`,     |                               | :math:`f_k\tn`,      |                       |
-  | :math:`U^o`      |                               | :math:`o_k\tn`       |                       |
-  +------------------+-------------------------------+----------------------+-----------------------+
-  | :math:`b^i`,     | ``(n_cell)``                  | :math:`g^\ck\tn`,    | ``(d_cell)``          |
-  | :math:`b^f`,     |                               | :math:`c^\ck\tn`,    |                       |
-  | :math:`b^o`      |                               | :math:`\hbar^\ck\tn` |                       |
-  +------------------+-------------------------------+----------------------+-----------------------+
-  | :math:`W^\ck`    | ``(d_cell, d_emb)``           | :math:`h\tn`         | ``(n_cell x d_cell)`` |
-  +------------------+-------------------------------+----------------------+-----------------------+
-  | :math:`U^\ck`    | ``(d_cell, n_cell x d_cell)`` | :math:`z\tn`         | ``(d_emb)``           |
-  +------------------+-------------------------------+----------------------+-----------------------+
-  | :math:`b^\ck`    | ``(d_cell)``                  | :math:`y\tn`         | ``(vocab_size)``      |
-  +------------------+-------------------------------+----------------------+-----------------------+
-  | :math:`c^\ck\tz` | ``(d_cell)``                  |                                              |
-  +------------------+-------------------------------+                                              |
-  | :math:`W^z`      | ``(d_emb, n_cell x d_cell)``  |                                              |
-  +------------------+-------------------------------+                                              |
-  | :math:`b^z`      | ``(d_emb)``                   |                                              |
-  +------------------+-------------------------------+----------------------+-----------------------+
+  +-----------------------------------------------+--------------------------------------------+
+  | Trainable Parameters                          | Nodes                                      |
+  +------------------+----------------------------+----------------------+---------------------+
+  | Parameter        | Shape                      | Symbol               | Shape               |
+  +==================+============================+======================+=====================+
+  | :math:`E`        | ``(d_emb, vocab_size)``    | :math:`e\t`          | ``(d_emb)``         |
+  +------------------+----------------------------+----------------------+---------------------+
+  | :math:`h\tz`     | ``(n_blk x d_blk)``        | :math:`i\tn`,        | ``(n_blk)``         |
+  +------------------+----------------------------+ :math:`f\tn`,        |                     |
+  | :math:`W^i`,     | ``(n_blk, d_emb)``         | :math:`o\tn`         |                     |
+  | :math:`W^f`,     |                            |                      |                     |
+  | :math:`W^o`      |                            |                      |                     |
+  +------------------+----------------------------+----------------------+---------------------+
+  | :math:`U^i`,     | ``(n_blk, n_blk x d_blk)`` | :math:`i_k\tn`,      | ``(1)``             |
+  | :math:`U^f`,     |                            | :math:`f_k\tn`,      |                     |
+  | :math:`U^o`      |                            | :math:`o_k\tn`       |                     |
+  +------------------+----------------------------+----------------------+---------------------+
+  | :math:`b^i`,     | ``(n_blk)``                | :math:`g^\ck\tn`,    | ``(d_blk)``         |
+  | :math:`b^f`,     |                            | :math:`c^\ck\tn`,    |                     |
+  | :math:`b^o`      |                            | :math:`\hbar^\ck\tn` |                     |
+  +------------------+----------------------------+----------------------+---------------------+
+  | :math:`W^\ck`    | ``(d_blk, d_emb)``         | :math:`h\tn`         | ``(n_blk x d_blk)`` |
+  +------------------+----------------------------+----------------------+---------------------+
+  | :math:`U^\ck`    | ``(d_blk, n_blk x d_blk)`` | :math:`z\tn`         | ``(d_emb)``         |
+  +------------------+----------------------------+----------------------+---------------------+
+  | :math:`b^\ck`    | ``(d_blk)``                | :math:`y\tn`         | ``(vocab_size)``    |
+  +------------------+----------------------------+----------------------+---------------------+
+  | :math:`c^\ck\tz` | ``(d_blk)``                |                                            |
+  +------------------+----------------------------+                                            |
+  | :math:`W^z`      | ``(d_emb, n_blk x d_blk)`` |                                            |
+  +------------------+----------------------------+                                            |
+  | :math:`b^z`      | ``(d_emb)``                |                                            |
+  +------------------+----------------------------+----------------------+---------------------+
 
   - The only differences between :py:class:`lmp.model.LSTM1997` and :py:class:`lmp.model.LSTM2000` are equations
     :math:`\eqref{1}\eqref{2}`.
@@ -94,23 +94,23 @@ class LSTM2000(BaseModel):
 
   Parameters
   ----------
-  d_cell: int
-    Memory cell dimension.
+  d_blk: int
+    Dimension of each memory cell block.
   d_emb: int
     Token embedding dimension.
   kwargs: typing.Any, optional
     Useless parameter.  Intently left for subclasses inheritance.
-  n_cell: int
-    Number of memory cells.
+  n_blk: int
+    Number of memory cell blocks.
   tknzr: lmp.tknzr.BaseTknzr
     Tokenizer instance.
 
   Attributes
   ----------
   c_0: torch.nn.Parameter
-    Initial internal states of memory cells.
-  d_cell: int
-    Memory cell dimension.
+    Initial internal states of memory cell blocks.
+  d_blk: int
+    Dimension of each memory cell block.
   emb: torch.nn.Embedding
     Token embedding lookup table.
   h_0: torch.nn.Parameter
@@ -119,16 +119,16 @@ class LSTM2000(BaseModel):
     Loss function to be optimized.
   model_name: ClassVar[str]
     CLI name of LSTM (2000 version) is ``LSTM-2000``.
-  n_cell: int
-    Number of memory cells.
+  n_blk: int
+    Number of memory cell blocks.
   proj_e2c: torch.nn.Linear
-    Fully connected layer which connects input units to memory cells.  Input dimension is ``d_emb``.  Output dimension
-    is ``n_cell * (3 + d_cell)``.
+    Fully connected layer which connects input units to memory cell blocks.  Input dimension is ``d_emb``.  Output
+    dimension is ``n_blk * (3 + d_blk)``.
   proj_h2c: torch.nn.Linear
-    Fully connected layer which connects hidden states to memory cells.  Input dimension is ``n_cell * d_cell``.
-    Output dimension is ``n_cell * (3 + d_cell)``.
+    Fully connected layer which connects hidden states to memory cell blocks.  Input dimension is ``n_blk * d_blk``.
+    Output dimension is ``n_blk * (3 + d_blk)``.
   proj_h2e: torch.nn.Linear
-    Fully connected layer which connects hidden states to embedding dimension.  Input dimension is ``n_cell * d_cell``.
+    Fully connected layer which connects hidden states to embedding dimension.  Input dimension is ``n_blk * d_blk``.
     Output dimension is ``d_emb``.
 
   See Also
@@ -149,21 +149,21 @@ class LSTM2000(BaseModel):
 
   model_name: ClassVar[str] = 'LSTM-2000'
 
-  def __init__(self, *, d_cell: int, d_emb: int, n_cell: int, tknzr: BaseTknzr, **kwargs: Any):
+  def __init__(self, *, d_blk: int, d_emb: int, n_blk: int, tknzr: BaseTknzr, **kwargs: Any):
     super().__init__(**kwargs)
-    # `d_cell` validation.
-    lmp.util.validate.raise_if_not_instance(val=d_cell, val_name='d_cell', val_type=int)
-    lmp.util.validate.raise_if_wrong_ordered(vals=[1, d_cell], val_names=['1', 'd_cell'])
-    self.d_cell = d_cell
+    # `d_blk` validation.
+    lmp.util.validate.raise_if_not_instance(val=d_blk, val_name='d_blk', val_type=int)
+    lmp.util.validate.raise_if_wrong_ordered(vals=[1, d_blk], val_names=['1', 'd_blk'])
+    self.d_blk = d_blk
 
     # `d_emb` validation.
     lmp.util.validate.raise_if_not_instance(val=d_emb, val_name='d_emb', val_type=int)
     lmp.util.validate.raise_if_wrong_ordered(vals=[1, d_emb], val_names=['1', 'd_emb'])
 
-    # `n_cell` validation.
-    lmp.util.validate.raise_if_not_instance(val=n_cell, val_name='n_cell', val_type=int)
-    lmp.util.validate.raise_if_wrong_ordered(vals=[1, n_cell], val_names=['1', 'n_cell'])
-    self.n_cell = n_cell
+    # `n_blk` validation.
+    lmp.util.validate.raise_if_not_instance(val=n_blk, val_name='n_blk', val_type=int)
+    lmp.util.validate.raise_if_wrong_ordered(vals=[1, n_blk], val_names=['1', 'n_blk'])
+    self.n_blk = n_blk
 
     # `tknzr` validation.
     lmp.util.validate.raise_if_not_instance(val=tknzr, val_name='tknzr', val_type=BaseTknzr)
@@ -172,18 +172,18 @@ class LSTM2000(BaseModel):
     self.emb = nn.Embedding(num_embeddings=tknzr.vocab_size, embedding_dim=d_emb, padding_idx=tknzr.pad_tkid)
 
     # Fully connected layer which connects input units to memory cells.
-    self.proj_e2c = nn.Linear(in_features=d_emb, out_features=n_cell * (3 + d_cell))
+    self.proj_e2c = nn.Linear(in_features=d_emb, out_features=n_blk * (3 + d_blk))
 
     # Fully connected layer which connects hidden states to memory cells.
-    self.proj_h2c = nn.Linear(in_features=n_cell * d_cell, out_features=n_cell * (3 + d_cell), bias=False)
+    self.proj_h2c = nn.Linear(in_features=n_blk * d_blk, out_features=n_blk * (3 + d_blk), bias=False)
 
     # Initial hidden states and initial memory cell internal states.  First dimension is set to `1` to broadcast along
     # batch dimension.
-    self.h_0 = nn.Parameter(torch.zeros(1, n_cell * d_cell))
-    self.c_0 = nn.Parameter(torch.zeros(1, n_cell, d_cell))
+    self.h_0 = nn.Parameter(torch.zeros(1, n_blk * d_blk))
+    self.c_0 = nn.Parameter(torch.zeros(1, n_blk, d_blk))
 
     # Fully connected layer which project hidden states to embedding dimension.
-    self.proj_h2e = nn.Linear(in_features=n_cell * d_cell, out_features=d_emb)
+    self.proj_h2e = nn.Linear(in_features=n_blk * d_blk, out_features=d_emb)
 
     # Calculate cross entropy loss for all non-padding tokens.
     self.loss_fn = nn.CrossEntropyLoss(ignore_index=tknzr.pad_tkid)
@@ -195,7 +195,7 @@ class LSTM2000(BaseModel):
     r"""Initialize model parameters.
 
     All weights and non-gate units's biases are initialized with uniform distribution
-    :math:`\mathcal{U}\pa{\frac{-1}{\sqrt{v}}, \frac{1}{\sqrt{v}}}` where :math:`v =` ``max(d_emb, n_cell x d_cell)``.
+    :math:`\mathcal{U}\pa{\frac{-1}{\sqrt{v}}, \frac{1}{\sqrt{v}}}` where :math:`v =` ``max(d_emb, n_blk x d_blk)``.
     Input gate and output gate units' biases are initialized with uniform distribution
     :math:`\mathcal{U}\pa{\frac{-1}{\sqrt{v}}, 0}`.  Forget gate units' biases are initialized with uniform
     distribution :math:`\mathcal{U}\pa{0, \frac{1}{\sqrt{v}}}`.
@@ -205,7 +205,7 @@ class LSTM2000(BaseModel):
     None
     """
     # Initialize weights and biases with uniform distribution.
-    d_hid = self.n_cell * self.d_cell
+    d_hid = self.n_blk * self.d_blk
     inv_sqrt_dim = 1 / math.sqrt(max(self.emb.embedding_dim, d_hid))
     nn.init.uniform_(self.emb.weight, -inv_sqrt_dim, inv_sqrt_dim)
     nn.init.uniform_(self.proj_e2c.weight, -inv_sqrt_dim, inv_sqrt_dim)
@@ -217,11 +217,11 @@ class LSTM2000(BaseModel):
     nn.init.uniform_(self.proj_h2e.bias, -inv_sqrt_dim, inv_sqrt_dim)
 
     # Input gate and output gate units' biases are initialized to negative values.
-    nn.init.uniform_(self.proj_e2c.bias[d_hid:d_hid + self.n_cell], -inv_sqrt_dim, 0.0)
-    nn.init.uniform_(self.proj_e2c.bias[d_hid + 2 * self.n_cell:], -inv_sqrt_dim, 0.0)
+    nn.init.uniform_(self.proj_e2c.bias[d_hid:d_hid + self.n_blk], -inv_sqrt_dim, 0.0)
+    nn.init.uniform_(self.proj_e2c.bias[d_hid + 2 * self.n_blk:], -inv_sqrt_dim, 0.0)
 
     # Forget gate units' biases are initialized to positive values.
-    nn.init.uniform_(self.proj_e2c.bias[d_hid + self.n_cell:d_hid + 2 * self.n_cell], 0.0, inv_sqrt_dim)
+    nn.init.uniform_(self.proj_e2c.bias[d_hid + self.n_blk:d_hid + 2 * self.n_blk], 0.0, inv_sqrt_dim)
 
   def forward(self, batch_cur_tkids: torch.Tensor, batch_next_tkids: torch.Tensor) -> torch.Tensor:
     """Calculate language model training loss.
@@ -240,7 +240,7 @@ class LSTM2000(BaseModel):
     ----------
     batch_cur_tkids: torch.Tensor
       Batch of token ids which represent input token ids of all time steps.  ``batch_cur_tkids`` has shape
-      ``(batch_size, seq_len)`` and ``dtype == torch.int``.
+      ``(batch_size, seq_len)`` and ``dtype == torch.long``.
     batch_next_tkids: torch.Tensor
       Batch of token ids which represent prediction targets of all time steps.  ``batch_next_tkids`` has the same shape
       and ``dtype`` as ``batch_cur_tkids``.
@@ -255,43 +255,43 @@ class LSTM2000(BaseModel):
 
     # Token embedding lookup and project from embedding layer to memory cells.
     # In  shape: (batch_size, seq_len).
-    # Out shape: (batch_size, seq_len, n_cell x (3 + d_cell)).
+    # Out shape: (batch_size, seq_len, n_blk x (3 + d_blk)).
     cells_and_gates_input_by_emb = self.proj_e2c(self.emb(batch_cur_tkids))
 
     # Perform recurrent calculation for `seq_len` steps.  We use teacher forcing, i.e., the current input `e[:, i, :]`
     # is used instead of generated by model.
-    d_hid = self.n_cell * self.d_cell
+    d_hid = self.n_blk * self.d_blk
     z_all = []
     c_prev: Union[torch.Tensor, nn.Parameter] = self.c_0
     h_prev: Union[torch.Tensor, nn.Parameter] = self.h_0
     for i in range(seq_len):
       # Project `h_prev` from hidden states to memory cells.  Then calculate memory cells and gates input activation.
-      # shape: (batch_size, n_cell x (3 + d_cell)).
+      # shape: (batch_size, n_blk x (3 + d_blk)).
       cells_and_gates_input_act = torch.sigmoid(cells_and_gates_input_by_emb[:, i, :] + self.proj_h2c(h_prev))
 
       # Calculate memory cells input activation and reshape to separate memory cells.
-      # shape: (batch_size, n_cell, d_cell)
+      # shape: (batch_size, n_blk, d_blk)
       cells_input_act = 4 * cells_and_gates_input_act[:, :d_hid] - 2
-      cells_input_act = cells_input_act.reshape(-1, self.n_cell, self.d_cell)
+      cells_input_act = cells_input_act.reshape(-1, self.n_blk, self.d_blk)
 
       # Get input gates.
-      # shape: (batch_size, n_cell, 1)
-      input_gates = cells_and_gates_input_act[:, d_hid:d_hid + self.n_cell].unsqueeze(2)
+      # shape: (batch_size, n_blk, 1)
+      input_gates = cells_and_gates_input_act[:, d_hid:d_hid + self.n_blk].unsqueeze(2)
 
       # Get forget gates.
-      # shape: (batch_size, n_cell, 1)
-      forget_gates = cells_and_gates_input_act[:, d_hid + self.n_cell:d_hid + 2 * self.n_cell].unsqueeze(2)
+      # shape: (batch_size, n_blk, 1)
+      forget_gates = cells_and_gates_input_act[:, d_hid + self.n_blk:d_hid + 2 * self.n_blk].unsqueeze(2)
 
       # Calculate current memory cells' internal states.
-      # shape: (batch_size, n_cell, d_cell)
+      # shape: (batch_size, n_blk, d_blk)
       c_cur = forget_gates * c_prev + input_gates * cells_input_act
 
       # Get output gates.
-      # shape: (batch_size, n_cell, 1)
-      output_gates = cells_and_gates_input_act[:, d_hid + 2 * self.n_cell:].unsqueeze(2)
+      # shape: (batch_size, n_blk, 1)
+      output_gates = cells_and_gates_input_act[:, d_hid + 2 * self.n_blk:].unsqueeze(2)
 
       # Calculate current memory cells' outputs and reshape to fit the shape of hidden state.
-      # shape: (batch_size, n_cell x d_cell)
+      # shape: (batch_size, n_blk x d_blk)
       h_cur = output_gates * (2 * torch.sigmoid(c_cur) - 1)
       h_cur = h_cur.reshape(-1, d_hid)
 
@@ -338,7 +338,7 @@ class LSTM2000(BaseModel):
     Parameters
     ----------
     batch_cur_tkids: torch.Tensor
-      Batch of current input token ids.  ``batch_cur_tkids`` has shape ``(batch_size)`` and ``dtype == torch.int``.
+      Batch of current input token ids.  ``batch_cur_tkids`` has shape ``(batch_size)`` and ``dtype == torch.long``.
     batch_prev_states: typing.Optional[list[torch.Tensor]], default: None
       Batch of previous calculation results.  Set to ``None`` to use ``[self.h_0, self.c_0]``.  ``batch_prev_states``
       must has two items, the first item will be used as hidden states and the second item will be used as memory
@@ -360,37 +360,37 @@ class LSTM2000(BaseModel):
 
     # Token embedding lookup and project from embedding layer to memory cells.
     # In  shape: (batch_size).
-    # Out shape: (batch_size, n_cell x (3 + d_cell)).
+    # Out shape: (batch_size, n_blk x (3 + d_blk)).
     cells_and_gates_input_by_emb = self.proj_e2c(self.emb(batch_cur_tkids))
 
     # Project `h_prev` from hidden states to memory cells.  Then calculate memory cells and gates input activation.
-    # shape: (batch_size, n_cell x (3 + d_cell)).
+    # shape: (batch_size, n_blk x (3 + d_blk)).
     cells_and_gates_input_act = torch.sigmoid(cells_and_gates_input_by_emb + self.proj_h2c(h_prev))
 
     # Calculate memory cells input activation and reshape to separate memory cells.
-    # shape: (batch_size, n_cell, d_cell)
-    d_hid = self.n_cell * self.d_cell
+    # shape: (batch_size, n_blk, d_blk)
+    d_hid = self.n_blk * self.d_blk
     cells_input_act = 4 * cells_and_gates_input_act[:, :d_hid] - 2
-    cells_input_act = cells_input_act.reshape(-1, self.n_cell, self.d_cell)
+    cells_input_act = cells_input_act.reshape(-1, self.n_blk, self.d_blk)
 
     # Get input gates.
-    # shape: (batch_size, n_cell, 1)
-    input_gates = cells_and_gates_input_act[:, d_hid:d_hid + self.n_cell].unsqueeze(2)
+    # shape: (batch_size, n_blk, 1)
+    input_gates = cells_and_gates_input_act[:, d_hid:d_hid + self.n_blk].unsqueeze(2)
 
     # Get forget gates.
-    # shape: (batch_size, n_cell, 1)
-    forget_gates = cells_and_gates_input_act[:, d_hid + self.n_cell:d_hid + 2 * self.n_cell].unsqueeze(2)
+    # shape: (batch_size, n_blk, 1)
+    forget_gates = cells_and_gates_input_act[:, d_hid + self.n_blk:d_hid + 2 * self.n_blk].unsqueeze(2)
 
     # Calculate current memory cells' internal states.
-    # shape: (batch_size, n_cell, d_cell)
+    # shape: (batch_size, n_blk, d_blk)
     c_cur = forget_gates * c_prev + input_gates * cells_input_act
 
     # Get output gates.
-    # shape: (batch_size, n_cell, 1)
-    output_gates = cells_and_gates_input_act[:, d_hid + 2 * self.n_cell:].unsqueeze(2)
+    # shape: (batch_size, n_blk, 1)
+    output_gates = cells_and_gates_input_act[:, d_hid + 2 * self.n_blk:].unsqueeze(2)
 
     # Calculate current memory cells' outputs and reshape to fit the shape of hidden state.
-    # shape: (batch_size, n_cell x d_cell)
+    # shape: (batch_size, n_blk x d_blk)
     h_cur = output_gates * (2 * torch.sigmoid(c_cur) - 1)
     h_cur = h_cur.reshape(-1, d_hid)
 
@@ -439,7 +439,7 @@ class LSTM2000(BaseModel):
     ...   '--beta1', '0.9',
     ...   '--beta2', '0.99',
     ...   '--ckpt_step', '1000',
-    ...   '--d_cell', '64',
+    ...   '--d_blk', '64',
     ...   '--d_emb', '100',
     ...   '--dset_name', 'wiki-text-2',
     ...   '--eps', '1e-8',
@@ -448,7 +448,7 @@ class LSTM2000(BaseModel):
     ...   '--lr', '1e-4',
     ...   '--max_norm', '1',
     ...   '--max_seq_len', '128',
-    ...   '--n_cell', '8',
+    ...   '--n_blk', '8',
     ...   '--n_epoch', '10',
     ...   '--tknzr_exp_name', 'my_tknzr_exp',
     ...   '--ver', 'train',
@@ -462,7 +462,7 @@ class LSTM2000(BaseModel):
     True
     >>> args.ckpt_step == 1000
     True
-    >>> args.d_cell == 64
+    >>> args.d_blk == 64
     True
     >>> args.d_emb == 100
     True
@@ -480,7 +480,7 @@ class LSTM2000(BaseModel):
     True
     >>> args.max_seq_len == 128
     True
-    >>> args.n_cell == 8
+    >>> args.n_blk == 8
     True
     >>> args.n_epoch == 10
     True
@@ -499,8 +499,8 @@ class LSTM2000(BaseModel):
     # Required arguments.
     group = parser.add_argument_group('LSTM (2000 version) training arguments')
     group.add_argument(
-      '--d_cell',
-      help='Memory cell dimension.',
+      '--d_blk',
+      help='Dimension of each memory cell block.',
       required=True,
       type=int,
     )
@@ -511,8 +511,8 @@ class LSTM2000(BaseModel):
       type=int,
     )
     group.add_argument(
-      '--n_cell',
-      help='Number of memory cells.',
+      '--n_blk',
+      help='Number of memory cell blocks.',
       required=True,
       type=int,
     )

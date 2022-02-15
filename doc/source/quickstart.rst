@@ -162,7 +162,7 @@ This example use :py:mod:`lmp.model.LSTM2000` as our training language model:
      --beta1 0.9 \
      --beta2 0.99 \
      --ckpt_step 500 \
-     --d_cell 64 \
+     --d_blk 64 \
      --d_emb 100 \
      --dset_name wiki-text-2 \
      --eps 1e-8 \
@@ -171,7 +171,7 @@ This example use :py:mod:`lmp.model.LSTM2000` as our training language model:
      --lr 1e-4 \
      --max_norm 1 \
      --max_seq_len 128 \
-     --n_cell 8 \
+     --n_blk 8 \
      --n_epoch 10 \
      --tknzr_exp_name my_tknzr_exp \
      --ver train \

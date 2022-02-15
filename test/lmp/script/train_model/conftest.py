@@ -69,8 +69,8 @@ def ckpt_step() -> int:
 
 
 @pytest.fixture(params=[2, 4])
-def d_cell(request) -> int:
-  """Memory cell dimension."""
+def d_blk(request) -> int:
+  """Dimension of each memory cell block."""
   return request.param
 
 
@@ -129,8 +129,8 @@ def max_seq_len() -> int:
 
 
 @pytest.fixture(params=[2, 4])
-def n_cell(request) -> int:
-  """Number of memory cells."""
+def n_blk(request) -> int:
+  """Number of memory cell blocks."""
   return request.param
 
 

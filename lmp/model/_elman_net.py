@@ -162,7 +162,7 @@ class ElmanNet(BaseModel):
     ----------
     batch_cur_tkids: torch.Tensor
       Batch of token ids which represent input token ids of all time steps.  ``batch_cur_tkids`` has shape
-      ``(batch_size, seq_len)`` and ``dtype == torch.int``.
+      ``(batch_size, seq_len)`` and ``dtype == torch.long``.
     batch_next_tkids: torch.Tensor
       Batch of token ids which represent prediction targets of all time steps.  ``batch_next_tkids`` has the same shape
       and ``dtype`` as ``batch_cur_tkids``.
@@ -234,7 +234,7 @@ class ElmanNet(BaseModel):
     Parameters
     ----------
     batch_cur_tkids: torch.Tensor
-      Batch of current input token ids.  ``batch_cur_tkids`` has shape ``(batch_size)`` and ``dtype == torch.int``.
+      Batch of current input token ids.  ``batch_cur_tkids`` has shape ``(batch_size)`` and ``dtype == torch.long``.
     batch_prev_states: typing.Optional[list[torch.Tensor]], default: None
       Batch of previous calculation results.  Set to ``None`` to use initial hidden states.  ``batch_prev_states`` must
       only has one item with shape ``(batch_size, d_emb)`` and ``dtype == torch.float``.

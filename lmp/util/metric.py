@@ -25,7 +25,7 @@ def ppl(batch_tkids: torch.Tensor, batch_tkids_pd: torch.Tensor, eos_tkid: int, 
   ----------
   batch_tkids: torch.Tensor
     Batch of token ids which represent prediction targets.  ``batch_tkids`` has shape ``(batch_size, seq_len)`` and
-    ``dtype == torch.int``.
+    ``dtype == torch.long``.
   batch_tkids_pd: torch.Tensor
     Batch of token ids prediction probability distribution.  ``batch_tkids_pd`` has shape
     ``(batch_size, seq_len, vocab_size)`` and ``dtype == torch.float``.

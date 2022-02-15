@@ -55,7 +55,7 @@ def test_instance_method() -> None:
         default=Parameter.empty,
       ),
       Parameter(
-        name='d_cell',
+        name='d_blk',
         kind=Parameter.KEYWORD_ONLY,
         default=Parameter.empty,
         annotation=int,
@@ -67,7 +67,7 @@ def test_instance_method() -> None:
         annotation=int,
       ),
       Parameter(
-        name='n_cell',
+        name='n_blk',
         kind=Parameter.KEYWORD_ONLY,
         default=Parameter.empty,
         annotation=int,

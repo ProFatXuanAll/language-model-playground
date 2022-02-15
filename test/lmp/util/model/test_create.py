@@ -18,26 +18,26 @@ def test_create_elman_net(tknzr: BaseTknzr) -> None:
 
 def test_create_lstm_1997(tknzr: BaseTknzr) -> None:
   """Test construction for :py:class:`lmp.model.LSTM1997`."""
-  model = lmp.util.model.create(d_cell=8, d_emb=10, model_name=LSTM1997.model_name, n_cell=4, tknzr=tknzr)
+  model = lmp.util.model.create(d_blk=8, d_emb=10, model_name=LSTM1997.model_name, n_blk=4, tknzr=tknzr)
   assert isinstance(model, LSTM1997)
-  assert model.d_cell == 8
+  assert model.d_blk == 8
   assert model.emb.embedding_dim == 10
-  assert model.n_cell == 4
+  assert model.n_blk == 4
 
 
 def test_create_lstm_2000(tknzr: BaseTknzr) -> None:
   """Test construction for :py:class:`lmp.model.LSTM2000`."""
-  model = lmp.util.model.create(d_cell=8, d_emb=10, model_name=LSTM2000.model_name, n_cell=4, tknzr=tknzr)
+  model = lmp.util.model.create(d_blk=8, d_emb=10, model_name=LSTM2000.model_name, n_blk=4, tknzr=tknzr)
   assert isinstance(model, LSTM2000)
-  assert model.d_cell == 8
+  assert model.d_blk == 8
   assert model.emb.embedding_dim == 10
-  assert model.n_cell == 4
+  assert model.n_blk == 4
 
 
 def test_create_lstm_2002(tknzr: BaseTknzr) -> None:
   """Test construction for :py:class:`lmp.model.LSTM2002`."""
-  model = lmp.util.model.create(d_cell=8, d_emb=10, model_name=LSTM2002.model_name, n_cell=4, tknzr=tknzr)
+  model = lmp.util.model.create(d_blk=8, d_emb=10, model_name=LSTM2002.model_name, n_blk=4, tknzr=tknzr)
   assert isinstance(model, LSTM2002)
-  assert model.d_cell == 8
+  assert model.d_blk == 8
   assert model.emb.embedding_dim == 10
-  assert model.n_cell == 4
+  assert model.n_blk == 4

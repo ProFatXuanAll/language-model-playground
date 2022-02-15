@@ -22,7 +22,7 @@ def test_train_lstm_1997_on_wiki_text_2(
   cfg_file_path: str,
   ckpt_dir_path: str,
   ckpt_step: int,
-  d_cell: int,
+  d_blk: int,
   d_emb: int,
   eps: float,
   exp_name: str,
@@ -31,7 +31,7 @@ def test_train_lstm_1997_on_wiki_text_2(
   lr: float,
   max_norm: float,
   max_seq_len: int,
-  n_cell: int,
+  n_blk: int,
   n_epoch: int,
   seed: int,
   tknzr_exp_name: str,
@@ -49,8 +49,8 @@ def test_train_lstm_1997_on_wiki_text_2(
       str(beta2),
       '--ckpt_step',
       str(ckpt_step),
-      '--d_cell',
-      str(d_cell),
+      '--d_blk',
+      str(d_blk),
       '--d_emb',
       str(d_emb),
       '--dset_name',
@@ -67,8 +67,8 @@ def test_train_lstm_1997_on_wiki_text_2(
       str(max_norm),
       '--max_seq_len',
       str(max_seq_len),
-      '--n_cell',
-      str(n_cell),
+      '--n_blk',
+      str(n_blk),
       '--n_epoch',
       str(n_epoch),
       '--seed',
@@ -96,7 +96,7 @@ def test_train_lstm_1997_on_wiki_text_2(
   assert cfg.beta1 == beta1
   assert cfg.beta2 == beta2
   assert cfg.ckpt_step == ckpt_step
-  assert cfg.d_cell == d_cell
+  assert cfg.d_blk == d_blk
   assert cfg.d_emb == d_emb
   assert cfg.dset_name == WikiText2Dset.dset_name
   assert cfg.eps == eps
@@ -106,7 +106,7 @@ def test_train_lstm_1997_on_wiki_text_2(
   assert cfg.max_norm == max_norm
   assert cfg.max_seq_len == max_seq_len
   assert cfg.model_name == LSTM1997.model_name
-  assert cfg.n_cell == n_cell
+  assert cfg.n_blk == n_blk
   assert cfg.n_epoch == n_epoch
   assert cfg.seed == seed
   assert cfg.tknzr_exp_name == tknzr_exp_name
