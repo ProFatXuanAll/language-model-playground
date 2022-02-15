@@ -33,7 +33,6 @@ from typing import List
 
 import lmp.dset
 import lmp.tknzr
-import lmp.util.cfg
 import lmp.util.rand
 import lmp.util.tknzr
 
@@ -105,11 +104,8 @@ def main(argv: List[str]) -> None:
   # Set random seed for reproducibility.
   lmp.util.rand.set_seed(seed=args.seed)
 
-  # Load pre-trained tokenizer configuration.
-  tknzr_cfg = lmp.util.cfg.load(exp_name=args.exp_name)
-
   # Load pre-trained tokenizer instance.
-  tknzr = lmp.util.tknzr.load(exp_name=args.exp_name, tknzr_name=tknzr_cfg.tknzr_name)
+  tknzr = lmp.util.tknzr.load(exp_name=args.exp_name)
 
   # Tokenize text.
   print(tknzr.tknz(args.txt))
@@ -117,7 +113,6 @@ def main(argv: List[str]) -> None:
   # Free memory.  This is only need for unit test.
   del args
   del tknzr
-  del tknzr_cfg
   gc.collect()
 
 

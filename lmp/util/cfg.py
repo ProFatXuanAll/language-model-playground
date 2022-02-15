@@ -10,51 +10,6 @@ import lmp.util.validate
 FILE_NAME = 'cfg.json'
 
 
-def load(exp_name: str) -> argparse.Namespace:
-  """Load training configuration from JSON file.
-
-  Load training configuration from path ``project_root/exp/exp_name/cfg.json``.  Loaded configurations will be wrapped
-  in :py:class:`argparse.Namespace` for convenience.
-
-  Parameters
-  ----------
-  exp_name: str
-    Name of the training experiment.
-
-  Returns
-  -------
-  argparse.Namespace
-    Training experiment's configurations.
-
-  See Also
-  --------
-  lmp.util.cfg.save
-    Save training configurations into JSON file.
-
-  Examples
-  --------
-  >>> import argparse
-  >>> import lmp.util.cfg
-  >>> args = argparse.Namespace(a=1, b=2, c=3)
-  >>> lmp.util.cfg.save(args=args, exp_name='my_exp')
-  >>> assert args == lmp.util.cfg.load(exp_name='my_exp')
-  """
-  # `exp_name` validation.
-  lmp.util.validate.raise_if_not_instance(val=exp_name, val_name='exp_name', val_type=str)
-  lmp.util.validate.raise_if_empty_str(val=exp_name, val_name='exp_name')
-
-  # `file_path` validation.
-  file_path = os.path.join(lmp.util.path.EXP_PATH, exp_name, FILE_NAME)
-  lmp.util.validate.raise_if_is_directory(path=file_path)
-
-  # Load configuration from JSON file.
-  with open(file_path, 'r', encoding='utf-8') as input_file:
-    cfg = json.load(input_file)
-
-  # Wrap configuration with `argparse.Namespace` for convenience.
-  return argparse.Namespace(**cfg)
-
-
 def save(args: argparse.Namespace, exp_name: str) -> None:
   """Save training configurations into JSON file.
 
@@ -111,3 +66,48 @@ def save(args: argparse.Namespace, exp_name: str) -> None:
   # Save configuration in JSON format.
   with open(file_path, 'w', encoding='utf-8') as output_file:
     json.dump(args.__dict__, output_file, ensure_ascii=False, sort_keys=True)
+
+
+def load(exp_name: str) -> argparse.Namespace:
+  """Load training configuration from JSON file.
+
+  Load training configuration from path ``project_root/exp/exp_name/cfg.json``.  Loaded configurations will be wrapped
+  in :py:class:`argparse.Namespace` for convenience.
+
+  Parameters
+  ----------
+  exp_name: str
+    Name of the training experiment.
+
+  Returns
+  -------
+  argparse.Namespace
+    Training experiment's configurations.
+
+  See Also
+  --------
+  lmp.util.cfg.save
+    Save training configurations into JSON file.
+
+  Examples
+  --------
+  >>> import argparse
+  >>> import lmp.util.cfg
+  >>> args = argparse.Namespace(a=1, b=2, c=3)
+  >>> lmp.util.cfg.save(args=args, exp_name='my_exp')
+  >>> assert args == lmp.util.cfg.load(exp_name='my_exp')
+  """
+  # `exp_name` validation.
+  lmp.util.validate.raise_if_not_instance(val=exp_name, val_name='exp_name', val_type=str)
+  lmp.util.validate.raise_if_empty_str(val=exp_name, val_name='exp_name')
+
+  # `file_path` validation.
+  file_path = os.path.join(lmp.util.path.EXP_PATH, exp_name, FILE_NAME)
+  lmp.util.validate.raise_if_is_directory(path=file_path)
+
+  # Load configuration from JSON file.
+  with open(file_path, 'r', encoding='utf-8') as input_file:
+    cfg = json.load(input_file)
+
+  # Wrap configuration with `argparse.Namespace` for convenience.
+  return argparse.Namespace(**cfg)

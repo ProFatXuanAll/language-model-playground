@@ -190,64 +190,93 @@ class BaseTknzr(abc.ABC):
       help='Convert all text and tokens into lower cases if given.',
     )
 
-  def batch_dec(self, batch_tkids: List[List[int]], *, rm_sp_tks: bool = False) -> List[str]:
-    """Decode batch of token id lists back to batch of text.
+  def norm(self, txt: str) -> str:
+    """Perform normalization on text.
+
+    Text will be NFKC normalized.  Whitespaces are collapsed and strip from both ends.  If ``self.is_uncased == True``,
+    then text will be converted to lower cases.
 
     Parameters
     ----------
-    batch_tkids: list[list[int]]
-      Batch of token id lists to be decoded.
-    rm_sp_tks: bool, default: False
-      Whether to remove special tokens.  See :py:meth:`lmp.tknzr.BaseTknzr.dec` for ``rm_sp_tks`` usage.
+    txt: str
+      Text to be normalized.
+
+    Returns
+    -------
+    str
+      Normalized text.
+
+    See Also
+    --------
+    unicodedata.normalize
+      Python built-in unicode normalization.
+
+    Examples
+    --------
+    Convert text to lower cases.
+
+    >>> from lmp.tknzr import CharTknzr
+    >>> tknzr = CharTknzr(is_uncased=True, max_seq_len=128, max_vocab=10, min_count=2)
+    >>> assert tknzr.norm('ABC') == 'abc'
+    """
+    # `txt` validation.
+    lmp.util.validate.raise_if_not_instance(val=txt, val_name='txt', val_type=str)
+
+    norm_txt = WS_PTTN.sub(' ', unicodedata.normalize('NFKC', txt)).strip()
+    if self.is_uncased:
+      return norm_txt.lower()
+    return norm_txt
+
+  @abc.abstractmethod
+  def tknz(self, txt: str) -> List[str]:
+    """Perform tokenization on text.
+
+    Text will first be normalized by :py:meth:`lmp.tknzr.BaseTknz.norm`, then be tokenized into list of tokens.
+
+    Parameters
+    ----------
+    txt: str
+      Text to be tokenized.
 
     Returns
     -------
     list[str]
-      Batch of decoded text.
+      List of normalized tokens.
 
     See Also
     --------
-    lmp.tknzr.BaseTknzr.batch_enc
-      Encode batch of text into batch of token id lists.
-    lmp.tknzr.BaseTknzr.dec
-      Decode token id list back to text.
+    lmp.tknzr.BaseTknzr.dtknz
+      Detokenize list of tokens back to text.
+    lmp.tknzr.BaseTknzr.norm
+      Text normalization.
     """
-    # `batch_tkids` validation.
-    lmp.util.validate.raise_if_not_instance(val=batch_tkids, val_name='batch_tkids', val_type=list)
+    raise NotImplementedError
 
-    # Decode each sequence of token ids in the batch.
-    return [self.dec(tkids, rm_sp_tks=rm_sp_tks) for tkids in batch_tkids]
+  @abc.abstractmethod
+  def dtknz(self, tks: List[str]) -> str:
+    """Convert tokens back to text.
 
-  def batch_enc(self, batch_txt: List[str]) -> List[List[int]]:
-    """Encode batch of text into batch of token id lists.
-
-    Each text in ``batch_txt`` will be encoded with :py:meth:`lmp.tknzr.BaseTknzr.enc`.  All encoded token id lists
-    will have the same length (``= self.max_seq_len``).
+    :term:`Tokens` will be detokenized and normalized by :py:meth:`lmp.tknzr.BaseTknz.norm`.  The execution order of
+    detokenization and normalization will not effect the result.
 
     Parameters
     ----------
-    batch_txt: list[str],
-      Batch of text to be encoded.
+    tks: list[str]
+      List of tokens to be detokenized.
 
     Returns
     -------
-    list[list[int]]
-      Encoded batch of token id lists.
+    str
+      Normalized text detokenized from tokens.
 
     See Also
     --------
-    lmp.tknzr.BaseTknzr.pad_to_max
-      Pad token id list when token id list is shorter than required.
-    lmp.tknzr.BaseTknzr.trunc_to_max
-      Truncate token id list when token id list is longer than allowed.
-    lmp.tknzr.BaseTknzr.batch_dec
-      Decode batch of token id lists back to batch of text.
-    lmp.tknzr.BaseTknzr.enc
-      Encode text into token id list.
+    lmp.tknzr.BaseTknzr.tknz
+      Tokenize text into list of tokens.
+    lmp.tknzr.BaseTknzr.norm
+      Text normalization.
     """
-    # `batch_txt` validation.
-    lmp.util.validate.raise_if_not_instance(val=batch_txt, val_name='batch_txt', val_type=list)
-    return [self.enc(txt=txt) for txt in batch_txt]
+    raise NotImplementedError
 
   def build_vocab(self, batch_txt: Iterable[str]) -> None:
     """Build vocabulary for tokenizer.
@@ -311,84 +340,85 @@ class BaseTknzr(abc.ABC):
       # Increment token id.
       max_id += 1
 
-  def dec(self, tkids: List[int], *, rm_sp_tks: bool = False) -> str:
-    """Decode token id list back to text.
+  @property
+  def vocab_size(self) -> int:
+    """Get tokenizer vocabulary size.
 
-    :term:`Token id` list will first be converted into token list, then be detokenized back to text.  Special tokens
-    other than ``[unk]`` will be removed if ``rm_sp_tks == True``.  Note that unknown tokens ``[unk]`` will not be
-    removed even if ``rm_sp_tks == True``.  Token ids in the list that are not in tokenizer's inverse lookup table will
-    be converted into ``[unk]`` token.
+    Returns
+    -------
+    int
+      Tokenizer vocabulary size.
 
-    Parameters
-    ----------
+    See Also
+    --------
+    lmp.tknzr.BaseTknzr.build_vocab
+      Build vocabulary for tokenizer.
+    """
+    return len(self.tk2id)
+
+  def trunc_to_max(self, tkids: List[int]) -> List[int]:
+    """Truncate token id list when token id list is longer than allowed.
+
+    If ``len(tkids) > self.max_seq_len``, then truncate ``tkids`` to have length equals to ``self.max_seq_len``.  Do
+    nothing when ``len(tkids) <= self.max_seq_len``.
+
+    Arguments
+    ---------
     tkids: list[int]
-      Token id list to be decoded.
-    rm_sp_tks: bool, default: False
-      Set to ``True`` to remove ``[bos]``, ``[eos]`` and ``[pad]``.
+      Token id list to be truncated.
 
     Returns
     -------
-    str
-      Decoded text.
+    list[int]
+      Truncated token id list.
 
     See Also
     --------
-    lmp.tknzr.BaseTknzr.dtknz
-      Convert tokens back to text.
-    lmp.tknzr.BaseTknzr.enc
-      Encode text into token id list.
+    lmp.tknzr.BaseTknzr.pad_to_max
+      Pad token id list when token id list is shorter than required.
 
-    Note
-    ----
-    Unknown tokens cannot be converted back to original tokens, so unknown tokens should not be removed and serve as
-    hints of :term:`OOV`.
+    Examples
+    --------
+    >>> from lmp.tknzr import CharTknzr
+    >>> tknzr = CharTknzr(is_uncased=True, max_seq_len=1, max_vocab=10, min_count=1)
+    >>> assert tknzr.trunc_to_max([1, 2, 3]) == [1]
     """
-    # `tkids` validation.
-    lmp.util.validate.raise_if_not_instance(val=tkids, val_name='tkids', val_type=list)
-    # `rm_sp_tks` validation.
-    lmp.util.validate.raise_if_not_instance(val=rm_sp_tks, val_name='rm_sp_tks', val_type=bool)
+    # Truncate token id list to maximum sequence length.
+    return tkids[:self.max_seq_len]
 
-    # Remove special token ids.
-    if rm_sp_tks:
-      sp_tkids = [BOS_TKID, EOS_TKID, PAD_TKID]
-      tkids = list(filter(lambda tkid: tkid not in sp_tkids, tkids))
+  def pad_to_max(self, tkids: List[int]) -> List[int]:
+    """Pad token id list when token id list is shorter than required.
 
-    tks = []
-    # Convert token ids into tokens.
-    for tkid in tkids:
-      try:
-        tks.append(self.id2tk[tkid])
-      # Convert unknown token ids into `[unk]` token.
-      except KeyError:
-        tks.append(UNK_TK)
+    If ``len(tkids) < self.max_seq_len``, then append padding token id at the end of ``tkids`` until ``tkids`` has
+    length equal to ``self.max_seq_len``.  Do nothing when ``len(tkids) >= self.max_seq_len``.
 
-    return self.dtknz(tks)
-
-  @abc.abstractmethod
-  def dtknz(self, tks: List[str]) -> str:
-    """Convert tokens back to text.
-
-    :term:`Tokens` will be detokenized and normalized by :py:meth:`lmp.tknzr.BaseTknz.norm`.  The execution order of
-    detokenization and normalization will not effect the result.
-
-    Parameters
-    ----------
-    tks: list[str]
-      List of tokens to be detokenized.
+    Arguments
+    ---------
+    tkids: list[int]
+      Token id list to be padded.
 
     Returns
     -------
-    str
-      Normalized text detokenized from tokens.
+    list[int]
+      Padded token id list.
 
     See Also
     --------
-    lmp.tknzr.BaseTknzr.tknz
-      Tokenize text into list of tokens.
-    lmp.tknzr.BaseTknzr.norm
-      Text normalization.
+    lmp.tknzr.BaseTknzr.trunc_to_max
+      Truncate token id list when token id list is longer than allowed.
+
+    Examples
+    --------
+    >>> from lmp.tknzr._base import PAD_TKID
+    >>> from lmp.tknzr import CharTknzr
+    >>> tknzr = CharTknzr(is_uncased=True, max_seq_len=5, max_vocab=10, min_count=1)
+    >>> assert tknzr.pad_to_max([1, 2, 3]) == [1, 2, 3, PAD_TKID, PAD_TKID]
     """
-    raise NotImplementedError
+    # Calculate padding length.
+    pad_len = max(0, self.max_seq_len - len(tkids))
+
+    # Pad to maximum sequence length.
+    return tkids + [PAD_TKID] * pad_len
 
   def enc(self, txt: str) -> List[int]:
     """Encode text into token id list.
@@ -447,144 +477,114 @@ class BaseTknzr(abc.ABC):
     # First truncate sequence to maximum sequence length, then pad sequence to maximum sequence length.
     return self.pad_to_max(tkids=self.trunc_to_max(tkids=tkids))
 
-  def norm(self, txt: str) -> str:
-    """Perform normalization on text.
+  def dec(self, tkids: List[int], *, rm_sp_tks: bool = False) -> str:
+    """Decode token id list back to text.
 
-    Text will be NFKC normalized.  Whitespaces are collapsed and strip from both ends.  If ``self.is_uncased == True``,
-    then text will be converted to lower cases.
+    :term:`Token id` list will first be converted into token list, then be detokenized back to text.  Special tokens
+    other than ``[unk]`` will be removed if ``rm_sp_tks == True``.  Note that unknown tokens ``[unk]`` will not be
+    removed even if ``rm_sp_tks == True``.  Token ids in the list that are not in tokenizer's inverse lookup table will
+    be converted into ``[unk]`` token.
 
     Parameters
     ----------
-    txt: str
-      Text to be normalized.
+    tkids: list[int]
+      Token id list to be decoded.
+    rm_sp_tks: bool, default: False
+      Set to ``True`` to remove ``[bos]``, ``[eos]`` and ``[pad]``.
 
     Returns
     -------
     str
-      Normalized text.
-
-    See Also
-    --------
-    unicodedata.normalize
-      Python built-in unicode normalization.
-
-    Examples
-    --------
-    Convert text to lower cases.
-
-    >>> from lmp.tknzr import CharTknzr
-    >>> tknzr = CharTknzr(is_uncased=True, max_seq_len=128, max_vocab=10, min_count=2)
-    >>> assert tknzr.norm('ABC') == 'abc'
-    """
-    # `txt` validation.
-    lmp.util.validate.raise_if_not_instance(val=txt, val_name='txt', val_type=str)
-
-    norm_txt = WS_PTTN.sub(' ', unicodedata.normalize('NFKC', txt)).strip()
-    if self.is_uncased:
-      return norm_txt.lower()
-    return norm_txt
-
-  def pad_to_max(self, tkids: List[int]) -> List[int]:
-    """Pad token id list when token id list is shorter than required.
-
-    If ``len(tkids) < self.max_seq_len``, then append padding token id at the end of ``tkids`` until ``tkids`` has
-    length equal to ``self.max_seq_len``.  Do nothing when ``len(tkids) >= self.max_seq_len``.
-
-    Arguments
-    ---------
-    tkids: list[int]
-      Token id list to be padded.
-
-    Returns
-    -------
-    list[int]
-      Padded token id list.
-
-    See Also
-    --------
-    lmp.tknzr.BaseTknzr.trunc_to_max
-      Truncate token id list when token id list is longer than allowed.
-
-    Examples
-    --------
-    >>> from lmp.tknzr._base import PAD_TKID
-    >>> from lmp.tknzr import CharTknzr
-    >>> tknzr = CharTknzr(is_uncased=True, max_seq_len=5, max_vocab=10, min_count=1)
-    >>> assert tknzr.pad_to_max([1, 2, 3]) == [1, 2, 3, PAD_TKID, PAD_TKID]
-    """
-    # Calculate padding length.
-    pad_len = max(0, self.max_seq_len - len(tkids))
-
-    # Pad to maximum sequence length.
-    return tkids + [PAD_TKID] * pad_len
-
-  @abc.abstractmethod
-  def tknz(self, txt: str) -> List[str]:
-    """Perform tokenization on text.
-
-    Text will first be normalized by :py:meth:`lmp.tknzr.BaseTknz.norm`, then be tokenized into list of tokens.
-
-    Parameters
-    ----------
-    txt: str
-      Text to be tokenized.
-
-    Returns
-    -------
-    list[str]
-      List of normalized tokens.
+      Decoded text.
 
     See Also
     --------
     lmp.tknzr.BaseTknzr.dtknz
-      Detokenize list of tokens back to text.
-    lmp.tknzr.BaseTknzr.norm
-      Text normalization.
+      Convert tokens back to text.
+    lmp.tknzr.BaseTknzr.enc
+      Encode text into token id list.
+
+    Note
+    ----
+    Unknown tokens cannot be converted back to original tokens, so unknown tokens should not be removed and serve as
+    hints of :term:`OOV`.
     """
-    raise NotImplementedError
+    # `tkids` validation.
+    lmp.util.validate.raise_if_not_instance(val=tkids, val_name='tkids', val_type=list)
+    # `rm_sp_tks` validation.
+    lmp.util.validate.raise_if_not_instance(val=rm_sp_tks, val_name='rm_sp_tks', val_type=bool)
 
-  def trunc_to_max(self, tkids: List[int]) -> List[int]:
-    """Truncate token id list when token id list is longer than allowed.
+    # Remove special token ids.
+    if rm_sp_tks:
+      sp_tkids = [BOS_TKID, EOS_TKID, PAD_TKID]
+      tkids = list(filter(lambda tkid: tkid not in sp_tkids, tkids))
 
-    If ``len(tkids) > self.max_seq_len``, then truncate ``tkids`` to have length equals to ``self.max_seq_len``.  Do
-    nothing when ``len(tkids) <= self.max_seq_len``.
+    tks = []
+    # Convert token ids into tokens.
+    for tkid in tkids:
+      try:
+        tks.append(self.id2tk[tkid])
+      # Convert unknown token ids into `[unk]` token.
+      except KeyError:
+        tks.append(UNK_TK)
 
-    Arguments
-    ---------
-    tkids: list[int]
-      Token id list to be truncated.
+    return self.dtknz(tks)
+
+  def batch_enc(self, batch_txt: List[str]) -> List[List[int]]:
+    """Encode batch of text into batch of token id lists.
+
+    Each text in ``batch_txt`` will be encoded with :py:meth:`lmp.tknzr.BaseTknzr.enc`.  All encoded token id lists
+    will have the same length (``= self.max_seq_len``).
+
+    Parameters
+    ----------
+    batch_txt: list[str],
+      Batch of text to be encoded.
 
     Returns
     -------
-    list[int]
-      Truncated token id list.
+    list[list[int]]
+      Encoded batch of token id lists.
 
     See Also
     --------
     lmp.tknzr.BaseTknzr.pad_to_max
       Pad token id list when token id list is shorter than required.
-
-    Examples
-    --------
-    >>> from lmp.tknzr import CharTknzr
-    >>> tknzr = CharTknzr(is_uncased=True, max_seq_len=1, max_vocab=10, min_count=1)
-    >>> assert tknzr.trunc_to_max([1, 2, 3]) == [1]
+    lmp.tknzr.BaseTknzr.trunc_to_max
+      Truncate token id list when token id list is longer than allowed.
+    lmp.tknzr.BaseTknzr.batch_dec
+      Decode batch of token id lists back to batch of text.
+    lmp.tknzr.BaseTknzr.enc
+      Encode text into token id list.
     """
-    # Truncate token id list to maximum sequence length.
-    return tkids[:self.max_seq_len]
+    # `batch_txt` validation.
+    lmp.util.validate.raise_if_not_instance(val=batch_txt, val_name='batch_txt', val_type=list)
+    return [self.enc(txt=txt) for txt in batch_txt]
 
-  @property
-  def vocab_size(self) -> int:
-    """Get tokenizer vocabulary size.
+  def batch_dec(self, batch_tkids: List[List[int]], *, rm_sp_tks: bool = False) -> List[str]:
+    """Decode batch of token id lists back to batch of text.
+
+    Parameters
+    ----------
+    batch_tkids: list[list[int]]
+      Batch of token id lists to be decoded.
+    rm_sp_tks: bool, default: False
+      Whether to remove special tokens.  See :py:meth:`lmp.tknzr.BaseTknzr.dec` for ``rm_sp_tks`` usage.
 
     Returns
     -------
-    int
-      Tokenizer vocabulary size.
+    list[str]
+      Batch of decoded text.
 
     See Also
     --------
-    lmp.tknzr.BaseTknzr.build_vocab
-      Build vocabulary for tokenizer.
+    lmp.tknzr.BaseTknzr.batch_enc
+      Encode batch of text into batch of token id lists.
+    lmp.tknzr.BaseTknzr.dec
+      Decode token id list back to text.
     """
-    return len(self.tk2id)
+    # `batch_tkids` validation.
+    lmp.util.validate.raise_if_not_instance(val=batch_tkids, val_name='batch_tkids', val_type=list)
+
+    # Decode each sequence of token ids in the batch.
+    return [self.dec(tkids, rm_sp_tks=rm_sp_tks) for tkids in batch_tkids]

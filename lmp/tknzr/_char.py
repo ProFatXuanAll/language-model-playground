@@ -54,38 +54,6 @@ class CharTknzr(BaseTknzr):
 
   tknzr_name: ClassVar[str] = 'character'
 
-  def dtknz(self, tks: List[str]) -> str:
-    """Join list of characters back to text.
-
-    Tokens will be joined without whitespaces.  Returned text is normalized by :py:meth:`lmp.tknzr.BaseTknz.norm`.
-
-    Parameters
-    ----------
-    tks: list[str]
-      Token list to be joint.
-
-    Returns
-    -------
-    str
-      Normalized text without additional whitespaces other than the ones in the token list.
-
-    See Also
-    --------
-    lmp.tknzr.CharTknzr.tknz
-      Convert text into characters.
-    lmp.tknzr.BaseTknzr.norm
-      Text normalization.
-
-    Examples
-    --------
-    >>> from lmp.tknzr import CharTknzr
-    >>> tknzr = CharTknzr(is_uncased=False, max_seq_len=128, max_vocab=10, min_count=2)
-    >>> assert tknzr.dtknz(['a', 'b', 'c']) == 'abc'
-    >>> assert tknzr.dtknz(['a', 'b', 'c', ' ', 'd', 'e', 'f']) == 'abc def'
-    """
-    # First perform detokenization, then do normalization.  Order of these operation does not affect the output.
-    return self.norm(''.join(tks))
-
   def tknz(self, txt: str) -> List[str]:
     """Convert text into list of characters.
 
@@ -131,3 +99,35 @@ class CharTknzr(BaseTknzr):
         txt = txt[1:]
 
     return tks
+
+  def dtknz(self, tks: List[str]) -> str:
+    """Join list of characters back to text.
+
+    Tokens will be joined without whitespaces.  Returned text is normalized by :py:meth:`lmp.tknzr.BaseTknz.norm`.
+
+    Parameters
+    ----------
+    tks: list[str]
+      Token list to be joint.
+
+    Returns
+    -------
+    str
+      Normalized text without additional whitespaces other than the ones in the token list.
+
+    See Also
+    --------
+    lmp.tknzr.CharTknzr.tknz
+      Convert text into characters.
+    lmp.tknzr.BaseTknzr.norm
+      Text normalization.
+
+    Examples
+    --------
+    >>> from lmp.tknzr import CharTknzr
+    >>> tknzr = CharTknzr(is_uncased=False, max_seq_len=128, max_vocab=10, min_count=2)
+    >>> assert tknzr.dtknz(['a', 'b', 'c']) == 'abc'
+    >>> assert tknzr.dtknz(['a', 'b', 'c', ' ', 'd', 'e', 'f']) == 'abc def'
+    """
+    # First perform detokenization, then do normalization.  Order of these operation does not affect the output.
+    return self.norm(''.join(tks))
