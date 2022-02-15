@@ -1,6 +1,4 @@
-"""Sample dataset.
-
-Use this script to sample and observe data points in specified dataset.
+"""Use this script to sample and observe data points of a dataset.
 
 See Also
 --------

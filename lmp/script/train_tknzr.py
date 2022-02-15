@@ -141,7 +141,10 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
   # Use tokenizer name to create subparser for all tokenizers.
   subparsers = parser.add_subparsers(dest='tknzr_name', required=True)
   for tknzr_name, tknzr_type in lmp.tknzr.TKNZR_OPTS.items():
-    tknzr_subparser = subparsers.add_parser(tknzr_name, description=f'Training {tknzr_type.__name__} tokenizer.')
+    tknzr_subparser = subparsers.add_parser(
+      tknzr_name,
+      description=f'Training `lmp.tknzr.{tknzr_type.__name__}` tokenizer.',
+    )
 
     # Required arguments.
     group = tknzr_subparser.add_argument_group('tokenizer training arguments')
@@ -201,7 +204,7 @@ def main(argv: List[str]) -> None:
   lmp.util.rand.set_seed(seed=args.seed)
 
   # Get dataset instance with specified version.
-  dset = lmp.util.dset.load(dset_name=args.dset_name, ver=args.ver)
+  dset = lmp.util.dset.load(**args.__dict__)
 
   # Get new tokenizer instance.
   tknzr = lmp.util.tknzr.create(**args.__dict__)
