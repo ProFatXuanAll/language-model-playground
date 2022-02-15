@@ -51,11 +51,13 @@ interesting in!
    :caption: Table of Contents:
 
    quickstart
-   lmp/index
+   dset/index
+   infer/index
+   model/index
+   tknzr/index
+   script/index
    experiment/index
-   contribute
-   how_to_doc
-   how_to_test
+   dev/index
    glossary
 
 Indices and tables

@@ -1,0 +1,5 @@
+:py:mod:`lmp.model._lstm_1997`
+==============================
+
+.. automodule:: lmp.model._lstm_1997
+   :members:

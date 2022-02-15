@@ -1,0 +1,5 @@
+LSTM (1997 version)
+===================
+
+.. autoclass:: lmp.model.LSTM1997
+   :members:
