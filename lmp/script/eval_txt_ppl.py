@@ -109,6 +109,7 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
   return parser.parse_args(argv)
 
 
+@torch.no_grad()
 def main(argv: List[str]) -> None:
   """Script entry point.
 

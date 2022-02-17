@@ -1,16 +1,16 @@
-"""Setup fixtures for testing :py:class:`lmp.model.ElmanNet`."""
+"""Setup fixtures for testing :py:class:`lmp.model._elman_net.ElmanNet`."""
 
 import pytest
 import torch
 
-from lmp.model import ElmanNet
-from lmp.tknzr import BaseTknzr
+from lmp.model._elman_net import ElmanNet
+from lmp.tknzr._base import BaseTknzr
 
 
 @pytest.fixture
-def elman_net(d_emb: int, tknzr: BaseTknzr) -> ElmanNet:
+def elman_net(d_emb: int, d_hid: int, p_emb: float, p_hid: float, tknzr: BaseTknzr) -> ElmanNet:
   """:py:class:`lmp.model.ElmanNet` instance."""
-  return ElmanNet(d_emb=d_emb, tknzr=tknzr)
+  return ElmanNet(d_emb=d_emb, d_hid=d_hid, p_emb=p_emb, p_hid=p_hid, tknzr=tknzr)
 
 
 @pytest.fixture

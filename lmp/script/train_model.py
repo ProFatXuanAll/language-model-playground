@@ -175,7 +175,106 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
   # Use model name to create subparser for all language models.
   subparsers = parser.add_subparsers(dest='model_name', required=True)
   for model_name, model_type in lmp.model.MODEL_OPTS.items():
-    model_subparser = subparsers.add_parser(model_name, description=f'Training {model_type.__name__} language model.')
+    model_subparser = subparsers.add_parser(
+      model_name,
+      description=f'Training `lmp.model.{model_type.__name__}` language model.',
+    )
+
+    # Required arguments.
+    group = model_subparser.add_argument_group('language model training arguments')
+    group.add_argument(
+      '--batch_size',
+      help='Mini-batch size.',
+      required=True,
+      type=int,
+    )
+    group.add_argument(
+      '--beta1',
+      help='First beta coefficient of AdamW optimizer.',
+      required=True,
+      type=float,
+    )
+    group.add_argument(
+      '--beta2',
+      help='Second beta coefficient of AdamW optimizer.',
+      required=True,
+      type=float,
+    )
+    group.add_argument(
+      '--ckpt_step',
+      help='Checkpoint save interval.',
+      required=True,
+      type=int,
+    )
+    group.add_argument(
+      '--dset_name',
+      choices=lmp.dset.DSET_OPTS.keys(),
+      help='Name of the dataset which will be used to train language model.',
+      required=True,
+      type=str,
+    )
+    group.add_argument(
+      '--eps',
+      help='Denominator smooth term of AdamW optimizer.',
+      required=True,
+      type=float,
+    )
+    group.add_argument(
+      '--exp_name',
+      help='Name of the language model training experiment.',
+      required=True,
+      type=str,
+    )
+    group.add_argument(
+      '--log_step',
+      help='Performance log interval.',
+      required=True,
+      type=int,
+    )
+    group.add_argument(
+      '--lr',
+      help='Learning rate.',
+      required=True,
+      type=float,
+    )
+    group.add_argument(
+      '--max_norm',
+      help='Gradient max-norm constraint.',
+      required=True,
+      type=float,
+    )
+    group.add_argument(
+      '--n_epoch',
+      help='Number of training epochs.',
+      required=True,
+      type=int,
+    )
+    group.add_argument(
+      '--tknzr_exp_name',
+      help='Name of the pre-trained tokenizer experiment.',
+      required=True,
+      type=str,
+    )
+    group.add_argument(
+      '--ver',
+      help='Version of the dataset.',
+      required=True,
+      type=str,
+    )
+    group.add_argument(
+      '--wd',
+      help='Weight decay coefficient of AdamW optimizer.',
+      required=True,
+      type=float,
+    )
+
+    # Optional arguments.
+    group.add_argument(
+      '--seed',
+      default=42,
+      help='Random seed.',
+      type=int,
+    )
 
     # Add model specific arguments.
     model_type.train_parser(parser=model_subparser)

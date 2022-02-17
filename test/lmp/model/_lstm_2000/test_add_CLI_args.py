@@ -1,13 +1,13 @@
 """Test parser arguments.
 
 Test target:
-- :py:meth:`lmp.model.LSTM1997.train_parser`.
+- :py:meth:`lmp.model._lstm_2000.LSTM2000.add_CLI_args`.
 """
 
 import argparse
 
 from lmp.dset import ALL_DSETS
-from lmp.model import LSTM1997
+from lmp.model._lstm_2000 import LSTM2000
 
 
 def test_arguments(
@@ -31,7 +31,7 @@ def test_arguments(
 ) -> None:
   """Must have correct arguments."""
   parser = argparse.ArgumentParser()
-  LSTM1997.train_parser(parser=parser)
+  LSTM2000.add_CLI_args(parser=parser)
   for dset_type in ALL_DSETS:
     for ver in dset_type.vers:
       args = parser.parse_args(

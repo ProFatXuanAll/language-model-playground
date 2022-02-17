@@ -1,12 +1,12 @@
-"""Test forward pass of :py:class:`lmp.model.ElmanNet`.
+"""Test forward pass and tensor graph.
 
 Test target:
-- :py:meth:`lmp.model.ElmanNet.forward`.
+- :py:meth:`lmp.model._elman_net.ElmanNet.forward`.
 """
 
 import torch
 
-from lmp.model import ElmanNet
+from lmp.model._elman_net import ElmanNet
 
 
 def test_forward_path(
@@ -26,6 +26,8 @@ def test_forward_path(
   assert loss.dtype == torch.float
   assert hasattr(elman_net.emb.weight, 'grad')
   assert hasattr(elman_net.h_0, 'grad')
-  assert hasattr(elman_net.proj_e2h.weight, 'grad')
-  assert hasattr(elman_net.proj_e2h.bias, 'grad')
+  assert hasattr(elman_net.proj_e2h[1].weight, 'grad')
+  assert hasattr(elman_net.proj_e2h[1].bias, 'grad')
   assert hasattr(elman_net.proj_h2h.weight, 'grad')
+  assert hasattr(elman_net.proj_h2e[1].weight, 'grad')
+  assert hasattr(elman_net.proj_h2e[1].bias, 'grad')

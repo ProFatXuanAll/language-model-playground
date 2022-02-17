@@ -1,4 +1,4 @@
-"""Test :py:class:`lmp.model.LSTM2000` signatures."""
+"""Test :py:mod:`lmp.model._lstm_2000` signatures."""
 
 import argparse
 import inspect
@@ -7,30 +7,32 @@ from typing import Any, ClassVar, List, Optional, Tuple, get_type_hints
 
 import torch
 
-from lmp.model import LSTM2000, BaseModel
-from lmp.tknzr import BaseTknzr
+import lmp.model._lstm_2000
+from lmp.model._base import BaseModel
+from lmp.tknzr._base import BaseTknzr
 
 
-def test_class() -> None:
-  """Ensure abstract class signatures."""
-  assert inspect.isclass(LSTM2000)
-  assert issubclass(LSTM2000, BaseModel)
-  assert not inspect.isabstract(LSTM2000)
+def test_module_attribute() -> None:
+  """Ensure module attributes' signatures."""
+  assert hasattr(lmp.model._lstm_2000, 'LSTM2000')
+  assert inspect.isclass(lmp.model._lstm_2000.LSTM2000)
+  assert issubclass(lmp.model._lstm_2000.LSTM2000, BaseModel)
+  assert not inspect.isabstract(lmp.model._lstm_2000.LSTM2000)
 
 
 def test_class_attribute() -> None:
   """Ensure class attributes' signatures."""
-  type_hints = get_type_hints(LSTM2000)
+  type_hints = get_type_hints(lmp.model._lstm_2000.LSTM2000)
   assert type_hints['model_name'] == ClassVar[str]
-  assert LSTM2000.model_name == 'LSTM-2000'
+  assert lmp.model._lstm_2000.LSTM2000.model_name == 'LSTM-2000'
 
 
 def test_class_method() -> None:
   """Ensure class methods' signatures."""
-  assert hasattr(LSTM2000, 'train_parser')
-  assert inspect.ismethod(LSTM2000.train_parser)
-  assert LSTM2000.train_parser.__self__ == LSTM2000
-  assert inspect.signature(LSTM2000.train_parser) == Signature(
+  assert hasattr(lmp.model._lstm_2000.LSTM2000, 'train_parser')
+  assert inspect.ismethod(lmp.model._lstm_2000.LSTM2000.train_parser)
+  assert lmp.model._lstm_2000.LSTM2000.train_parser.__self__ == lmp.model._lstm_2000.LSTM2000
+  assert inspect.signature(lmp.model._lstm_2000.LSTM2000.train_parser) == Signature(
     parameters=[
       Parameter(
         name='parser',
@@ -45,9 +47,9 @@ def test_class_method() -> None:
 
 def test_instance_method() -> None:
   """Ensure instance methods' signatures."""
-  assert hasattr(LSTM2000, '__init__')
-  assert inspect.isfunction(LSTM2000.__init__)
-  assert inspect.signature(LSTM2000.__init__) == Signature(
+  assert hasattr(lmp.model._lstm_2000.LSTM2000, '__init__')
+  assert inspect.isfunction(lmp.model._lstm_2000.LSTM2000.__init__)
+  assert inspect.signature(lmp.model._lstm_2000.LSTM2000.__init__) == Signature(
     parameters=[
       Parameter(
         name='self',
@@ -86,9 +88,9 @@ def test_instance_method() -> None:
     ],
     return_annotation=Signature.empty,
   )
-  assert hasattr(LSTM2000, 'forward')
-  assert inspect.isfunction(LSTM2000.forward)
-  assert inspect.signature(LSTM2000.forward) == Signature(
+  assert hasattr(lmp.model._lstm_2000.LSTM2000, 'forward')
+  assert inspect.isfunction(lmp.model._lstm_2000.LSTM2000.forward)
+  assert inspect.signature(lmp.model._lstm_2000.LSTM2000.forward) == Signature(
     parameters=[
       Parameter(
         name='self',
@@ -108,9 +110,9 @@ def test_instance_method() -> None:
     ],
     return_annotation=torch.Tensor,
   )
-  assert hasattr(LSTM2000, 'params_init')
-  assert inspect.isfunction(LSTM2000.params_init)
-  assert inspect.signature(LSTM2000.params_init) == Signature(
+  assert hasattr(lmp.model._lstm_2000.LSTM2000, 'params_init')
+  assert inspect.isfunction(lmp.model._lstm_2000.LSTM2000.params_init)
+  assert inspect.signature(lmp.model._lstm_2000.LSTM2000.params_init) == Signature(
     parameters=[
       Parameter(
         name='self',
@@ -120,9 +122,9 @@ def test_instance_method() -> None:
     ],
     return_annotation=None,
   )
-  assert hasattr(LSTM2000, 'pred')
-  assert inspect.isfunction(LSTM2000.pred)
-  assert inspect.signature(LSTM2000.pred) == Signature(
+  assert hasattr(lmp.model._lstm_2000.LSTM2000, 'pred')
+  assert inspect.isfunction(lmp.model._lstm_2000.LSTM2000.pred)
+  assert inspect.signature(lmp.model._lstm_2000.LSTM2000.pred) == Signature(
     parameters=[
       Parameter(
         name='self',

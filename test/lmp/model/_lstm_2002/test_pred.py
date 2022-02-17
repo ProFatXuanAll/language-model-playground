@@ -1,22 +1,22 @@
-"""Test prediction of :py:class:`lmp.model.LSTM1997`.
+"""Test prediction.
 
 Test target:
-- :py:meth:`lmp.model.LSTM1997.pred`.
+- :py:meth:`lmp.model._lstm_2002.LSTM2002.pred`.
 """
 
 import torch
 
-from lmp.model import LSTM1997
+from lmp.model._lstm_2002 import LSTM2002
 
 
-def test_prediction_result(lstm_1997: LSTM1997, batch_cur_tkids: torch.Tensor) -> None:
+def test_prediction_result(lstm_2002: LSTM2002, batch_cur_tkids: torch.Tensor) -> None:
   """Return float tensor with correct shape and range."""
-  lstm_1997 = lstm_1997.eval()
+  lstm_2002 = lstm_2002.eval()
   seq_len = batch_cur_tkids.size(1)
 
   batch_prev_states = None
   for i in range(seq_len):
-    batch_next_tkids_pd, batch_prev_states = lstm_1997.pred(
+    batch_next_tkids_pd, batch_prev_states = lstm_2002.pred(
       batch_cur_tkids=batch_cur_tkids[..., i],
       batch_prev_states=batch_prev_states,
     )
@@ -25,7 +25,7 @@ def test_prediction_result(lstm_1997: LSTM1997, batch_cur_tkids: torch.Tensor) -
     assert batch_next_tkids_pd.dtype == torch.float
 
     # Shape: (batch_size, vocab_size).
-    assert batch_next_tkids_pd.size() == torch.Size([batch_cur_tkids.shape[0], lstm_1997.emb.num_embeddings])
+    assert batch_next_tkids_pd.size() == torch.Size([batch_cur_tkids.shape[0], lstm_2002.emb.num_embeddings])
 
     # Probabilities are values within range [0, 1].
     assert torch.all(0 <= batch_next_tkids_pd).item()
@@ -37,5 +37,5 @@ def test_prediction_result(lstm_1997: LSTM1997, batch_cur_tkids: torch.Tensor) -
 
     assert isinstance(batch_prev_states, list)
     assert len(batch_prev_states) == 2
-    assert batch_prev_states[0].size() == torch.Size([batch_cur_tkids.size(0), lstm_1997.n_blk * lstm_1997.d_blk])
-    assert batch_prev_states[1].size() == torch.Size([batch_cur_tkids.size(0), lstm_1997.n_blk, lstm_1997.d_blk])
+    assert batch_prev_states[0].size() == torch.Size([batch_cur_tkids.size(0), lstm_2002.n_blk * lstm_2002.d_blk])
+    assert batch_prev_states[1].size() == torch.Size([batch_cur_tkids.size(0), lstm_2002.n_blk, lstm_2002.d_blk])

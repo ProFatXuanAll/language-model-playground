@@ -10,7 +10,7 @@ import torch.nn.functional as F
 
 import lmp.util.validate
 from lmp.model._base import BaseModel
-from lmp.tknzr._base import BaseTknzr
+from lmp.tknzr._base import BaseTknzr, PAD_TKID
 
 
 class LSTM1997(BaseModel):
@@ -44,11 +44,11 @@ class LSTM1997(BaseModel):
        i\tn         & = \sig{W^i \cdot e\t + U^i \cdot h\t + b^i}                        \\
        o\tn         & = \sig{W^o \cdot e\t + U^o \cdot h\t + b^o}                        \\
        k            & \in \set{1, 2, \dots, \nc}                                         \\
-       g^\ck\tn     & = 4 \sig{W^\ck \cdot e\t + U^\ck \cdot h\t + b^\ck} - 2            \\
+       g^\ck\tn     & = \tanh\pa{W^\ck \cdot e\t + U^\ck \cdot h\t + b^\ck}              \\
        c^\ck\tn     & = c^\ck\t + i_k\tn \cdot g^\ck\tn                                  \\
-       \hbar^\ck\tn & = o_k\tn \cdot \pa{2 \sig{c^\ck\tn} - 1}                           \\
+       \hbar^\ck\tn & = o_k\tn \cdot \pa{\tanh\pa{c^\ck\tn}}                             \\
        h\tn         & = \cat{\hbar^\cn{1}\tn, \hbar^\cn{2}\tn, \dots, \hbar^\cn{\nc}\tn} \\
-       z\tn         & = \sig{W^z \cdot h\tn + b^z}                                       \\
+       z\tn         & = \tanh\pa{W^z \cdot h\tn + b^z}                                   \\
        y\tn         & = \sof{E^{\top} \cdot z\tn}
      \end{align*}
 
@@ -174,7 +174,7 @@ class LSTM1997(BaseModel):
     lmp.util.validate.raise_if_not_instance(val=tknzr, val_name='tknzr', val_type=BaseTknzr)
 
     # Token embedding layer.  Use token ids to perform token embeddings lookup.
-    self.emb = nn.Embedding(num_embeddings=tknzr.vocab_size, embedding_dim=d_emb, padding_idx=tknzr.pad_tkid)
+    self.emb = nn.Embedding(num_embeddings=tknzr.vocab_size, embedding_dim=d_emb, padding_idx=PAD_TKID)
 
     # Fully connected layer which connects input units to memory cells.
     self.proj_e2c = nn.Linear(in_features=d_emb, out_features=n_blk * (2 + d_blk))

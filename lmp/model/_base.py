@@ -6,9 +6,6 @@ from typing import Any, ClassVar, List, Optional, Tuple
 
 import torch
 
-import lmp.dset
-import lmp.util.path
-
 
 class BaseModel(abc.ABC, torch.nn.Module):
   r"""Language model abstract base class.
@@ -22,20 +19,20 @@ class BaseModel(abc.ABC, torch.nn.Module):
 
      \newcommand{\pa}[1]{\left( #1 \right)}
      \newcommand{\set}[1]{\left\lbrace #1 \right\rbrace}
-     x = \pa{x[0], x[1], x[2], \dots, x[S - 1], x[S], x[S + 1]}.
+     x = \pa{x[1], x[2], \dots, x[S]}.
 
-  - :math:`x` has length :math:`S + 2`.
-  - :math:`x[0]` is the token id of ``[bos]``.
-  - :math:`x[S + 1]` is the token id of ``[eos]``.
+  - :math:`x` has length :math:`S`.
+  - :math:`x[1]` is the token id of ``[bos]``.
+  - :math:`x[S]` is the token id of ``[eos]``.
 
-  Let :math:`x[t]` be the :math:`t`-th time step of :math:`x` where :math:`t \in \set{0, 1, \dots, S, S + 1}`.  The
+  Let :math:`x[t]` be the :math:`t`-th time step of :math:`x` where :math:`t \in \set{1, \dots, S}`.  The
   training goal of a language model with parameter :math:`\theta` is to find an optimal parameter
   :math:`\theta^{\star}` such that when replace  :math:`\theta` with :math:`\theta^{\star}` it maximizes the prediction
-  probability of next token id :math:`x[t + 1]` given :math:`x[0], x[1], \dots, x[t]`:
+  probability of next token id :math:`x[t]` given :math:`x[1], \dots, x[t - 1]`:
 
   .. math::
 
-     \theta^{\star} = \arg\max_{\theta} \prod_{t = 0}^S P(x[t + 1] | x[0], x[1], \dots, x[t] ; \theta)
+     \theta^{\star} = \arg\max_{\theta} \prod_{t = 1}^S P(x[t] | x[1], \dots, x[t - 1] ; \theta)
 
   Parameters
   ----------
@@ -63,6 +60,27 @@ class BaseModel(abc.ABC, torch.nn.Module):
     """
     raise NotImplementedError
 
+  @classmethod
+  @abc.abstractmethod
+  def add_CLI_args(cls, parser: argparse.ArgumentParser) -> None:
+    """Add language model constructor parameters to CLI arguments parser.
+
+    Parameters
+    ----------
+    parser: argparse.ArgumentParser
+      CLI arguments parser.
+
+    Returns
+    -------
+    None
+
+    See Also
+    --------
+    :doc:`lmp.script.train_model </script/train_model>`
+      Language model training script.
+    """
+    raise NotImplementedError
+
   @abc.abstractmethod
   def forward(self, batch_cur_tkids: torch.Tensor, batch_next_tkids: torch.Tensor) -> torch.Tensor:
     """Calculate language model training loss.
@@ -75,8 +93,8 @@ class BaseModel(abc.ABC, torch.nn.Module):
       Batch of token ids which represent input token ids of all time steps.  ``batch_cur_tkids`` has shape
       ``(batch_size, seq_len)`` and ``dtype == torch.long``.
     batch_next_tkids: torch.Tensor
-      Batch of token ids which represent prediction targets of all time steps.  ``batch_next_tkids`` has the same shape
-      and ``dtype`` as ``batch_cur_tkids``.
+      Batch of token ids which represent prediction targets of all time steps.  ``batch_next_tkids`` has shape
+      ``(batch_size, seq_len)`` and ``dtype == torch.long``.
 
     Returns
     -------
@@ -118,182 +136,3 @@ class BaseModel(abc.ABC, torch.nn.Module):
       which represent current hiddent states.  Different models have different hidden states structure.
     """
     raise NotImplementedError
-
-  @classmethod
-  def train_parser(cls, parser: argparse.ArgumentParser) -> None:
-    """CLI arguments parser for training language model.
-
-    Parameters
-    ----------
-    parser: argparse.ArgumentParser
-      CLI arguments parser.
-
-    Returns
-    -------
-    None
-
-    See Also
-    --------
-    lmp.script.train_model
-      Language model training script.
-
-    Examples
-    --------
-    >>> import argparse
-    >>> from lmp.model import BaseModel
-    >>> parser = argparse.ArgumentParser()
-    >>> BaseModel.train_parser(parser)
-    >>> args = parser.parse_args([
-    ...   '--batch_size', '32',
-    ...   '--beta1', '0.9',
-    ...   '--beta2', '0.99',
-    ...   '--ckpt_step', '1000',
-    ...   '--dset_name', 'wiki-text-2',
-    ...   '--eps', '1e-8',
-    ...   '--exp_name', 'my_exp',
-    ...   '--log_step', '200',
-    ...   '--lr', '1e-4',
-    ...   '--max_norm', '1',
-    ...   '--max_seq_len', '128',
-    ...   '--n_epoch', '10',
-    ...   '--tknzr_exp_name', 'my_tknzr_exp',
-    ...   '--ver', 'train',
-    ...   '--wd', '1e-2',
-    ... ])
-    >>> args.batch_size == 32
-    True
-    >>> args.beta1 == 0.9
-    True
-    >>> args.beta2 == 0.99
-    True
-    >>> args.ckpt_step == 1000
-    True
-    >>> args.dset_name == 'wiki-text-2'
-    True
-    >>> args.eps == 1e-8
-    True
-    >>> args.exp_name == 'my_exp'
-    True
-    >>> args.log_step == 200
-    True
-    >>> args.lr == 1e-4
-    True
-    >>> args.max_norm == 1
-    True
-    >>> args.max_seq_len == 128
-    True
-    >>> args.n_epoch == 10
-    True
-    >>> args.seed == 42
-    True
-    >>> args.tknzr_exp_name == 'my_tknzr_exp'
-    True
-    >>> args.ver == 'train'
-    True
-    >>> args.wd == 1e-2
-    True
-    """
-    # `parser` validation.
-    lmp.util.validate.raise_if_not_instance(val=parser, val_name='parser', val_type=argparse.ArgumentParser)
-
-    # Required arguments.
-    group = parser.add_argument_group('language model training arguments')
-    group.add_argument(
-      '--batch_size',
-      help='Mini-batch size.',
-      required=True,
-      type=int,
-    )
-    group.add_argument(
-      '--beta1',
-      help='First beta coefficient of AdamW optimizer.',
-      required=True,
-      type=float,
-    )
-    group.add_argument(
-      '--beta2',
-      help='Second beta coefficient of AdamW optimizer.',
-      required=True,
-      type=float,
-    )
-    group.add_argument(
-      '--ckpt_step',
-      help='Checkpoint save interval.',
-      required=True,
-      type=int,
-    )
-    group.add_argument(
-      '--dset_name',
-      choices=lmp.dset.DSET_OPTS.keys(),
-      help='Name of the dataset which will be used to train language model.',
-      required=True,
-      type=str,
-    )
-    group.add_argument(
-      '--eps',
-      help='Denominator smooth term of AdamW optimizer.',
-      required=True,
-      type=float,
-    )
-    group.add_argument(
-      '--exp_name',
-      help='Name of the language model training experiment.',
-      required=True,
-      type=str,
-    )
-    group.add_argument(
-      '--log_step',
-      help='Performance log interval.',
-      required=True,
-      type=int,
-    )
-    group.add_argument(
-      '--lr',
-      help='Learning rate.',
-      required=True,
-      type=float,
-    )
-    group.add_argument(
-      '--max_norm',
-      help='Gradient max-norm constraint.',
-      required=True,
-      type=float,
-    )
-    group.add_argument(
-      '--max_seq_len',
-      help='Maximum sequence length constraint.',
-      required=True,
-      type=int,
-    )
-    group.add_argument(
-      '--n_epoch',
-      help='Number of training epochs.',
-      required=True,
-      type=int,
-    )
-    group.add_argument(
-      '--tknzr_exp_name',
-      help='Name of the pre-trained tokenizer experiment.',
-      required=True,
-      type=str,
-    )
-    group.add_argument(
-      '--ver',
-      help='Version of the dataset.',
-      required=True,
-      type=str,
-    )
-    group.add_argument(
-      '--wd',
-      help='Weight decay coefficient of AdamW optimizer.',
-      required=True,
-      type=float,
-    )
-
-    # Optional arguments.
-    group.add_argument(
-      '--seed',
-      default=42,
-      help='Random seed.',
-      type=int,
-    )

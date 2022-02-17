@@ -1,10 +1,10 @@
-"""Setup fixtures for testing :py:class:`lmp.model.LSTM2002`."""
+"""Setup fixtures for testing :py:class:`lmp.model._lstm_2002.LSTM2002`."""
 
 import pytest
 import torch
 
-from lmp.model import LSTM2002
-from lmp.tknzr import BaseTknzr
+from lmp.model._lstm_2002 import LSTM2002
+from lmp.tknzr._base import BaseTknzr
 
 
 @pytest.fixture

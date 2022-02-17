@@ -1,4 +1,4 @@
-"""Test :py:class:`lmp.model.LSTM1997` signatures."""
+"""Test :py:mod:`lmp.model._elman_net` signatures."""
 
 import argparse
 import inspect
@@ -7,30 +7,32 @@ from typing import Any, ClassVar, List, Optional, Tuple, get_type_hints
 
 import torch
 
-from lmp.model import LSTM1997, BaseModel
-from lmp.tknzr import BaseTknzr
+import lmp.model._elman_net
+from lmp.model._base import BaseModel
+from lmp.tknzr._base import BaseTknzr
 
 
-def test_class() -> None:
-  """Ensure abstract class signatures."""
-  assert inspect.isclass(LSTM1997)
-  assert issubclass(LSTM1997, BaseModel)
-  assert not inspect.isabstract(LSTM1997)
+def test_module_attribute() -> None:
+  """Ensure module attributes' signatures."""
+  assert hasattr(lmp.model._elman_net, 'ElmanNet')
+  assert inspect.isclass(lmp.model._elman_net.ElmanNet)
+  assert issubclass(lmp.model._elman_net.ElmanNet, BaseModel)
+  assert not inspect.isabstract(lmp.model._elman_net.ElmanNet)
 
 
 def test_class_attribute() -> None:
   """Ensure class attributes' signatures."""
-  type_hints = get_type_hints(LSTM1997)
+  type_hints = get_type_hints(lmp.model._elman_net.ElmanNet)
   assert type_hints['model_name'] == ClassVar[str]
-  assert LSTM1997.model_name == 'LSTM-1997'
+  assert lmp.model._elman_net.ElmanNet.model_name == 'Elman-Net'
 
 
 def test_class_method() -> None:
   """Ensure class methods' signatures."""
-  assert hasattr(LSTM1997, 'train_parser')
-  assert inspect.ismethod(LSTM1997.train_parser)
-  assert LSTM1997.train_parser.__self__ == LSTM1997
-  assert inspect.signature(LSTM1997.train_parser) == Signature(
+  assert hasattr(lmp.model._elman_net.ElmanNet, 'add_CLI_args')
+  assert inspect.ismethod(lmp.model._elman_net.ElmanNet.add_CLI_args)
+  assert lmp.model._elman_net.ElmanNet.add_CLI_args.__self__ == lmp.model._elman_net.ElmanNet
+  assert inspect.signature(lmp.model._elman_net.ElmanNet.add_CLI_args) == Signature(
     parameters=[
       Parameter(
         name='parser',
@@ -45,20 +47,14 @@ def test_class_method() -> None:
 
 def test_instance_method() -> None:
   """Ensure instance methods' signatures."""
-  assert hasattr(LSTM1997, '__init__')
-  assert inspect.isfunction(LSTM1997.__init__)
-  assert inspect.signature(LSTM1997.__init__) == Signature(
+  assert hasattr(lmp.model._elman_net.ElmanNet, '__init__')
+  assert inspect.isfunction(lmp.model._elman_net.ElmanNet.__init__)
+  assert inspect.signature(lmp.model._elman_net.ElmanNet.__init__) == Signature(
     parameters=[
       Parameter(
         name='self',
         kind=Parameter.POSITIONAL_OR_KEYWORD,
         default=Parameter.empty,
-      ),
-      Parameter(
-        name='d_blk',
-        kind=Parameter.KEYWORD_ONLY,
-        default=Parameter.empty,
-        annotation=int,
       ),
       Parameter(
         name='d_emb',
@@ -67,10 +63,22 @@ def test_instance_method() -> None:
         annotation=int,
       ),
       Parameter(
-        name='n_blk',
+        name='d_hid',
         kind=Parameter.KEYWORD_ONLY,
         default=Parameter.empty,
         annotation=int,
+      ),
+      Parameter(
+        name='p_emb',
+        kind=Parameter.KEYWORD_ONLY,
+        default=Parameter.empty,
+        annotation=float,
+      ),
+      Parameter(
+        name='p_hid',
+        kind=Parameter.KEYWORD_ONLY,
+        default=Parameter.empty,
+        annotation=float,
       ),
       Parameter(
         name='tknzr',
@@ -86,9 +94,9 @@ def test_instance_method() -> None:
     ],
     return_annotation=Signature.empty,
   )
-  assert hasattr(LSTM1997, 'forward')
-  assert inspect.isfunction(LSTM1997.forward)
-  assert inspect.signature(LSTM1997.forward) == Signature(
+  assert hasattr(lmp.model._elman_net.ElmanNet, 'forward')
+  assert inspect.isfunction(lmp.model._elman_net.ElmanNet.forward)
+  assert inspect.signature(lmp.model._elman_net.ElmanNet.forward) == Signature(
     parameters=[
       Parameter(
         name='self',
@@ -108,9 +116,9 @@ def test_instance_method() -> None:
     ],
     return_annotation=torch.Tensor,
   )
-  assert hasattr(LSTM1997, 'params_init')
-  assert inspect.isfunction(LSTM1997.params_init)
-  assert inspect.signature(LSTM1997.params_init) == Signature(
+  assert hasattr(lmp.model._elman_net.ElmanNet, 'params_init')
+  assert inspect.isfunction(lmp.model._elman_net.ElmanNet.params_init)
+  assert inspect.signature(lmp.model._elman_net.ElmanNet.params_init) == Signature(
     parameters=[
       Parameter(
         name='self',
@@ -120,9 +128,9 @@ def test_instance_method() -> None:
     ],
     return_annotation=None,
   )
-  assert hasattr(LSTM1997, 'pred')
-  assert inspect.isfunction(LSTM1997.pred)
-  assert inspect.signature(LSTM1997.pred) == Signature(
+  assert hasattr(lmp.model._elman_net.ElmanNet, 'pred')
+  assert inspect.isfunction(lmp.model._elman_net.ElmanNet.pred)
+  assert inspect.signature(lmp.model._elman_net.ElmanNet.pred) == Signature(
     parameters=[
       Parameter(
         name='self',

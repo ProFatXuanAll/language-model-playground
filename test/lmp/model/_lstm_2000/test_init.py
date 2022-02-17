@@ -1,7 +1,7 @@
-"""Test the construction of :py:class:`lmp.model.LSTM2000`.
+"""Test model construction.
 
 Test target:
-- :py:meth:`lmp.model.LSTM2000.__init__`.
+- :py:meth:`lmp.model._lstm_2000.LSTM2000.__init__`.
 """
 
 import math
@@ -9,8 +9,8 @@ import math
 import torch
 import torch.nn as nn
 
-from lmp.model import LSTM2000
-from lmp.tknzr import BaseTknzr
+from lmp.model._lstm_2000 import LSTM2000
+from lmp.tknzr._base import PAD_TKID, BaseTknzr
 
 
 def test_parameters(d_blk: int, d_emb: int, n_blk: int, tknzr: BaseTknzr, lstm_2000: LSTM2000) -> None:
@@ -22,7 +22,7 @@ def test_parameters(d_blk: int, d_emb: int, n_blk: int, tknzr: BaseTknzr, lstm_2
   assert isinstance(lstm_2000.emb, nn.Embedding)
   assert lstm_2000.emb.embedding_dim == d_emb
   assert lstm_2000.emb.num_embeddings == tknzr.vocab_size
-  assert lstm_2000.emb.padding_idx == tknzr.pad_tkid
+  assert lstm_2000.emb.padding_idx == PAD_TKID
   assert torch.all((-inv_sqrt_dim <= lstm_2000.emb.weight) & (lstm_2000.emb.weight <= inv_sqrt_dim))
 
   assert hasattr(lstm_2000, 'proj_e2c')

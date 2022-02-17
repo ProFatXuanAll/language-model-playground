@@ -5,7 +5,7 @@ Attributes
 ALL_MODELS: list[lmp.model.BaseModel]
   All available language models.
 MODEL_OPTS: typing.Final[dict[str, lmp.model.BaseModel]]
-  Mapping from language model's name `model_name` to language model's class.
+  Mapping from language model's name ``model_name`` to language model's class.
 
 Examples
 --------

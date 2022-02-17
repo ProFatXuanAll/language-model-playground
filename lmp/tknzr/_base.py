@@ -163,7 +163,7 @@ class BaseTknzr(abc.ABC):
     lmp.util.validate.raise_if_not_instance(val=parser, val_name='parser', val_type=argparse.ArgumentParser)
 
     # Required arguments.
-    group = parser.add_argument_group(f'{cls.__name__} constructor arguments')
+    group = parser.add_argument_group(f'`lmp.tknzr.{cls.__name__}` constructor arguments')
     group.add_argument(
       '--max_seq_len',
       help='Maximum length constraint.',

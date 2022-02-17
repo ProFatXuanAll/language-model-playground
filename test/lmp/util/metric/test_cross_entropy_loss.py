@@ -1,7 +1,7 @@
-"""Test perplexity calculation.
+"""Test cross entropy loss calculation.
 
 Test target:
-- :py:meth:`lmp.util.metric.ppl`.
+- :py:meth:`lmp.util.metric.cross_entropy_loss`.
 """
 
 import math
@@ -26,7 +26,6 @@ def batch_tkids() -> torch.Tensor:
 
 @pytest.fixture
 def batch_tkids_pd(batch_tkids: torch.Tensor) -> torch.Tensor:
-  """Mock token ids probability distribution with shape ``(batch_size, seq_len, vocab_size) == (2, 3, 4)``."""
   """Mock token ids probability distribution with shape ``(batch_size, seq_len, vocab_size) == (2, 5, 4)``."""
   pd = torch.zeros(2, 5, 4)
   pd[0, 0, BOS_TKID] = 0.9
@@ -43,8 +42,8 @@ def batch_tkids_pd(batch_tkids: torch.Tensor) -> torch.Tensor:
 
 
 @pytest.fixture
-def batch_ppl(batch_tkids: torch.Tensor, batch_tkids_pd: torch.Tensor) -> torch.Tensor:
-  """Expect perplexity result.
+def batch_cross_entropy_loss(batch_tkids: torch.Tensor, batch_tkids_pd: torch.Tensor) -> torch.Tensor:
+  """Expect cross entropy loss result.
 
   Must has shape ``(batch_size) == (2)``.
   """
@@ -54,17 +53,21 @@ def batch_ppl(batch_tkids: torch.Tensor, batch_tkids_pd: torch.Tensor) -> torch.
   # NaN is masked.
   b1 = math.log(0.4) + math.log(0.3) + math.log(0.2) + math.log(0.1)
   b1 = b1 / 4
-  return torch.exp(-torch.tensor([b0, b1]))
+  return -torch.tensor([b0, b1])
 
 
-def test_calculate_result(batch_ppl: torch.Tensor, batch_tkids: torch.Tensor, batch_tkids_pd: torch.Tensor) -> None:
-  """Test perplexity calcuation result."""
+def test_calculate_result(
+  batch_cross_entropy_loss: torch.Tensor,
+  batch_tkids: torch.Tensor,
+  batch_tkids_pd: torch.Tensor,
+) -> None:
+  """Test cross entropy loss calcuation result."""
   assert torch.all(
     torch.isclose(
-      input=lmp.util.metric.ppl(
+      input=lmp.util.metric.cross_entropy_loss(
         batch_tkids=batch_tkids,
         batch_tkids_pd=batch_tkids_pd,
       ),
-      other=batch_ppl,
+      other=batch_cross_entropy_loss,
     )
   )

@@ -1,4 +1,4 @@
-"""Test :py:class:`lmp.model.BaseModel` signatures."""
+"""Test :py:mod:`lmp.model._base` signatures."""
 
 import argparse
 import inspect
@@ -7,29 +7,31 @@ from typing import Any, ClassVar, List, Optional, Tuple, get_type_hints
 
 import torch
 
-from lmp.model import BaseModel
+import lmp.model._base
 
 
-def test_class() -> None:
-  """Ensure abstract class signatures."""
-  assert inspect.isclass(BaseModel)
-  assert issubclass(BaseModel, torch.nn.Module)
-  assert inspect.isabstract(BaseModel)
+def test_module_attribute() -> None:
+  """Ensure module attributes' signatures."""
+  assert hasattr(lmp.model._base, 'BaseModel')
+  assert inspect.isclass(lmp.model._base.BaseModel)
+  assert issubclass(lmp.model._base.BaseModel, torch.nn.Module)
+  assert inspect.isabstract(lmp.model._base.BaseModel)
 
 
 def test_class_attribute() -> None:
   """Ensure class attributes' signatures."""
-  type_hints = get_type_hints(BaseModel)
+  type_hints = get_type_hints(lmp.model._base.BaseModel)
   assert type_hints['model_name'] == ClassVar[str]
-  assert BaseModel.model_name == 'base'
+  assert lmp.model._base.BaseModel.model_name == 'base'
 
 
 def test_class_method() -> None:
   """Ensure class methods' signatures."""
-  assert hasattr(BaseModel, 'train_parser')
-  assert inspect.ismethod(BaseModel.train_parser)
-  assert BaseModel.train_parser.__self__ == BaseModel
-  assert inspect.signature(BaseModel.train_parser) == Signature(
+  assert hasattr(lmp.model._base.BaseModel, 'add_CLI_args')
+  assert inspect.ismethod(lmp.model._base.BaseModel.add_CLI_args)
+  assert 'add_CLI_args' in lmp.model._base.BaseModel.__abstractmethods__
+  assert lmp.model._base.BaseModel.add_CLI_args.__self__ == lmp.model._base.BaseModel
+  assert inspect.signature(lmp.model._base.BaseModel.add_CLI_args) == Signature(
     parameters=[
       Parameter(
         name='parser',
@@ -44,9 +46,9 @@ def test_class_method() -> None:
 
 def test_instance_method() -> None:
   """Ensure instance methods' signatures."""
-  assert hasattr(BaseModel, '__init__')
-  assert inspect.isfunction(BaseModel.__init__)
-  assert inspect.signature(BaseModel.__init__) == Signature(
+  assert hasattr(lmp.model._base.BaseModel, '__init__')
+  assert inspect.isfunction(lmp.model._base.BaseModel.__init__)
+  assert inspect.signature(lmp.model._base.BaseModel.__init__) == Signature(
     parameters=[
       Parameter(
         name='self',
@@ -61,10 +63,10 @@ def test_instance_method() -> None:
     ],
     return_annotation=Signature.empty,
   )
-  assert hasattr(BaseModel, 'forward')
-  assert inspect.isfunction(BaseModel.forward)
-  assert 'forward' in BaseModel.__abstractmethods__
-  assert inspect.signature(BaseModel.forward) == Signature(
+  assert hasattr(lmp.model._base.BaseModel, 'forward')
+  assert inspect.isfunction(lmp.model._base.BaseModel.forward)
+  assert 'forward' in lmp.model._base.BaseModel.__abstractmethods__
+  assert inspect.signature(lmp.model._base.BaseModel.forward) == Signature(
     parameters=[
       Parameter(
         name='self',
@@ -84,10 +86,10 @@ def test_instance_method() -> None:
     ],
     return_annotation=torch.Tensor,
   )
-  assert hasattr(BaseModel, 'params_init')
-  assert inspect.isfunction(BaseModel.params_init)
-  assert 'params_init' in BaseModel.__abstractmethods__
-  assert inspect.signature(BaseModel.params_init) == Signature(
+  assert hasattr(lmp.model._base.BaseModel, 'params_init')
+  assert inspect.isfunction(lmp.model._base.BaseModel.params_init)
+  assert 'params_init' in lmp.model._base.BaseModel.__abstractmethods__
+  assert inspect.signature(lmp.model._base.BaseModel.params_init) == Signature(
     parameters=[
       Parameter(
         name='self',
@@ -97,10 +99,10 @@ def test_instance_method() -> None:
     ],
     return_annotation=None,
   )
-  assert hasattr(BaseModel, 'pred')
-  assert inspect.isfunction(BaseModel.pred)
-  assert 'pred' in BaseModel.__abstractmethods__
-  assert inspect.signature(BaseModel.pred) == Signature(
+  assert hasattr(lmp.model._base.BaseModel, 'pred')
+  assert inspect.isfunction(lmp.model._base.BaseModel.pred)
+  assert 'pred' in lmp.model._base.BaseModel.__abstractmethods__
+  assert inspect.signature(lmp.model._base.BaseModel.pred) == Signature(
     parameters=[
       Parameter(
         name='self',

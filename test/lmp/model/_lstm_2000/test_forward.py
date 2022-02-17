@@ -1,12 +1,12 @@
-"""Test forward pass of :py:class:`lmp.model.LSTM2000`.
+"""Test forward pass and tensor graph.
 
 Test target:
-- :py:meth:`lmp.model.LSTM2000.forward`.
+- :py:meth:`lmp.model._lstm_2000.LSTM2000.forward`.
 """
 
 import torch
 
-from lmp.model import LSTM2000
+from lmp.model._lstm_2000 import LSTM2000
 
 
 def test_forward_path(

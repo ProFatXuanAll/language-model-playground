@@ -1,7 +1,7 @@
-"""Test the construction of :py:class:`lmp.model.LSTM2002`.
+"""Test model construction.
 
 Test target:
-- :py:meth:`lmp.model.LSTM2002.__init__`.
+- :py:meth:`lmp.model._lstm_2002.LSTM2002.__init__`.
 """
 
 import math
@@ -9,8 +9,8 @@ import math
 import torch
 import torch.nn as nn
 
-from lmp.model import LSTM2002
-from lmp.tknzr import BaseTknzr
+from lmp.model._lstm_2002 import LSTM2002
+from lmp.tknzr._base import BaseTknzr
 
 
 def test_parameters(d_blk: int, d_emb: int, n_blk: int, tknzr: BaseTknzr, lstm_2002: LSTM2002) -> None:
