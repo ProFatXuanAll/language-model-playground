@@ -5,25 +5,25 @@ import pytest
 from lmp.tknzr import BaseTknzr, CharTknzr
 
 
-@pytest.fixture(params=[2, 4])
+@pytest.fixture(params=[1, 2])
 def d_blk(request) -> int:
   """Dimension of each memory cell block."""
   return request.param
 
 
-@pytest.fixture(params=[2, 4])
+@pytest.fixture(params=[1, 2])
 def d_emb(request) -> int:
   """Embedding dimension."""
   return request.param
 
 
-@pytest.fixture(params=[2, 4])
+@pytest.fixture(params=[1, 2])
 def d_hid(request) -> int:
   """Hidden dimension."""
   return request.param
 
 
-@pytest.fixture(params=[2, 4])
+@pytest.fixture(params=[1, 2])
 def n_blk(request) -> int:
   """Number of memory cell blocks."""
   return request.param

@@ -29,10 +29,10 @@ def test_class_attribute() -> None:
 
 def test_class_method() -> None:
   """Ensure class methods' signatures."""
-  assert hasattr(lmp.model._lstm_2000.LSTM2000, 'train_parser')
-  assert inspect.ismethod(lmp.model._lstm_2000.LSTM2000.train_parser)
-  assert lmp.model._lstm_2000.LSTM2000.train_parser.__self__ == lmp.model._lstm_2000.LSTM2000
-  assert inspect.signature(lmp.model._lstm_2000.LSTM2000.train_parser) == Signature(
+  assert hasattr(lmp.model._lstm_2000.LSTM2000, 'add_CLI_args')
+  assert inspect.ismethod(lmp.model._lstm_2000.LSTM2000.add_CLI_args)
+  assert lmp.model._lstm_2000.LSTM2000.add_CLI_args.__self__ == lmp.model._lstm_2000.LSTM2000
+  assert inspect.signature(lmp.model._lstm_2000.LSTM2000.add_CLI_args) == Signature(
     parameters=[
       Parameter(
         name='parser',
@@ -73,6 +73,18 @@ def test_instance_method() -> None:
         kind=Parameter.KEYWORD_ONLY,
         default=Parameter.empty,
         annotation=int,
+      ),
+      Parameter(
+        name='p_emb',
+        kind=Parameter.KEYWORD_ONLY,
+        default=Parameter.empty,
+        annotation=float,
+      ),
+      Parameter(
+        name='p_hid',
+        kind=Parameter.KEYWORD_ONLY,
+        default=Parameter.empty,
+        annotation=float,
       ),
       Parameter(
         name='tknzr',
