@@ -11,75 +11,61 @@ from lmp.tknzr._ws import WsTknzr
 
 def test_cased_enc() -> None:
   """Encode text to token ids (case-sensitive)."""
-  tknzr = WsTknzr(is_uncased=False, max_seq_len=1, max_vocab=-1, min_count=0)
+  tknzr = WsTknzr(is_uncased=False, max_vocab=-1, min_count=0)
   tknzr.build_vocab(['A', 'a'])
 
   # Return `[bos] [eos]` when given empty input.
-  tknzr.max_seq_len = 2
-  assert tknzr.enc(txt='') == [BOS_TKID, EOS_TKID]
+  assert tknzr.enc(max_seq_len=2, txt='') == [BOS_TKID, EOS_TKID]
 
   # Encoding format.
-  tknzr.max_seq_len = 4
-  assert tknzr.enc(txt='a A') == [BOS_TKID, tknzr.tk2id['a'], tknzr.tk2id['A'], EOS_TKID]
+  assert tknzr.enc(max_seq_len=4, txt='a A') == [BOS_TKID, tknzr.tk2id['a'], tknzr.tk2id['A'], EOS_TKID]
 
   # Padding.
-  tknzr.max_seq_len = 5
-  assert tknzr.enc(txt='a A') == [BOS_TKID, tknzr.tk2id['a'], tknzr.tk2id['A'], EOS_TKID, PAD_TKID]
+  assert tknzr.enc(max_seq_len=5, txt='a A') == [BOS_TKID, tknzr.tk2id['a'], tknzr.tk2id['A'], EOS_TKID, PAD_TKID]
 
   # Truncate.
-  tknzr.max_seq_len = 3
-  assert tknzr.enc(txt='a A') == [BOS_TKID, tknzr.tk2id['a'], tknzr.tk2id['A']]
+  assert tknzr.enc(max_seq_len=3, txt='a A') == [BOS_TKID, tknzr.tk2id['a'], tknzr.tk2id['A']]
 
   # Unknown tokens.
-  tknzr.max_seq_len = 4
-  assert tknzr.enc(txt='b B') == [BOS_TKID, UNK_TKID, UNK_TKID, EOS_TKID]
+  assert tknzr.enc(max_seq_len=4, txt='b B') == [BOS_TKID, UNK_TKID, UNK_TKID, EOS_TKID]
 
   # Unknown tokens with padding.
-  tknzr.max_seq_len = 5
-  assert tknzr.enc(txt='b B') == [BOS_TKID, UNK_TKID, UNK_TKID, EOS_TKID, PAD_TKID]
+  assert tknzr.enc(max_seq_len=5, txt='b B') == [BOS_TKID, UNK_TKID, UNK_TKID, EOS_TKID, PAD_TKID]
 
   # Unknown tokens with truncation.
-  tknzr.max_seq_len = 2
-  assert tknzr.enc(txt='b B') == [BOS_TKID, UNK_TKID]
+  assert tknzr.enc(max_seq_len=2, txt='b B') == [BOS_TKID, UNK_TKID]
 
 
 def test_uncased_enc() -> None:
   """Encode text to token ids (case-insensitive)."""
-  tknzr = WsTknzr(is_uncased=True, max_seq_len=1, max_vocab=-1, min_count=0)
+  tknzr = WsTknzr(is_uncased=True, max_vocab=-1, min_count=0)
   tknzr.build_vocab(batch_txt=['a'])
 
   # Return `[bos] [eos]` when given empty input.
-  tknzr.max_seq_len = 2
-  assert tknzr.enc(txt='') == [BOS_TKID, EOS_TKID]
+  assert tknzr.enc(max_seq_len=2, txt='') == [BOS_TKID, EOS_TKID]
 
   # Encoding format.
-  tknzr.max_seq_len = 4
-  assert tknzr.enc(txt='a A') == [BOS_TKID, tknzr.tk2id['a'], tknzr.tk2id['a'], EOS_TKID]
+  assert tknzr.enc(max_seq_len=4, txt='a A') == [BOS_TKID, tknzr.tk2id['a'], tknzr.tk2id['a'], EOS_TKID]
 
   # Padding.
-  tknzr.max_seq_len = 5
-  assert tknzr.enc(txt='a A') == [BOS_TKID, tknzr.tk2id['a'], tknzr.tk2id['a'], EOS_TKID, PAD_TKID]
+  assert tknzr.enc(max_seq_len=5, txt='a A') == [BOS_TKID, tknzr.tk2id['a'], tknzr.tk2id['a'], EOS_TKID, PAD_TKID]
 
   # Truncate.
-  tknzr.max_seq_len = 3
-  assert tknzr.enc(txt='a A') == [BOS_TKID, tknzr.tk2id['a'], tknzr.tk2id['a']]
+  assert tknzr.enc(max_seq_len=3, txt='a A') == [BOS_TKID, tknzr.tk2id['a'], tknzr.tk2id['a']]
 
   # Unknown tokens.
-  tknzr.max_seq_len = 4
-  assert tknzr.enc(txt='b B') == [BOS_TKID, UNK_TKID, UNK_TKID, EOS_TKID]
+  assert tknzr.enc(max_seq_len=4, txt='b B') == [BOS_TKID, UNK_TKID, UNK_TKID, EOS_TKID]
 
   # Unknown tokens with padding.
-  tknzr.max_seq_len = 5
-  assert tknzr.enc(txt='b B') == [BOS_TKID, UNK_TKID, UNK_TKID, EOS_TKID, PAD_TKID]
+  assert tknzr.enc(max_seq_len=5, txt='b B') == [BOS_TKID, UNK_TKID, UNK_TKID, EOS_TKID, PAD_TKID]
 
   # Unknown tokens with truncation.
-  tknzr.max_seq_len = 2
-  assert tknzr.enc(txt='b B') == [BOS_TKID, UNK_TKID]
+  assert tknzr.enc(max_seq_len=2, txt='b B') == [BOS_TKID, UNK_TKID]
 
 
 def test_dec() -> None:
   """Decode token ids to text."""
-  tknzr = WsTknzr(is_uncased=False, max_seq_len=128, max_vocab=-1, min_count=0)
+  tknzr = WsTknzr(is_uncased=False, max_vocab=-1, min_count=0)
   tknzr.build_vocab(batch_txt=['A', 'a'])
 
   # Return empty string when given empty list.

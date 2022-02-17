@@ -40,7 +40,7 @@ def create(model_name: str, **kwargs: Any) -> BaseModel:
   >>> from lmp.model import ElmanNet
   >>> from lmp.tknzr import CharTknzr
   >>> import lmp.util.model
-  >>> tknzr = CharTknzr(is_uncased=False, max_seq_len=128, max_vocab=10, min_count=2)
+  >>> tknzr = CharTknzr(is_uncased=False, max_vocab=10, min_count=2)
   >>> model = lmp.util.model.create(
   ...   d_emb=10,
   ...   model_name='Elman-Net',

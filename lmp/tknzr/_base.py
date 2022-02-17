@@ -61,8 +61,6 @@ class BaseTknzr(abc.ABC):
   ----------
   is_uncased: bool
     Set to ``True`` to convert text into lower cases.  Mainly used by :py:meth:`lmp.tknzr.BaseTknzr.norm`.
-  max_seq_len: int
-    Automatically truncate or pad token id list to have length equal to ``max_seq_len``.
   max_vocab: int
     Tokenizer's maximum vocabulary size.  Set to ``-1`` to include as many tokens in vocabulary as possible.  Mainly
     used by :py:meth:`lmp.tknzr.BaseTknzr.build_vocab`.
@@ -78,8 +76,6 @@ class BaseTknzr(abc.ABC):
     Token-to-id inverse lookup table.
   is_uncased: bool
     Convert text into lower cases if set to ``True``.
-  max_seq_len: int
-    Maximum length constraint of each token id list.
   max_vocab: int
     Tokenizer's maximum vocabulary size.
   min_count: int
@@ -97,15 +93,10 @@ class BaseTknzr(abc.ABC):
 
   tknzr_name: ClassVar[str] = 'base'
 
-  def __init__(self, *, is_uncased: bool, max_seq_len: int, max_vocab: int, min_count: int, **kwargs: Any):
+  def __init__(self, *, is_uncased: bool, max_vocab: int, min_count: int, **kwargs: Any):
     # `is_uncased` validation.
     lmp.util.validate.raise_if_not_instance(val=is_uncased, val_name='is_uncased', val_type=bool)
     self.is_uncased = is_uncased
-
-    # `max_seq_len` validation.
-    lmp.util.validate.raise_if_not_instance(val=max_seq_len, val_name='max_seq_len', val_type=int)
-    lmp.util.validate.raise_if_wrong_ordered(vals=[1, max_seq_len], val_names=['1', 'max_seq_len'])
-    self.max_seq_len = max_seq_len
 
     # `max_vocab` validation.
     lmp.util.validate.raise_if_not_instance(val=max_vocab, val_name='max_vocab', val_type=int)
@@ -150,12 +141,10 @@ class BaseTknzr(abc.ABC):
     >>> parser = argparse.ArgumentParser()
     >>> BaseTknzr.train_parser(parser)
     >>> args = parser.parse_args([
-    ...   '--max_seq_len', '128',
     ...   '--max_vocab', '10',
     ...   '--min_count', '2',
     ... ])
     >>> assert args.is_uncased == False
-    >>> assert args.max_seq_len == 128
     >>> assert args.max_vocab == 10
     >>> assert args.min_count == 2
     """
@@ -164,12 +153,6 @@ class BaseTknzr(abc.ABC):
 
     # Required arguments.
     group = parser.add_argument_group(f'`lmp.tknzr.{cls.__name__}` constructor arguments')
-    group.add_argument(
-      '--max_seq_len',
-      help='Maximum length constraint.',
-      required=True,
-      type=int,
-    )
     group.add_argument(
       '--max_vocab',
       help='Maximum vocabulary size.  Set to `-1` to include any tokens.',
@@ -216,7 +199,7 @@ class BaseTknzr(abc.ABC):
     Convert text to lower cases.
 
     >>> from lmp.tknzr import CharTknzr
-    >>> tknzr = CharTknzr(is_uncased=True, max_seq_len=128, max_vocab=10, min_count=2)
+    >>> tknzr = CharTknzr(is_uncased=True, max_vocab=10, min_count=2)
     >>> assert tknzr.norm('ABC') == 'abc'
     """
     # `txt` validation.
@@ -356,14 +339,16 @@ class BaseTknzr(abc.ABC):
     """
     return len(self.tk2id)
 
-  def trunc_to_max(self, tkids: List[int]) -> List[int]:
+  def trunc_to_max(self, max_seq_len: int, tkids: List[int]) -> List[int]:
     """Truncate token id list when token id list is longer than allowed.
 
-    If ``len(tkids) > self.max_seq_len``, then truncate ``tkids`` to have length equals to ``self.max_seq_len``.  Do
-    nothing when ``len(tkids) <= self.max_seq_len``.
+    If ``len(tkids) > max_seq_len``, then truncate ``tkids`` to have length equals to ``max_seq_len``.  Do nothing when
+    ``len(tkids) <= max_seq_len``.
 
     Arguments
     ---------
+    max_seq_len: int
+      Maximum length constraint.
     tkids: list[int]
       Token id list to be truncated.
 
@@ -380,20 +365,26 @@ class BaseTknzr(abc.ABC):
     Examples
     --------
     >>> from lmp.tknzr import CharTknzr
-    >>> tknzr = CharTknzr(is_uncased=True, max_seq_len=1, max_vocab=10, min_count=1)
-    >>> assert tknzr.trunc_to_max([1, 2, 3]) == [1]
+    >>> tknzr = CharTknzr(is_uncased=True, max_vocab=10, min_count=1)
+    >>> assert tknzr.trunc_to_max(max_seq_len=1, tkids=[1, 2, 3]) == [1]
     """
-    # Truncate token id list to maximum sequence length.
-    return tkids[:self.max_seq_len]
+    # `max_seq_len` validation.
+    lmp.util.validate.raise_if_not_instance(val=max_seq_len, val_name='max_seq_len', val_type=int)
+    lmp.util.validate.raise_if_wrong_ordered(vals=[1, max_seq_len], val_names=['1', 'max_seq_len'])
 
-  def pad_to_max(self, tkids: List[int]) -> List[int]:
+    # Truncate token id list to maximum sequence length.
+    return tkids[:max_seq_len]
+
+  def pad_to_max(self, max_seq_len: int, tkids: List[int]) -> List[int]:
     """Pad token id list when token id list is shorter than required.
 
-    If ``len(tkids) < self.max_seq_len``, then append padding token id at the end of ``tkids`` until ``tkids`` has
-    length equal to ``self.max_seq_len``.  Do nothing when ``len(tkids) >= self.max_seq_len``.
+    If ``len(tkids) < max_seq_len``, then append padding token id at the end of ``tkids`` until ``tkids`` has length
+    equal to ``max_seq_len``.  Do nothing when ``len(tkids) >= max_seq_len``.
 
     Arguments
     ---------
+    max_seq_len: int
+      Maximum length constraint.
     tkids: list[int]
       Token id list to be padded.
 
@@ -411,16 +402,20 @@ class BaseTknzr(abc.ABC):
     --------
     >>> from lmp.tknzr._base import PAD_TKID
     >>> from lmp.tknzr import CharTknzr
-    >>> tknzr = CharTknzr(is_uncased=True, max_seq_len=5, max_vocab=10, min_count=1)
-    >>> assert tknzr.pad_to_max([1, 2, 3]) == [1, 2, 3, PAD_TKID, PAD_TKID]
+    >>> tknzr = CharTknzr(is_uncased=True, max_vocab=10, min_count=1)
+    >>> assert tknzr.pad_to_max(max_seq_len=5, tkids=[1, 2, 3]) == [1, 2, 3, PAD_TKID, PAD_TKID]
     """
+    # `max_seq_len` validation.
+    lmp.util.validate.raise_if_not_instance(val=max_seq_len, val_name='max_seq_len', val_type=int)
+    lmp.util.validate.raise_if_wrong_ordered(vals=[1, max_seq_len], val_names=['1', 'max_seq_len'])
+
     # Calculate padding length.
-    pad_len = max(0, self.max_seq_len - len(tkids))
+    pad_len = max(0, max_seq_len - len(tkids))
 
     # Pad to maximum sequence length.
     return tkids + [PAD_TKID] * pad_len
 
-  def enc(self, txt: str) -> List[int]:
+  def enc(self, max_seq_len: int, txt: str) -> List[int]:
     """Encode text into token id list.
 
     Text will be tokenized into token list (``tk_0, tk_1, tk_2, ..., tk_n``) and formatted as follow::
@@ -431,15 +426,16 @@ class BaseTknzr(abc.ABC):
     - ``[eos]`` is the "end of sentence" token.
     - ``[unk]`` tokens are used to replace :term:`OOV` tokens, i.e., tokens not in tokenizer's dictionary.  These
       tokens cannot be encoded since they are, well, unknown.
-    - After prepending ``[bos]`` and appending ``[eos]`` tokens, if token list is longer than ``self.max_seq_len``,
-      then token list will be truncated to have length equals to ``self.max_seq_len``.
-    - After prepending ``[bos]`` and appending ``[eos]`` tokens, if token list is shorter than ``self.max_seq_len``,
-      then padding token ``[pad]`` will be appended to token list util token list has length equals to
-      ``self.max_seq_len``.
+    - After prepending ``[bos]`` and appending ``[eos]`` tokens, if token list is longer than ``max_seq_len``, then
+      token list will be truncated to have length equals to ``max_seq_len``.
+    - After prepending ``[bos]`` and appending ``[eos]`` tokens, if token list is shorter than ``max_seq_len``, then
+      padding token ``[pad]`` will be appended to token list util token list has length equals to ``max_seq_len``.
     - All tokens in token list are converted to token ids and returned.
 
     Parameters
     ----------
+    max_seq_len: int
+      Maximum length of token id list.
     txt: str
       Text to be encoded.
 
@@ -475,7 +471,7 @@ class BaseTknzr(abc.ABC):
     tkids.append(EOS_TKID)
 
     # First truncate sequence to maximum sequence length, then pad sequence to maximum sequence length.
-    return self.pad_to_max(tkids=self.trunc_to_max(tkids=tkids))
+    return self.pad_to_max(max_seq_len=max_seq_len, tkids=self.trunc_to_max(max_seq_len=max_seq_len, tkids=tkids))
 
   def dec(self, tkids: List[int], *, rm_sp_tks: bool = False) -> str:
     """Decode token id list back to text.
@@ -530,16 +526,18 @@ class BaseTknzr(abc.ABC):
 
     return self.dtknz(tks)
 
-  def batch_enc(self, batch_txt: List[str]) -> List[List[int]]:
+  def batch_enc(self, batch_txt: List[str], max_seq_len: int) -> List[List[int]]:
     """Encode batch of text into batch of token id lists.
 
     Each text in ``batch_txt`` will be encoded with :py:meth:`lmp.tknzr.BaseTknzr.enc`.  All encoded token id lists
-    will have the same length (``= self.max_seq_len``).
+    will have the same length (``= max_seq_len``).
 
     Parameters
     ----------
     batch_txt: list[str],
       Batch of text to be encoded.
+    max_seq_len: int
+      Maximum length of all token id lists in the batch.
 
     Returns
     -------
@@ -559,7 +557,7 @@ class BaseTknzr(abc.ABC):
     """
     # `batch_txt` validation.
     lmp.util.validate.raise_if_not_instance(val=batch_txt, val_name='batch_txt', val_type=list)
-    return [self.enc(txt=txt) for txt in batch_txt]
+    return [self.enc(max_seq_len=max_seq_len, txt=txt) for txt in batch_txt]
 
   def batch_dec(self, batch_tkids: List[List[int]], *, rm_sp_tks: bool = False) -> List[str]:
     """Decode batch of token id lists back to batch of text.

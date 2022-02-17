@@ -9,36 +9,22 @@ import argparse
 from lmp.tknzr._char import CharTknzr
 
 
-def test_arguments(max_seq_len: int, max_vocab: int, min_count: int) -> None:
+def test_arguments(is_uncased: bool, max_vocab: int, min_count: int) -> None:
   """Must have correct arguments."""
   parser = argparse.ArgumentParser()
   CharTknzr.add_CLI_args(parser=parser)
-  args = parser.parse_args(
-    [
-      '--max_seq_len',
-      str(max_seq_len),
-      '--max_vocab',
-      str(max_vocab),
-      '--min_count',
-      str(min_count),
-    ]
-  )
-  assert not args.is_uncased
-  assert args.max_seq_len == max_seq_len
-  assert args.max_vocab == max_vocab
-  assert args.min_count == min_count
-  args = parser.parse_args(
-    [
-      '--is_uncased',
-      '--max_seq_len',
-      str(max_seq_len),
-      '--max_vocab',
-      str(max_vocab),
-      '--min_count',
-      str(min_count),
-    ]
-  )
-  assert args.is_uncased
-  assert args.max_seq_len == max_seq_len
+  argv = [
+    '--max_vocab',
+    str(max_vocab),
+    '--min_count',
+    str(min_count),
+  ]
+
+  if is_uncased:
+    argv.append('--is_uncased')
+
+  args = parser.parse_args(argv)
+
+  assert args.is_uncased == is_uncased
   assert args.max_vocab == max_vocab
   assert args.min_count == min_count

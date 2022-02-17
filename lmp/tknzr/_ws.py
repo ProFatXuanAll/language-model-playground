@@ -1,4 +1,10 @@
-"""Whitespace tokenizer class."""
+"""Whitespace tokenizer class.
+
+Attributes
+----------
+SPLIT_PTTN: typing.Final[re.Pattern]
+  Special tokens and whitespaces matching pattern.
+"""
 
 import re
 from typing import ClassVar, Final, List
@@ -19,8 +25,6 @@ class WsTknzr(BaseTknzr):
     Set to ``True`` to convert text into lower cases.
   max_vocab: int
     Maximum vocabulary size.
-  max_seq_len: int
-    Automatically truncate or pad token id list to have length equal to ``max_seq_len``.
   min_count: int
     Minimum token occurrence counts.
   kwargs: typing.Any, optional
@@ -41,7 +45,7 @@ class WsTknzr(BaseTknzr):
   Examples
   --------
   >>> from lmp.tknzr import WsTknzr
-  >>> tknzr = WsTknzr(is_uncased=False, max_seq_len=128, max_vocab=10, min_count=2)
+  >>> tknzr = WsTknzr(is_uncased=False, max_vocab=10, min_count=2)
   >>> assert tknzr.tknz('a b c') == ['a', 'b', 'c']
   >>> assert tknzr.dtknz(['a', 'b', 'c']) == 'a b c'
   """
@@ -73,7 +77,7 @@ class WsTknzr(BaseTknzr):
     Examples
     --------
     >>> from lmp.tknzr import WsTknzr
-    >>> tknzr = WsTknzr(is_uncased=False, max_seq_len=128, max_vocab=10, min_count=2)
+    >>> tknzr = WsTknzr(is_uncased=False, max_vocab=10, min_count=2)
     >>> assert tknzr.tknz('a b c') == ['a', 'b', 'c']
     >>> assert tknzr.tknz('abc def') == ['abc', 'def']
     """
@@ -109,7 +113,7 @@ class WsTknzr(BaseTknzr):
     Examples
     --------
     >>> from lmp.tknzr import WsTknzr
-    >>> tknzr = WsTknzr(is_uncased=False, max_seq_len=128, max_vocab=10, min_count=2)
+    >>> tknzr = WsTknzr(is_uncased=False, max_vocab=10, min_count=2)
     >>> assert tknzr.dtknz(['a', 'b', 'c']) == 'a b c'
     >>> assert tknzr.dtknz(['abc', 'def']) == 'abc def'
     """

@@ -12,7 +12,6 @@ from lmp.tknzr import CharTknzr, WsTknzr
 def test_char_tknzr_parse_results(
   exp_name: str,
   is_uncased: bool,
-  max_seq_len: int,
   max_vocab: int,
   min_count: int,
   seed: int,
@@ -26,8 +25,6 @@ def test_char_tknzr_parse_results(
         dset_name,
         '--exp_name',
         exp_name,
-        '--max_seq_len',
-        str(max_seq_len),
         '--max_vocab',
         str(max_vocab),
         '--min_count',
@@ -45,7 +42,6 @@ def test_char_tknzr_parse_results(
       assert args.dset_name == dset_name
       assert args.exp_name == exp_name
       assert args.is_uncased == is_uncased
-      assert args.max_seq_len == max_seq_len
       assert args.max_vocab == max_vocab
       assert args.min_count == min_count
       assert args.seed == seed
@@ -56,7 +52,6 @@ def test_char_tknzr_parse_results(
 def test_ws_tknzr_parse_results(
   exp_name: str,
   is_uncased: bool,
-  max_seq_len: int,
   max_vocab: int,
   min_count: int,
   seed: int,
@@ -70,8 +65,6 @@ def test_ws_tknzr_parse_results(
         dset_name,
         '--exp_name',
         exp_name,
-        '--max_seq_len',
-        str(max_seq_len),
         '--max_vocab',
         str(max_vocab),
         '--min_count',
@@ -89,7 +82,6 @@ def test_ws_tknzr_parse_results(
       assert args.dset_name == dset_name
       assert args.exp_name == exp_name
       assert args.is_uncased == is_uncased
-      assert args.max_seq_len == max_seq_len
       assert args.max_vocab == max_vocab
       assert args.min_count == min_count
       assert args.seed == seed

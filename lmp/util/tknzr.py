@@ -39,7 +39,6 @@ def create(tknzr_name: str, **kwargs: Any) -> BaseTknzr:
   >>> import lmp.util.tknzr
   >>> tknzr = lmp.util.tknzr.create(
   ...   is_uncased=False,
-  ...   max_seq_len=128,
   ...   max_vocab=-1,
   ...   min_count=0,
   ...   tknzr_name=WsTknzr.tknzr_name,
@@ -130,7 +129,6 @@ def load(exp_name: str) -> BaseTknzr:
   >>> import lmp.util.tknzr
   >>> tknzr = lmp.util.tknzr.create(
   ...   is_uncased=True,
-  ...   max_seq_len=128,
   ...   max_vocab=10,
   ...   min_count=2,
   ...   tknzr_name=WsTknzr.tknzr_name,
@@ -140,7 +138,6 @@ def load(exp_name: str) -> BaseTknzr:
   >>> assert isinstance(load_tknzr, WsTknzr)
   >>> assert load_tknzr.id2tk == tknzr.id2tk
   >>> assert load_tknzr.is_uncased == tknzr.is_uncased
-  >>> assert load_tknzr.max_seq_len == tknzr.max_seq_len
   >>> assert load_tknzr.max_vocab == tknzr.max_vocab
   >>> assert load_tknzr.min_count == tknzr.min_count
   >>> assert load_tknzr.tk2id == tknzr.tk2id

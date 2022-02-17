@@ -14,12 +14,6 @@ def is_uncased(request) -> bool:
   return request.param
 
 
-@pytest.fixture(params=[1, 128])
-def max_seq_len(request) -> int:
-  """Maximum length constraint."""
-  return request.param
-
-
 @pytest.fixture(params=[-1, 10000])
 def max_vocab(request) -> int:
   """Maximum vocabulary size."""

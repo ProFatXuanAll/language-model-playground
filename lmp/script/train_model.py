@@ -1,8 +1,8 @@
-r"""Train language model.
+r"""Use this script to train language model on particular dataset.
 
-Use this script to train language model on particular dataset.  This script is usually run after training tokenizer.
+This script is usually run after training tokenizer.
 Training performance will be shown on both CLI and tensorboard.  Use ``pipenv run tensorboard`` to launch tensorboard
-and open browser with URL http://localhost:6006/ to see training performance.
+and open browser with URL http://localhost:6006/ to see model training performance.
 
 See Also
 --------
@@ -277,7 +277,7 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
     )
 
     # Add model specific arguments.
-    model_type.train_parser(parser=model_subparser)
+    model_type.add_CLI_args(parser=model_subparser)
 
   return parser.parse_args(argv)
 

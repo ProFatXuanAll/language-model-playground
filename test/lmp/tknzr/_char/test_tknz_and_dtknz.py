@@ -14,9 +14,9 @@ from lmp.tknzr._char import CharTknzr
 
 
 @pytest.fixture
-def tknzr(is_uncased: bool, max_seq_len: int, max_vocab: int, min_count: int) -> CharTknzr:
+def tknzr(is_uncased: bool, max_vocab: int, min_count: int) -> CharTknzr:
   """Character tokenizer shared in this module."""
-  return CharTknzr(is_uncased=is_uncased, max_seq_len=max_seq_len, max_vocab=max_vocab, min_count=min_count)
+  return CharTknzr(is_uncased=is_uncased, max_vocab=max_vocab, min_count=min_count)
 
 
 def test_tknz(tknzr: CharTknzr) -> None:

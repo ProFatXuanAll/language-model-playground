@@ -83,12 +83,6 @@ def test_instance_method() -> None:
         annotation=bool,
       ),
       Parameter(
-        name='max_seq_len',
-        kind=Parameter.KEYWORD_ONLY,
-        default=Parameter.empty,
-        annotation=int,
-      ),
-      Parameter(
         name='max_vocab',
         kind=Parameter.KEYWORD_ONLY,
         default=Parameter.empty,
@@ -146,6 +140,12 @@ def test_instance_method() -> None:
         kind=Parameter.POSITIONAL_OR_KEYWORD,
         default=Parameter.empty,
         annotation=List[str],
+      ),
+      Parameter(
+        name='max_seq_len',
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        default=Parameter.empty,
+        annotation=int,
       ),
     ],
     return_annotation=List[List[int]],
@@ -221,6 +221,12 @@ def test_instance_method() -> None:
         default=Parameter.empty,
       ),
       Parameter(
+        name='max_seq_len',
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        default=Parameter.empty,
+        annotation=int,
+      ),
+      Parameter(
         name='txt',
         kind=Parameter.POSITIONAL_OR_KEYWORD,
         default=Parameter.empty,
@@ -255,6 +261,12 @@ def test_instance_method() -> None:
         name='self',
         kind=Parameter.POSITIONAL_OR_KEYWORD,
         default=Parameter.empty,
+      ),
+      Parameter(
+        name='max_seq_len',
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        default=Parameter.empty,
+        annotation=int,
       ),
       Parameter(
         name='tkids',
@@ -292,6 +304,12 @@ def test_instance_method() -> None:
         name='self',
         kind=Parameter.POSITIONAL_OR_KEYWORD,
         default=Parameter.empty,
+      ),
+      Parameter(
+        name='max_seq_len',
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        default=Parameter.empty,
+        annotation=int,
       ),
       Parameter(
         name='tkids',

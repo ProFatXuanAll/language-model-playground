@@ -13,19 +13,17 @@ def test_padding(is_uncased: bool, max_vocab: int, min_count: int) -> None:
   """Pad to specified length."""
   assert CharTknzr(
     is_uncased=is_uncased,
-    max_seq_len=2,
     max_vocab=max_vocab,
     min_count=min_count,
-  ).pad_to_max(tkids=[]) == [
+  ).pad_to_max(max_seq_len=2, tkids=[]) == [
     PAD_TKID,
     PAD_TKID,
   ]
   assert CharTknzr(
     is_uncased=is_uncased,
-    max_seq_len=5,
     max_vocab=max_vocab,
     min_count=min_count,
-  ).pad_to_max(tkids=[
+  ).pad_to_max(max_seq_len=5, tkids=[
     BOS_TKID,
     UNK_TKID,
     EOS_TKID,
@@ -42,16 +40,14 @@ def test_truncation(is_uncased: bool, max_vocab: int, min_count: int) -> None:
   """Truncate to specified length."""
   assert CharTknzr(
     is_uncased=is_uncased,
-    max_seq_len=5,
     max_vocab=max_vocab,
     min_count=min_count,
-  ).trunc_to_max(tkids=[]) == []
+  ).trunc_to_max(max_seq_len=5, tkids=[]) == []
   assert CharTknzr(
     is_uncased=is_uncased,
-    max_seq_len=2,
     max_vocab=max_vocab,
     min_count=min_count,
-  ).trunc_to_max(tkids=[
+  ).trunc_to_max(max_seq_len=2, tkids=[
     BOS_TKID,
     UNK_TKID,
     EOS_TKID,

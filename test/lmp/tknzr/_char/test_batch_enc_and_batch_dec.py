@@ -11,16 +11,14 @@ from lmp.tknzr._char import CharTknzr
 
 def test_cased_batch_enc() -> None:
   """Encode batch of text to batch of token ids (case-sensitive)."""
-  tknzr = CharTknzr(is_uncased=False, max_seq_len=1, max_vocab=-1, min_count=0)
+  tknzr = CharTknzr(is_uncased=False, max_vocab=-1, min_count=0)
   tknzr.build_vocab(batch_txt=['A', 'a'])
 
   # Return empty list when given empty list.
-  tknzr.max_seq_len = 2
-  assert tknzr.batch_enc(batch_txt=[]) == []
+  assert tknzr.batch_enc(batch_txt=[], max_seq_len=2) == []
 
   # Batch encoding format.
-  tknzr.max_seq_len = 4
-  assert tknzr.batch_enc(batch_txt=['aA', 'Aa']) == [
+  assert tknzr.batch_enc(batch_txt=['aA', 'Aa'], max_seq_len=4) == [
     [
       BOS_TKID,
       tknzr.tk2id['a'],
@@ -36,8 +34,7 @@ def test_cased_batch_enc() -> None:
   ]
 
   # Truncate and pad to specified length.
-  tknzr.max_seq_len = 4
-  assert tknzr.batch_enc(batch_txt=['a', 'aA', 'aAA']) == [
+  assert tknzr.batch_enc(batch_txt=['a', 'aA', 'aAA'], max_seq_len=4) == [
     [
       BOS_TKID,
       tknzr.tk2id['a'],
@@ -59,8 +56,7 @@ def test_cased_batch_enc() -> None:
   ]
 
   # Unknown tokens.
-  tknzr.max_seq_len = 4
-  assert tknzr.batch_enc(batch_txt=['a', 'ab', 'abc']) == [
+  assert tknzr.batch_enc(batch_txt=['a', 'ab', 'abc'], max_seq_len=4) == [
     [
       BOS_TKID,
       tknzr.tk2id['a'],
@@ -84,16 +80,14 @@ def test_cased_batch_enc() -> None:
 
 def test_uncased_batch_enc() -> None:
   """Encode batch of text to batch of token ids (case-insensitive)."""
-  tknzr = CharTknzr(is_uncased=True, max_seq_len=1, max_vocab=-1, min_count=0)
+  tknzr = CharTknzr(is_uncased=True, max_vocab=-1, min_count=0)
   tknzr.build_vocab(batch_txt=['a'])
 
   # Return empty list when given empty list.
-  tknzr.max_seq_len = 2
-  assert tknzr.batch_enc(batch_txt=[]) == []
+  assert tknzr.batch_enc(batch_txt=[], max_seq_len=2) == []
 
   # Batch encoding format.
-  tknzr.max_seq_len = 4
-  assert tknzr.batch_enc(batch_txt=['aA', 'Aa']) == [
+  assert tknzr.batch_enc(batch_txt=['aA', 'Aa'], max_seq_len=4) == [
     [
       BOS_TKID,
       tknzr.tk2id['a'],
@@ -109,8 +103,7 @@ def test_uncased_batch_enc() -> None:
   ]
 
   # Truncate and pad to specified length.
-  tknzr.max_seq_len = 4
-  assert tknzr.batch_enc(batch_txt=['a', 'aA', 'aAA']) == [
+  assert tknzr.batch_enc(batch_txt=['a', 'aA', 'aAA'], max_seq_len=4) == [
     [
       BOS_TKID,
       tknzr.tk2id['a'],
@@ -132,8 +125,7 @@ def test_uncased_batch_enc() -> None:
   ]
 
   # Unknown tokens.
-  tknzr.max_seq_len = 4
-  assert tknzr.batch_enc(batch_txt=['a', 'ab', 'abc']) == [
+  assert tknzr.batch_enc(batch_txt=['a', 'ab', 'abc'], max_seq_len=4) == [
     [
       BOS_TKID,
       tknzr.tk2id['a'],
@@ -157,7 +149,7 @@ def test_uncased_batch_enc() -> None:
 
 def test_batch_dec() -> None:
   """Decode batch of token ids to batch of text."""
-  tknzr = CharTknzr(is_uncased=False, max_seq_len=128, max_vocab=-1, min_count=0)
+  tknzr = CharTknzr(is_uncased=False, max_vocab=-1, min_count=0)
   tknzr.build_vocab(batch_txt=['A', 'a'])
 
   # Return empty list when given empty list.

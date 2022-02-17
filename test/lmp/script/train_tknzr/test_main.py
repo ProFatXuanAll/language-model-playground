@@ -18,7 +18,6 @@ def test_train_char_tknzr_on_wiki_text_2(
   cfg_file_path: str,
   exp_name: str,
   is_uncased: bool,
-  max_seq_len: int,
   max_vocab: int,
   min_count: int,
   seed: int,
@@ -32,8 +31,6 @@ def test_train_char_tknzr_on_wiki_text_2(
     WikiText2Dset.dset_name,
     '--exp_name',
     exp_name,
-    '--max_seq_len',
-    str(max_seq_len),
     '--max_vocab',
     str(max_vocab),
     '--min_count',
@@ -58,7 +55,6 @@ def test_train_char_tknzr_on_wiki_text_2(
   assert os.path.exists(tknzr_file_path)
   tknzr = lmp.util.tknzr.load(exp_name=exp_name)
   assert tknzr.is_uncased == is_uncased
-  assert tknzr.max_seq_len == max_seq_len
   assert tknzr.max_vocab == max_vocab
   assert tknzr.min_count == min_count
 

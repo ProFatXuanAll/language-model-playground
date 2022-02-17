@@ -14,9 +14,9 @@ from lmp.tknzr._ws import WsTknzr
 
 
 @pytest.fixture
-def tknzr(is_uncased: bool, max_seq_len: int, max_vocab: int, min_count: int) -> WsTknzr:
+def tknzr(is_uncased: bool, max_vocab: int, min_count: int) -> WsTknzr:
   """Whitespace tokenizer shared in this module."""
-  return WsTknzr(is_uncased=is_uncased, max_seq_len=max_seq_len, max_vocab=max_vocab, min_count=min_count)
+  return WsTknzr(is_uncased=is_uncased, max_vocab=max_vocab, min_count=min_count)
 
 
 def test_tknz(tknzr: WsTknzr) -> None:

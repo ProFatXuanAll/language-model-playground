@@ -44,7 +44,7 @@ def p_hid(request) -> float:
 @pytest.fixture
 def tknzr() -> BaseTknzr:
   """:py:class:`lmp.tknzr.BaseTknzr` instance."""
-  tknzr = CharTknzr(is_uncased=True, max_seq_len=8, max_vocab=-1, min_count=0)
+  tknzr = CharTknzr(is_uncased=True, max_vocab=-1, min_count=0)
   tknzr.build_vocab(batch_txt=['a', 'b', 'c'])
   return tknzr
 
