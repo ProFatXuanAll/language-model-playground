@@ -6,7 +6,7 @@ import torch
 
 from lmp.infer._base import BaseInfer
 from lmp.model import BaseModel
-from lmp.tknzr import BaseTknzr
+from lmp.tknzr._base import EOS_TKID, PAD_TKID, BaseTknzr
 
 
 class Top1Infer(BaseInfer):
@@ -75,7 +75,7 @@ class Top1Infer(BaseInfer):
     batch_cur_tkids = torch.LongTensor(tknzr.batch_enc(batch_txt=[txt], max_seq_len=self.max_seq_len)).to(device)
 
     # Remove token ids after `[eos]` since model is not trained to predict tokens after seeing `[eos]`.
-    mask = (batch_cur_tkids == tknzr.eos_tkid) | (batch_cur_tkids == tknzr.pad_tkid)
+    mask = (batch_cur_tkids == EOS_TKID) | (batch_cur_tkids == PAD_TKID)
     seq_len = batch_cur_tkids.size(1) - mask.sum()
     batch_cur_tkids = batch_cur_tkids[:, :seq_len]
 
@@ -108,7 +108,7 @@ class Top1Infer(BaseInfer):
       batch_cur_tkids = batch_next_tkids
 
       # If the prediction token id is `[eos]`, then stop generation immediately.
-      if gen_tkid == tknzr.eos_tkid:
+      if gen_tkid == EOS_TKID:
         break
 
     # Output generated text.

@@ -427,7 +427,7 @@ def main(argv: List[str]) -> None:
 
         # Log on tensorboard
         writer.add_scalar(f'train-loss/{args.dset_name}/{args.ver}', avg_loss, step)
-        writer.add_scalar('lr', schdl.get_last_lr(), step)
+        writer.add_scalar('lr', schdl.get_last_lr()[0], step)
 
         # Refresh log performance.
         pre_avg_loss = avg_loss

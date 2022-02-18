@@ -133,45 +133,9 @@ class BaseTknzr(abc.ABC):
     --------
     :doc:`lmp.script.train_tknzr </script/train_tknzr>`
       Tokenizer training script.
-
-    Examples
-    --------
-    >>> import argparse
-    >>> from lmp.tknzr import BaseTknzr
-    >>> parser = argparse.ArgumentParser()
-    >>> BaseTknzr.train_parser(parser)
-    >>> args = parser.parse_args([
-    ...   '--max_vocab', '10',
-    ...   '--min_count', '2',
-    ... ])
-    >>> assert args.is_uncased == False
-    >>> assert args.max_vocab == 10
-    >>> assert args.min_count == 2
     """
     # `parser` validation.
     lmp.util.validate.raise_if_not_instance(val=parser, val_name='parser', val_type=argparse.ArgumentParser)
-
-    # Required arguments.
-    group = parser.add_argument_group(f'`lmp.tknzr.{cls.__name__}` constructor arguments')
-    group.add_argument(
-      '--max_vocab',
-      help='Maximum vocabulary size.  Set to `-1` to include any tokens.',
-      required=True,
-      type=int,
-    )
-    group.add_argument(
-      '--min_count',
-      help='Minimum token occurrence count.  Set to `0` to disable.',
-      required=True,
-      type=int,
-    )
-
-    # Optional arguments.
-    group.add_argument(
-      '--is_uncased',
-      action='store_true',
-      help='Convert all text and tokens into lower cases if given.',
-    )
 
   def norm(self, txt: str) -> str:
     """Perform normalization on text.

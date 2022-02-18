@@ -8,6 +8,7 @@ import pytest
 import lmp.util.cfg
 import lmp.util.model
 import lmp.util.path
+import lmp.util.tknzr
 from lmp.model import BaseModel, ElmanNet
 from lmp.tknzr import BaseTknzr, CharTknzr
 
@@ -21,7 +22,7 @@ def ckpt() -> int:
 @pytest.fixture
 def max_seq_len() -> int:
   """Maximum sequence length."""
-  return 128
+  return 8
 
 
 @pytest.fixture
@@ -33,28 +34,16 @@ def seed() -> int:
 @pytest.fixture
 def tknzr() -> BaseTknzr:
   """:py:class:`lmp.tknzr.BaseTknzr` instance."""
-  return CharTknzr(
-    is_uncased=True,
-    max_vocab=-1,
-    min_count=0,
-    tk2id={
-      CharTknzr.bos_tk: CharTknzr.bos_tkid,
-      CharTknzr.eos_tk: CharTknzr.eos_tkid,
-      CharTknzr.pad_tk: CharTknzr.pad_tkid,
-      CharTknzr.unk_tk: CharTknzr.unk_tkid,
-      'a': max(CharTknzr.bos_tkid, CharTknzr.eos_tkid, CharTknzr.pad_tkid, CharTknzr.unk_tkid) + 1,
-      'b': max(CharTknzr.bos_tkid, CharTknzr.eos_tkid, CharTknzr.pad_tkid, CharTknzr.unk_tkid) + 2,
-      'c': max(CharTknzr.bos_tkid, CharTknzr.eos_tkid, CharTknzr.pad_tkid, CharTknzr.unk_tkid) + 3,
-    },
-  )
+  tknzr = CharTknzr(is_uncased=True, max_vocab=-1, min_count=0)
+  tknzr.build_vocab(batch_txt=['a', 'b', 'c'])
+  return tknzr
 
 
 @pytest.fixture
 def tknzr_exp_name(exp_name: str, request, tknzr: BaseTknzr) -> str:
   """Tokenizer experiment name."""
   exp_name = f'{exp_name}-tokenizer'
-  tknzr.save(exp_name=exp_name)
-  lmp.util.cfg.save(args=argparse.Namespace(exp_name=exp_name, tknzr_name=tknzr.tknzr_name), exp_name=exp_name)
+  lmp.util.tknzr.save(exp_name=exp_name, tknzr=tknzr)
   abs_dir_path = os.path.join(lmp.util.path.EXP_PATH, exp_name)
 
   def fin() -> None:
@@ -70,7 +59,7 @@ def tknzr_exp_name(exp_name: str, request, tknzr: BaseTknzr) -> str:
 @pytest.fixture
 def model(tknzr: BaseTknzr) -> BaseModel:
   """:py:class:`lmp.model.BaseModel` instance."""
-  return ElmanNet(d_emb=10, tknzr=tknzr)
+  return ElmanNet(d_emb=2, d_hid=2, p_emb=0.1, p_hid=0.1, tknzr=tknzr)
 
 
 @pytest.fixture
@@ -79,11 +68,7 @@ def model_exp_name(ckpt: int, exp_name: str, max_seq_len: int, model: BaseModel,
   exp_name = f'{exp_name}-model'
   lmp.util.model.save(ckpt=ckpt, exp_name=exp_name, model=model)
   lmp.util.cfg.save(
-    args=argparse.Namespace(
-      exp_name=exp_name,
-      tknzr_exp_name=tknzr_exp_name,
-      max_seq_len=max_seq_len,
-    ),
+    args=argparse.Namespace(exp_name=exp_name, tknzr_exp_name=tknzr_exp_name, max_seq_len=max_seq_len),
     exp_name=exp_name
   )
   abs_dir_path = os.path.join(lmp.util.path.EXP_PATH, exp_name)

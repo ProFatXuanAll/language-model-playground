@@ -109,7 +109,6 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
   return parser.parse_args(argv)
 
 
-@torch.no_grad()
 def main(argv: List[str]) -> None:
   """Script entry point.
 
@@ -131,14 +130,11 @@ def main(argv: List[str]) -> None:
   # Load pre-trained model configuration.
   model_cfg = lmp.util.cfg.load(exp_name=args.exp_name)
 
-  # Load pre-trained tokenizer configuration.
-  tknzr_cfg = lmp.util.cfg.load(exp_name=model_cfg.tknzr_exp_name)
-
   # Load pre-trained tokenizer instance.
-  tknzr = lmp.util.tknzr.load(exp_name=tknzr_cfg.exp_name, tknzr_name=tknzr_cfg.tknzr_name)
+  tknzr = lmp.util.tknzr.load(exp_name=model_cfg.tknzr_exp_name)
 
   # Load pre-trained model instance.
-  model = lmp.util.model.load(ckpt=args.ckpt, exp_name=args.exp_name, tknzr=tknzr)
+  model = lmp.util.model.load(ckpt=args.ckpt, exp_name=args.exp_name)
 
   # Set model to evaluation model.  This turn off dropout layers in model.
   model = model.eval()
@@ -171,12 +167,7 @@ def main(argv: List[str]) -> None:
     batch_tkids_pd.append(batch_next_tkids_pd)
 
   # Calculate perplexity.
-  ppl = lmp.util.metric.ppl(
-    batch_tkids=batch_next_tkids,
-    batch_tkids_pd=torch.stack(batch_tkids_pd, dim=1),
-    eos_tkid=tknzr.eos_tkid,
-    pad_tkid=tknzr.pad_tkid,
-  )
+  ppl = lmp.util.metric.ppl(batch_tkids=batch_next_tkids, batch_tkids_pd=torch.stack(batch_tkids_pd, dim=1))
 
   # Output perplexity on given sample.
   print(ppl.item())
@@ -195,7 +186,6 @@ def main(argv: List[str]) -> None:
   del model_cfg
   del ppl
   del tknzr
-  del tknzr_cfg
   gc.collect()
 
 

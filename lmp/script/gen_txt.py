@@ -95,8 +95,43 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
   for infer_name, infer_type in INFER_OPTS.items():
     infer_subparser = subparsers.add_parser(infer_name, description=f'Use {infer_type.__name__} as inference method.')
 
+    # Required arguments.
+    group = infer_subparser.add_argument_group('language model inference arguments')
+    group.add_argument(
+      '--ckpt',
+      help='Pre-trained language model checkpoint.',
+      required=True,
+      type=int,
+    )
+    group.add_argument(
+      '--exp_name',
+      help='Pre-trained language model experiment name.',
+      required=True,
+      type=str,
+    )
+    group.add_argument(
+      '--max_seq_len',
+      help='Maximum sequence length constraint.',
+      required=True,
+      type=int,
+    )
+    group.add_argument(
+      '--txt',
+      help='Text segment which the generation process is condition on.',
+      required=True,
+      type=str,
+    )
+
+    # Optional arguments.
+    group.add_argument(
+      '--seed',
+      default=42,
+      help='Random seed.',
+      type=int,
+    )
+
     # Add inference method specific arguments.
-    infer_type.infer_parser(parser=infer_subparser)
+    infer_type.add_CLI_args(parser=infer_subparser)
 
   return parser.parse_args(argv)
 
@@ -122,14 +157,11 @@ def main(argv: List[str]) -> None:
   # Load pre-trained model configuration.
   model_cfg = lmp.util.cfg.load(exp_name=args.exp_name)
 
-  # Load pre-trained tokenizer configuration.
-  tknzr_cfg = lmp.util.cfg.load(exp_name=model_cfg.tknzr_exp_name)
-
   # Load pre-trained tokenizer instance.
-  tknzr = lmp.util.tknzr.load(exp_name=tknzr_cfg.exp_name, tknzr_name=tknzr_cfg.tknzr_name)
+  tknzr = lmp.util.tknzr.load(exp_name=model_cfg.tknzr_exp_name)
 
   # Load pre-trained model instance.
-  model = lmp.util.model.load(ckpt=args.ckpt, exp_name=args.exp_name, tknzr=tknzr)
+  model = lmp.util.model.load(ckpt=args.ckpt, exp_name=args.exp_name)
 
   # Set model to evaluation model.  This turn off dropout layers in model.
   model = model.eval()
@@ -158,7 +190,6 @@ def main(argv: List[str]) -> None:
   del model
   del model_cfg
   del tknzr
-  del tknzr_cfg
   del txt
   gc.collect()
 

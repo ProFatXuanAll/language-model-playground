@@ -1,39 +1,41 @@
-"""Test :py:class:`lmp.infer.Top1Infer` signatures."""
+"""Test :py:mod:`lmp.infer._top_k` signatures."""
 
 import inspect
 from inspect import Parameter, Signature
 from typing import Any, get_type_hints
 
-from lmp.infer import BaseInfer, TopKInfer
+import lmp.infer._top_k
+from lmp.infer._base import BaseInfer
 
 
-def test_class() -> None:
-  """Ensure class signatures."""
-  assert inspect.isclass(TopKInfer)
-  assert not inspect.isabstract(TopKInfer)
-  assert issubclass(TopKInfer, BaseInfer)
+def test_module_attribute() -> None:
+  """Ensure module attributes' signatures."""
+  assert hasattr(lmp.infer._top_k, 'TopKInfer')
+  assert inspect.isclass(lmp.infer._top_k.TopKInfer)
+  assert issubclass(lmp.infer._top_k.TopKInfer, BaseInfer)
+  assert not inspect.isabstract(lmp.infer._top_k.TopKInfer)
 
 
 def test_class_attribute() -> None:
   """Ensure class attributes' signatures."""
-  print(get_type_hints(TopKInfer))
-  assert get_type_hints(TopKInfer) == get_type_hints(BaseInfer)
-  assert TopKInfer.infer_name == 'top-k'
+  print(get_type_hints(lmp.infer._top_k.TopKInfer))
+  assert get_type_hints(lmp.infer._top_k.TopKInfer) == get_type_hints(BaseInfer)
+  assert lmp.infer._top_k.TopKInfer.infer_name == 'top-K'
 
 
 def test_inherent_class_method():
   """Ensure inherent class methods are the same as base class."""
-  assert inspect.signature(TopKInfer.infer_parser) == inspect.signature(BaseInfer.infer_parser)
+  assert inspect.signature(lmp.infer._top_k.TopKInfer.add_CLI_args) == inspect.signature(BaseInfer.add_CLI_args)
 
 
 def test_inherent_instance_method():
   """Ensure inherent instance methods are the same as base class."""
-  assert inspect.signature(TopKInfer.gen) == inspect.signature(BaseInfer.gen)
+  assert inspect.signature(lmp.infer._top_k.TopKInfer.gen) == inspect.signature(BaseInfer.gen)
 
 
 def test_instance_method() -> None:
   """Ensure instance methods' signatures."""
-  assert inspect.signature(TopKInfer.__init__) == Signature(
+  assert inspect.signature(lmp.infer._top_k.TopKInfer.__init__) == Signature(
     parameters=[
       Parameter(
         name='self',

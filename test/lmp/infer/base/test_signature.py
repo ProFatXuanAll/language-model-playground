@@ -1,36 +1,37 @@
-"""Test :py:class:`lmp.infer.BaseInfer` signatures."""
+"""Test :py:mod:`lmp.infer._base` signatures."""
 
 import argparse
 import inspect
 from inspect import Parameter, Signature
 from typing import Any, ClassVar, get_type_hints
 
-from lmp.infer import BaseInfer
+import lmp.infer._base
 from lmp.model import BaseModel
 from lmp.tknzr import BaseTknzr
 
 
-def test_class() -> None:
-  """Ensure abstract class signatures."""
-  assert inspect.isclass(BaseInfer)
-  assert inspect.isabstract(BaseInfer)
+def test_module_attribute() -> None:
+  """Ensure module attributes' signatures."""
+  assert hasattr(lmp.infer._base, 'BaseInfer')
+  assert inspect.isclass(lmp.infer._base.BaseInfer)
+  assert inspect.isabstract(lmp.infer._base.BaseInfer)
 
 
 def test_class_attribute() -> None:
   """Ensure class attributes' signatures."""
-  print(get_type_hints(BaseInfer))
-  assert get_type_hints(BaseInfer) == {
+  print(get_type_hints(lmp.infer._base.BaseInfer))
+  assert get_type_hints(lmp.infer._base.BaseInfer) == {
     'infer_name': ClassVar[str],
   }
-  assert BaseInfer.infer_name == 'base'
+  assert lmp.infer._base.BaseInfer.infer_name == 'base'
 
 
 def test_class_method() -> None:
   """Ensure class methods' signatures."""
-  assert hasattr(BaseInfer, 'infer_parser')
-  assert inspect.ismethod(BaseInfer.infer_parser)
-  assert BaseInfer.infer_parser.__self__ == BaseInfer
-  assert inspect.signature(BaseInfer.infer_parser) == Signature(
+  assert hasattr(lmp.infer._base.BaseInfer, 'add_CLI_args')
+  assert inspect.ismethod(lmp.infer._base.BaseInfer.add_CLI_args)
+  assert lmp.infer._base.BaseInfer.add_CLI_args.__self__ == lmp.infer._base.BaseInfer
+  assert inspect.signature(lmp.infer._base.BaseInfer.add_CLI_args) == Signature(
     parameters=[
       Parameter(
         name='parser',
@@ -45,8 +46,8 @@ def test_class_method() -> None:
 
 def test_instance_method() -> None:
   """Ensure instance methods' signatures."""
-  assert hasattr(BaseInfer, '__init__')
-  assert inspect.signature(BaseInfer.__init__) == Signature(
+  assert hasattr(lmp.infer._base.BaseInfer, '__init__')
+  assert inspect.signature(lmp.infer._base.BaseInfer.__init__) == Signature(
     parameters=[
       Parameter(
         name='self',
@@ -67,9 +68,9 @@ def test_instance_method() -> None:
     ],
     return_annotation=Signature.empty,
   )
-  assert hasattr(BaseInfer, 'gen')
-  assert 'gen' in BaseInfer.__abstractmethods__
-  assert inspect.signature(BaseInfer.gen) == Signature(
+  assert hasattr(lmp.infer._base.BaseInfer, 'gen')
+  assert 'gen' in lmp.infer._base.BaseInfer.__abstractmethods__
+  assert inspect.signature(lmp.infer._base.BaseInfer.gen) == Signature(
     parameters=[
       Parameter(
         name='self',

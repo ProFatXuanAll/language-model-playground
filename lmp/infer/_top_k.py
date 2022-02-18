@@ -1,4 +1,4 @@
-"""Top-k inference method."""
+"""Top-K inference method."""
 
 import argparse
 from typing import Any, ClassVar, List
@@ -8,13 +8,13 @@ import torch
 import lmp.util.validate
 from lmp.infer._base import BaseInfer
 from lmp.model import BaseModel
-from lmp.tknzr import BaseTknzr
+from lmp.tknzr._base import EOS_TKID, PAD_TKID, BaseTknzr
 
 
 class TopKInfer(BaseInfer):
-  """Top-k inference method.
+  """Top-K inference method.
 
-  For each inference step, this method pick the token id with the **top-k highest probability** from token id
+  For each inference step, this method pick the token id with the **top-K highest probability** from token id
   probability distribution, and use that token id as the next token id prediction result.  It is a non-greedy algorithm
   since the best prediction (which correspond to the highest probability) is not guaranteed to be chosen.  In exchange
   it has higher diversity on generation results compare to :py:class:`lmp.infer.Top1Infer`.
@@ -31,7 +31,7 @@ class TopKInfer(BaseInfer):
   Attributes
   ----------
   infer_name: ClassVar[str]
-    CLI name of top-k inference method is ``top-k``.
+    CLI name of top-k inference method is ``top-K``.
   k: int
     Number of token ids to be sampled.
 
@@ -45,7 +45,7 @@ class TopKInfer(BaseInfer):
     Use pre-trained language model checkpoint to generate continual text of given text segment.
   """
 
-  infer_name: ClassVar[str] = 'top-k'
+  infer_name: ClassVar[str] = 'top-K'
 
   def __init__(self, k: int, max_seq_len: int, **kwargs: Any):
     super().__init__(max_seq_len=max_seq_len)
@@ -54,16 +54,54 @@ class TopKInfer(BaseInfer):
     lmp.util.validate.raise_if_wrong_ordered(vals=[1, k], val_names=['1', 'k'])
     self.k = k
 
+  @classmethod
+  def add_CLI_args(cls, parser: argparse.ArgumentParser) -> None:
+    """Add top-K inference method constructor parameters to CLI arguments parser.
+
+    Parameters
+    ----------
+    parser: argparse.ArgumentParser
+      CLI arguments parser.
+
+    Returns
+    -------
+    None
+
+    See Also
+    --------
+    :doc:`lmp.script.gen_txt </script/gen_txt>`
+      Use pre-trained language model checkpoint to generate continual text of given text segment.
+
+    Examples
+    --------
+    >>> import argparse
+    >>> from lmp.infer import TopKInfer
+    >>> parser = argparse.ArgumentParser()
+    >>> TopKInfer.infer_parser(parser)
+    >>> args = parser.parse_args(['--k', '10'])
+    >>> assert args.k == 10
+    """
+    super().add_CLI_args(parser=parser)
+
+    # Required arguments.
+    group = parser.add_argument_group('top-K inference method arguments')
+    group.add_argument(
+      '--k',
+      help='Number of token ids to be sampled.',
+      required=True,
+      type=int,
+    )
+
   @torch.no_grad()
   def gen(self, model: BaseModel, tknzr: BaseTknzr, txt: str) -> str:
     """Generate continual text conditioned on given text segment.
 
-    Top-k inference algorithm is structured as follow:
+    Top-K inference algorithm is structured as follow:
 
     #. Encode input text as 1 sample batch.
     #. Remove token ids after ``[eos]`` since model is not trained to predict tokens after seeing ``[eos]``.
     #. Loop over conditioned token ids to generate conditioned hidden states.
-    #. Loop to generate token ids.  In each iteration, generated token id was choosed so that it is one of the top-k
+    #. Loop to generate token ids.  In each iteration, generated token id was choosed so that it is one of the top-K
        highest probabilities from next token id prediction probability distribution.  Generating loop will stop early
        if ``[eos]`` is generated, otherwise generating loop only stop when maximum length constraint enforced by
        ``self.max_seq_len`` is violated.
@@ -91,7 +129,7 @@ class TopKInfer(BaseInfer):
     batch_cur_tkids = torch.LongTensor(tknzr.batch_enc(batch_txt=[txt], max_seq_len=self.max_seq_len)).to(device)
 
     # Remove token ids after `[eos]` since model is not trained to predict tokens after seeing `[eos]`.
-    mask = (batch_cur_tkids == tknzr.eos_tkid) | (batch_cur_tkids == tknzr.pad_tkid)
+    mask = (batch_cur_tkids == EOS_TKID) | (batch_cur_tkids == PAD_TKID)
     seq_len = batch_cur_tkids.size(1) - mask.sum()
     batch_cur_tkids = batch_cur_tkids[:, :seq_len]
 
@@ -114,11 +152,11 @@ class TopKInfer(BaseInfer):
         batch_prev_states=batch_prev_states,
       )
 
-      # Get top-k highest probabilities from next token id prediction probability distribution.
+      # Get top-K highest probabilities from next token id prediction probability distribution.
       # shape: (1, k).
       batch_next_tkids_topk_p, batch_next_tkids_topk = batch_next_tkids_pd.topk(k=self.k, dim=-1)
 
-      # Use the top-k highest probabilities to construct multinomial distribution.  Then sample token id from
+      # Use the top-K highest probabilities to construct multinomial distribution.  Then sample token id from
       # multinomial distribution as the next token id prediction result.
       # `batch_next_tkids_topk_sample` shape: (1, 1).
       batch_next_tkids_topk_sample = torch.multinomial(batch_next_tkids_topk_p, num_samples=1)
@@ -137,64 +175,8 @@ class TopKInfer(BaseInfer):
       batch_cur_tkids = batch_next_tkids
 
       # If the prediction token id is `[eos]`, then stop generation immediately.
-      if gen_tkid == tknzr.eos_tkid:
+      if gen_tkid == EOS_TKID:
         break
 
     # Output generated text.
     return tknzr.batch_dec(batch_tkids=[gen_tkids], rm_sp_tks=True)[0]
-
-  @classmethod
-  def infer_parser(cls, parser: argparse.ArgumentParser) -> None:
-    """CLI arguments parser for language model text generation with top-k inference method.
-
-    Parameters
-    ----------
-    parser: argparse.ArgumentParser
-      CLI arguments parser.
-
-    Returns
-    -------
-    None
-
-    See Also
-    --------
-    lmp.script.gen_txt
-      Use pre-trained language model checkpoint to generate continual text of given text segment.
-
-    Examples
-    --------
-    >>> import argparse
-    >>> from lmp.infer import TopKInfer
-    >>> parser = argparse.ArgumentParser()
-    >>> TopKInfer.infer_parser(parser)
-    >>> args = parser.parse_args([
-    ...   '--ckpt', '5000',
-    ...   '--exp_name', 'my_exp',
-    ...   '--k', '10',
-    ...   '--max_seq_len', '128',
-    ...   '--txt', 'Hello world',
-    ... ])
-    >>> args.ckpt == 5000
-    True
-    >>> args.exp_name == 'my_exp'
-    True
-    >>> args.k == 10
-    True
-    >>> args.max_seq_len == 128
-    True
-    >>> args.txt == 'Hello world'
-    True
-    >>> args.seed == 42
-    True
-    """
-    # Load common arguments.
-    super().infer_parser(parser=parser)
-
-    # Required arguments.
-    group = parser.add_argument_group('top-k inference method arguments')
-    group.add_argument(
-      '--k',
-      help='Number of token ids to be sampled.',
-      required=True,
-      type=int,
-    )

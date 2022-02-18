@@ -46,6 +46,27 @@ class BaseInfer(abc.ABC):
 
     self.max_seq_len = max_seq_len
 
+  @classmethod
+  def add_CLI_args(cls, parser: argparse.ArgumentParser) -> None:
+    """Add inference method constructor parameters to CLI arguments parser.
+
+    Parameters
+    ----------
+    parser: argparse.ArgumentParser
+      CLI arguments parser.
+
+    Returns
+    -------
+    None
+
+    See Also
+    --------
+    :doc:`lmp.script.gen_txt </script/gen_txt>`
+      Use pre-trained language model checkpoint to generate continual text of given text segment.
+    """
+    # `parser` validation.
+    lmp.util.validate.raise_if_not_instance(val=parser, val_name='parser', val_type=argparse.ArgumentParser)
+
   @torch.no_grad()
   @abc.abstractmethod
   def gen(self, model: BaseModel, tknzr: BaseTknzr, txt: str) -> str:
@@ -66,79 +87,3 @@ class BaseInfer(abc.ABC):
       Generated text.
     """
     raise NotImplementedError
-
-  @classmethod
-  def infer_parser(cls, parser: argparse.ArgumentParser) -> None:
-    """CLI arguments parser for language model text generation.
-
-    Parameters
-    ----------
-    parser: argparse.ArgumentParser
-      CLI arguments parser.
-
-    Returns
-    -------
-    None
-
-    See Also
-    --------
-    lmp.script.gen_txt
-      Use pre-trained language model checkpoint to generate continual text of given text segment.
-
-    Examples
-    --------
-    >>> import argparse
-    >>> from lmp.infer import BaseInfer
-    >>> parser = argparse.ArgumentParser()
-    >>> BaseInfer.infer_parser(parser)
-    >>> args = parser.parse_args([
-    ...   '--ckpt', '5000',
-    ...   '--exp_name', 'my_exp',
-    ...   '--max_seq_len', '128',
-    ...   '--txt', 'Hello world',
-    ... ])
-    >>> args.ckpt == 5000
-    True
-    >>> args.exp_name == 'my_exp'
-    True
-    >>> args.max_seq_len == 128
-    True
-    >>> args.txt == 'Hello world'
-    True
-    >>> args.seed == 42
-    True
-    """
-    # Required arguments.
-    group = parser.add_argument_group('language model inference arguments')
-    group.add_argument(
-      '--ckpt',
-      help='Pre-trained language model checkpoint.',
-      required=True,
-      type=int,
-    )
-    group.add_argument(
-      '--exp_name',
-      help='Pre-trained language model experiment name.',
-      required=True,
-      type=str,
-    )
-    group.add_argument(
-      '--max_seq_len',
-      help='Maximum sequence length constraint.',
-      required=True,
-      type=int,
-    )
-    group.add_argument(
-      '--txt',
-      help='Text segment which the generation process is condition on.',
-      required=True,
-      type=str,
-    )
-
-    # Optional arguments.
-    group.add_argument(
-      '--seed',
-      default=42,
-      help='Random seed.',
-      type=int,
-    )

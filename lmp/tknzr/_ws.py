@@ -6,6 +6,7 @@ SPLIT_PTTN: typing.Final[re.Pattern]
   Special tokens and whitespaces matching pattern.
 """
 
+import argparse
 import re
 from typing import ClassVar, Final, List
 
@@ -51,6 +52,62 @@ class WsTknzr(BaseTknzr):
   """
 
   tknzr_name: ClassVar[str] = 'whitespace'
+
+  @classmethod
+  def add_CLI_args(cls, parser: argparse.ArgumentParser) -> None:
+    """Add whitespace tokenizer constructor parameters to CLI arguments parser.
+
+    Parameters
+    ----------
+    parser: argparse.ArgumentParser
+      CLI arguments parser.
+
+    Returns
+    -------
+    None
+
+    See Also
+    --------
+    :doc:`lmp.script.train_tknzr </script/train_tknzr>`
+      Tokenizer training script.
+
+    Examples
+    --------
+    >>> import argparse
+    >>> from lmp.tknzr import WsTknzr
+    >>> parser = argparse.ArgumentParser()
+    >>> WsTknzr.add_CLI_args(parser)
+    >>> args = parser.parse_args([
+    ...   '--max_vocab', '10',
+    ...   '--min_count', '2',
+    ... ])
+    >>> assert args.is_uncased == False
+    >>> assert args.max_vocab == 10
+    >>> assert args.min_count == 2
+    """
+    super().add_CLI_args(parser=parser)
+
+    # Required arguments.
+    group = parser.add_argument_group('whitespace tokenizer constructor arguments')
+    group.add_argument(
+      '--max_vocab',
+      help='Maximum vocabulary size.  Set to `-1` to include any tokens.',
+      required=True,
+      type=int,
+    )
+    group.add_argument(
+      '--min_count',
+      help='Minimum token occurrence count.  Set to `0` to disable.',
+      required=True,
+      type=int,
+    )
+
+    # Optional arguments.
+    group.add_argument(
+      '--is_uncased',
+      action='store_true',
+      help='Convert all text and tokens into lower cases if given.',
+    )
 
   def tknz(self, txt: str) -> List[str]:
     """Split text between whitespaces.

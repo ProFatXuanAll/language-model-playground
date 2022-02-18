@@ -1,4 +1,4 @@
-r"""Use pre-trained language model checkpoints to calculate average perplexity on a particular dataset.
+r"""Use pre-trained language model checkpoints to calculate average perplexity on a dataset.
 
 One must first run the script :py:mod:`lmp.script.train_model` before running this script.  Use
 ``pipenv run tensorboard`` to launch tensorboard and open browser with URL http://localhost:6006/ to see evaluation
@@ -162,7 +162,6 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
   return parser.parse_args(argv)
 
 
-@torch.no_grad()
 def main(argv: List[str]) -> None:
   """Script entry point.
 
@@ -191,11 +190,8 @@ def main(argv: List[str]) -> None:
   # Load pre-trained model configuration.
   model_cfg = lmp.util.cfg.load(exp_name=args.exp_name)
 
-  # Load pre-trained tokenizer configuration.
-  tknzr_cfg = lmp.util.cfg.load(exp_name=model_cfg.tknzr_exp_name)
-
   # Load pre-trained tokenizer instance.
-  tknzr = lmp.util.tknzr.load(exp_name=tknzr_cfg.exp_name, tknzr_name=tknzr_cfg.tknzr_name)
+  tknzr = lmp.util.tknzr.load(exp_name=model_cfg.tknzr_exp_name)
 
   # Get model running device.
   device = torch.device('cpu')
@@ -208,7 +204,7 @@ def main(argv: List[str]) -> None:
   # Evaluate checkpoints within ranges.
   for ckpt in lmp.util.model.list_ckpts(exp_name=args.exp_name, first_ckpt=args.first_ckpt, last_ckpt=args.last_ckpt):
     # Load pre-trained model instance.
-    model = lmp.util.model.load(ckpt=ckpt, exp_name=args.exp_name, tknzr=tknzr)
+    model = lmp.util.model.load(ckpt=ckpt, exp_name=args.exp_name)
 
     # Set model to evaluation model.  This turn off dropout layers in model.
     model = model.eval()
@@ -239,12 +235,7 @@ def main(argv: List[str]) -> None:
         batch_tkids_pd.append(batch_next_tkids_pd)
 
       # Calculate perplexity.
-      batch_ppl = lmp.util.metric.ppl(
-        batch_tkids=batch_next_tkids,
-        batch_tkids_pd=torch.stack(batch_tkids_pd, dim=1),
-        eos_tkid=tknzr.eos_tkid,
-        pad_tkid=tknzr.pad_tkid,
-      )
+      batch_ppl = lmp.util.metric.ppl(batch_tkids=batch_next_tkids, batch_tkids_pd=torch.stack(batch_tkids_pd, dim=1))
 
       # Accumulate average perplexity.
       avg_ppl += (batch_ppl / dset_size).sum().item()
@@ -279,7 +270,6 @@ def main(argv: List[str]) -> None:
   del dset_size
   del model_cfg
   del tknzr
-  del tknzr_cfg
   del writer
   gc.collect()
 
