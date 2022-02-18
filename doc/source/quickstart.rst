@@ -173,8 +173,11 @@ This example use :py:mod:`lmp.model.LSTM2000` as our training language model:
      --max_seq_len 128 \
      --n_blk 8 \
      --n_epoch 10 \
+     --p_emb 0.1 \
+     --p_hid 0.1 \
      --tknzr_exp_name my_tknzr_exp \
      --ver train \
+     --warmup_step 1000 \
      --wd 1e-2
 
 We pass ``LSTM-2000`` as the first argument to specify that we will use :py:class:`lmp.model.LSTM2000` as our language
