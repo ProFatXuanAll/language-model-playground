@@ -29,9 +29,18 @@ def test_save_and_load(ckpt_dir_path: str, exp_name: str, model: BaseModel) -> N
     assert torch.equal(p_1, p_2)
 
 
-def test_load_last(ckpt_dir_path: str, exp_name: str, model: BaseModel, tknzr: BaseTknzr) -> None:
+def test_load_last(
+  ckpt_dir_path: str,
+  d_emb: int,
+  d_hid: int,
+  exp_name: str,
+  model: BaseModel,
+  p_emb: float,
+  p_hid: float,
+  tknzr: BaseTknzr,
+) -> None:
   """Load the last checkpoint when ``ckpt == -1``."""
-  last_model = ElmanNet(d_emb=10, tknzr=tknzr)
+  last_model = ElmanNet(d_emb=d_emb, d_hid=d_hid, p_emb=p_emb, p_hid=p_hid, tknzr=tknzr)
   lmp.util.model.save(ckpt=0, exp_name=exp_name, model=model)
   lmp.util.model.save(ckpt=1, exp_name=exp_name, model=last_model)
   load_model = lmp.util.model.load(ckpt=1, exp_name=exp_name)

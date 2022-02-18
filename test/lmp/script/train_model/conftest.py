@@ -1,12 +1,12 @@
-"""Setup fixtures for testing :py:mod:`lmp.script.train_tknzr`."""
+"""Setup fixtures for testing :py:mod:`lmp.script.train_model`."""
 
-import argparse
 import os
 
 import pytest
 
 import lmp.util.cfg
 import lmp.util.path
+import lmp.util.tknzr
 from lmp.tknzr import BaseTknzr, CharTknzr
 
 
@@ -74,9 +74,15 @@ def d_blk(request) -> int:
   return request.param
 
 
-@pytest.fixture(params=[10, 20])
+@pytest.fixture(params=[2, 4])
 def d_emb(request) -> int:
   """Embedding dimension."""
+  return request.param
+
+
+@pytest.fixture(params=[2, 4])
+def d_hid(request) -> int:
+  """Hidden dimension."""
   return request.param
 
 
@@ -125,7 +131,7 @@ def max_norm() -> float:
 @pytest.fixture
 def max_seq_len() -> int:
   """Maximum sequence length."""
-  return 128
+  return 4
 
 
 @pytest.fixture(params=[2, 4])
@@ -141,6 +147,18 @@ def n_epoch() -> int:
 
 
 @pytest.fixture
+def p_emb(request) -> float:
+  """Embedding dropout probability."""
+  return 0.1
+
+
+@pytest.fixture
+def p_hid(request) -> float:
+  """Hidden units dropout probability."""
+  return 0.1
+
+
+@pytest.fixture
 def seed() -> int:
   """Random seed."""
   return 42
@@ -149,28 +167,16 @@ def seed() -> int:
 @pytest.fixture
 def tknzr() -> BaseTknzr:
   """:py:class:`lmp.tknzr.BaseTknzr` instance."""
-  return CharTknzr(
-    is_uncased=True,
-    max_vocab=-1,
-    min_count=0,
-    tk2id={
-      CharTknzr.bos_tk: CharTknzr.bos_tkid,
-      CharTknzr.eos_tk: CharTknzr.eos_tkid,
-      CharTknzr.pad_tk: CharTknzr.pad_tkid,
-      CharTknzr.unk_tk: CharTknzr.unk_tkid,
-      'a': max(CharTknzr.bos_tkid, CharTknzr.eos_tkid, CharTknzr.pad_tkid, CharTknzr.unk_tkid) + 1,
-      'b': max(CharTknzr.bos_tkid, CharTknzr.eos_tkid, CharTknzr.pad_tkid, CharTknzr.unk_tkid) + 2,
-      'c': max(CharTknzr.bos_tkid, CharTknzr.eos_tkid, CharTknzr.pad_tkid, CharTknzr.unk_tkid) + 3,
-    },
-  )
+  tknzr = CharTknzr(is_uncased=True, max_vocab=-1, min_count=0)
+  tknzr.build_vocab(batch_txt=['a', 'b', 'c'])
+  return tknzr
 
 
 @pytest.fixture
 def tknzr_exp_name(exp_name: str, request, tknzr: BaseTknzr) -> str:
   """Tokenizer experiment name."""
   exp_name = f'{exp_name}-tokenizer'
-  tknzr.save(exp_name=exp_name)
-  lmp.util.cfg.save(args=argparse.Namespace(exp_name=exp_name, tknzr_name=tknzr.tknzr_name), exp_name=exp_name)
+  lmp.util.tknzr.save(exp_name=exp_name, tknzr=tknzr)
   abs_dir_path = os.path.join(lmp.util.path.EXP_PATH, exp_name)
 
   def fin() -> None:
@@ -181,6 +187,12 @@ def tknzr_exp_name(exp_name: str, request, tknzr: BaseTknzr) -> str:
 
   request.addfinalizer(fin)
   return exp_name
+
+
+@pytest.fixture
+def warmup_step() -> int:
+  """Warmup step."""
+  return 1000
 
 
 @pytest.fixture

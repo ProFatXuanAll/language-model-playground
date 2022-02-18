@@ -24,6 +24,7 @@ The following example script train Elman Net model :py:class:`lmp.model.ElmanNet
      --beta2 0.99 \
      --ckpt_step 1000 \
      --d_emb 100 \
+     --d_hid 100 \
      --dset_name wiki-text-2 \
      --eps 1e-8 \
      --exp_name my_model_exp \
@@ -32,8 +33,11 @@ The following example script train Elman Net model :py:class:`lmp.model.ElmanNet
      --max_norm 1 \
      --max_seq_len 128 \
      --n_epoch 10 \
+     --p_emb 0.5 \
+     --p_hid 0.1 \
      --tknzr_exp_name my_tknzr_exp \
      --ver train \
+     --warmup_step 10000 \
      --wd 1e-2
 
 The training result will be save at path ``project_root/exp/my_model_exp`` and can be reused by other scripts.  We only
@@ -50,6 +54,7 @@ with too many epochs.
      --beta2 0.99 \
      --ckpt_step 1000 \
      --d_emb 100 \
+     --d_hid 100 \
      --dset_name wiki-text-2 \
      --eps 1e-8 \
      --exp_name my_model_exp \
@@ -58,18 +63,22 @@ with too many epochs.
      --max_norm 1 \
      --max_seq_len 128 \
      --n_epoch 20 \
+     --p_emb 0.5 \
+     --p_hid 0.1 \
      --tknzr_exp_name my_tknzr_exp \
      --ver train \
+     --warmup_step 10000 \
      --wd 1e-2
 
 One can reduce overfitting with the following ways:
 
 - Increase ``--batch_size``.  This increase sample variance and make model hard to optimize.
 - Increase ``--wd``.  This increase L2 penalty and make model output differences small when given large variance input.
-- Reduce model parameters (In :py:class:`lmp.model.ElmanNet` this means reducing ``--d_emb``).  This make model
-  capacity low and hard to memorize all samples.  Thus model is forced to learn and utilize patterns found on different
-  samples.
-- Use dropout.  Dropout is a way to perform models ensembling without the cost of training multiple model instances.
+- Reduce model parameters (In :py:class:`lmp.model.ElmanNet` this means reducing ``--d_emb`` or ``--d_hid``).  This
+  make model capacity low and hard to memorize all samples.  Thus model is forced to learn and utilize patterns found
+  on different samples.
+- Use dropout (In :py:class:`lmp.model.ElmanNet` this means increasing ``--p_emb`` or ``--p_hid``).  Dropout is a way
+  to perform models ensembling without the cost of training multiple model instances.
 - Use any combinations of tricks above.
 
 .. code-block:: shell
@@ -80,6 +89,7 @@ One can reduce overfitting with the following ways:
      --beta2 0.99 \
      --ckpt_step 1000 \
      --d_emb 50 \
+     --d_hid 50 \
      --dset_name wiki-text-2 \
      --eps 1e-8 \
      --exp_name my_model_exp \
@@ -88,8 +98,11 @@ One can reduce overfitting with the following ways:
      --max_norm 1 \
      --max_seq_len 128 \
      --n_epoch 10 \
+     --p_emb 0.5 \
+     --p_hid 0.5 \
      --tknzr_exp_name my_tknzr_exp \
      --ver train \
+     --warmup_step 10000 \
      --wd 1e-1
 
 We use :py:class:`torch.optim.AdamW` to perform optimization.  Use ``--beta1``, ``--beta2``, ``--eps``, ``--lr`` and
@@ -103,6 +116,8 @@ gradient explosion.
      --beta1 0.95 \
      --beta2 0.98 \
      --ckpt_step 1000 \
+     --d_emb 100 \
+     --d_hid 100 \
      --dset_name wiki-text-2 \
      --eps 1e-6 \
      --exp_name my_model_exp \
@@ -111,9 +126,11 @@ gradient explosion.
      --max_norm 0.1 \
      --max_seq_len 128 \
      --n_epoch 10 \
+     --p_emb 0.5 \
+     --p_hid 0.1 \
      --tknzr_exp_name my_tknzr_exp \
      --ver train \
-     --d_emb 100 \
+     --warmup_step 10000 \
      --wd 1e-2
 
 You can use ``-h`` or ``--help`` options to get a list of available language models.
@@ -147,6 +164,7 @@ import lmp.util.cfg
 import lmp.util.dset
 import lmp.util.log
 import lmp.util.model
+import lmp.util.optim
 import lmp.util.rand
 import lmp.util.tknzr
 
@@ -244,6 +262,12 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
       type=float,
     )
     group.add_argument(
+      '--max_seq_len',
+      help='Maximum sequence length constraint.',
+      required=True,
+      type=int,
+    )
+    group.add_argument(
       '--n_epoch',
       help='Number of training epochs.',
       required=True,
@@ -260,6 +284,12 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
       help='Version of the dataset.',
       required=True,
       type=str,
+    )
+    group.add_argument(
+      '--warmup_step',
+      help='Learning rate warm up steps.',
+      required=True,
+      type=float,
     )
     group.add_argument(
       '--wd',
@@ -310,8 +340,7 @@ def main(argv: List[str]) -> None:
   data_loader = torch.utils.data.DataLoader(batch_size=args.batch_size, dataset=dset, shuffle=True)
 
   # Load pre-trained tokenizer.
-  tknzr_cfg = lmp.util.cfg.load(exp_name=args.tknzr_exp_name)
-  tknzr = lmp.util.tknzr.load(exp_name=args.tknzr_exp_name, tknzr_name=tknzr_cfg.tknzr_name)
+  tknzr = lmp.util.tknzr.load(exp_name=args.tknzr_exp_name)
 
   # Get model running device.
   device = torch.device('cpu')
@@ -323,21 +352,22 @@ def main(argv: List[str]) -> None:
   model = model.train()
   model = model.to(device)
 
-  # Remove weight decay on bias and layer-norm.  This must be done only after moving model to running device.
-  no_decay = ['bias', 'LayerNorm.weight']
-  optim_group_params = [
-    {
-      'params': [param for name, param in model.named_parameters() if not any(nd in name for nd in no_decay)],
-      'weight_decay': args.wd,
-    },
-    {
-      'params': [param for name, param in model.named_parameters() if any(nd in name for nd in no_decay)],
-      'weight_decay': 0.0,
-    },
-  ]
+  # Get new optimizer instance.
+  optim = lmp.util.optim.get_optimizer(
+    beta1=args.beta1,
+    beta2=args.beta2,
+    eps=args.eps,
+    lr=args.lr,
+    model=model,
+    wd=args.wd,
+  )
 
-  # Get new optimizer instance.  We always use AdamW as our model optimizer.
-  optim = torch.optim.AdamW(optim_group_params, betas=(args.beta1, args.beta2), eps=args.eps, lr=args.lr)
+  # Get learning rate scheduler.
+  schdl = lmp.util.optim.get_scheduler(
+    optim=optim,
+    total_step=args.n_epoch * len(data_loader),
+    warmup_step=args.warmup_step,
+  )
 
   # Get tensorboard logger instance.
   writer = lmp.util.log.get_tb_logger(exp_name=args.exp_name)
@@ -375,6 +405,9 @@ def main(argv: List[str]) -> None:
       # Gradient descent.
       optim.step()
 
+      # Update learning rate.
+      schdl.step()
+
       # Clean up gradient.
       optim.zero_grad()
 
@@ -394,6 +427,7 @@ def main(argv: List[str]) -> None:
 
         # Log on tensorboard
         writer.add_scalar(f'train-loss/{args.dset_name}/{args.ver}', avg_loss, step)
+        writer.add_scalar('lr', schdl.get_last_lr(), step)
 
         # Refresh log performance.
         pre_avg_loss = avg_loss
@@ -421,12 +455,10 @@ def main(argv: List[str]) -> None:
   del device
   del dset
   del tknzr
-  del tknzr_cfg
   del model
-  del no_decay
   del optim
-  del optim_group_params
   del pre_avg_loss
+  del schdl
   del step
   del tqdm_data_loader
   del writer

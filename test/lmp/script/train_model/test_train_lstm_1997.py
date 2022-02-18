@@ -1,12 +1,13 @@
 """Test training :py:class:`lmp.model.LSTM1997`.
 
 Test target:
-- :py:meth:`lmp.script.train_tknzr.main`.
+- :py:meth:`lmp.script.train_model.main`.
 """
 
+import math
 import os
 
-import lmp.script.train_tknzr
+import lmp.script.train_model
 import lmp.util.cfg
 import lmp.util.model
 import lmp.util.path
@@ -33,8 +34,11 @@ def test_train_lstm_1997_on_wiki_text_2(
   max_seq_len: int,
   n_blk: int,
   n_epoch: int,
+  p_emb: float,
+  p_hid: float,
   seed: int,
   tknzr_exp_name: str,
+  warmup_step: int,
   wd: float,
 ) -> None:
   """Successfully train model :py:class:`lmp.model.LSTM1997` on :py:class:`lmp.dset.WikiText2Dset` dataset."""
@@ -71,12 +75,18 @@ def test_train_lstm_1997_on_wiki_text_2(
       str(n_blk),
       '--n_epoch',
       str(n_epoch),
+      '--p_emb',
+      str(p_emb),
+      '--p_hid',
+      str(p_hid),
       '--seed',
       str(seed),
       '--tknzr_exp_name',
       str(tknzr_exp_name),
       '--ver',
       'valid',  # avoid training too long.
+      '--warmup_step',
+      str(warmup_step),
       '--wd',
       str(wd),
     ]
@@ -93,25 +103,28 @@ def test_train_lstm_1997_on_wiki_text_2(
 
   cfg = lmp.util.cfg.load(exp_name=exp_name)
   assert cfg.batch_size == batch_size
-  assert cfg.beta1 == beta1
-  assert cfg.beta2 == beta2
+  assert math.isclose(cfg.beta1, beta1)
+  assert math.isclose(cfg.beta2, beta2)
   assert cfg.ckpt_step == ckpt_step
   assert cfg.d_blk == d_blk
   assert cfg.d_emb == d_emb
   assert cfg.dset_name == WikiText2Dset.dset_name
-  assert cfg.eps == eps
+  assert math.isclose(cfg.eps, eps)
   assert cfg.exp_name == exp_name
   assert cfg.log_step == log_step
-  assert cfg.lr == lr
-  assert cfg.max_norm == max_norm
+  assert math.isclose(cfg.lr, lr)
+  assert math.isclose(cfg.max_norm, max_norm)
   assert cfg.max_seq_len == max_seq_len
   assert cfg.model_name == LSTM1997.model_name
   assert cfg.n_blk == n_blk
   assert cfg.n_epoch == n_epoch
+  assert math.isclose(cfg.p_emb, p_emb)
+  assert math.isclose(cfg.p_hid, p_hid)
   assert cfg.seed == seed
   assert cfg.tknzr_exp_name == tknzr_exp_name
   assert cfg.ver == 'valid'
-  assert cfg.wd == wd
+  assert cfg.warmup_step == warmup_step
+  assert math.isclose(cfg.wd, wd)
 
   model = lmp.util.model.load(ckpt=-1, exp_name=exp_name)
   assert isinstance(model, LSTM1997)

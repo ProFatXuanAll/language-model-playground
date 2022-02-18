@@ -69,11 +69,6 @@ def test_module_method() -> None:
         default=Parameter.empty,
         annotation=str,
       ),
-      Parameter(
-        name='kwargs',
-        kind=Parameter.VAR_KEYWORD,
-        annotation=Any,
-      ),
     ],
     return_annotation=BaseModel,
   )
