@@ -8,6 +8,7 @@ from typing import ClassVar, List, Optional
 
 import lmp.util.path
 from lmp.dset._base import BaseDset
+from lmp.tknzr._base import UNK_TK
 
 
 class WikiText2Dset(BaseDset):
@@ -19,16 +20,16 @@ class WikiText2Dset(BaseDset):
   .. _WikiText:
      https://www.salesforce.com/products/einstein/ai-research/the-wikitext-dependency-language-modeling-dataset/
 
-  Here are supported versions and number of tokens informations.
+  Here are supported versions and number of tokens (splited by whitespaces) informations.
 
   +-----------+--------------------------+--------------------------+
   | version   | maximum number of tokens | minimum number of tokens |
   +===========+==========================+==========================+
-  | ``train`` | 2602                     | 2                        |
+  | ``train`` | 206                      | 4                        |
   +-----------+--------------------------+--------------------------+
-  | ``test``  | 2959                     | 1                        |
+  | ``test``  | 151                      | 4                        |
   +-----------+--------------------------+--------------------------+
-  | ``valid`` | 1775                     | 1                        |
+  | ``valid`` | 164                      | 6                        |
   +-----------+--------------------------+--------------------------+
 
   Parameters
@@ -82,21 +83,54 @@ class WikiText2Dset(BaseDset):
     with open(os.path.join(lmp.util.path.DATA_PATH, f'wiki.{self.ver}.tokens'), 'r') as text_file:
       lines = [line.strip() for line in text_file.readlines()]
 
-    spl = ''
+    # RegExp pattern to split line into list of sentences by semicolons and periods.
+    sent_pttn = re.compile(r'.+?\s[.;]\s')
+    # RegExp pattern to find useless characters and unknown tokens.
+    useless_char_pttn = re.compile(r'(\W|\s|' + re.escape(UNK_TK) + r')')
+    # Sentences with number of useful characters less than `min_useful_char` will be discarded.  `31` is what we
+    # observe to be a good value.
+    min_useful_char = 31
+    # Sentences with useful characters ratio less than `min_useful_char_ratio` will be discarded.  `0.5` is what we
+    # observe to be a good value.
+    min_useful_char_ratio = 0.5
     for line in lines:
-      # Discard all empty lines and (sub)section titles.
-      if not line or line.startswith('='):
-        # Perform text normalization and replace unknown token `<unk>` with `[unk]`.
-        spl = re.sub(r'<unk>', '[unk]', self.norm(spl))
-        # Avoid including empty sample.
-        if spl:
-          self.spls.append(spl)
-        # Reset to record next sample.
-        spl = ''
+      # Discard empty lines.
+      if not line:
+        continue
+      # Discard section and subsection titles.
+      if line.startswith('=') and line.endswith('='):
         continue
 
-      # Nearby paragraphs (separated by one newline) are concatenated to form one sample.
-      spl = f'{spl} {line}'
+      # Perform text normalization and replace unknown token `<unk>` with `[unk]`.
+      line = re.sub(r'<unk>', UNK_TK, self.norm(line))
+
+      # Split line using sentence pattern.
+      sents = []
+      match = sent_pttn.match(line)
+      while match:
+        sents.append(match.group().strip())
+        line = line[match.end():]
+        match = sent_pttn.match(line)
+
+      sents.append(line.strip())
+
+      # Replace `@.@` token with middle character.
+      sents = [re.sub(r'@(.)@', r'\1', sent) for sent in sents]
+
+      # Join two sentences as one sample.
+      if len(sents) > 1:
+        sents = [f'{sent_1} {sent_2}' for sent_1, sent_2 in zip(sents[:-1], sents[1:])]
+
+      for sent in sents:
+        useful_char_len = len(useless_char_pttn.sub('', sent))
+        # Discard short sentences.
+        if useful_char_len < min_useful_char:
+          continue
+        if (useful_char_len / len(sent)) < min_useful_char_ratio:
+          continue
+
+        # Add sentence to dataset.
+        self.spls.append(sent)
 
   @classmethod
   def download_dataset(cls) -> None:

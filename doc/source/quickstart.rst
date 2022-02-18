@@ -308,6 +308,7 @@ example:
    python -m lmp.script.gen_txt top-1 \
      --ckpt 5000 \
      --exp_name my_model_exp \
+     --max_seq_len 128 \
      --txt "We are"
 
 We use ``top-1`` to specify we want to use :py:class:`lmp.infer.Top1Infer` as inference method to generate continual
