@@ -32,7 +32,6 @@ import unicodedata
 from collections import Counter
 from typing import Any, ClassVar, Dict, Final, Iterable, List
 
-import lmp.dset
 import lmp.util.path
 import lmp.util.validate
 

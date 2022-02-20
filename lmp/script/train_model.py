@@ -289,7 +289,7 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
       '--warmup_step',
       help='Learning rate warm up steps.',
       required=True,
-      type=float,
+      type=int,
     )
     group.add_argument(
       '--wd',
@@ -425,22 +425,13 @@ def main(argv: List[str]) -> None:
         # Log on CLI.
         tqdm_data_loader.set_description(f'epoch: {epoch}, loss: {avg_loss:.6f}')
 
-        # Log on tensorboard
+        # Log on tensorboard.
         writer.add_scalar(f'train-loss/{args.dset_name}/{args.ver}', avg_loss, step)
         writer.add_scalar('lr', schdl.get_last_lr()[0], step)
 
         # Refresh log performance.
         pre_avg_loss = avg_loss
         avg_loss = 0.0
-
-      # Free memory.
-      del batch_cur_tkids
-      del batch_next_tkids
-      del batch_tkids
-      del batch_txt
-      del loss
-      torch.cuda.empty_cache()
-      gc.collect()
 
   # Save last checkpoint.
   lmp.util.model.save(ckpt=step, exp_name=args.exp_name, model=model)

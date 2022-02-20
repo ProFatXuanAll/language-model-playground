@@ -440,7 +440,7 @@ class LSTM2000(BaseModel):
 
     # Return batch average loss.
     # shape: (1).
-    return torch.nanmean(loss)
+    return loss.mean()
 
   @torch.no_grad()
   def pred(
