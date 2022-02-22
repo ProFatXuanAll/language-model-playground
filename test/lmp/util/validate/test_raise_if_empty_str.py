@@ -1,4 +1,5 @@
 """Test raise exception.
+
 Test target:
 - :py:meth:`lmp.util.validate.raise_if_empty_str`.
 """

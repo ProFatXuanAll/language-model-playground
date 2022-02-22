@@ -1,6 +1,7 @@
 r"""Setup fixtures for testing :py:mod:`lmp.util.log`."""
 
 import os
+from typing import Callable
 
 import pytest
 
@@ -8,14 +9,8 @@ import lmp.util.path
 
 
 @pytest.fixture
-def log_dir_path(exp_name: str, request) -> str:
+def log_dir_path(clean_dir_finalizer_factory: Callable[[str], None], exp_name: str, request) -> str:
   r"""Clean up tensorboard loggings."""
   abs_dir_path = os.path.join(lmp.util.path.LOG_PATH, exp_name)
-
-  def fin() -> None:
-    for log_file in os.listdir(abs_dir_path):
-      os.remove(os.path.join(abs_dir_path, log_file))
-    os.removedirs(abs_dir_path)
-
-  request.addfinalizer(fin)
+  request.addfinalizer(clean_dir_finalizer_factory(abs_dir_path))
   return abs_dir_path

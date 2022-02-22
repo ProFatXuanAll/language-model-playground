@@ -21,6 +21,10 @@ Run the following command in project root directory:
 
    pipenv run test
 
+.. note::
+   All dataset will be downloaded to local disk and will not be removed after test.  This speed up testing and is the
+   desired behavior.
+
 Generate Test Coverage Report
 -----------------------------
 Run the following command in project root directory:

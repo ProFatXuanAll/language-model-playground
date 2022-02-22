@@ -1,11 +1,14 @@
 """Test training :py:class:`lmp.model.ElmanNet`.
 
 Test target:
+- :py:meth:`lmp.model.ElmanNet.forward`
 - :py:meth:`lmp.script.train_model.main`.
 """
 
 import math
 import os
+
+import torch
 
 import lmp.script.train_model
 import lmp.util.cfg
@@ -27,7 +30,6 @@ def test_train_elman_net_on_wiki_text_2(
   d_hid: int,
   eps: float,
   exp_name: str,
-  log_dir_path: str,
   log_step: int,
   lr: float,
   max_norm: float,
@@ -37,6 +39,7 @@ def test_train_elman_net_on_wiki_text_2(
   p_hid: float,
   seed: int,
   tknzr_exp_name: str,
+  train_log_dir_path: str,
   warmup_step: int,
   wd: float,
 ) -> None:
@@ -81,7 +84,7 @@ def test_train_elman_net_on_wiki_text_2(
       '--tknzr_exp_name',
       str(tknzr_exp_name),
       '--ver',
-      'valid',  # avoid training too long.
+      'valid',  # Make training faster.
       '--warmup_step',
       str(warmup_step),
       '--wd',
@@ -96,7 +99,7 @@ def test_train_elman_net_on_wiki_text_2(
   # Must have at least one checkpoints.
   assert os.path.exists(os.path.join(ckpt_dir_path, f'model-{ckpt_step}.pt'))
   # Must log model performance.
-  assert os.path.exists(log_dir_path)
+  assert os.path.exists(train_log_dir_path)
 
   cfg = lmp.util.cfg.load(exp_name=exp_name)
   assert cfg.batch_size == batch_size
@@ -123,6 +126,10 @@ def test_train_elman_net_on_wiki_text_2(
 
   model = lmp.util.model.load(ckpt=-1, exp_name=exp_name)
   assert isinstance(model, ElmanNet)
+
+  device = torch.device('cpu')
+  for p in model.parameters():
+    assert p.device == device, 'Must save model parameters to CPU.'
 
   # Must log training performance.
   captured = capsys.readouterr()

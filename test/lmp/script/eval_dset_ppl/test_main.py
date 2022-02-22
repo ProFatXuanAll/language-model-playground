@@ -17,7 +17,7 @@ def test_ppl_output(
   batch_size: int,
   capsys,
   ckpts: List[int],
-  log_dir_path: str,
+  eval_log_dir_path: str,
   model_exp_name: str,
   seed: int,
 ) -> None:
@@ -40,7 +40,7 @@ def test_ppl_output(
     ]
   )
 
-  assert os.path.exists(log_dir_path)
+  assert os.path.exists(eval_log_dir_path)
 
   captured = capsys.readouterr()
   assert captured.err

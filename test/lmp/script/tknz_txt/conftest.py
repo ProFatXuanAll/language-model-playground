@@ -1,34 +1,11 @@
 """Setup fixtures for testing :py:mod:`lmp.script.tknz_txt`."""
 
-import os
-
 import pytest
 
 import lmp.util.cfg
 import lmp.util.path
 import lmp.util.tknzr
 from lmp.tknzr import CharTknzr, WsTknzr
-
-
-@pytest.fixture
-def seed() -> int:
-  """Random seed."""
-  return 42
-
-
-@pytest.fixture
-def tknzr_file_path(exp_name: str, request) -> None:
-  """Cleanup saved tokenizer."""
-  abs_dir_path = os.path.join(lmp.util.path.EXP_PATH, exp_name)
-  abs_file_path = os.path.join(abs_dir_path, lmp.util.tknzr.FILE_NAME)
-
-  def fin() -> None:
-    if os.path.exists(abs_file_path):
-      os.remove(abs_file_path)
-    if os.path.exists(abs_dir_path) and not os.listdir(abs_dir_path):
-      os.removedirs(abs_dir_path)
-
-  request.addfinalizer(fin)
 
 
 @pytest.fixture

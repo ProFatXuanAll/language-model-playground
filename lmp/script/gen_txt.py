@@ -191,6 +191,7 @@ def main(argv: List[str]) -> None:
   del model_cfg
   del tknzr
   del txt
+  torch.cuda.empty_cache()
   gc.collect()
 
 

@@ -147,6 +147,7 @@ You can use ``-h`` or ``--help`` options on a specific language model to get a l
 """
 
 import argparse
+import copy
 import gc
 import sys
 from typing import List
@@ -379,7 +380,7 @@ def main(argv: List[str]) -> None:
   # Global optimization step.
   step = 0
   for epoch in range(args.n_epoch):
-    tqdm_data_loader = tqdm(data_loader, desc=f'epoch: {epoch}, loss: {pre_avg_loss:.6f}')
+    tqdm_data_loader = tqdm(data_loader, desc=f'epoch: {epoch}, loss: {pre_avg_loss:.6f}', dynamic_ncols=True)
     for batch_txt in tqdm_data_loader:
       # Encode batch text into batch token ids.  We convert batch token ids into tensor and move to tensor to the same
       # running device as model.  Since CUDA only support integer with Long type, we use `torch.LongTensor` instead of
@@ -414,9 +415,9 @@ def main(argv: List[str]) -> None:
       # Increment global step.
       step += 1
 
-      # Save checkpoint for each `ckpt_step` step.
+      # Save checkpoint for each `ckpt_step` step.  We move model to CPU first then move back to CUDA device.
       if step % args.ckpt_step == 0:
-        lmp.util.model.save(ckpt=step, exp_name=args.exp_name, model=model)
+        lmp.util.model.save(ckpt=step, exp_name=args.exp_name, model=copy.deepcopy(model).to('cpu'))
 
       # Log performance for each `log_step` step.
       if step % args.log_step == 0:
@@ -434,7 +435,7 @@ def main(argv: List[str]) -> None:
         avg_loss = 0.0
 
   # Save last checkpoint.
-  lmp.util.model.save(ckpt=step, exp_name=args.exp_name, model=model)
+  lmp.util.model.save(ckpt=step, exp_name=args.exp_name, model=copy.deepcopy(model).to('cpu'))
 
   # Close tensorboard logger.
   writer.close()
@@ -442,15 +443,20 @@ def main(argv: List[str]) -> None:
   # Free memory.  This is only need for unit test.
   del args
   del avg_loss
+  del batch_cur_tkids
+  del batch_next_tkids
+  del batch_tkids
+  del batch_txt
   del data_loader
   del device
   del dset
-  del tknzr
+  del loss
   del model
   del optim
   del pre_avg_loss
   del schdl
   del step
+  del tknzr
   del tqdm_data_loader
   del writer
   torch.cuda.empty_cache()

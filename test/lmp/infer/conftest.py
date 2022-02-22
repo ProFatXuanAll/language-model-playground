@@ -9,12 +9,6 @@ from lmp.tknzr._base import BOS_TK, EOS_TK, PAD_TK, UNK_TK, BaseTknzr
 
 
 @pytest.fixture
-def max_seq_len() -> int:
-  """Maximum sequence length."""
-  return 16
-
-
-@pytest.fixture
 def tknzr() -> BaseTknzr:
   """Max non special token is ``c``."""
   tknzr = CharTknzr(is_uncased=True, max_vocab=-1, min_count=0)

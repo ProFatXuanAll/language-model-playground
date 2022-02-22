@@ -34,7 +34,6 @@ def test_module_method():
     ],
     return_annotation=None,
   )
-
   assert hasattr(lmp.util.validate, 'raise_if_empty_str')
   assert inspect.isfunction(lmp.util.validate.raise_if_empty_str)
   assert inspect.signature(lmp.util.validate.raise_if_empty_str) == Signature(
@@ -54,7 +53,6 @@ def test_module_method():
     ],
     return_annotation=None,
   )
-
   assert hasattr(lmp.util.validate, 'raise_if_not_in')
   assert inspect.isfunction(lmp.util.validate.raise_if_not_in)
   assert inspect.signature(lmp.util.validate.raise_if_not_in) == Signature(
@@ -80,7 +78,6 @@ def test_module_method():
     ],
     return_annotation=None,
   )
-
   assert hasattr(lmp.util.validate, 'raise_if_is_directory')
   assert inspect.isfunction(lmp.util.validate.raise_if_is_directory)
   assert inspect.signature(lmp.util.validate.raise_if_is_directory) == Signature(
@@ -94,7 +91,6 @@ def test_module_method():
     ],
     return_annotation=None,
   )
-
   assert hasattr(lmp.util.validate, 'raise_if_is_file')
   assert inspect.isfunction(lmp.util.validate.raise_if_is_file)
   assert inspect.signature(lmp.util.validate.raise_if_is_file) == Signature(
@@ -108,7 +104,6 @@ def test_module_method():
     ],
     return_annotation=None,
   )
-
   assert hasattr(lmp.util.validate, 'raise_if_wrong_ordered')
   assert inspect.isfunction(lmp.util.validate.raise_if_wrong_ordered)
   assert inspect.signature(lmp.util.validate.raise_if_wrong_ordered) == Signature(

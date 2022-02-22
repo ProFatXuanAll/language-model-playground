@@ -240,22 +240,6 @@ def main(argv: List[str]) -> None:
       # Accumulate average perplexity.
       avg_ppl += (batch_ppl / dset_size).sum().item()
 
-      # Free memory.
-      del batch_cur_tkids
-      del batch_next_tkids
-      del batch_next_tkids_pd
-      del batch_ppl
-      del batch_prev_states
-      del batch_tkids
-      del batch_tkids_pd
-      torch.cuda.empty_cache()
-      gc.collect()
-
-    # Free memory.
-    del model
-    torch.cuda.empty_cache()
-    gc.collect()
-
     # Log average perplexity on dataset to CLI and tensorboard.
     writer.add_scalar(f'ppl/{args.dset_name}/{args.ver}', avg_ppl, ckpt)
     print(f'checkpoint: {ckpt}, avg ppl: {avg_ppl}')
@@ -263,14 +247,23 @@ def main(argv: List[str]) -> None:
   # Free memory.  This is only need for unit test.
   del args
   del avg_ppl
+  del batch_cur_tkids
+  del batch_next_tkids
+  del batch_next_tkids_pd
+  del batch_ppl
+  del batch_prev_states
+  del batch_tkids
+  del batch_tkids_pd
   del ckpt
   del data_loader
   del device
   del dset
   del dset_size
+  del model
   del model_cfg
   del tknzr
   del writer
+  torch.cuda.empty_cache()
   gc.collect()
 
 

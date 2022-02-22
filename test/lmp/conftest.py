@@ -1,24 +1,41 @@
 """Setup fixtures for testing :py:mod:`lmp`."""
 
-import argparse
 import os
 import uuid
-from typing import Dict, List
+from typing import Callable, Dict, List
 
 import pytest
+import torch
 
-import lmp.util.path
-from lmp.dset import ChPoemDset, WikiText2Dset
+#######################################################################################################################
+# Common fixtures.
+#######################################################################################################################
 
 
-def pytest_addoption(parser: argparse.ArgumentParser) -> None:
-  """Pytest CLI parser."""
-  parser.addoption(
-    '--no_cache_dset',
-    action='store_false',
-    default=False,
-    help='Set to true to delete all downloaded datasets after testing.',
-  )
+@pytest.fixture
+def clean_dir_finalizer_factory() -> Callable[[str], None]:
+  """Create finalizer function."""
+
+  def create_finalizer(abs_dir_path: str) -> None:
+
+    def finalizer() -> None:
+      if not os.path.exists(abs_dir_path):
+        return
+
+      # Remove files in the directory.
+      for file_name in os.listdir(abs_dir_path):
+        try:
+          os.remove(os.path.join(abs_dir_path, file_name))
+        except Exception:
+          pass
+
+      # Remove empty directory.
+      if not os.listdir(abs_dir_path):
+        os.removedirs(abs_dir_path)
+
+    return finalizer
+
+  return create_finalizer
 
 
 @pytest.fixture
@@ -36,14 +53,216 @@ def exp_name() -> str:
   return 'test-' + str(uuid.uuid4())
 
 
+@pytest.fixture
+def seed() -> int:
+  """Random seed."""
+  return 42
+
+
+#######################################################################################################################
+# Inference method related fixtures.
+#######################################################################################################################
+
+
+@pytest.fixture
+def k() -> int:
+  """``k`` in the top-K."""
+  return 5
+
+
+@pytest.fixture
+def p() -> float:
+  """``p`` in the top-."""
+  return 0.9
+
+
+#######################################################################################################################
+# Model related fixtures.
+#######################################################################################################################
+
+
+@pytest.fixture
+def batch_size() -> int:
+  """Batch size."""
+  return 128
+
+
+@pytest.fixture
+def beta1() -> float:
+  """Mock beta1."""
+  return 0.9
+
+
+@pytest.fixture
+def beta2() -> float:
+  """Mock beta2."""
+  return 0.99
+
+
+@pytest.fixture
+def ckpt() -> int:
+  """Checkpoint number."""
+  return 0
+
+
+@pytest.fixture
+def ckpts() -> List[int]:
+  """Model checkpoints."""
+  return [0, 1, 2]
+
+
+@pytest.fixture
+def ckpt_step() -> int:
+  """Checkpoint step."""
+  return 10
+
+
+@pytest.fixture(params=[1, 2])
+def d_blk(request) -> int:
+  """Mock memory cell block dimension."""
+  return request.param
+
+
+@pytest.fixture(params=[1, 2])
+def d_emb(request) -> int:
+  """Mock embedding dimension."""
+  return request.param
+
+
+@pytest.fixture(params=[1, 2])
+def d_hid(request) -> int:
+  """Mock hidden dimension."""
+  return request.param
+
+
+@pytest.fixture
+def eps() -> float:
+  """Mock eps."""
+  return 1e-8
+
+
+@pytest.fixture
+def host_name() -> str:
+  """Mock host name."""
+  return '127.0.0.1'
+
+
+@pytest.fixture
+def host_port() -> int:
+  """Mock host port."""
+  return 30678
+
+
+@pytest.fixture
+def log_step() -> int:
+  """Log step."""
+  return 10
+
+
+@pytest.fixture(params=[1e-3, 1e-5])
+def lr(request) -> float:
+  """Mock learning rate."""
+  return request.param
+
+
+@pytest.fixture
+def max_norm() -> float:
+  """Gradient clipping max norm."""
+  return 1.0
+
+
+@pytest.fixture
+def max_seq_len() -> int:
+  """Mock maximum sequence length."""
+  return 8
+
+
+@pytest.fixture(params=[1, 2])
+def n_blk(request) -> int:
+  """Mock number of memory cell blocks."""
+  return request.param
+
+
+@pytest.fixture
+def n_epoch() -> int:
+  """Mock number of training epochs."""
+  return 2
+
+
+@pytest.fixture(params=[0.1, 0.5])
+def p_emb(request) -> float:
+  """Mock embedding dropout probability."""
+  return request.param
+
+
+@pytest.fixture(params=[0.1, 0.5])
+def p_hid(request) -> float:
+  """Mock hidden units dropout probability."""
+  return request.param
+
+
+@pytest.fixture
+def total_step(warmup_step: int) -> float:
+  """Mock total step."""
+  return warmup_step + 1000
+
+
+@pytest.fixture
+def warmup_step() -> float:
+  """Mock warm up step."""
+  return 1000
+
+
+@pytest.fixture
+def wd() -> float:
+  """Mock weight decay."""
+  return 1e-2
+
+
+@pytest.fixture
+def world_size() -> int:
+  """Mock world size."""
+  if torch.cuda.device_count() > 1:
+    return 2
+  return 1
+
+
+#######################################################################################################################
+# Tokenizer related fixtures.
+#######################################################################################################################
+
+
+@pytest.fixture(params=[False, True])
+def is_uncased(request) -> bool:
+  """Respect cases if set to ``False``."""
+  return request.param
+
+
+@pytest.fixture(params=[-1, 100])
+def max_vocab(request) -> int:
+  """Maximum vocabulary size."""
+  return request.param
+
+
+@pytest.fixture(params=[0, 10])
+def min_count(request) -> int:
+  """Minimum token occurrence counts."""
+  return request.param
+
+
+#######################################################################################################################
+# Text fixtures.
+#######################################################################################################################
+
+
 @pytest.fixture(
   params=[
-    # Full-width to half-width.
+    # Convert full-width character to half-width character.
     {
       'input': '０',
       'output': '0'
     },
-    # NFKD to NFKC.
+    # Normalize NFKD character to NFKC character.
     {
       'input': 'é',
       'output': 'é'
@@ -91,46 +310,16 @@ def ws_strip_txt(request) -> Dict[str, str]:
   return request.param
 
 
-@pytest.fixture(scope='session')
-def ch_poem_file_paths(request) -> List[str]:
-  """Chinese poem download file path.
-
-  After testing, clean up files and directories created during test.
-  """
-  abs_file_paths = [os.path.join(lmp.util.path.DATA_PATH, f'{ver}.csv') for ver in ChPoemDset.vers]
-
-  def fin() -> None:
-    # Only delete dataset when explicitly specified by CLI arguments.  This speed up test process.
-    if not request.config.getoption('--no_cache_dset'):
-      return
-    for abs_file_path in abs_file_paths:
-      if os.path.exists(abs_file_path):
-        os.remove(abs_file_path)
-    if os.path.exists(lmp.util.path.DATA_PATH) and not os.listdir(lmp.util.path.DATA_PATH):
-      os.removedirs(lmp.util.path.DATA_PATH)
-
-  request.addfinalizer(fin)
-  return abs_file_paths
-
-
-@pytest.fixture(scope='session')
-def wiki_text_2_file_paths(request) -> List[str]:
-  """Chinese poem download file path.
-
-  After testing, clean up files and directories created during test.
-  """
-  abs_file_paths = [os.path.join(lmp.util.path.DATA_PATH, f'wiki.{ver}.tokens') for ver in WikiText2Dset.vers]
-
-  def fin() -> None:
-    # Only delete dataset when explicitly specified by CLI arguments.  This speed up test process.
-    if not request.config.getoption('--no_cache_dset'):
-      return
-
-    for abs_file_path in abs_file_paths:
-      if os.path.exists(abs_file_path):
-        os.remove(abs_file_path)
-    if os.path.exists(lmp.util.path.DATA_PATH) and not os.listdir(lmp.util.path.DATA_PATH):
-      os.removedirs(lmp.util.path.DATA_PATH)
-
-  request.addfinalizer(fin)
-  return abs_file_paths
+@pytest.fixture(params=[
+  {
+    'input': 'ABC',
+    'output': 'abc'
+  },
+  {
+    'input': 'abc',
+    'output': 'abc'
+  },
+])
+def uncased_txt(request) -> Dict[str, str]:
+  """Case-insensitive text."""
+  return request.param

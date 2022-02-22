@@ -7,9 +7,3 @@ import pytest
 def idx(request) -> int:
   """Sample index."""
   return request.param
-
-
-@pytest.fixture
-def seed() -> int:
-  """Random seed."""
-  return 42
