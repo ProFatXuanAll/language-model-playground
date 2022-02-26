@@ -1,7 +1,8 @@
-r"""Distributed parallel version of :doc:`lmp.script.train_model </script/train_model>`.
+r"""Distributedly train language model on multiple processes / nodes by data parallism.
 
-CLI arguments are the same as :doc:`lmp.script.train_model </script/train_model>` except for the addtional distributed
-training arguments.
+This script is distributed data parallel version of :doc:`lmp.script.train_model </script/train_model>`.  Other than
+distributed training setup CLI arguments, the rest arguments are the same as
+:doc:`lmp.script.train_model </script/train_model>`.
 
 See Also
 --------
@@ -16,7 +17,7 @@ The following example script use two process on localhost ``127.0.0.1`` to train
 .. code-block:: shell
 
    # process 0 on localhost
-   python -m lmp.script.dp_train_model Elman-Net \
+   python -m lmp.script.ddp_train_model Elman-Net \
      --batch_size 32 \
      --beta1 0.9 \
      --beta2 0.99 \
@@ -44,7 +45,7 @@ The following example script use two process on localhost ``127.0.0.1`` to train
      --world_size 2
 
    # process 1 on localhost
-   python -m lmp.script.dp_train_model Elman-Net \
+   python -m lmp.script.ddp_train_model Elman-Net \
      --batch_size 32 \
      --beta1 0.9 \
      --beta2 0.99 \
@@ -75,18 +76,19 @@ You can use ``-h`` or ``--help`` options to get a list of available language mod
 
 .. code-block:: shell
 
-   python -m lmp.script.dp_train_model -h
+   python -m lmp.script.ddp_train_model -h
 
 You can use ``-h`` or ``--help`` options on a specific language model to get a list of supported CLI arguments.
 
 .. code-block:: shell
 
-   python -m lmp.script.dp_train_model Elman-Net -h
+   python -m lmp.script.ddp_train_model Elman-Net -h
 """
 
 import argparse
 import copy
 import gc
+import os
 import sys
 from datetime import timedelta
 from typing import Final, List
@@ -109,6 +111,7 @@ import lmp.util.model
 import lmp.util.optim
 import lmp.util.rand
 import lmp.util.tknzr
+import lmp.util.validate
 
 HOST_RANK: Final[int] = 0
 
@@ -132,7 +135,10 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
     Parsed CLI arguments.
   """
   # Create parser.
-  parser = argparse.ArgumentParser('python -m lmp.script.train_model', description='Train language model.')
+  parser = argparse.ArgumentParser(
+    'python -m lmp.script.ddp_train_model',
+    description='Distributed data parallel version of language model training script.',
+  )
 
   # Use model name to create subparser for all language models.
   subparsers = parser.add_subparsers(dest='model_name', required=True)
@@ -276,9 +282,22 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
 
     # Optional arguments.
     group.add_argument(
+      '--is_dset_in_memory',
+      action='store_true',
+      help='If set to true, then the whole dataset will be loaded in memory.  This will speed up text preprocessing.  '
+      'Default is ``False``.'
+    )
+    group.add_argument(
+      '--n_worker',
+      default=0,
+      help='Number of workers (processes) to use to preprocess text.  We recommand to set to ``0`` when your '
+      'mini-batch size is less than ``256``, set to ``4`` otherwise.  Default is ``0``.',
+      type=int,
+    )
+    group.add_argument(
       '--seed',
       default=42,
-      help='Random seed.',
+      help='Random seed.  Default is ``42``.',
       type=int,
     )
 
@@ -302,6 +321,35 @@ def main(argv: List[str]) -> None:
   """
   # Parse CLI arguments.
   args = parse_args(argv=argv)
+
+  # `args.batch_size` validation.
+  lmp.util.validate.raise_if_wrong_ordered(vals=[1, args.batch_size], val_names=['1', 'args.batch_size'])
+  # `args.ckpt_step` validation.
+  lmp.util.validate.raise_if_wrong_ordered(vals=[1, args.ckpt_step], val_names=['1', 'args.ckpt_step'])
+  # `args.log_step` validation.
+  lmp.util.validate.raise_if_wrong_ordered(vals=[1, args.log_step], val_names=['1', 'args.log_step'])
+  # `args.max_norm` validation.
+  lmp.util.validate.raise_if_wrong_ordered(vals=[0, args.max_norm], val_names=['0', 'args.max_norm'])
+  # `args.n_epoch` validation.
+  lmp.util.validate.raise_if_wrong_ordered(vals=[1, args.n_epoch], val_names=['1', 'args.n_epoch'])
+  # `args.n_worker` validation.
+  lmp.util.validate.raise_if_wrong_ordered(
+    vals=[0, args.n_worker, len(os.sched_getaffinity(0))],
+    val_names=['0', 'args.n_worker', 'number of available CPUs'],
+  )
+  lmp.util.validate.raise_if_wrong_ordered(
+    vals=[args.n_worker, args.batch_size],
+    val_names=['args.n_worker', 'args.batch_size'],
+  )
+  # `args.world_size` validation.
+  lmp.util.validate.raise_if_wrong_ordered(vals=[0, args.world_size], val_names=['0', 'args.world_size'])
+  # `args.local_rank` validation.
+  lmp.util.validate.raise_if_wrong_ordered(vals=[0, args.local_rank], val_names=['0', 'args.local_rank'])
+  # `args.rank` validation.
+  lmp.util.validate.raise_if_wrong_ordered(
+    vals=[0, args.rank, args.world_size - 1],
+    val_names=['0', 'args.rank', 'args.world_size - 1'],
+  )
 
   # Save training configuration.  Only main process need to save configuration.
   if args.rank == HOST_RANK:
@@ -345,8 +393,27 @@ def main(argv: List[str]) -> None:
   # Set random seed for reproducibility.  Note that each process use different seed to get different slice of batch.
   lmp.util.rand.set_seed(seed=args.seed + args.rank)
 
-  # Get dataset instance with specified version.
-  dset = lmp.util.dset.load(**args.__dict__)
+  # Get model running device.
+  device = torch.device('cpu')
+  if torch.cuda.is_available():
+    device = torch.device(f'cuda:{args.local_rank}')
+
+  # Load pre-trained tokenizer.
+  tknzr = lmp.util.tknzr.load(exp_name=args.tknzr_exp_name)
+
+  # Get dataset instance and convert samples to tensor.
+  if args.is_dset_in_memory:
+    dset: torch.utils.data.Dataset = lmp.util.dset.FastTensorDset(
+      dset=lmp.util.dset.load(**args.__dict__),
+      max_seq_len=args.max_seq_len,
+      tknzr=tknzr,
+    )
+  else:
+    dset = lmp.util.dset.SlowTensorDset(
+      dset=lmp.util.dset.load(**args.__dict__),
+      max_seq_len=args.max_seq_len,
+      tknzr=tknzr,
+    )
 
   # Mini-batch sampler.  Each process will get batches exclusive to itself.
   dist_sampler = torch.utils.data.distributed.DistributedSampler(
@@ -356,20 +423,16 @@ def main(argv: List[str]) -> None:
     shuffle=True,
   )
 
-  # Create dataloader with distributed sampler.
+  # Mini-batch distributed random sampler.  Only when `args.n_worker > 0` we set `persisten_worker = True`.  We set
+  # `pin_memory = True` to speed up process (which only speed up a few seconds).
   data_loader = torch.utils.data.DataLoader(
-    dataset=dset,
     batch_size=args.batch_size // args.world_size,
+    dataset=dset,
+    num_workers=args.n_worker,
+    persistent_workers=bool(args.n_worker != 0),
+    pin_memory=True,
     sampler=dist_sampler,
   )
-
-  # Load pre-trained tokenizer.
-  tknzr = lmp.util.tknzr.load(exp_name=args.tknzr_exp_name)
-
-  # Get model running device.
-  device = torch.device('cpu')
-  if torch.cuda.is_available():
-    device = torch.device(f'cuda:{args.local_rank}')
 
   # Get new model instance and move model to running device.
   model = lmp.util.model.create(tknzr=tknzr, **args.__dict__)
@@ -393,8 +456,8 @@ def main(argv: List[str]) -> None:
     warmup_step=args.warmup_step,
   )
 
-  # Create DPP model.
-  model = torch.nn.parallel.DistributedDataParallel(model)
+  # Create DDP model.
+  ddp_model = torch.nn.parallel.DistributedDataParallel(model)
 
   # Get tensorboard logger instance.  Only main process need to log performance.
   if args.rank == HOST_RANK:
@@ -412,21 +475,20 @@ def main(argv: List[str]) -> None:
     # Update random sample order.
     dist_sampler.set_epoch(epoch)
 
-    # Processes can have unevenly distributed number of batch.  Thus one must use join to avoid dead lock.
-    with model.join():
+    # Processes can have unevenly distributed number of batch.  Thus one must use `ddp_model.join()` to avoid dead lock.
+    with ddp_model.join():
       tqdm_data_loader = tqdm(data_loader, desc=f'epoch: {epoch}, loss: {pre_avg_loss:.6f}', dynamic_ncols=True)
-      for batch_txt in tqdm_data_loader:
+      for batch_tkids in tqdm_data_loader:
         # Encode batch text into batch token ids.  We convert batch token ids into tensor and move to tensor to the same
-        # running device as model.  Since CUDA only support integer with Long type, we use `torch.LongTensor` instead of
-        # `torch.IntTensor`.
-        batch_tkids = torch.LongTensor(tknzr.batch_enc(batch_txt=batch_txt, max_seq_len=args.max_seq_len)).to(device)
+        # running device as model.
+        batch_tkids = batch_tkids.to(device)
 
         # Format batch token ids to satisfy language model training format.
         batch_cur_tkids = batch_tkids[..., :-1]
         batch_next_tkids = batch_tkids[..., 1:]
 
         # Calculate loss using loss function.
-        loss = model(batch_cur_tkids=batch_cur_tkids, batch_next_tkids=batch_next_tkids)
+        loss = ddp_model(batch_cur_tkids=batch_cur_tkids, batch_next_tkids=batch_next_tkids)
 
         # Accumulate average loss for logging.  Use `.item()` to avoid construct tensor graph.
         avg_loss += loss.item()
@@ -452,7 +514,7 @@ def main(argv: List[str]) -> None:
         # Save checkpoint for each `ckpt_step` step.  We move model to CPU first then move back to CUDA device.  Only
         # main process need to save checkpoint.
         if args.rank == HOST_RANK and step % args.ckpt_step == 0:
-          lmp.util.model.save(ckpt=step, exp_name=args.exp_name, model=copy.deepcopy(model.module).to('cpu'))
+          lmp.util.model.save(ckpt=step, exp_name=args.exp_name, model=copy.deepcopy(model).to('cpu'))
 
         # Log performance for each `log_step` step.
         if step % args.log_step == 0:
@@ -472,7 +534,7 @@ def main(argv: List[str]) -> None:
 
   # Save last checkpoint.  Only main process need to save checkpoint.
   if args.rank == HOST_RANK:
-    lmp.util.model.save(ckpt=step, exp_name=args.exp_name, model=copy.deepcopy(model.module).to('cpu'))
+    lmp.util.model.save(ckpt=step, exp_name=args.exp_name, model=copy.deepcopy(model).to('cpu'))
 
     # Close tensorboard logger.
     writer.close()
@@ -483,11 +545,11 @@ def main(argv: List[str]) -> None:
   del batch_cur_tkids
   del batch_next_tkids
   del batch_tkids
-  del batch_txt
   del data_loader
   del device
   del dist_args_k
   del dist_sampler
+  del ddp_model
   del dset
   del loss
   del model

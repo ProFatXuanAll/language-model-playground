@@ -149,6 +149,7 @@ You can use ``-h`` or ``--help`` options on a specific language model to get a l
 import argparse
 import copy
 import gc
+import os
 import sys
 from typing import List
 
@@ -168,6 +169,7 @@ import lmp.util.model
 import lmp.util.optim
 import lmp.util.rand
 import lmp.util.tknzr
+import lmp.util.validate
 
 
 def parse_args(argv: List[str]) -> argparse.Namespace:
@@ -301,9 +303,22 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
 
     # Optional arguments.
     group.add_argument(
+      '--is_dset_in_memory',
+      action='store_true',
+      help='If set to true, then the whole dataset will be loaded in memory.  This will speed up text preprocessing.  '
+      'Default is ``False``.'
+    )
+    group.add_argument(
+      '--n_worker',
+      default=0,
+      help='Number of workers (processes) to use to preprocess text.  We recommand to set to ``0`` when your '
+      'mini-batch size is less than ``256``, set to ``4`` otherwise.  Default is ``0``.',
+      type=int,
+    )
+    group.add_argument(
       '--seed',
       default=42,
-      help='Random seed.',
+      help='Random seed.  Default is ``42``.',
       type=int,
     )
 
@@ -328,25 +343,64 @@ def main(argv: List[str]) -> None:
   # Parse CLI arguments.
   args = parse_args(argv=argv)
 
+  # `args.batch_size` validation.
+  lmp.util.validate.raise_if_wrong_ordered(vals=[1, args.batch_size], val_names=['1', 'args.batch_size'])
+  # `args.ckpt_step` validation.
+  lmp.util.validate.raise_if_wrong_ordered(vals=[1, args.ckpt_step], val_names=['1', 'args.ckpt_step'])
+  # `args.log_step` validation.
+  lmp.util.validate.raise_if_wrong_ordered(vals=[1, args.log_step], val_names=['1', 'args.log_step'])
+  # `args.max_norm` validation.
+  lmp.util.validate.raise_if_wrong_ordered(vals=[0, args.max_norm], val_names=['0', 'args.max_norm'])
+  # `args.n_epoch` validation.
+  lmp.util.validate.raise_if_wrong_ordered(vals=[1, args.n_epoch], val_names=['1', 'args.n_epoch'])
+  # `args.n_worker` validation.
+  lmp.util.validate.raise_if_wrong_ordered(
+    vals=[0, args.n_worker, len(os.sched_getaffinity(0))],
+    val_names=['0', 'args.n_worker', 'number of available CPUs'],
+  )
+  lmp.util.validate.raise_if_wrong_ordered(
+    vals=[args.n_worker, args.batch_size],
+    val_names=['args.n_worker', 'args.batch_size'],
+  )
+
   # Save training configuration.
   lmp.util.cfg.save(args=args, exp_name=args.exp_name)
 
   # Set random seed for reproducibility.
   lmp.util.rand.set_seed(seed=args.seed)
 
-  # Get dataset instance with specified version.
-  dset = lmp.util.dset.load(**args.__dict__)
-
-  # Mini-batch random sampler.
-  data_loader = torch.utils.data.DataLoader(batch_size=args.batch_size, dataset=dset, shuffle=True)
-
-  # Load pre-trained tokenizer.
-  tknzr = lmp.util.tknzr.load(exp_name=args.tknzr_exp_name)
-
   # Get model running device.
   device = torch.device('cpu')
   if torch.cuda.is_available():
     device = torch.device('cuda')
+
+  # Load pre-trained tokenizer.
+  tknzr = lmp.util.tknzr.load(exp_name=args.tknzr_exp_name)
+
+  # Get dataset instance and convert samples to tensor.
+  if args.is_dset_in_memory:
+    dset: torch.utils.data.Dataset = lmp.util.dset.FastTensorDset(
+      dset=lmp.util.dset.load(**args.__dict__),
+      max_seq_len=args.max_seq_len,
+      tknzr=tknzr,
+    )
+  else:
+    dset = lmp.util.dset.SlowTensorDset(
+      dset=lmp.util.dset.load(**args.__dict__),
+      max_seq_len=args.max_seq_len,
+      tknzr=tknzr,
+    )
+
+  # Mini-batch random sampler.  Only when `args.n_worker > 0` we set `persisten_worker = True`.  We set
+  # `pin_memory = True` to speed up process (which only speed up a few seconds).
+  data_loader = torch.utils.data.DataLoader(
+    batch_size=args.batch_size,
+    dataset=dset,
+    shuffle=True,
+    num_workers=args.n_worker,
+    persistent_workers=bool(args.n_worker != 0),
+    pin_memory=True,
+  )
 
   # Get new model instance and move model to running device.
   model = lmp.util.model.create(tknzr=tknzr, **args.__dict__)
@@ -381,11 +435,10 @@ def main(argv: List[str]) -> None:
   step = 0
   for epoch in range(args.n_epoch):
     tqdm_data_loader = tqdm(data_loader, desc=f'epoch: {epoch}, loss: {pre_avg_loss:.6f}', dynamic_ncols=True)
-    for batch_txt in tqdm_data_loader:
+    for batch_tkids in tqdm_data_loader:
       # Encode batch text into batch token ids.  We convert batch token ids into tensor and move to tensor to the same
-      # running device as model.  Since CUDA only support integer with Long type, we use `torch.LongTensor` instead of
-      # `torch.IntTensor`.
-      batch_tkids = torch.LongTensor(tknzr.batch_enc(batch_txt=batch_txt, max_seq_len=args.max_seq_len)).to(device)
+      # running device as model.
+      batch_tkids = batch_tkids.to(device)
 
       # Format batch token ids to satisfy language model training format.
       batch_cur_tkids = batch_tkids[..., :-1]
@@ -446,7 +499,6 @@ def main(argv: List[str]) -> None:
   del batch_cur_tkids
   del batch_next_tkids
   del batch_tkids
-  del batch_txt
   del data_loader
   del device
   del dset

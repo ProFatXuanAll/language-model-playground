@@ -57,13 +57,14 @@ from typing import List
 
 import torch
 
+import lmp.infer
 import lmp.model
 import lmp.util.cfg
 import lmp.util.infer
 import lmp.util.model
 import lmp.util.rand
 import lmp.util.tknzr
-from lmp.infer import INFER_OPTS
+import lmp.util.validate
 
 
 def parse_args(argv: List[str]) -> argparse.Namespace:
@@ -92,7 +93,7 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
 
   # Use inference method name to create subparser for all inference methods.
   subparsers = parser.add_subparsers(dest='infer_name', required=True)
-  for infer_name, infer_type in INFER_OPTS.items():
+  for infer_name, infer_type in lmp.infer.INFER_OPTS.items():
     infer_subparser = subparsers.add_parser(infer_name, description=f'Use {infer_type.__name__} as inference method.')
 
     # Required arguments.
@@ -126,7 +127,7 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
     group.add_argument(
       '--seed',
       default=42,
-      help='Random seed.',
+      help='Random seed.  Default is ``42``.',
       type=int,
     )
 
@@ -150,6 +151,11 @@ def main(argv: List[str]) -> None:
   """
   # Parse CLI arguments.
   args = parse_args(argv=argv)
+
+  # `args.ckpt` validation.
+  lmp.util.validate.raise_if_wrong_ordered(vals=[-1, args.ckpt], val_names=['-1', 'args.ckpt'])
+  # `args.txt` validation.
+  lmp.util.validate.raise_if_empty_str(val=args.txt, val_name='args.txt')
 
   # Set random seed for reproducibility.
   lmp.util.rand.set_seed(seed=args.seed)

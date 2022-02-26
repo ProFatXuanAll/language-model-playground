@@ -1,16 +1,16 @@
-"""Test parsing :py:class:`lmp.model.ElmanNet` arguments.
+"""Test parsing :py:class:`lmp.model.LSTM2000` arguments.
 
 Test target:
-- :py:meth:`lmp.model.ElmanNet.add_CLI_args`
-- :py:meth:`lmp.script.dp_train_model.parse_args`.
+- :py:meth:`lmp.model.LSTM2000.add_CLI_args`
+- :py:meth:`lmp.script.ddp_train_model.parse_args`.
 """
 
 import math
 
-import lmp.script.dp_train_model
+import lmp.script.ddp_train_model
 import lmp.script.train_model
 from lmp.dset import ALL_DSETS
-from lmp.model import ElmanNet
+from lmp.model import LSTM2000
 
 
 def test_elman_net_parse_results(
@@ -18,17 +18,20 @@ def test_elman_net_parse_results(
   beta1: float,
   beta2: float,
   ckpt_step: int,
+  d_blk: int,
   d_emb: int,
-  d_hid: int,
   eps: float,
   exp_name: str,
   host_name: str,
   host_port: int,
+  is_dset_in_memory: bool,
   log_step: int,
   lr: float,
   max_norm: float,
   max_seq_len: int,
+  n_blk: int,
   n_epoch: int,
+  n_worker: int,
   p_emb: float,
   p_hid: float,
   seed: int,
@@ -37,14 +40,14 @@ def test_elman_net_parse_results(
   wd: float,
   world_size: int,
 ) -> None:
-  """Must correctly parse all arguments for :py:class:`lmp.model.ElmanNet`."""
+  """Must correctly parse all arguments for :py:class:`lmp.model.LSTM2000`."""
   local_rank = 0
   rank = 0
 
   for dset_type in ALL_DSETS:
     for ver in dset_type.vers:
       argv = [
-        ElmanNet.model_name,
+        LSTM2000.model_name,
         '--batch_size',
         str(batch_size),
         '--beta1',
@@ -53,10 +56,10 @@ def test_elman_net_parse_results(
         str(beta2),
         '--ckpt_step',
         str(ckpt_step),
+        '--d_blk',
+        str(d_blk),
         '--d_emb',
         str(d_emb),
-        '--d_hid',
-        str(d_hid),
         '--dset_name',
         dset_type.dset_name,
         '--eps',
@@ -71,8 +74,12 @@ def test_elman_net_parse_results(
         str(max_norm),
         '--max_seq_len',
         str(max_seq_len),
+        '--n_blk',
+        str(n_blk),
         '--n_epoch',
         str(n_epoch),
+        '--n_worker',
+        str(n_worker),
         '--p_emb',
         str(p_emb),
         '--p_hid',
@@ -89,6 +96,9 @@ def test_elman_net_parse_results(
         str(wd),
       ]
 
+      if is_dset_in_memory:
+        argv.append('--is_dset_in_memory')
+
       common_args = lmp.script.train_model.parse_args(argv=argv)
 
       argv.append('--host_name')
@@ -102,7 +112,7 @@ def test_elman_net_parse_results(
       argv.append('--world_size')
       argv.append(str(world_size))
 
-      args = lmp.script.dp_train_model.parse_args(argv=argv)
+      args = lmp.script.ddp_train_model.parse_args(argv=argv)
 
       for k in common_args.__dict__.keys():
         assert k in args.__dict__, \
@@ -117,20 +127,23 @@ def test_elman_net_parse_results(
       assert math.isclose(args.beta1, beta1)
       assert math.isclose(args.beta2, beta2)
       assert args.ckpt_step == ckpt_step
+      assert args.d_blk == d_blk
       assert args.d_emb == d_emb
-      assert args.d_hid == d_hid
       assert args.dset_name == dset_type.dset_name
       assert math.isclose(args.eps, eps)
       assert args.exp_name == exp_name
       assert args.host_name == host_name
       assert args.host_port == host_port
+      assert args.is_dset_in_memory == is_dset_in_memory
       assert args.local_rank == local_rank
       assert args.log_step == log_step
       assert math.isclose(args.lr, lr)
       assert math.isclose(args.max_norm, max_norm)
       assert args.max_seq_len == max_seq_len
-      assert args.model_name == ElmanNet.model_name
+      assert args.model_name == LSTM2000.model_name
+      assert args.n_blk == n_blk
       assert args.n_epoch == n_epoch
+      assert args.n_worker == n_worker
       assert math.isclose(args.p_emb, p_emb)
       assert math.isclose(args.p_hid, p_hid)
       assert args.rank == rank

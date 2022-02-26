@@ -167,7 +167,7 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
     group.add_argument(
       '--seed',
       default=42,
-      help='Random seed.',
+      help='Random seed.  Default is ``42``.',
       type=int,
     )
 

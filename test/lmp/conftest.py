@@ -150,7 +150,13 @@ def host_name() -> str:
 @pytest.fixture
 def host_port() -> int:
   """Mock host port."""
-  return 30678
+  return 42069
+
+
+@pytest.fixture(params=[False, True])
+def is_dset_in_memory(request) -> bool:
+  """Set to ``True`` to load data in memory."""
+  return request.param
 
 
 @pytest.fixture
@@ -187,6 +193,12 @@ def n_blk(request) -> int:
 def n_epoch() -> int:
   """Mock number of training epochs."""
   return 2
+
+
+@pytest.fixture(params=[0, 2])
+def n_worker(request) -> int:
+  """Mock number of worker subprocess."""
+  return request.param
 
 
 @pytest.fixture(params=[0.1, 0.5])

@@ -106,7 +106,7 @@ class CharTknzr(BaseTknzr):
     group.add_argument(
       '--is_uncased',
       action='store_true',
-      help='Convert all text and tokens into lower cases if given.',
+      help='Convert all text and tokens into lower cases if given.  Default is ``False``.',
     )
 
   def tknz(self, txt: str) -> List[str]:

@@ -49,6 +49,7 @@ from typing import List
 import lmp.dset
 import lmp.util.dset
 import lmp.util.rand
+import lmp.util.validate
 
 
 def parse_args(argv: List[str]) -> argparse.Namespace:
@@ -87,7 +88,7 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
     dset_subparser.add_argument(
       '--seed',
       default=42,
-      help='Random seed.',
+      help='Random seed.  Default is ``42``.',
       type=int,
     )
     dset_subparser.add_argument(
@@ -115,6 +116,9 @@ def main(argv: List[str]) -> None:
   """
   # Parse CLI arguments.
   args = parse_args(argv=argv)
+
+  # `args.idx` validation.
+  lmp.util.validate.raise_if_wrong_ordered(vals=[0, args.idx], val_names=['0', 'args.idx'])
 
   # Set random seed for reproducibility.
   lmp.util.rand.set_seed(seed=args.seed)

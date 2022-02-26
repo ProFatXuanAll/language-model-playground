@@ -67,6 +67,7 @@ You can use ``-h`` or ``--help`` options to get a list of supported CLI argument
 
 import argparse
 import gc
+import os
 import sys
 from typing import List
 
@@ -84,6 +85,7 @@ import lmp.util.metric
 import lmp.util.model
 import lmp.util.rand
 import lmp.util.tknzr
+import lmp.util.validate
 
 
 def parse_args(argv: List[str]) -> argparse.Namespace:
@@ -121,7 +123,7 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
     # Required arguments.
     dset_subparser.add_argument(
       '--batch_size',
-      help='Evaluation batch size.',
+      help='Evaluation mini-batch size.',
       required=True,
       type=int,
     )
@@ -140,15 +142,28 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
 
     # Optional arguments.
     dset_subparser.add_argument(
+      '--is_dset_in_memory',
+      action='store_true',
+      help='If set to true, then the whole dataset will be loaded in memory.  This will speed up text preprocessing.  '
+      'Default is ``False``.'
+    )
+    dset_subparser.add_argument(
       '--last_ckpt',
       default=-1,
-      help='The last checkpoint of pre-trained language model to be evaluated.',
+      help='The last checkpoint of pre-trained language model to be evaluated.  Default is ``-1``.',
+      type=int,
+    )
+    dset_subparser.add_argument(
+      '--n_worker',
+      default=0,
+      help='Number of workers (processes) to use to preprocess text.  We recommand to set to ``0`` when your '
+      'mini-batch size is less than ``256``, set to ``4`` otherwise.  Default is ``0``.',
       type=int,
     )
     dset_subparser.add_argument(
       '--seed',
       default=42,
-      help='Random seed.',
+      help='Random seed.  Default is ``42``',
       type=int,
     )
     dset_subparser.add_argument(
@@ -177,15 +192,29 @@ def main(argv: List[str]) -> None:
   # Parse CLI arguments.
   args = parse_args(argv=argv)
 
+  # `args.batch_size` validation.
+  lmp.util.validate.raise_if_wrong_ordered(vals=[1, args.batch_size], val_names=['1', 'args.batch_size'])
+  # `args.first_ckpt` validation.
+  lmp.util.validate.raise_if_wrong_ordered(vals=[-1, args.first_ckpt], val_names=['-1', 'args.first_ckpt'])
+  # `args.last_ckpt` validation.
+  lmp.util.validate.raise_if_wrong_ordered(vals=[-1, args.last_ckpt], val_names=['-1', 'args.last_ckpt'])
+  # `args.n_worker` validation.
+  lmp.util.validate.raise_if_wrong_ordered(
+    vals=[0, args.n_worker, len(os.sched_getaffinity(0))],
+    val_names=['0', 'args.n_worker', 'number of available CPUs'],
+  )
+  lmp.util.validate.raise_if_wrong_ordered(
+    vals=[args.n_worker, args.batch_size],
+    val_names=['args.n_worker', 'args.batch_size'],
+  )
+
   # Set random seed for reproducibility.
   lmp.util.rand.set_seed(seed=args.seed)
 
-  # Get dataset instance with specified version.
-  dset = lmp.util.dset.load(dset_name=args.dset_name, ver=args.ver)
-  dset_size = len(dset)
-
-  # Mini-batch random sampler.
-  data_loader = torch.utils.data.DataLoader(batch_size=args.batch_size, dataset=dset, shuffle=False)
+  # Get model running device.
+  device = torch.device('cpu')
+  if torch.cuda.is_available():
+    device = torch.device('cuda')
 
   # Load pre-trained model configuration.
   model_cfg = lmp.util.cfg.load(exp_name=args.exp_name)
@@ -193,10 +222,32 @@ def main(argv: List[str]) -> None:
   # Load pre-trained tokenizer instance.
   tknzr = lmp.util.tknzr.load(exp_name=model_cfg.tknzr_exp_name)
 
-  # Get model running device.
-  device = torch.device('cpu')
-  if torch.cuda.is_available():
-    device = torch.device('cuda')
+  # Get dataset instance and convert samples to tensor.
+  if args.is_dset_in_memory:
+    dset: torch.utils.data.Dataset = lmp.util.dset.FastTensorDset(
+      dset=lmp.util.dset.load(**args.__dict__),
+      max_seq_len=model_cfg.max_seq_len,
+      tknzr=tknzr,
+    )
+  else:
+    dset = lmp.util.dset.SlowTensorDset(
+      dset=lmp.util.dset.load(**args.__dict__),
+      max_seq_len=model_cfg.max_seq_len,
+      tknzr=tknzr,
+    )
+
+  dset_size = len(dset)
+
+  # Mini-batch sampler.  Only when `args.n_worker > 0` we set `persisten_worker = True`.  We set
+  # `pin_memory = True` to speed up process (which only speed up a few seconds).
+  data_loader = torch.utils.data.DataLoader(
+    batch_size=args.batch_size,
+    dataset=dset,
+    shuffle=False,
+    num_workers=args.n_worker,
+    persistent_workers=bool(args.n_worker != 0),
+    pin_memory=True,
+  )
 
   # Get tensorboard logger instance.
   writer = lmp.util.log.get_tb_logger(exp_name=args.exp_name)
@@ -214,9 +265,9 @@ def main(argv: List[str]) -> None:
 
     # Record average perplexity.
     avg_ppl = 0.0
-    for batch_txt in tqdm(data_loader):
+    for batch_tkids in tqdm(data_loader):
       # Encode text into token ids.  We convert token ids into tensor and move to the same running device as model.
-      batch_tkids = torch.LongTensor(tknzr.batch_enc(batch_txt=batch_txt, max_seq_len=model_cfg.max_seq_len)).to(device)
+      batch_tkids = batch_tkids.to(device)
 
       # Format batch token ids to satisfy language model training format.
       batch_cur_tkids = batch_tkids[..., :-1]
