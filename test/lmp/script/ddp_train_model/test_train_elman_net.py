@@ -116,15 +116,22 @@ def test_train_elman_net_on_wiki_text_2(
     argv.append('0')
     lmp.script.ddp_train_model.main(argv=argv)
   else:
-    p0 = ctx.Process(target=lmp.script.ddp_train_model.main, args=(argv + ['--rank', '0', '--local_rank', '0'],))
-    p1 = ctx.Process(target=lmp.script.ddp_train_model.main, args=(argv + ['--rank', '1', '--local_rank', '1'],))
-    p0.start()
-    p1.start()
-    p0.join()
-    p1.join()
-    assert p0.exitcode == p1.exitcode == 0
-    p0.close()
-    p1.close()
+    pool = []
+    for rank in range(world_size):
+      p = ctx.Process(
+        target=lmp.script.ddp_train_model.main,
+        args=(argv + ['--rank', str(rank), '--local_rank', str(rank)],)
+      )
+      p.start()
+      pool.append(p)
+
+    for p in pool:
+      p.join()
+
+    assert all(map(lambda p: p.exitcode == 0, pool))
+
+    for p in pool:
+      p.close()
 
   # Must save training configuration.
   assert os.path.exists(cfg_file_path)
