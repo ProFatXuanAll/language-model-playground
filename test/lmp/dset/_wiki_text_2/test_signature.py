@@ -33,6 +33,7 @@ def test_inherent_instance_method() -> None:
 
 def test_inherent_static_method() -> None:
   """Ensure inherent static methods are the same as base class."""
+  assert lmp.dset._wiki_text_2.WikiText2Dset.download_file == BaseDset.download_file
   assert lmp.dset._wiki_text_2.WikiText2Dset.norm == BaseDset.norm
 
 

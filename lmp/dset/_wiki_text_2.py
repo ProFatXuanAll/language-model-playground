@@ -83,54 +83,21 @@ class WikiText2Dset(BaseDset):
     with open(os.path.join(lmp.util.path.DATA_PATH, f'wiki.{self.ver}.tokens'), 'r') as text_file:
       lines = [line.strip() for line in text_file.readlines()]
 
-    # RegExp pattern to split line into list of sentences by semicolons and periods.
-    sent_pttn = re.compile(r'.+?\s[.;]\s')
-    # RegExp pattern to find useless characters and unknown tokens.
-    useless_char_pttn = re.compile(r'(\W|\s|' + re.escape(UNK_TK) + r')')
-    # Sentences with number of useful characters less than `min_useful_char` will be discarded.  `31` is what we
-    # observe to be a good value.
-    min_useful_char = 31
-    # Sentences with useful characters ratio less than `min_useful_char_ratio` will be discarded.  `0.5` is what we
-    # observe to be a good value.
-    min_useful_char_ratio = 0.5
     for line in lines:
       # Discard empty lines.
       if not line:
         continue
-      # Discard section and subsection titles.
+      # Discard section titles.
       if line.startswith('=') and line.endswith('='):
         continue
+
+      # Replace `@.@` token with middle character.
+      line = re.sub(r'@(.)@', r'\1', line)
 
       # Perform text normalization and replace unknown token `<unk>` with `[unk]`.
       line = re.sub(r'<unk>', UNK_TK, self.norm(line))
 
-      # Split line using sentence pattern.
-      sents = []
-      match = sent_pttn.match(line)
-      while match:
-        sents.append(match.group().strip())
-        line = line[match.end():]
-        match = sent_pttn.match(line)
-
-      sents.append(line.strip())
-
-      # Replace `@.@` token with middle character.
-      sents = [re.sub(r'@(.)@', r'\1', sent) for sent in sents]
-
-      # Join two sentences as one sample.
-      if len(sents) > 1:
-        sents = [f'{sent_1} {sent_2}' for sent_1, sent_2 in zip(sents[:-1], sents[1:])]
-
-      for sent in sents:
-        useful_char_len = len(useless_char_pttn.sub('', sent))
-        # Discard short sentences.
-        if useful_char_len < min_useful_char:
-          continue
-        if (useful_char_len / len(sent)) < min_useful_char_ratio:
-          continue
-
-        # Add sentence to dataset.
-        self.spls.append(sent)
+      self.spls.append(line)
 
   @classmethod
   def download_dataset(cls) -> None:

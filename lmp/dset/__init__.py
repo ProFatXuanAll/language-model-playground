@@ -9,12 +9,12 @@ DSET_OPTS: typing.Final[dict[str, lmp.dset.BaseDset]]
 
 Examples
 --------
-Get :py:class:`lmp.dset.WikiText2Dset` by its name.
+Get :py:class:`lmp.dset.DemoDset` by its name.
 
->>> from lmp.dset import DSET_OPTS, WikiText2Dset
->>> WikiText2Dset.dset_name in DSET_OPTS
+>>> from lmp.dset import DSET_OPTS, DemoDset
+>>> DemoDset.dset_name in DSET_OPTS
 True
->>> DSET_OPTS[WikiText2Dset.dset_name] == WikiText2Dset
+>>> DSET_OPTS[DemoDset.dset_name] == DemoDset
 True
 """
 
@@ -22,10 +22,12 @@ from typing import Dict, Final, List, Type
 
 from lmp.dset._base import BaseDset
 from lmp.dset._ch_poem import ChPoemDset
+from lmp.dset._demo import DemoDset
 from lmp.dset._wiki_text_2 import WikiText2Dset
 
 ALL_DSETS: Final[List[Type[BaseDset]]] = [
   ChPoemDset,
+  DemoDset,
   WikiText2Dset,
 ]
 DSET_OPTS: Final[Dict[str, Type[BaseDset]]] = {d.dset_name: d for d in ALL_DSETS}

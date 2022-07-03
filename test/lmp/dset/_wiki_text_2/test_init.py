@@ -8,7 +8,7 @@ import lmp.dset._wiki_text_2
 
 
 def test_default_version() -> None:
-  """Must be able to construct default version."""
+  """Must be able to construct the default version."""
   dset = lmp.dset._wiki_text_2.WikiText2Dset(ver=None)
   assert dset.ver == lmp.dset._wiki_text_2.WikiText2Dset.df_ver
 

@@ -8,7 +8,7 @@ import lmp.dset._ch_poem
 
 
 def test_default_version() -> None:
-  """Must be able to construct default version."""
+  """Must be able to construct the default version."""
   dset = lmp.dset._ch_poem.ChPoemDset(ver=None)
   assert dset.ver == lmp.dset._ch_poem.ChPoemDset.df_ver
 

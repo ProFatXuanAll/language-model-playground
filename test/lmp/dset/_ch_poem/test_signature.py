@@ -61,6 +61,7 @@ def test_inherent_instance_method() -> None:
 
 def test_inherent_static_method() -> None:
   """Ensure inherent static methods are the same as base class."""
+  assert lmp.dset._ch_poem.ChPoemDset.download_file == BaseDset.download_file
   assert lmp.dset._ch_poem.ChPoemDset.norm == BaseDset.norm
 
 
