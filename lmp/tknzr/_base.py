@@ -59,15 +59,19 @@ class BaseTknzr(abc.ABC):
   Parameters
   ----------
   is_uncased: bool
-    Set to ``True`` to convert text into lower cases.  Mainly used by :py:meth:`lmp.tknzr.BaseTknzr.norm`.
+    Set to ``True`` to convert text into lower cases.
+    Mainly used by :py:meth:`lmp.tknzr.BaseTknzr.norm`.
   max_vocab: int
-    Tokenizer's maximum vocabulary size.  Set to ``-1`` to include as many tokens in vocabulary as possible.  Mainly
-    used by :py:meth:`lmp.tknzr.BaseTknzr.build_vocab`.
+    Tokenizer's maximum vocabulary size.
+    Set to ``-1`` to include as many tokens in vocabulary as possible.
+    Mainly used by :py:meth:`lmp.tknzr.BaseTknzr.build_vocab`.
   min_count: int
-    Minimum token occurrence counts.  Tokens have occurrence counts less than ``min_count`` will not be added to
-    tokenizer's vocabulary.  Mainly used by :py:meth:`lmp.tknzr.BaseTknzr.build_vocab`.
+    Minimum token occurrence counts.
+    Tokens have occurrence counts less than ``min_count`` will not be added to tokenizer's vocabulary.
+    Mainly used by :py:meth:`lmp.tknzr.BaseTknzr.build_vocab`.
   kwargs: typing.Any, optional
-    Useless parameter.  Intently left for subclasses inheritance.
+    Useless parameter.
+    Intently left for subclasses inheritance.
 
   Attributes
   ----------
@@ -82,7 +86,8 @@ class BaseTknzr(abc.ABC):
   tk2id: dict[str, int]
     Token-to-id lookup table.
   tknzr_name: typing.ClassVar[str]
-    CLI Display name of the tokenizer.  Only used to parse CLI arguments.
+    CLI name of the tokenizer.
+    Only used to parse CLI arguments.
 
   See Also
   --------
@@ -139,8 +144,9 @@ class BaseTknzr(abc.ABC):
   def norm(self, txt: str) -> str:
     """Perform normalization on text.
 
-    Text will be NFKC normalized.  Whitespaces are collapsed and strip from both ends.  If ``self.is_uncased == True``,
-    then text will be converted to lower cases.
+    Text will be NFKC normalized.
+    Whitespaces are collapsed and strip from both ends.
+    If ``self.is_uncased == True``, then text will be converted to lower cases.
 
     Parameters
     ----------
@@ -202,8 +208,8 @@ class BaseTknzr(abc.ABC):
   def dtknz(self, tks: List[str]) -> str:
     """Convert tokens back to text.
 
-    :term:`Tokens` will be detokenized and normalized by :py:meth:`lmp.tknzr.BaseTknz.norm`.  The execution order of
-    detokenization and normalization will not effect the result.
+    :term:`Tokens` will be detokenized and normalized by :py:meth:`lmp.tknzr.BaseTknz.norm`.
+    The execution order of detokenization and normalization will not effect the result.
 
     Parameters
     ----------
@@ -227,14 +233,16 @@ class BaseTknzr(abc.ABC):
   def build_vocab(self, batch_txt: Iterable[str]) -> None:
     """Build vocabulary for tokenizer.
 
-    Build :term:`vocabulary` based on :term:`token` occurrence counts.  Each text in ``batch_txt`` will first be
-    normalized and tokenized.  We then count each token's occurrence and build vocabulary based on occurrence count.
+    Build :term:`vocabulary` based on :term:`token` occurrence counts.
+    Each text in ``batch_txt`` will first be normalized and tokenized.
+    We then count each token's occurrence and build vocabulary based on occurrence count.
     Vocabulary will be sorted by token occurrence counts in descending order.
 
-    When adding a new token to vocabulary, its token id will be assign to the largest token id + 1.  Tokens already in
-    vocabulary will not be added to vocabulary again.  If a token's occurrence count is lower than ``self.min_count``,
-    then that token will not be added to vocabulary.  If the size of vocabulary is larger than or equal to
-    ``self.max_vocab``, then no new tokens will be added to vocabulary.
+    When adding a new token to vocabulary, its token id will be assign to the largest token id + 1.
+    Tokens already in vocabulary will not be added to vocabulary again.
+    If a token's occurrence count is lower than ``self.min_count``, then that token will not be added to vocabulary.
+    If the size of vocabulary is larger than or equal to ``self.max_vocab``, then no new tokens will be added to
+    vocabulary.
 
     Parameters
     ----------
@@ -264,14 +272,14 @@ class BaseTknzr(abc.ABC):
 
     max_id = max(self.tk2id.values()) + 1
     for tk, tk_count in c.most_common():
-      # Stop adding tokens when pass vocabulary size limit.  Add as many tokens into vocabulary as possible when
-      # `self.max_vocab == -1`.
+      # Stop adding tokens when pass vocabulary size limit.
+      # Add as many tokens into vocabulary as possible when `self.max_vocab == -1`.
       if self.max_vocab != -1 and max_id >= self.max_vocab:
         break
 
-      # Stop adding the token when the token occurrence count is low.  Since we sort token by occurrence count, tokens
-      # enumerated in the remaining loops will not have occurrence count higher than `self.min_count` and thus we can
-      # break loop savely.
+      # Stop adding the token when the token occurrence count is low.
+      # Since we sort token by occurrence count, tokens enumerated in the remaining loops will not have occurrence
+      # count higher than `self.min_count` and thus we can break loop savely.
       if tk_count < self.min_count:
         break
 
@@ -305,8 +313,8 @@ class BaseTknzr(abc.ABC):
   def trunc_to_max(self, max_seq_len: int, tkids: List[int]) -> List[int]:
     """Truncate token id list when token id list is longer than allowed.
 
-    If ``len(tkids) > max_seq_len``, then truncate ``tkids`` to have length equals to ``max_seq_len``.  Do nothing when
-    ``len(tkids) <= max_seq_len``.
+    If ``len(tkids) > max_seq_len``, then truncate ``tkids`` to have length equals to ``max_seq_len``.
+    Do nothing when ``len(tkids) <= max_seq_len``.
 
     Arguments
     ---------
@@ -342,7 +350,8 @@ class BaseTknzr(abc.ABC):
     """Pad token id list when token id list is shorter than required.
 
     If ``len(tkids) < max_seq_len``, then append padding token id at the end of ``tkids`` until ``tkids`` has length
-    equal to ``max_seq_len``.  Do nothing when ``len(tkids) >= max_seq_len``.
+    equal to ``max_seq_len``.
+    Do nothing when ``len(tkids) >= max_seq_len``.
 
     Arguments
     ---------
@@ -387,8 +396,8 @@ class BaseTknzr(abc.ABC):
 
     - ``[bos]`` is the "begin of sentence" token.
     - ``[eos]`` is the "end of sentence" token.
-    - ``[unk]`` tokens are used to replace :term:`OOV` tokens, i.e., tokens not in tokenizer's dictionary.  These
-      tokens cannot be encoded since they are, well, unknown.
+    - ``[unk]`` tokens are used to replace :term:`OOV` tokens, i.e., tokens not in tokenizer's dictionary.
+      These tokens cannot be encoded since they are, well, unknown.
     - After prepending ``[bos]`` and appending ``[eos]`` tokens, if token list is longer than ``max_seq_len``, then
       token list will be truncated to have length equals to ``max_seq_len``.
     - After prepending ``[bos]`` and appending ``[eos]`` tokens, if token list is shorter than ``max_seq_len``, then
@@ -439,10 +448,10 @@ class BaseTknzr(abc.ABC):
   def dec(self, tkids: List[int], *, rm_sp_tks: bool = False) -> str:
     """Decode token id list back to text.
 
-    :term:`Token id` list will first be converted into token list, then be detokenized back to text.  Special tokens
-    other than ``[unk]`` will be removed if ``rm_sp_tks == True``.  Note that unknown tokens ``[unk]`` will not be
-    removed even if ``rm_sp_tks == True``.  Token ids in the list that are not in tokenizer's inverse lookup table will
-    be converted into ``[unk]`` token.
+    :term:`Token id` list will first be converted into token list, then be detokenized back to text.
+    Special tokens other than ``[unk]`` will be removed if ``rm_sp_tks == True``.
+    Note that unknown tokens ``[unk]`` will not be removed even if ``rm_sp_tks == True``.
+    Token ids in the list that are not in tokenizer's inverse lookup table will be converted into ``[unk]`` token.
 
     Parameters
     ----------
@@ -492,8 +501,8 @@ class BaseTknzr(abc.ABC):
   def batch_enc(self, batch_txt: List[str], max_seq_len: int) -> List[List[int]]:
     """Encode batch of text into batch of token id lists.
 
-    Each text in ``batch_txt`` will be encoded with :py:meth:`lmp.tknzr.BaseTknzr.enc`.  All encoded token id lists
-    will have the same length (``= max_seq_len``).
+    Each text in ``batch_txt`` will be encoded with :py:meth:`lmp.tknzr.BaseTknzr.enc`.
+    All encoded token id lists will have the same length (``= max_seq_len``).
 
     Parameters
     ----------
@@ -530,7 +539,8 @@ class BaseTknzr(abc.ABC):
     batch_tkids: list[list[int]]
       Batch of token id lists to be decoded.
     rm_sp_tks: bool, default: False
-      Whether to remove special tokens.  See :py:meth:`lmp.tknzr.BaseTknzr.dec` for ``rm_sp_tks`` usage.
+      Whether to remove special tokens.
+      See :py:meth:`lmp.tknzr.BaseTknzr.dec` for ``rm_sp_tks`` usage.
 
     Returns
     -------

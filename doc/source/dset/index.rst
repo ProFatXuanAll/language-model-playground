@@ -31,8 +31,8 @@ And you can enumerate samples by treating dataset as iterator.
     print(sample)
 
 Dataset may have many versions.
-You can see the supported versions by the :py:attr:`lmp.dset.BaseDset.vers` class attribute.
-Default version is defined as :py:attr:`lmp.dset.BaseDset.df_ver`.
+You can see the supported versions by the :py:attr:`vers` class attribute.
+Default version is defined as class attribute :py:attr:`df_ver`.
 
 .. code-block:: python
 

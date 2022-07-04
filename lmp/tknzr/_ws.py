@@ -18,7 +18,8 @@ SPLIT_PTTN: Final[re.Pattern] = re.compile('(' + '|'.join(map(re.escape, SP_TKS)
 class WsTknzr(BaseTknzr):
   """Whitespace tokenizer class.
 
-  Tokenize text into whitespaces seperated tokens.  No whitespace will be preserved after tokenization.
+  Tokenize text into whitespaces seperated tokens.
+  No whitespace will be preserved after tokenization.
 
   Parameters
   ----------
@@ -29,7 +30,8 @@ class WsTknzr(BaseTknzr):
   min_count: int
     Minimum token occurrence counts.
   kwargs: typing.Any, optional
-    Useless parameter.  Intently left for subclasses inheritance.
+    Useless parameter.
+    Intently left for subclasses inheritance.
 
   Attributes
   ----------
@@ -148,7 +150,8 @@ class WsTknzr(BaseTknzr):
   def dtknz(self, tks: List[str]) -> str:
     """Join text with whitespaces.
 
-    Insert whitespace between tokens.  Returned text is normalized by :py:meth:`lmp.tknzr.BaseTknz.norm`.
+    Insert whitespace between tokens.
+    Returned text is normalized by :py:meth:`lmp.tknzr.BaseTknz.norm`.
 
     Parameters
     ----------

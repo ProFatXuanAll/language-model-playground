@@ -29,7 +29,8 @@ class CharTknzr(BaseTknzr):
   min_count: int
     Minimum token occurrence counts.
   kwargs: typing.Any, optional
-    Useless parameter.  Intently left for subclasses inheritance.
+    Useless parameter.
+    Intently left for subclasses inheritance.
 
   Attributes
   ----------
@@ -158,7 +159,8 @@ class CharTknzr(BaseTknzr):
   def dtknz(self, tks: List[str]) -> str:
     """Join list of characters back to text.
 
-    Tokens will be joined without whitespaces.  Returned text is normalized by :py:meth:`lmp.tknzr.BaseTknz.norm`.
+    Tokens will be joined without whitespaces.
+    Returned text is normalized by :py:meth:`lmp.tknzr.BaseTknz.norm`.
 
     Parameters
     ----------
