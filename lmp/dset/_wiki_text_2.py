@@ -36,7 +36,8 @@ class WikiText2Dset(BaseDset):
   Parameters
   ----------
   ver: Optional[str], default: None
-    Version of the dataset.   Set ``ver = ''`` to use default version.
+    Version of the dataset.
+    Set ``ver = ''`` to use default version.
 
   Attributes
   ----------
@@ -118,7 +119,8 @@ class WikiText2Dset(BaseDset):
     """Download Wiki-text-2 dataset.
 
     Download zip file from https://s3.amazonaws.com/research.metamind.io/wikitext/wikitext-2-v1.zip and extract raw
-    files from zip file.  Raw files are named as ``'wiki.ver.tokens'``, where ``ver`` is the version of the dataset.
+    files from zip file.
+    Raw files are named as ``wiki.ver.tokens``, where ``ver`` is the version of the dataset.
     After extracting raw files the downloaded zip file will be deleted.
 
     Returns

@@ -34,7 +34,8 @@ class DemoDset(BaseDset):
   Parameters
   ----------
   ver: Optional[str], default: None
-    Version of the dataset.   Set ``ver = ''`` to use default version.
+    Version of the dataset.
+    Set ``ver = ''`` to use default version.
 
   Attributes
   ----------

@@ -14,10 +14,10 @@ from lmp.dset._base import BaseDset
 
 
 class ChPoemDset(BaseDset):
-  """Chinese poem dataset.
+  """Poems of ancient Chinese dynasty.
 
-  Poems of ancient Chinese dynasty.  See https://github.com/Werneror/Poetry for details on dataset.  See
-  https://github.com/ProFatXuanAll/demo-dataset for dataset preprocessing details.
+  See https://github.com/Werneror/Poetry for details on dataset.
+  See https://github.com/ProFatXuanAll/demo-dataset for dataset preprocessing details.
 
   Here we list some dataset statistics.
 
@@ -84,7 +84,8 @@ class ChPoemDset(BaseDset):
   Parameters
   ----------
   ver: Optional[str], default: None
-    Version of the dataset.   Set ``ver = ''`` to use default version.
+    Version of the dataset.
+    Set ``ver = ''`` to use default version.
 
   Attributes
   ----------
@@ -97,10 +98,11 @@ class ChPoemDset(BaseDset):
   ver: str
     Version of the dataset.
   vers: typing.ClassVar[list[str]]
-    All available versions of the dataset.  Versions are named after their appearing times, including ``元``,
-    ``元末明初``, ``先秦``, ``南北朝``, ``唐``, ``唐末宋初``, ``宋``, ``宋末元初``, ``宋末金初``, ``明``, ``明末清初``,
-    ``民國末當代初``, ``清``, ``清末民國初``, ``清末近現代初``, ``漢``, ``當代``, ``秦``, ``近現代``,
-    ``近現代末當代初``, ``遼``, ``金``, ``金末元初``, ``隋``, ``隋末唐初``, ``魏晉``, ``魏晉末南北朝初``.
+    All available versions of the dataset.
+    Versions are named after their appearing times, including ``元``, ``元末明初``, ``先秦``, ``南北朝``, ``唐``,
+    ``唐末宋初``, ``宋``, ``宋末元初``, ``宋末金初``, ``明``, ``明末清初``, ``民國末當代初``, ``清``, ``清末民國初``,
+    ``清末近現代初``, ``漢``, ``當代``, ``秦``, ``近現代``, ``近現代末當代初``, ``遼``, ``金``, ``金末元初``, ``隋``,
+    ``隋末唐初``, ``魏晉``, ``魏晉末南北朝初``.
 
   See Also
   --------
@@ -171,9 +173,9 @@ class ChPoemDset(BaseDset):
   def download_dataset(cls, ver: str) -> None:
     """Download Chinese poem dataset.
 
-    Download zip file from https://github.com/ProFatXuanAll/demo-dataset/raw/main/ch-poem and extract raw file from
-    zip file.  Raw files are named as ``'ver.csv'``, where ``ver`` is the version of the dataset.  After extracting raw
-    files the downloaded zip file will be deleted.
+    Download zip files from GitHub and extract raw file from zip file.
+    Raw files are named as ``ver.csv``, where ``ver`` is the version of the dataset.
+    After extracting raw files the downloaded zip file will be deleted.
 
     Parameters
     ----------

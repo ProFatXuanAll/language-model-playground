@@ -148,7 +148,8 @@ class BaseDset(torch.utils.data.Dataset):
   def norm(txt: str) -> str:
     """Text normalization.
 
-    Text will be NFKC normalized.  Whitespaces are collapsed and strip from both ends.
+    Text will be NFKC normalized.
+    Whitespaces are collapsed and strip from both ends.
 
     Parameters
     ----------
