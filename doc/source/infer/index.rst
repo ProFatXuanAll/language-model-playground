@@ -1,9 +1,10 @@
 Inference methods
 =================
 
-.. toctree::
-   :caption: All available inference methods are listed below:
-   :glob:
-   :maxdepth: 1
+All available inference methods are listed below:
 
-   *
+.. toctree::
+  :glob:
+  :maxdepth: 1
+
+  *

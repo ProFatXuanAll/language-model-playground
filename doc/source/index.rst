@@ -2,33 +2,35 @@ Welcome to Language Model Playground's documentation!
 =====================================================
 
 **Language model playground** is a tutorial about "How to implement :term:`neural network` based
-:term:`language models`".  We use Pytorch_ to implement language models.
+:term:`language models`".
+We use Pytorch_ to implement language models.
 
 We have implemented several :term:`language models` including:
 
-- Elman Net. (See :py:class:`lmp.model.ElmanNet`.)
-- LSTM and its variations.  (See :py:class:`lmp.model.LSTM1997`, :py:class:`lmp.model.LSTM2000` and
-  :py:class:`lmp.model.LSTM2002`.)
+- Elman Net.
+  (See :py:class:`lmp.model.ElmanNet`.)
+- LSTM and its variations.
+  (See :py:class:`lmp.model.LSTM1997`, :py:class:`lmp.model.LSTM2000` and :py:class:`lmp.model.LSTM2002`.)
 - And more to come!
 
-You can easily create these models instance using module :py:mod:`lmp.model`.  You can also train these models directly
-using CLI script :py:mod:`lmp.script.train_model`.
+You can easily create these models instance using module :py:mod:`lmp.model`.
+You can also train these models directly using CLI script :py:mod:`lmp.script.train_model`.
 
 .. code-block:: python
 
-   import lmp.model
+  import lmp.model
 
-   model = lmp.model.ElmanNet(...)  # parameters go in here.
-   model = lmp.model.LSTM1997(...)  # parameters go in here.
+  model = lmp.model.ElmanNet(...)  # parameters go in here.
+  model = lmp.model.LSTM1997(...)  # parameters go in here.
 
 .. seealso::
 
-   :doc:`lmp.model </model/index>`
-      All available language models.
+  :doc:`lmp.model </model/index>`
+    All available language models.
 
 .. todo::
 
-   Add Transformer models.
+  Add Transformer models.
 
 We have written serveral **scripts** to demonstrate typical training pipline of :term:`language models` and demonstrate
 furthur usage on language models:
@@ -47,24 +49,24 @@ See :doc:`quick start <quickstart>` for typical language model training pipline,
 interesting in!
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Table of Contents:
+  :maxdepth: 2
+  :caption: Table of Contents:
 
-   quickstart
-   dset/index
-   infer/index
-   model/index
-   tknzr/index
-   script/index
-   experiment/index
-   dev/index
-   glossary
+  quickstart
+  dset/index
+  infer/index
+  model/index
+  tknzr/index
+  script/index
+  experiment/index
+  dev/index
+  glossary
 
 Indices and tables
 ==================
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+- :ref:`genindex`
+- :ref:`modindex`
+- :ref:`search`
 
 .. _PyTorch: https://pytorch.org/

@@ -1,9 +1,10 @@
 Tokenizers
 ==========
 
-.. toctree::
-   :caption: All available tokenizers are listed below:
-   :glob:
-   :maxdepth: 1
+All available tokenizers are listed below:
 
-   *
+.. toctree::
+  :glob:
+  :maxdepth: 1
+
+  *
