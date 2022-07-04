@@ -61,7 +61,7 @@ class DemoDset(BaseDset):
   >>> from lmp.dset import DemoDset
   >>> dset = DemoDset(ver='train')
   >>> dset[0]
-  'If you add 0 to 50 you get 50 .'
+  'If you add 0 to 1 you get 1 .'
   """
 
   df_ver: ClassVar[str] = 'train'
@@ -96,3 +96,6 @@ class DemoDset(BaseDset):
 
     # Normalize dataset.
     self.spls = list(map(self.norm, self.spls))
+
+    # Sort dataset by length in ascending order.
+    self.spls.sort(key=len)

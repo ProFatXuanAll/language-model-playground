@@ -161,6 +161,12 @@ class ChPoemDset(BaseDset):
     # Normalize dataset.
     self.spls = df['內容'].apply(str).apply(self.norm).tolist()
 
+    # Discard samples having fewer than 24 characters.
+    self.spls = list(filter(lambda spl: len(spl) >= 24, self.spls))
+
+    # Sort dataset by length in ascending order.
+    self.spls.sort(key=len)
+
   @classmethod
   def download_dataset(cls, ver: str) -> None:
     """Download Chinese poem dataset.

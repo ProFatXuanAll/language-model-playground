@@ -15,27 +15,30 @@ import lmp.util.validate
 class BaseDset(torch.utils.data.Dataset):
   """Dataset base class.
 
-  Most datasets need to be downloaded from the web, some of them can be generated locally.  If requested datasets are
-  not on your local machine, then they will be downloaded / generated automatically.  Once dataset files exist they
-  will not be downloaded / generated again.
+  Most datasets need to be downloaded from the web.
+  Only some of them can be generated locally.
+  Datasets will be downloaded / generated automatically if they are not on your local machine.
+  Once dataset files existed they will not be downloaded / generated again.
 
   Parameters
   ----------
   ver: Optional[str], default: None
-    Version of the dataset.  Set to ``None`` to use default version ``self.__class__.df_ver``.
+    Version of the dataset.
+    Set to ``None`` to use default version ``self.__class__.df_ver``.
 
   Attributes
   ----------
   df_ver: typing.ClassVar[str]
     Default version of the dataset.
   dset_name: typing.ClassVar[str]
-    CLI Display name of the dataset.  Only used to parse CLI arguments.
+    CLI name of the dataset.
+    Only used to parse CLI arguments.
   spls: list[str]
     All samples in the dataset.
   ver: str
     Version of the dataset.
   vers: typing.ClassVar[list[str]]
-    List of supported datasets' versions.
+    List of dataset supported versions.
 
   See Also
   --------

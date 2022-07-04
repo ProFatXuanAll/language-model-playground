@@ -20,17 +20,18 @@ class WikiText2Dset(BaseDset):
   .. _WikiText:
      https://www.salesforce.com/products/einstein/ai-research/the-wikitext-dependency-language-modeling-dataset/
 
-  Here are supported versions and number of tokens (splited by whitespaces) informations.
+  Here are the statistics of the supported versions.
+  Tokens are separated by whitespaces.
 
-  +-----------+--------------------------+--------------------------+
-  | version   | maximum number of tokens | minimum number of tokens |
-  +===========+==========================+==========================+
-  | ``train`` | 206                      | 4                        |
-  +-----------+--------------------------+--------------------------+
-  | ``test``  | 151                      | 4                        |
-  +-----------+--------------------------+--------------------------+
-  | ``valid`` | 164                      | 6                        |
-  +-----------+--------------------------+--------------------------+
+  +-----------+-------------------+--------------------------+--------------------------+
+  | Version   | Number of samples | Maximum number of tokens | Minimum number of tokens |
+  +===========+===================+==========================+==========================+
+  | ``train`` | 14628             | 699                      | 10                       |
+  +-----------+-------------------+--------------------------+--------------------------+
+  | ``test``  | 1718              | 481                      | 10                       |
+  +-----------+-------------------+--------------------------+--------------------------+
+  | ``valid`` | 1533              | 429                      | 10                       |
+  +-----------+-------------------+--------------------------+--------------------------+
 
   Parameters
   ----------
@@ -84,20 +85,33 @@ class WikiText2Dset(BaseDset):
       lines = [line.strip() for line in text_file.readlines()]
 
     for line in lines:
+      # Perform text normalization.
+      line = self.norm(line)
+
       # Discard empty lines.
       if not line:
         continue
       # Discard section titles.
       if line.startswith('=') and line.endswith('='):
         continue
+      # Discard samples consist mainly non-alphabetic words.
+      if len(re.findall(r'(<formula>|<unk>|[^a-zA-Z])', line)) / len(line) >= 0.3:
+        continue
+      # Discard samples having fewer than 10 words.
+      if len(line.split(' ')) < 10:
+        continue
 
       # Replace `@.@` token with middle character.
       line = re.sub(r'@(.)@', r'\1', line)
 
-      # Perform text normalization and replace unknown token `<unk>` with `[unk]`.
-      line = re.sub(r'<unk>', UNK_TK, self.norm(line))
+      # Replace unknown token `<unk>` with `[unk]`.
+      line = re.sub(r'<unk>', UNK_TK, line)
 
+      # Add the preprocessed line to dataset.
       self.spls.append(line)
+
+    # Sort dataset by length in ascending order.
+    self.spls.sort(key=len)
 
   @classmethod
   def download_dataset(cls) -> None:
