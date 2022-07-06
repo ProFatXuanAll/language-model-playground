@@ -16,6 +16,9 @@ Glossary
     All checkpoints will be saved at your :term:`experiment path` and named with format ``model-\d+.pt``, where
     ``\d+`` means checkpoint step.
 
+  context window
+    TBD
+
   detokenize
   detokenization
     Converts list of tokens back to one and only one text.
@@ -39,7 +42,8 @@ Glossary
 
   language model
   language models
-    A language model is a model which can calculate the probability of a given text is comming from human language.
+    A language model is a model which is capable of calculating the probability of a given text is comming from human
+    language.
 
     For example, the text "how are you?" is used in daily conversation and thus language model should output high
     probability (or equivalently low :term:`perplexity`).
@@ -81,7 +85,7 @@ Glossary
         All available language models.
 
   NFKC
-    **Unicode normalization** is a process which convert full-width character into half-width, convert same glyph into
+    **Unicode normalization** is a process which converts full-width character into half-width, convert same glyph into
     same unicode, etc.
     It is a standard tool to preprocess text.
 
@@ -97,7 +101,7 @@ Glossary
     In the context of :term:`neural network` optimization we usually mean to perform **gradient descent** on
     :term:`neural network`.
     To perform gradient descent, model need to first perform **forward pass**.
-    During forward pass, model will take a input which we called **tensors** and pass tensors to deeper layers in model
+    During forward pass, model will take a input which is called **tensors** and pass tensors to deeper layers in model
     for calculation.
     Every path **tensor** flow throught the model will be recorded and construct a **tensor flowing graph**.
     The output of forward pass is then used to calculate **loss** on **objective function** (or **loss function**).
@@ -114,14 +118,14 @@ Glossary
     .. math::
 
       \begin{align*}
-      ppl(x) &= \sqrt[n]{\frac{1}{P(x_1, x_2, \dots, x_n)}} \\
-      &= \bigg(P(x_1, x_2, \dots, x_n)\bigg)^{\frac{-1}{n}} \\
-      &= \bigg(P(x_1) P(x_2|x_1) P(x_3|x_1, x_2) \dots P(x_n|x_1, x_2, \dots, x_{n - 1})\bigg)^{\frac{-1}{n}} \\
-      &= \bigg(\prod_{i = 1}^n P(x_i|x_1, \dots, x_{i - 1})\bigg)^{\frac{-1}{n}} \\
-      &= e^{\log \prod_{i = 1}^n \big(P(x_i|x_1, \dots, x_{i - 1})\big)^{\frac{-1}{n}}} \\
-      &= e^{\frac{-1}{n}\log \prod_{i = 1}^n P(x_i|x_1, \dots, x_{i - 1})} \\
-      &= e^{\frac{-1}{n} \sum_{i = 1}^n \log P(x_i|x_1, \dots, x_{i - 1})} \\
-      &= \exp\bigg(\frac{-1}{n} \sum_{i = 1}^n \log P(x_i|x_1, \dots, x_{i - 1})\bigg)
+      ppl(x) &= \sqrt[n]{\dfrac{1}{P(x_1, x_2, \dots, x_n)}} \\
+      &= \bigg(P(x_1, x_2, \dots, x_n)\bigg)^{\dfrac{-1}{n}} \\
+      &= \bigg(P(x_1) P(x_2|x_1) P(x_3|x_1, x_2) \dots P(x_n|x_1, x_2, \dots, x_{n - 1})\bigg)^{\dfrac{-1}{n}} \\
+      &= \bigg(\prod_{i = 1}^n P(x_i|x_1, \dots, x_{i - 1})\bigg)^{\dfrac{-1}{n}} \\
+      &= e^{\log \prod_{i = 1}^n \big(P(x_i|x_1, \dots, x_{i - 1})\big)^{\dfrac{-1}{n}}} \\
+      &= e^{\dfrac{-1}{n}\log \prod_{i = 1}^n P(x_i|x_1, \dots, x_{i - 1})} \\
+      &= e^{\dfrac{-1}{n} \sum_{i = 1}^n \log P(x_i|x_1, \dots, x_{i - 1})} \\
+      &= \exp\bigg(\dfrac{-1}{n} \sum_{i = 1}^n \log P(x_i|x_1, \dots, x_{i - 1})\bigg)
       \end{align*}
 
   step
@@ -142,7 +146,7 @@ Glossary
     acquire statistic information (count tokens frequency, plot tokens distribution, etc.) to perform furthur
     analyzations.
 
-    How to tokenize is a research problem, and there are many statistic-based tokenization models (which we call them
+    How to tokenize is a research problem, and there are many statistic-based tokenization models (which is called
     :term:`tokenizer`) have been proposed.
     One such famous example is STANZA_ proposed by Stanford.
 

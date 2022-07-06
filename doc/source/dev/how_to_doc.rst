@@ -15,7 +15,7 @@ We mostly follow numpydoc_ (which is extended from PEP257_) style guide.  Please
 
 Autodoc
 -------
-We use `sphinx.ext.napoleon`_ (which use `sphinx.ext.autodoc`_) extension to generate document from docstring.  All
+We use `sphinx.ext.napoleon`_ (which uses `sphinx.ext.autodoc`_) extension to generate document from docstring.  All
 modules, classes, functions and scripts must be documented.  The following rules should be applied to document folder.
 
 - Put ``lmp`` documents under ``doc/source/lmp``.

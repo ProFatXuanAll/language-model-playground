@@ -28,11 +28,12 @@ Before You Commit
 
    .. note::
 
-      We aware that some types in :py:mod:`typing` is **deprecated** in favor of built-in syntax.  For example,
-      :py:mod:`typing.List` is deprecated in favor of built-in :py:class:`list`.  However, those deprecated types will
-      be in effect only after 2025 (See details in `PEP 585`_).  Thus we will continue using :py:mod:`typing` instead
-      of built-in syntax.  Also we are using Python_ version ``3.8`` which do not support built-in syntax.  We will
-      switch to built-in syntax once PyTorch_ support Python_ version ``3.9``.
+      We aware that some types in :py:mod:`typing` is **deprecated** in favor of built-in syntax.
+      For example, :py:mod:`typing.List` is deprecated in favor of built-in :py:class:`list`.
+      However, those deprecated types will be in effect only after 2025 (See details in `PEP 585`_).
+      Thus we will continue using :py:mod:`typing` instead of built-in syntax.
+      Also we are using Python_ version ``3.8`` which does not support built-in syntax.
+      We will switch to built-in syntax once PyTorch_ support Python_ version ``3.9``.
 
 #. Write docstring for every modules, classes, functions and methods.  See :doc:`how_to_doc` for detailed docstring
    guide line.

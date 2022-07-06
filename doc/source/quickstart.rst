@@ -244,7 +244,7 @@ Arguments including ``--beta1``, ``--beta2``, ``--eps``, ``--lr`` and ``--wd`` a
 
 For **regularization tricks**, one usually incorporate them to prevent irregular behaviors of model optimization.
 One of the tricks we used is called gradient clipping, which is used to avoid gradient become to large (in the sense of
-norm) which make parameters value become extremely positive or negative.
+norm) which makes parameters value become extremely positive or negative.
 Argument ``--max_norm`` is served as gradient clipping boundary.
 
 For **model architecture**, you can simply check a model's constructor (for example,
