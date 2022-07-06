@@ -95,7 +95,7 @@ class BaseDset(torch.utils.data.Dataset):
     Returns
     -------
     str
-      The sample which index equals to ``idx``.
+      The sample whose index equals to ``idx``.
     """
     # `idx` validation.
     lmp.util.validate.raise_if_not_instance(val=idx, val_name='idx', val_type=int)

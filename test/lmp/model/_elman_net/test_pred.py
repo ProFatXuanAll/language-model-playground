@@ -15,17 +15,17 @@ def test_prediction_result(elman_net: ElmanNet, batch_cur_tkids: torch.Tensor) -
   seq_len = batch_cur_tkids.size(1)
 
   batch_prev_states = None
-  for i in range(seq_len):
+  for idx in range(seq_len):
     batch_next_tkids_pd, batch_prev_states = elman_net.pred(
-      batch_cur_tkids=batch_cur_tkids[..., i],
+      batch_cur_tkids=batch_cur_tkids[..., idx].reshape(-1, 1),
       batch_prev_states=batch_prev_states,
     )
 
     # Output float tensor.
     assert batch_next_tkids_pd.dtype == torch.float
 
-    # Shape: (batch_size, vocab_size).
-    assert batch_next_tkids_pd.size() == torch.Size([batch_cur_tkids.shape[0], elman_net.emb.num_embeddings])
+    # Shape: (B, 1, V).
+    assert batch_next_tkids_pd.size() == torch.Size([batch_cur_tkids.shape[0], 1, elman_net.emb.num_embeddings])
 
     # Probabilities are values within range [0, 1].
     assert torch.all(0 <= batch_next_tkids_pd).item()

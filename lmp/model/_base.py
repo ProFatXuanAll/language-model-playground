@@ -10,39 +10,51 @@ import torch
 class BaseModel(abc.ABC, torch.nn.Module):
   r"""Language model abstract base class.
 
-  Implement basic functionalities for language model, including training loss calculation, next token id prediction
-  and parsing training arguments.
+  Implement basic functionalities of language model, including training loss calculation, next token id prediction and
+  parsing training arguments.
 
-  We define the input token id list :math:`x` as follow:
+  Let :math:`X = \set{x^0, x^1, \dots, x^{B - 1}}` be a mini-batch of token id list with batch size :math:`B`.
+  A token id list :math:`x \in X` is defined as follow:
 
   .. math::
 
      \newcommand{\pa}[1]{\left( #1 \right)}
-     \newcommand{\set}[1]{\left\lbrace #1 \right\rbrace}
-     x = \pa{x[1], x[2], \dots, x[S]}.
+     x = \pa{x[0], x[1], \dots, x[S]}.
 
-  - :math:`x` has length :math:`S`.
-  - :math:`x[1]` is the token id of ``[bos]``.
+  - :math:`x` has length :math:`S+1`.
+  - :math:`x[t]` is the :math:`t`\-th time step of :math:`x`, the range of :math:`t` is :math:`\set{0, \dots, S}`.
+  - :math:`x[0]` is the token id of ``[bos]``.
   - :math:`x[S]` is the token id of ``[eos]``.
+  - Each language model will be paired with one tokenizer.
+    Let :math:`V` be the size of the paired tokenizer's vocabulary.
+    Then each :math:`x[t]` is assigned with an unique token in the tokenizer's vocabulary, i.e.,
+    :math:`x[t] \in \set{0, \dots, V-1}`.
 
-  Let :math:`x[t]` be the :math:`t`-th time step of :math:`x` where :math:`t \in \set{1, \dots, S}`.  The
-  training goal of a language model with parameter :math:`\theta` is to find an optimal parameter
-  :math:`\theta^{\star}` such that when replace  :math:`\theta` with :math:`\theta^{\star}` it maximizes the prediction
-  probability of next token id :math:`x[t]` given :math:`x[1], \dots, x[t - 1]`:
+  The training goal of a language model with parameter :math:`\theta` is to find an optimal parameter
+  :math:`\theta^{\star}`, such that when replace :math:`\theta` with :math:`\theta^{\star}`, it maximizes the
+  prediction probability of next token id :math:`x[t]` given :math:`x[0], \dots, x[t-1]`:
 
   .. math::
 
-     \theta^{\star} = \arg\max_{\theta} \prod_{t = 1}^S P(x[t] | x[1], \dots, x[t - 1] ; \theta)
+     \theta^{\star} = \arg\max_{\theta} \prod_{x \in X} \prod_{t = 1}^S P(x[t] | x[0], \dots, x[t-1] ; \theta)
+
+  Note that all token id lists in :math:`X` have the same length :math:`S+1`, and :math:`t` start with :math:`1`
+  instead of :math:`0`.
+  Thus for each token id list :math:`x`, the first :math:`S` token ids are served as input, and the last :math:`S`
+  token ids are served as ground truth.
+  There are only :math:`S` positions contribute to loss.
 
   Parameters
   ----------
   kwargs: typing.Any, optional
-    Useless parameter.  Intently left for subclasses inheritance.
+    Useless parameter.
+    Intently left for subclasses inheritance.
 
   Attributes
   ----------
   model_name: typing.ClassVar[str]
-    CLI Display name of the model.  Only used to parse CLI arguments.
+    CLI name of the model.
+    Only used to parse CLI arguments.
   """
 
   model_name: ClassVar[str] = 'base'
@@ -82,29 +94,76 @@ class BaseModel(abc.ABC, torch.nn.Module):
     raise NotImplementedError
 
   @abc.abstractmethod
-  def forward(self, batch_cur_tkids: torch.Tensor, batch_next_tkids: torch.Tensor) -> torch.Tensor:
-    """Calculate language model training loss.
+  def forward(
+    self,
+    batch_cur_tkids: torch.Tensor,
+    batch_prev_states: Optional[List[torch.Tensor]] = None,
+  ) -> Tuple[torch.Tensor, List[torch.Tensor]]:
+    r"""Calculate next token id logits.
 
-    This method must only be used to train model.  For inference use :py:meth:`lmp.model.BaseModel.pred` instead.
+    Logits were calculated based on previous hidden states and current input token id.
+    Use :py:meth:`lmp.model.BaseModel.pred` to convert logits into next token id probability distribution over
+    tokenizer's vocabulary.
+    Use :py:meth:`lmp.model.BaseModel.loss` to convert logits into next token id prediction loss.
 
     Parameters
     ----------
     batch_cur_tkids: torch.Tensor
-      Batch of token ids which represent input token ids of all time steps.  ``batch_cur_tkids`` has shape
-      ``(batch_size, seq_len)`` and ``dtype == torch.long``.
-    batch_next_tkids: torch.Tensor
-      Batch of token ids which represent prediction targets of all time steps.  ``batch_next_tkids`` has shape
-      ``(batch_size, seq_len)`` and ``dtype == torch.long``.
+      Batch of current input token ids.
+      ``batch_cur_tkids`` has shape :math:`(B, S)` and ``dtype == torch.long``.
+    batch_prev_states: typing.Optional[list[torch.Tensor]], default: None
+      Batch of previous calculation results.
+      Set to ``None`` to use initial hidden states.
+      Different models may have different hidden states structure.
 
     Returns
     -------
-    torch.Tensor
-      Mini-batch loss of next token id prediction.  Returned tensor has shape ``(1)`` and ``dtype == torch.float``.
+    tuple[torch.Tensor, list[torch.Tensor]]
+      The first item in the tuple is the batch of next token id logits with shape :math:`(B, S, V)` and
+      ``dtype == torch.float``.
+      The second item in the tuple is a list of current hiddent states.
+      Different models may have different hidden states structure.
 
     See Also
     --------
     lmp.tknzr.BaseTknzr.enc
-      Token encoding was done by tokenizers.
+      Source of token ids.
+    """
+    raise NotImplementedError
+
+  @abc.abstractmethod
+  def loss(
+    self,
+    batch_cur_tkids: torch.Tensor,
+    batch_next_tkids: torch.Tensor,
+    batch_prev_states: Optional[List[torch.Tensor]] = None,
+  ) -> Tuple[torch.Tensor, List[torch.Tensor]]:
+    """Calculate language model prediction loss.
+
+    Loss is defined as the **difference** between next token prediction and ground truth.
+    This is treated as classification problem.
+    The number of classes equals to the vocabulary size.
+    This method must only be used for training.
+
+    Parameters
+    ----------
+    batch_cur_tkids: torch.Tensor
+      Batch of current input token ids.
+      ``batch_cur_tkids`` has shape :math:`(B, S)` and ``dtype == torch.long``.
+    batch_next_tkids: torch.Tensor
+      Ground truth of each sample in the batch.
+      ``batch_next_tkids`` has shape :math:`(B, S)` and ``dtype == torch.long``.
+    batch_prev_states: typing.Optional[list[torch.Tensor]], default: None
+      Batch of previous calculation results.
+      Set to ``None`` to use initial hidden states.
+      Different models may have different hidden states structure.
+
+    Returns
+    -------
+    tuple[torch.Tensor, list[torch.Tensor]]
+      The first item in the tuple is the mini-batch loss with shape :math:`(1)` and ``dtype == torch.float``.
+      The second item in the tuple is a list of current hiddent states.
+      Different models may have different hidden states structure.
     """
     raise NotImplementedError
 
@@ -115,24 +174,30 @@ class BaseModel(abc.ABC, torch.nn.Module):
     batch_cur_tkids: torch.Tensor,
     batch_prev_states: Optional[List[torch.Tensor]] = None,
   ) -> Tuple[torch.Tensor, List[torch.Tensor]]:
-    """Calculate next token id probability distribution given previous hidden states and current input token id.
+    """Calculate next token id probability distribution over tokenizer's vocabulary.
 
-    This method must only be used for inference.  For training use :py:meth:`lmp.model.BaseModel.forward` instead.  No
-    tensor graphs will be constructed and no gradients will be calculated.
+    Probabilities were calculated based on previous hidden states and current input token id.
+    This method must only be used for inference.
+    For training use :py:meth:`lmp.model.BaseModel.loss` instead.
+    No tensor graphs will be constructed and no gradients will be calculated.
 
     Parameters
     ----------
     batch_cur_tkids: torch.Tensor
-      Batch of current input token ids.  ``batch_cur_tkids`` has shape ``(batch_size)`` and ``dtype == torch.long``.
+      Batch of current input token ids.
+      ``batch_cur_tkids`` has shape :math:`(B, S)` and ``dtype == torch.long``.
     batch_prev_states: typing.Optional[list[torch.Tensor]], default: None
-      Batch of previous calculation results.  Set to ``None`` to use initial hidden states.  Different models have
-      different hidden states structure.
+      Batch of previous calculation results.
+      Set to ``None`` to use initial hidden states.
+      Different models may have different hidden states structure.
 
     Returns
     -------
     tuple[torch.Tensor, list[torch.Tensor]]
-      The first item in the tuple is the tensor of batch of next token id probability distribution with shape
-      ``(batch_size, vocab_size)`` and ``dtype == torch.float``.  The second item in the tuple is a list of tensor
-      which represent current hiddent states.  Different models have different hidden states structure.
+      The first item in the tuple is the batch of next token id probability distribution over the tokenizer's
+      vocabulary.
+      Probability tensor has shape :math:`(B, S, V)` and ``dtype == torch.float``.
+      The second item in the tuple is a list of current hiddent states.
+      Different models may have different hidden states structure.
     """
     raise NotImplementedError

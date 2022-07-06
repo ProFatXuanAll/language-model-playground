@@ -63,6 +63,7 @@ def test_instance_method() -> None:
     ],
     return_annotation=Signature.empty,
   )
+
   assert hasattr(lmp.model._base.BaseModel, 'forward')
   assert inspect.isfunction(lmp.model._base.BaseModel.forward)
   assert 'forward' in lmp.model._base.BaseModel.__abstractmethods__
@@ -79,13 +80,45 @@ def test_instance_method() -> None:
         annotation=torch.Tensor,
       ),
       Parameter(
+        name='batch_prev_states',
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        annotation=Optional[List[torch.Tensor]],
+        default=None,
+      ),
+    ],
+    return_annotation=Tuple[torch.Tensor, List[torch.Tensor]],
+  )
+
+  assert hasattr(lmp.model._base.BaseModel, 'loss')
+  assert inspect.isfunction(lmp.model._base.BaseModel.loss)
+  assert 'loss' in lmp.model._base.BaseModel.__abstractmethods__
+  assert inspect.signature(lmp.model._base.BaseModel.loss) == Signature(
+    parameters=[
+      Parameter(
+        name='self',
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        default=Parameter.empty,
+      ),
+      Parameter(
+        name='batch_cur_tkids',
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        annotation=torch.Tensor,
+      ),
+      Parameter(
         name='batch_next_tkids',
         kind=Parameter.POSITIONAL_OR_KEYWORD,
         annotation=torch.Tensor,
       ),
+      Parameter(
+        name='batch_prev_states',
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        annotation=Optional[List[torch.Tensor]],
+        default=None,
+      ),
     ],
-    return_annotation=torch.Tensor,
+    return_annotation=Tuple[torch.Tensor, List[torch.Tensor]],
   )
+
   assert hasattr(lmp.model._base.BaseModel, 'params_init')
   assert inspect.isfunction(lmp.model._base.BaseModel.params_init)
   assert 'params_init' in lmp.model._base.BaseModel.__abstractmethods__
@@ -99,6 +132,7 @@ def test_instance_method() -> None:
     ],
     return_annotation=None,
   )
+
   assert hasattr(lmp.model._base.BaseModel, 'pred')
   assert inspect.isfunction(lmp.model._base.BaseModel.pred)
   assert 'pred' in lmp.model._base.BaseModel.__abstractmethods__
