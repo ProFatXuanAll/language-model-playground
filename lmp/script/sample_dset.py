@@ -7,38 +7,39 @@ See Also
 
 Examples
 --------
-The default sample index is ``0``.  We can sample index ``0`` from :py:class:`lmp.dset.WikiText2Dset` dataset with
-version ``train`` by the following script.
+The default sample index is ``0``.
+We can sample index ``0`` from :py:class:`lmp.dset.WikiText2Dset` dataset with version ``train`` by the following
+script.
 
 .. code-block:: shell
 
-   python -m lmp.script.sample_dset wiki-text-2 --ver train
+  python -m lmp.script.sample_dset wiki-text-2 --ver train
 
 The default version of :py:class:`lmp.dset.WikiText2Dset` is ``train``, thus the following script has the sample result
 as above.
 
 .. code-block:: shell
 
-   python -m lmp.script.sample_dset wiki-text-2
+  python -m lmp.script.sample_dset wiki-text-2
 
 The following example sample index ``1`` from :py:class:`lmp.dset.WikiText2Dset` dataset with version ``test``.
 
 .. code-block:: shell
 
-   python -m lmp.script.sample_dset wiki-text-2 --idx 1 --ver test
+  python -m lmp.script.sample_dset wiki-text-2 --idx 1 --ver test
 
 You can use ``-h`` or ``--help`` options to get a list of available datasets.
 
 .. code-block:: shell
 
-   python -m lmp.script.sample_dset -h
+  python -m lmp.script.sample_dset -h
 
-You can use ``-h`` or ``--help`` options on a specific dataset to get a list of supported CLI arguments, including
-all available versions of a dataset.
+You can use ``-h`` or ``--help`` options on a specific dataset to get a list of supported CLI arguments, including all
+available versions of a dataset.
 
 .. code-block:: shell
 
-   python -m lmp.script.sample_dset wiki-text-2 -h
+  python -m lmp.script.sample_dset wiki-text-2 -h
 """
 
 import argparse
@@ -129,7 +130,8 @@ def main(argv: List[str]) -> None:
   # Output sample result.
   print(dset[args.idx])
 
-  # Free memory.  This is only need for unit test.
+  # Free memory.
+  # This is only need for unit test.
   del args
   del dset
   gc.collect()

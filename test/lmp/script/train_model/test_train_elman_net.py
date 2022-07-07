@@ -14,11 +14,11 @@ import lmp.script.train_model
 import lmp.util.cfg
 import lmp.util.model
 import lmp.util.path
-from lmp.dset import WikiText2Dset
+from lmp.dset import DemoDset
 from lmp.model import ElmanNet
 
 
-def test_train_elman_net_on_wiki_text_2(
+def test_train_elman_net_on_demo(
   batch_size: int,
   beta1: float,
   beta2: float,
@@ -26,17 +26,16 @@ def test_train_elman_net_on_wiki_text_2(
   cfg_file_path: str,
   ckpt_dir_path: str,
   ckpt_step: int,
+  ctx_win: int,
   d_emb: int,
   d_hid: int,
   eps: float,
   exp_name: str,
-  is_dset_in_memory: bool,
   log_step: int,
   lr: float,
   max_norm: float,
   max_seq_len: int,
   n_epoch: int,
-  n_worker: int,
   p_emb: float,
   p_hid: float,
   seed: int,
@@ -45,7 +44,7 @@ def test_train_elman_net_on_wiki_text_2(
   warmup_step: int,
   wd: float,
 ) -> None:
-  """Successfully train model :py:class:`lmp.model.ElmanNet` on :py:class:`lmp.dset.WikiText2Dset` dataset."""
+  """Successfully train model :py:class:`lmp.model.ElmanNet` on :py:class:`lmp.dset.DemoDset` dataset."""
   argv = [
     ElmanNet.model_name,
     '--batch_size',
@@ -56,12 +55,14 @@ def test_train_elman_net_on_wiki_text_2(
     str(beta2),
     '--ckpt_step',
     str(ckpt_step),
+    '--ctx_win',
+    str(ctx_win),
     '--d_emb',
     str(d_emb),
     '--d_hid',
     str(d_hid),
     '--dset_name',
-    WikiText2Dset.dset_name,
+    DemoDset.dset_name,
     '--eps',
     str(eps),
     '--exp_name',
@@ -76,8 +77,6 @@ def test_train_elman_net_on_wiki_text_2(
     str(max_seq_len),
     '--n_epoch',
     str(n_epoch),
-    '--n_worker',
-    str(n_worker),
     '--p_emb',
     str(p_emb),
     '--p_hid',
@@ -93,9 +92,6 @@ def test_train_elman_net_on_wiki_text_2(
     '--wd',
     str(wd),
   ]
-
-  if is_dset_in_memory:
-    argv.append('--is_dset_in_memory')
 
   lmp.script.train_model.main(argv=argv)
 
@@ -113,19 +109,18 @@ def test_train_elman_net_on_wiki_text_2(
   assert math.isclose(cfg.beta1, beta1)
   assert math.isclose(cfg.beta2, beta2)
   assert cfg.ckpt_step == ckpt_step
+  assert cfg.ctx_win == ctx_win
   assert cfg.d_emb == d_emb
   assert cfg.d_hid == d_hid
-  assert cfg.dset_name == WikiText2Dset.dset_name
+  assert cfg.dset_name == DemoDset.dset_name
   assert math.isclose(cfg.eps, eps)
   assert cfg.exp_name == exp_name
-  assert cfg.is_dset_in_memory == is_dset_in_memory
   assert cfg.log_step == log_step
   assert math.isclose(cfg.lr, lr)
   assert math.isclose(cfg.max_norm, max_norm)
   assert cfg.max_seq_len == max_seq_len
   assert cfg.model_name == ElmanNet.model_name
   assert cfg.n_epoch == n_epoch
-  assert cfg.n_worker == n_worker
   assert math.isclose(cfg.p_emb, p_emb)
   assert math.isclose(cfg.p_hid, p_hid)
   assert cfg.seed == seed

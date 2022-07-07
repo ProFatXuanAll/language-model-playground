@@ -17,18 +17,17 @@ def test_lstm_2000_parse_results(
   beta1: float,
   beta2: float,
   ckpt_step: int,
+  ctx_win: int,
   d_blk: int,
   d_emb: int,
   eps: float,
   exp_name: str,
-  is_dset_in_memory: bool,
   log_step: int,
   lr: float,
   max_norm: float,
   max_seq_len: int,
   n_blk: int,
   n_epoch: int,
-  n_worker: int,
   p_emb: float,
   p_hid: float,
   seed: int,
@@ -49,6 +48,8 @@ def test_lstm_2000_parse_results(
         str(beta2),
         '--ckpt_step',
         str(ckpt_step),
+        '--ctx_win',
+        str(ctx_win),
         '--d_blk',
         str(d_blk),
         '--d_emb',
@@ -71,8 +72,6 @@ def test_lstm_2000_parse_results(
         str(n_blk),
         '--n_epoch',
         str(n_epoch),
-        '--n_worker',
-        str(n_worker),
         '--p_emb',
         str(p_emb),
         '--p_hid',
@@ -89,21 +88,18 @@ def test_lstm_2000_parse_results(
         str(wd),
       ]
 
-      if is_dset_in_memory:
-        argv.append('--is_dset_in_memory')
-
       args = lmp.script.train_model.parse_args(argv=argv)
 
       assert args.batch_size == batch_size
       assert math.isclose(args.beta1, beta1)
       assert math.isclose(args.beta2, beta2)
       assert args.ckpt_step == ckpt_step
+      assert args.ctx_win == ctx_win
       assert args.d_blk == d_blk
       assert args.d_emb == d_emb
       assert args.dset_name == dset_type.dset_name
       assert math.isclose(args.eps, eps)
       assert args.exp_name == exp_name
-      assert args.is_dset_in_memory == is_dset_in_memory
       assert args.log_step == log_step
       assert math.isclose(args.lr, lr)
       assert math.isclose(args.max_norm, max_norm)
@@ -111,7 +107,6 @@ def test_lstm_2000_parse_results(
       assert args.model_name == LSTM2000.model_name
       assert args.n_blk == n_blk
       assert args.n_epoch == n_epoch
-      assert args.n_worker == n_worker
       assert math.isclose(args.p_emb, p_emb)
       assert math.isclose(args.p_hid, p_hid)
       assert args.seed == seed

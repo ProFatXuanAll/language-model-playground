@@ -20,12 +20,12 @@ The following example script train a whitespace tokenizer :py:class:`lmp.tknzr.W
 
 .. code-block:: shell
 
-   python -m lmp.script.train_tknzr whitespace \
-     --dset_name wiki-text-2 \
-     --exp_name my_tknzr_exp \
-     --max_vocab 10 \
-     --min_count 2 \
-     --ver train
+  python -m lmp.script.train_tknzr whitespace \
+    --dset_name wiki-text-2 \
+    --exp_name my_tknzr_exp \
+    --max_vocab 10 \
+    --min_count 2 \
+    --ver train
 
 The training result will be saved at path ``project_root/exp/my_tknzr_exp`` and can be reused by other scripts.
 
@@ -33,70 +33,73 @@ One can increase ``--max_vocab`` to allow tokenizer to include more tokens into 
 
 .. code-block:: shell
 
-   python -m lmp.script.train_tknzr whitespace \
-     --dset_name wiki-text-2 \
-     --exp_name my_tknzr_exp \
-     --max_vocab 10000 \
-     --min_count 2 \
-     --ver train
+  python -m lmp.script.train_tknzr whitespace \
+    --dset_name wiki-text-2 \
+    --exp_name my_tknzr_exp \
+    --max_vocab 10000 \
+    --min_count 2 \
+    --ver train
 
 Set ``--max_vocab`` to ``-1`` to include all tokens in :py:class:`lmp.dset.WikiText2Dset` into tokenizer's vocabulary:
 
 .. code-block:: shell
 
-   python -m lmp.script.train_tknzr whitespace \
-     --dset_name wiki-text-2 \
-     --exp_name my_tknzr_exp \
-     --max_vocab -1 \
-     --min_count 2 \
-     --ver train
+  python -m lmp.script.train_tknzr whitespace \
+    --dset_name wiki-text-2 \
+    --exp_name my_tknzr_exp \
+    --max_vocab -1 \
+    --min_count 2 \
+    --ver train
 
 Tokens have low occurrence counts may indicate typos, named entities (people, locations, organizations, etc.) or random
-character combinations (emojis, glyphs, etc.).  Sometimes one does not want to include tokens have low occurrence
-counts.  Use ``--min_count`` to filter out tokens have occurrence counts lower than ``--min_count``.
+character combinations (emojis, glyphs, etc.).
+Sometimes one does not want to include tokens have low occurrence counts.
+Use ``--min_count`` to filter out tokens have occurrence counts lower than ``--min_count``.
 
 .. code-block:: shell
 
-   python -m lmp.script.train_tknzr whitespace \
-     --dset_name wiki-text-2 \
-     --exp_name my_tknzr_exp \
-     --max_vocab 10000 \
-     --min_count 5 \
-     --ver train
+  python -m lmp.script.train_tknzr whitespace \
+    --dset_name wiki-text-2 \
+    --exp_name my_tknzr_exp \
+    --max_vocab 10000 \
+    --min_count 5 \
+    --ver train
 
-Sometimes cases do not matter, sometimes they do matter.  For example:
+Sometimes cases do not matter, sometimes they do matter.
+For example:
 
   I ate an apple.
   Apple is a fruit.
   Apple is a company.
 
 The words `apple` and `Apple` in the first two sentences have the meaning of edible fruit regardless of `apple` being
-upper case `Apple` or lower case `apple`.  But in the third sentence the word `Apple` has the meaning of smartphone
-company and can only be upper case (which represent the name of an entity).  Thus when processing text one must decide
-whether to treat cases as a whole or differently.  In this script one can use ``--is_uncased`` to treat upper cases as
-same as lower cases.
+upper case `Apple` or lower case `apple`.
+But in the third sentence the word `Apple` has the meaning of smartphone company and can only be upper case (which
+represents the name of an entity).
+Thus when processing text one must decide whether to treat cases as a whole or differently.
+In this script one can use ``--is_uncased`` to treat upper cases as same as lower cases.
 
 .. code-block:: shell
 
-   python -m lmp.script.train_tknzr whitespace
-     --dset_name wiki-text-2 \
-     --exp_name my_tknzr_exp \
-     --is_uncased \
-     --max_vocab 10000 \
-     --min_count 5 \
-     --ver train
+  python -m lmp.script.train_tknzr whitespace
+    --dset_name wiki-text-2 \
+    --exp_name my_tknzr_exp \
+    --is_uncased \
+    --max_vocab 10000 \
+    --min_count 5 \
+    --ver train
 
 You can use ``-h`` or ``--help`` options to get a list of available tokenizers.
 
 .. code-block:: shell
 
-   python -m lmp.script.train_tknzr -h
+  python -m lmp.script.train_tknzr -h
 
 You can use ``-h`` or ``--help`` options on a specific tokenizer to get a list of supported CLI arguments.
 
 .. code-block:: shell
 
-   python -m lmp.script.train_tknzr whitespace -h
+  python -m lmp.script.train_tknzr whitespace -h
 """
 
 import argparse
@@ -210,7 +213,8 @@ def main(argv: List[str]) -> None:
   # Save training result.
   lmp.util.tknzr.save(exp_name=args.exp_name, tknzr=tknzr)
 
-  # Free memory.  This is only need for unit test.
+  # Free memory.
+  # This is only need for unit test.
   del args
   del dset
   del tknzr

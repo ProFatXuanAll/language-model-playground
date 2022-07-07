@@ -1,8 +1,9 @@
 r"""Use this script to train language model on particular dataset.
 
 This script is usually run after training tokenizer.
-Training performance will be shown on both CLI and tensorboard.  Use ``pipenv run tensorboard`` to launch tensorboard
-and open browser with URL http://localhost:6006/ to see model training performance.
+Training performance will be shown on both CLI and tensorboard.
+Use ``pipenv run tensorboard`` to launch tensorboard and open browser with URL http://localhost:6006/ to see model
+training performance.
 
 See Also
 --------
@@ -18,138 +19,142 @@ The following example script train Elman Net model :py:class:`lmp.model.ElmanNet
 
 .. code-block:: shell
 
-   python -m lmp.script.train_model Elman-Net \
-     --batch_size 32 \
-     --beta1 0.9 \
-     --beta2 0.99 \
-     --ckpt_step 1000 \
-     --d_emb 100 \
-     --d_hid 100 \
-     --dset_name wiki-text-2 \
-     --eps 1e-8 \
-     --exp_name my_model_exp \
-     --log_step 200 \
-     --lr 1e-4 \
-     --max_norm 1 \
-     --max_seq_len 128 \
-     --n_epoch 10 \
-     --p_emb 0.5 \
-     --p_hid 0.1 \
-     --tknzr_exp_name my_tknzr_exp \
-     --ver train \
-     --warmup_step 10000 \
-     --wd 1e-2
+  python -m lmp.script.train_model Elman-Net \
+    --batch_size 32 \
+    --beta1 0.9 \
+    --beta2 0.99 \
+    --ckpt_step 1000 \
+    --ctx_win 32 \
+    --d_emb 100 \
+    --d_hid 100 \
+    --dset_name wiki-text-2 \
+    --eps 1e-8 \
+    --exp_name my_model_exp \
+    --log_step 200 \
+    --lr 1e-4 \
+    --max_norm 1 \
+    --max_seq_len 128 \
+    --n_epoch 10 \
+    --p_emb 0.5 \
+    --p_hid 0.1 \
+    --tknzr_exp_name my_tknzr_exp \
+    --ver train \
+    --warmup_step 10000 \
+    --wd 1e-2
 
-The training result will be save at path ``project_root/exp/my_model_exp`` and can be reused by other scripts.  We only
-save checkpoints for each ``--ckpt_step`` step and log performance for each ``--log_step`` step.
+The training result will be save at path ``project_root/exp/my_model_exp`` and can be reused by other scripts.
+We only save checkpoints per ``--ckpt_step`` steps and log performance per ``--log_step`` steps.
 
-One can increase ``--n_epoch`` to train more epochs.  Be careful model might overfit on datasets if model were trained
-with too many epochs.
+One can increase ``--n_epoch`` to train more epochs.
+Be careful model might overfit on datasets if model were trained with too many epochs.
 
 .. code-block:: shell
 
-   python -m lmp.script.train_model Elman-Net \
-     --batch_size 32 \
-     --beta1 0.9 \
-     --beta2 0.99 \
-     --ckpt_step 1000 \
-     --d_emb 100 \
-     --d_hid 100 \
-     --dset_name wiki-text-2 \
-     --eps 1e-8 \
-     --exp_name my_model_exp \
-     --log_step 200 \
-     --lr 1e-4 \
-     --max_norm 1 \
-     --max_seq_len 128 \
-     --n_epoch 20 \
-     --p_emb 0.5 \
-     --p_hid 0.1 \
-     --tknzr_exp_name my_tknzr_exp \
-     --ver train \
-     --warmup_step 10000 \
-     --wd 1e-2
+  python -m lmp.script.train_model Elman-Net \
+    --batch_size 32 \
+    --beta1 0.9 \
+    --beta2 0.99 \
+    --ckpt_step 1000 \
+    --ctx_win 32 \
+    --d_emb 100 \
+    --d_hid 100 \
+    --dset_name wiki-text-2 \
+    --eps 1e-8 \
+    --exp_name my_model_exp \
+    --log_step 200 \
+    --lr 1e-4 \
+    --max_norm 1 \
+    --max_seq_len 128 \
+    --n_epoch 20 \
+    --p_emb 0.5 \
+    --p_hid 0.1 \
+    --tknzr_exp_name my_tknzr_exp \
+    --ver train \
+    --warmup_step 10000 \
+    --wd 1e-2
 
 One can reduce overfitting with the following ways:
 
 - Increase ``--batch_size``.  This increase sample variance and make model hard to optimize.
 - Increase ``--wd``.  This increase L2 penalty and make model output differences small when given large variance input.
-- Reduce model parameters (In :py:class:`lmp.model.ElmanNet` this means reducing ``--d_emb`` or ``--d_hid``).  This
-  make model capacity low and hard to memorize all samples.  Thus model is forced to learn and utilize patterns found
-  on different samples.
-- Use dropout (In :py:class:`lmp.model.ElmanNet` this means increasing ``--p_emb`` or ``--p_hid``).  Dropout is a way
-  to perform models ensembling without the cost of training multiple model instances.
+- Reduce model parameters (In :py:class:`lmp.model.ElmanNet` this means reducing ``--d_emb`` or ``--d_hid``).
+  This make model capacity low and hard to memorize all samples.
+  Thus model is forced to learn and utilize patterns found on different samples.
+- Use dropout (In :py:class:`lmp.model.ElmanNet` this means increasing ``--p_emb`` or ``--p_hid``).
+  Dropout is a way to perform models ensembling without the cost of training multiple model instances.
 - Use any combinations of tricks above.
 
 .. code-block:: shell
 
-   python -m lmp.script.train_model Elman-Net \
-     --batch_size 32 \
-     --beta1 0.9 \
-     --beta2 0.99 \
-     --ckpt_step 1000 \
-     --d_emb 50 \
-     --d_hid 50 \
-     --dset_name wiki-text-2 \
-     --eps 1e-8 \
-     --exp_name my_model_exp \
-     --log_step 200 \
-     --lr 1e-4 \
-     --max_norm 1 \
-     --max_seq_len 128 \
-     --n_epoch 10 \
-     --p_emb 0.5 \
-     --p_hid 0.5 \
-     --tknzr_exp_name my_tknzr_exp \
-     --ver train \
-     --warmup_step 10000 \
-     --wd 1e-1
+  python -m lmp.script.train_model Elman-Net \
+    --batch_size 32 \
+    --beta1 0.9 \
+    --beta2 0.99 \
+    --ckpt_step 1000 \
+    --ctx_win 32 \
+    --d_emb 50 \
+    --d_hid 50 \
+    --dset_name wiki-text-2 \
+    --eps 1e-8 \
+    --exp_name my_model_exp \
+    --log_step 200 \
+    --lr 1e-4 \
+    --max_norm 1 \
+    --max_seq_len 128 \
+    --n_epoch 10 \
+    --p_emb 0.5 \
+    --p_hid 0.5 \
+    --tknzr_exp_name my_tknzr_exp \
+    --ver train \
+    --warmup_step 10000 \
+    --wd 1e-1
 
-We use :py:class:`torch.optim.AdamW` to perform optimization.  Use ``--beta1``, ``--beta2``, ``--eps``, ``--lr`` and
-``--wd`` to adjust optimization hyperparameters.  We also use ``--max_norm`` to perform gradient clipping which avoid
-gradient explosion.
+We use :py:class:`torch.optim.AdamW` to perform optimization.
+Use ``--beta1``, ``--beta2``, ``--eps``, ``--lr`` and ``--wd`` to adjust optimization hyperparameters.
+We also use ``--max_norm`` to perform gradient clipping which avoids gradient explosion.
 
 .. code-block:: shell
 
-   python -m lmp.script.train_model Elman-Net \
-     --batch_size 32 \
-     --beta1 0.95 \
-     --beta2 0.98 \
-     --ckpt_step 1000 \
-     --d_emb 100 \
-     --d_hid 100 \
-     --dset_name wiki-text-2 \
-     --eps 1e-6 \
-     --exp_name my_model_exp \
-     --log_step 200 \
-     --lr 5e-4 \
-     --max_norm 0.1 \
-     --max_seq_len 128 \
-     --n_epoch 10 \
-     --p_emb 0.5 \
-     --p_hid 0.1 \
-     --tknzr_exp_name my_tknzr_exp \
-     --ver train \
-     --warmup_step 10000 \
-     --wd 1e-2
+  python -m lmp.script.train_model Elman-Net \
+    --batch_size 32 \
+    --beta1 0.95 \
+    --beta2 0.98 \
+    --ckpt_step 1000 \
+    --ctx_win 32 \
+    --d_emb 100 \
+    --d_hid 100 \
+    --dset_name wiki-text-2 \
+    --eps 1e-6 \
+    --exp_name my_model_exp \
+    --log_step 200 \
+    --lr 5e-4 \
+    --max_norm 0.1 \
+    --max_seq_len 128 \
+    --n_epoch 10 \
+    --p_emb 0.5 \
+    --p_hid 0.1 \
+    --tknzr_exp_name my_tknzr_exp \
+    --ver train \
+    --warmup_step 10000 \
+    --wd 1e-2
 
 You can use ``-h`` or ``--help`` options to get a list of available language models.
 
 .. code-block:: shell
 
-   python -m lmp.script.train_model -h
+  python -m lmp.script.train_model -h
 
 You can use ``-h`` or ``--help`` options on a specific language model to get a list of supported CLI arguments.
 
 .. code-block:: shell
 
-   python -m lmp.script.train_model Elman-Net -h
+  python -m lmp.script.train_model Elman-Net -h
 """
 
 import argparse
 import copy
 import gc
-import os
+import math
 import sys
 from typing import List
 
@@ -170,6 +175,7 @@ import lmp.util.optim
 import lmp.util.rand
 import lmp.util.tknzr
 import lmp.util.validate
+from lmp.tknzr._base import PAD_TKID
 
 
 def parse_args(argv: List[str]) -> argparse.Namespace:
@@ -224,6 +230,12 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
     group.add_argument(
       '--ckpt_step',
       help='Checkpoint save interval.',
+      required=True,
+      type=int,
+    )
+    group.add_argument(
+      '--ctx_win',
+      help='Context window size.',
       required=True,
       type=int,
     )
@@ -303,19 +315,6 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
 
     # Optional arguments.
     group.add_argument(
-      '--is_dset_in_memory',
-      action='store_true',
-      help='If set to true, then the whole dataset will be loaded in memory.  This will speed up text preprocessing.  '
-      'Default is ``False``.'
-    )
-    group.add_argument(
-      '--n_worker',
-      default=0,
-      help='Number of workers (processes) to use to preprocess text.  We recommand to set to ``0`` when your '
-      'mini-batch size is less than ``256``, set to ``4`` otherwise.  Default is ``0``.',
-      type=int,
-    )
-    group.add_argument(
       '--seed',
       default=42,
       help='Random seed.  Default is ``42``.',
@@ -347,21 +346,17 @@ def main(argv: List[str]) -> None:
   lmp.util.validate.raise_if_wrong_ordered(vals=[1, args.batch_size], val_names=['1', 'args.batch_size'])
   # `args.ckpt_step` validation.
   lmp.util.validate.raise_if_wrong_ordered(vals=[1, args.ckpt_step], val_names=['1', 'args.ckpt_step'])
+  # `args.ctx_win` validation.
+  lmp.util.validate.raise_if_wrong_ordered(
+    vals=[1, args.ctx_win, args.max_seq_len],
+    val_names=['1', 'args.ctx_win', 'args.max_seq_len'],
+  )
   # `args.log_step` validation.
   lmp.util.validate.raise_if_wrong_ordered(vals=[1, args.log_step], val_names=['1', 'args.log_step'])
   # `args.max_norm` validation.
   lmp.util.validate.raise_if_wrong_ordered(vals=[0, args.max_norm], val_names=['0', 'args.max_norm'])
   # `args.n_epoch` validation.
   lmp.util.validate.raise_if_wrong_ordered(vals=[1, args.n_epoch], val_names=['1', 'args.n_epoch'])
-  # `args.n_worker` validation.
-  lmp.util.validate.raise_if_wrong_ordered(
-    vals=[0, args.n_worker, len(os.sched_getaffinity(0))],
-    val_names=['0', 'args.n_worker', 'number of available CPUs'],
-  )
-  lmp.util.validate.raise_if_wrong_ordered(
-    vals=[args.n_worker, args.batch_size],
-    val_names=['args.n_worker', 'args.batch_size'],
-  )
 
   # Save training configuration.
   lmp.util.cfg.save(args=args, exp_name=args.exp_name)
@@ -377,34 +372,23 @@ def main(argv: List[str]) -> None:
   # Load pre-trained tokenizer.
   tknzr = lmp.util.tknzr.load(exp_name=args.tknzr_exp_name)
 
-  # Get dataset instance and convert samples to tensor.
-  if args.is_dset_in_memory:
-    dset: torch.utils.data.Dataset = lmp.util.dset.FastTensorDset(
-      dset=lmp.util.dset.load(**args.__dict__),
-      max_seq_len=args.max_seq_len,
-      tknzr=tknzr,
-    )
-  else:
-    dset = lmp.util.dset.SlowTensorDset(
-      dset=lmp.util.dset.load(**args.__dict__),
-      max_seq_len=args.max_seq_len,
-      tknzr=tknzr,
-    )
+  # Get dataset instance of specific version.
+  dset = lmp.util.dset.load(**args.__dict__)
 
-  # Mini-batch random sampler.  Only when `args.n_worker > 0` we set `persisten_worker = True`.  We set
-  # `pin_memory = True` to speed up process (which only speed up a few seconds).
+  # Mini-batch sampler.
+  # Note that we do not shuffle the dataset, but in practice one should shuffle to make model robust to sampling order.
   data_loader = torch.utils.data.DataLoader(
     batch_size=args.batch_size,
     dataset=dset,
-    shuffle=True,
-    num_workers=args.n_worker,
-    persistent_workers=bool(args.n_worker != 0),
-    pin_memory=True,
+    shuffle=False,
   )
 
-  # Get new model instance and move model to running device.
+  # Create new model instance and initialize model parameters.
   model = lmp.util.model.create(tknzr=tknzr, **args.__dict__)
   model = model.train()
+  model.params_init()
+
+  # Move model to running device.
   model = model.to(device)
 
   # Get new optimizer instance.
@@ -420,7 +404,7 @@ def main(argv: List[str]) -> None:
   # Get learning rate scheduler.
   schdl = lmp.util.optim.get_scheduler(
     optim=optim,
-    total_step=args.n_epoch * len(data_loader),
+    total_step=args.n_epoch * len(data_loader) * math.ceil(args.max_seq_len // args.ctx_win),
     warmup_step=args.warmup_step,
   )
 
@@ -435,57 +419,79 @@ def main(argv: List[str]) -> None:
   step = 0
   for epoch in range(args.n_epoch):
     tqdm_data_loader = tqdm(data_loader, desc=f'epoch: {epoch}, loss: {pre_avg_loss:.6f}', dynamic_ncols=True)
-    for batch_tkids in tqdm_data_loader:
-      # Encode batch text into batch token ids.  We convert batch token ids into tensor and move to tensor to the same
-      # running device as model.
-      batch_tkids = batch_tkids.to(device)
 
-      # Format batch token ids to satisfy language model training format.
-      batch_cur_tkids = batch_tkids[..., :-1]
-      batch_next_tkids = batch_tkids[..., 1:]
+    # Loop through epoch by mini-batches.
+    for batch_txt in tqdm_data_loader:
+      # Encode batch text into batch token ids.
+      # We convert batch token ids into tensor and move to tensor to the same running device as model.
+      batch_tkids = torch.LongTensor(tknzr.batch_enc(batch_txt=batch_txt, max_seq_len=args.max_seq_len)).to(device)
 
-      # Calculate loss using loss function.
-      loss = model(batch_cur_tkids=batch_cur_tkids, batch_next_tkids=batch_next_tkids)
+      # Loop through mini-batch by context windows.
+      batch_prev_states = None
+      for ctx_idx in range(0, args.max_seq_len, args.ctx_win):
+        # Fetch context window.
+        ctx_batch_tkids = batch_tkids[..., ctx_idx:ctx_idx + args.ctx_win + 1]
 
-      # Accumulate average loss for logging.  Use `.item()` to avoid construct tensor graph.
-      avg_loss += loss.item()
+        # Drop the remaining sequence-length-1 context window.
+        if ctx_batch_tkids.size(1) == 1:
+          break
 
-      # Perform backward pass / back propagation.
-      loss.backward()
+        # Skip all-padding batch.
+        if torch.all(ctx_batch_tkids == PAD_TKID):
+          break
 
-      # Perform gradient clipping to avoid gradient explosion.
-      torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=args.max_norm)
+        # Construct language model training format.
+        batch_cur_tkids = ctx_batch_tkids[..., :-1]
+        batch_next_tkids = ctx_batch_tkids[..., 1:]
 
-      # Gradient descent.
-      optim.step()
+        # Calculate next token prediction loss.
+        loss, batch_prev_states = model.loss(
+          batch_cur_tkids=batch_cur_tkids,
+          batch_next_tkids=batch_next_tkids,
+          batch_prev_states=batch_prev_states,
+        )
 
-      # Update learning rate.
-      schdl.step()
+        # Accumulate average loss for logging.
+        # Use `.item()` to avoid construct tensor graph.
+        avg_loss += loss.item()
 
-      # Clean up gradient.
-      optim.zero_grad()
+        # Perform backward pass / back propagation.
+        loss.backward()
 
-      # Increment global step.
-      step += 1
+        # Perform gradient clipping to avoid gradient explosion.
+        torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=args.max_norm)
 
-      # Save checkpoint for each `ckpt_step` step.  We move model to CPU first then move back to CUDA device.
-      if step % args.ckpt_step == 0:
-        lmp.util.model.save(ckpt=step, exp_name=args.exp_name, model=copy.deepcopy(model).to('cpu'))
+        # Gradient descent.
+        optim.step()
 
-      # Log performance for each `log_step` step.
-      if step % args.log_step == 0:
-        avg_loss = avg_loss / args.log_step
+        # Update learning rate.
+        schdl.step()
 
-        # Log on CLI.
-        tqdm_data_loader.set_description(f'epoch: {epoch}, loss: {avg_loss:.6f}')
+        # Clean up gradient.
+        optim.zero_grad()
 
-        # Log on tensorboard.
-        writer.add_scalar(f'train-loss/{args.dset_name}/{args.ver}', avg_loss, step)
-        writer.add_scalar('lr', schdl.get_last_lr()[0], step)
+        # Increment global step.
+        step += 1
 
-        # Refresh log performance.
-        pre_avg_loss = avg_loss
-        avg_loss = 0.0
+        # Save checkpoint for each `ckpt_step` step.
+        # We move model to CPU first then move back to CUDA device.
+        if step % args.ckpt_step == 0:
+          lmp.util.model.save(ckpt=step, exp_name=args.exp_name, model=copy.deepcopy(model).to('cpu'))
+
+        # Log performance for each `log_step` step.
+        if step % args.log_step == 0:
+          avg_loss = avg_loss / args.log_step
+
+          # Log on CLI.
+          tqdm_data_loader.set_description(f'epoch: {epoch}, loss: {avg_loss:.6f}')
+
+          # Log on tensorboard.
+          writer.add_scalar(f'train-loss/{args.dset_name}/{args.ver}', avg_loss, step)
+          writer.add_scalar('lr', schdl.get_last_lr()[0], step)
+
+          # Refresh log performance.
+          pre_avg_loss = avg_loss
+          avg_loss = 0.0
 
   # Save last checkpoint.
   lmp.util.model.save(ckpt=step, exp_name=args.exp_name, model=copy.deepcopy(model).to('cpu'))
@@ -493,7 +499,8 @@ def main(argv: List[str]) -> None:
   # Close tensorboard logger.
   writer.close()
 
-  # Free memory.  This is only need for unit test.
+  # Free memory.
+  # This is only need for unit test.
   del args
   del avg_loss
   del batch_cur_tkids

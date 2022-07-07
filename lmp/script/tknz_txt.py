@@ -15,15 +15,15 @@ The following example used pre-trained tokenizer under experiment ``my_tknzr_exp
 
 .. code-block:: shell
 
-   python -m lmp.script.tknz_txt \
-     --exp_name my_tknzr_exp \
-     --txt "Hello World"
+  python -m lmp.script.tknz_txt \
+    --exp_name my_tknzr_exp \
+    --txt "Hello World"
 
 You can use ``-h`` or ``--help`` options to get a list of supported CLI arguments.
 
 .. code-block:: shell
 
-   python -m lmp.script.tknz_txt -h
+  python -m lmp.script.tknz_txt -h
 """
 
 import argparse
@@ -114,7 +114,8 @@ def main(argv: List[str]) -> None:
   # Tokenize text.
   print(tknzr.tknz(args.txt))
 
-  # Free memory.  This is only need for unit test.
+  # Free memory.
+  # This is only need for unit test.
   del args
   del tknzr
   gc.collect()

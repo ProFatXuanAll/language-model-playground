@@ -117,6 +117,12 @@ def ckpt_step() -> int:
   return 10
 
 
+@pytest.fixture
+def ctx_win(max_seq_len: int) -> int:
+  """Context window size."""
+  return max_seq_len // 2
+
+
 @pytest.fixture(params=[1, 2])
 def d_blk(request) -> int:
   """Mock memory cell block dimension."""
@@ -153,12 +159,6 @@ def host_port() -> int:
   return 42069
 
 
-@pytest.fixture(params=[False, True])
-def is_dset_in_memory(request) -> bool:
-  """Set to ``True`` to load data in memory."""
-  return request.param
-
-
 @pytest.fixture
 def log_step() -> int:
   """Log step."""
@@ -193,12 +193,6 @@ def n_blk(request) -> int:
 def n_epoch() -> int:
   """Mock number of training epochs."""
   return 2
-
-
-@pytest.fixture(params=[0, 2])
-def n_worker(request) -> int:
-  """Mock number of worker subprocess."""
-  return request.param
 
 
 @pytest.fixture(params=[0.1, 0.5])
