@@ -188,7 +188,7 @@ def list_ckpts(exp_name: str, first_ckpt: int, last_ckpt: int) -> List[int]:
   first_ckpt: int
     First checkpoint to include.  Set to ``-1`` to include only the last checkpoint.
   last_ckpt: int
-    Last checkpoint to include.  Set to ``-1`` to include all checkpoints which number is greater than ``first_ckpt``.
+    Last checkpoint to include.  Set to ``-1`` to include all checkpoints whose number is greater than ``first_ckpt``.
 
   Returns
   -------

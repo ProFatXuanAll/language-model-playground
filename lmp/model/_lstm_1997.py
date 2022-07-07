@@ -541,7 +541,7 @@ class LSTM1997(BaseModel):
     logits, batch_cur_states = self(batch_cur_tkids=batch_cur_tkids, batch_prev_states=batch_prev_states)
 
     # Calculate cross-entropy loss.
-    # shape: (B).
+    # shape: (1).
     loss = lmp.util.metric.cross_entropy_loss(
       batch_tkids=batch_next_tkids,
       batch_tkids_pd=F.softmax(logits, dim=2),
@@ -549,7 +549,7 @@ class LSTM1997(BaseModel):
 
     # Return batch average loss.
     # shape: (1).
-    return (loss.mean(), batch_cur_states)
+    return (loss, batch_cur_states)
 
   @torch.no_grad()
   def pred(

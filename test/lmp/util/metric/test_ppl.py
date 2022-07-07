@@ -15,7 +15,7 @@ from lmp.tknzr._base import BOS_TKID, EOS_TKID, PAD_TKID, UNK_TKID
 
 @pytest.fixture
 def batch_tkids() -> torch.Tensor:
-  """Mock target token ids with shape ``(batch_size, seq_len) == (2, 5)``."""
+  """Mock target token ids with shape ``(B, S) == (2, 5)``."""
   return torch.tensor(
     [
       [BOS_TKID, UNK_TKID, EOS_TKID, PAD_TKID, PAD_TKID],
@@ -26,8 +26,7 @@ def batch_tkids() -> torch.Tensor:
 
 @pytest.fixture
 def batch_tkids_pd(batch_tkids: torch.Tensor) -> torch.Tensor:
-  """Mock token ids probability distribution with shape ``(batch_size, seq_len, vocab_size) == (2, 3, 4)``."""
-  """Mock token ids probability distribution with shape ``(batch_size, seq_len, vocab_size) == (2, 5, 4)``."""
+  """Mock token ids probability distribution with shape ``(B, S, V) == (2, 3, 4)``."""
   pd = torch.zeros(2, 5, 4)
   pd[0, 0, BOS_TKID] = 0.9
   pd[0, 1, UNK_TKID] = 0.8
@@ -38,7 +37,7 @@ def batch_tkids_pd(batch_tkids: torch.Tensor) -> torch.Tensor:
   pd[1, 1, UNK_TKID] = 0.3
   pd[1, 2, UNK_TKID] = 0.2
   pd[1, 3, UNK_TKID] = 0.1
-  pd[1, 4, EOS_TKID] = math.nan
+  pd[1, 4, EOS_TKID] = 0.1
   return pd
 
 
@@ -46,15 +45,14 @@ def batch_tkids_pd(batch_tkids: torch.Tensor) -> torch.Tensor:
 def batch_ppl(batch_tkids: torch.Tensor, batch_tkids_pd: torch.Tensor) -> torch.Tensor:
   """Expect perplexity result.
 
-  Must has shape ``(batch_size) == (2)``.
+  Must has shape ``(B) == (2)``.
   """
-  # Padding is masked.
+  # Paddings are masked.
   b0 = math.log(0.9) + math.log(0.8) + math.log(0.7)
-  b0 = b0 / 3
-  # NaN is masked.
-  b1 = math.log(0.4) + math.log(0.3) + math.log(0.2) + math.log(0.1)
-  b1 = b1 / 4
-  return torch.exp(-torch.tensor([b0, b1]))
+  b0 = -b0 / 3
+  b1 = math.log(0.4) + math.log(0.3) + math.log(0.2) + math.log(0.1) + math.log(0.1)
+  b1 = -b1 / 5
+  return torch.exp(torch.tensor([b0, b1]))
 
 
 def test_calculate_result(batch_ppl: torch.Tensor, batch_tkids: torch.Tensor, batch_tkids_pd: torch.Tensor) -> None:

@@ -19,7 +19,8 @@ def set_seed(seed: int) -> None:
   Parameters
   ----------
   seed: int
-    Controlled random seed which do best effort to make experiment reproducible.  Must be bigger than ``0``.
+    Controlled random seed which does best effort to make experiment reproducible.
+    Must be bigger than ``0``.
 
   See Also
   --------

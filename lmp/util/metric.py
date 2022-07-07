@@ -14,46 +14,53 @@ def cross_entropy_loss(batch_tkids: torch.Tensor, batch_tkids_pd: torch.Tensor) 
 
      \newcommand{\pa}[1]{\left(#1\right)}
      \begin{align*}
-       \operatorname{Loss}(w_1, w_2, \dots, w_n) & = \frac{-1}{n} \sum_{i = 1}^n \log P(w_i|w_{< i})
+       \operatorname{Loss}(x_0, x_1, \dots, x_S) & = -\sum_{i = 1}^S \log P(x_i|x_{< i})
      \end{align*}
 
-  where :math:`n` is the length of the given token list, :math:`w_1, w_2, \dots, w_n` are tokens in the token list and
-  :math:`w_{< i} = \set{w_1, w_2, \dots, w_{i - 1}}`.  Note that ``[pad]`` will not be included in cross entropy loss
-  calculation results.  We do not use :py:class:`torch.nn.CrossEntropyLoss` since its reduction (summation over each
-  token id) may result in NaN.
+  where :math:`S+1` is the length of the given token id list :math:`x = (x_0, x_1, \dots, x_S)`.
+  The :math:`i`-th token id in :math:`x` is denote as :math:`x_i`.
+  The token ids before the :math:`i`-th token id are collectively denote as :math:`x_{< i}`.
+  The possible prediction results of :math:`x_{< i}` match the language model paired tokenizer's vocabulary with size
+  :math:`V`, and :math:`x_i` is the correct answer among :math:`V` possible choices.
+  Thus :math:`x_i \in \set{0, \dots, V-1}` for all :math:`i \in \set{0, \dots, V-1}`.
+  Padding tokens ``[pad]`` will not be included in cross entropy loss calculation results.
+  We do not use :py:class:`torch.nn.CrossEntropyLoss` since some context window consist entirely of ``[pad]`` tokens.
+  Per token prediction loss over a mini-batch with batch size :math:`B` will be averaged.
 
   Parameters
   ----------
   batch_tkids: torch.Tensor
-    Batch of token ids which represent prediction targets.  ``batch_tkids`` has shape ``(batch_size, seq_len)`` and
-    ``dtype == torch.long``.
+    Batch of token ids which represent prediction targets.
+    ``batch_tkids`` has shape :math:`(B, S)` and ``dtype == torch.long``.
   batch_tkids_pd: torch.Tensor
-    Batch of token ids prediction probability distribution.  ``batch_tkids_pd`` has shape
-    ``(batch_size, seq_len, vocab_size)`` and ``dtype == torch.float``.
+    Batch of token ids prediction probability distribution.
+    ``batch_tkids_pd`` has shape :math:`(B, S, V)` and ``dtype == torch.float``.
 
   Returns
   -------
   torch.Tensor
-    Cross entropy loss per sequence in the batch.  Returned tensor has shape ``(batch_size)`` and
-    ``dtype == torch.float``.
+    Average cross entropy loss per token in the batch.
+    Returned tensor has shape :math:`(1)` and ``dtype == torch.float``.
   """
-  # Get target token id's probabilities.  Use `batch_tkids` as indices to gather values from probability distribution.
-  # Since prediction has shape `(batch_size, seq_len, vocab_size)`, we need to gather along the `vocab_size` dimension.
-  # shape: (batch_size, seq_len).
+  # Get target token id's probabilities.
+  # Use `batch_tkids` as indices to gather values from probability distribution.
+  # Since prediction has shape `(B, S, V)`, we need to gather along the `V` dimension.
+  # shape: (B, S).
   batch_tkids_p = torch.gather(input=batch_tkids_pd, dim=2, index=batch_tkids.unsqueeze(2)).squeeze(2)
 
-  # Mask `PAD_TKID` with probability `1.0` since `log(1) = 0`.  We also mask NaN to make optimization numerically safe.
-  # This is the main difference between our cross entropy loss and `torch.nn.CrossEntropyLoss`.
-  mask = (batch_tkids == PAD_TKID) | torch.isnan(batch_tkids_p)
+  # Mask `PAD_TKID` with probability `1.0` since `log(1) = 0`.
+  mask = batch_tkids == PAD_TKID
   batch_tkids_p.masked_fill_(mask=mask, value=1.0)
 
-  # Only non-masked positions can contribute to sequence length.
-  batch_seq_len = batch_tkids.size(1) - mask.sum(dim=1)
+  # Return `0.0` when all token ids in the batch are `[pad]`.
+  n_non_pad = (~mask).sum()
+  if n_non_pad == 0:
+    return torch.tensor(0.0, requires_grad=True)
 
-  # Calculate perplexity per sequence in batch.  Convert to log space for numerically save computation. Then convert
-  # back from log space by exponentiating calculation results.
-  # shape: (batch_size)
-  return -batch_tkids_p.log().sum(dim=1) / batch_seq_len
+  # Calculate per token prediction loss and average over non `[pad]` token.
+  # Convert to log space for numerically save computation.
+  # shape: (1)
+  return -batch_tkids_p.log().sum() / n_non_pad
 
 
 def ppl(batch_tkids: torch.Tensor, batch_tkids_pd: torch.Tensor) -> torch.Tensor:
@@ -64,28 +71,53 @@ def ppl(batch_tkids: torch.Tensor, batch_tkids_pd: torch.Tensor) -> torch.Tensor
   .. math::
 
      \begin{align*}
-       \operatorname{Perplexity}(w_1, w_2, \dots, w_n) &= \left( P(w_1, w_2, \dots, w_n) \right)^{\frac{-1}{n}}  \\
-       &= \left( P(w_1) \times P(w_2|w_1) \times \cdots \times P(w_n|w_1, \dots, w_{n-1}) \right)^{\frac{-1}{n}} \\
-       &= \left( \prod_{i=1}^n P(w_i|w_{< i}) \right)^{\frac{-1}{n}}                                             \\
-       &= \exp \left( \ln \left( \prod_{i=1}^n P(w_i|w_{< i}) \right)^{\frac{-1}{n}} \right)                     \\
-       &= \exp \left( \frac{-1}{n} \sum_{i=1}^n \ln P(w_i|w_{< i}) \right)
+       \operatorname{Perplexity}(x_0, x_1, \dots, x_S) &= \pa{P(x_0, x_1, \dots, x_S)}^{\dfrac{-1}{S}}           \\
+       &= \pa{P(x_1|x_0) \times P(x_2|x_0, x_1) \times \cdots \times P(x_S|x_0, \dots, x_{S-1})}^{\dfrac{-1}{S}} \\
+       &= \pa{\prod_{i=1}^S P(x_i|x_{< i})}^{\dfrac{-1}{S}}                                                      \\
+       &= \exp \pa{\ln \pa{\prod_{i=1}^S P(x_i|x_{< i})}^{\dfrac{-1}{S}}}                                        \\
+       &= \exp \pa{\dfrac{-1}{S} \sum_{i=1}^S \ln P(x_i|x_{< i})}
      \end{align*}
 
-  where :math:`n` is the length of the given token list and :math:`w_1, w_2, \dots, w_n` are tokens in the token list.
-  Note that ``[pad]`` will not be included in perplexity calculation results.
+  where :math:`S+1` is the length of the given token id list :math:`x = (x_0, x_1, \dots, x_S)`.
+  The :math:`i`-th token id in :math:`x` is denote as :math:`x_i`.
+  The token ids before the :math:`i`-th token id are collectively denote as :math:`x_{< i}`.
+  The possible prediction results of :math:`x_{< i}` match the language model paired tokenizer's vocabulary with size
+  :math:`V`, and :math:`x_i` is the correct answer among :math:`V` possible choices.
+  Thus :math:`x_i \in \set{0, \dots, V-1}` for all :math:`i \in \set{0, \dots, V-1}`.
+  Padding tokens ``[pad]`` will not be included in perplexity calculation results.
 
   Parameters
   ----------
   batch_tkids: torch.Tensor
-    Batch of token ids which represent prediction targets.  ``batch_tkids`` has shape ``(batch_size, seq_len)`` and
+    Batch of token ids which represent prediction targets.  ``batch_tkids`` has shape :math:`(B, S)` and
     ``dtype == torch.long``.
   batch_tkids_pd: torch.Tensor
     Batch of token ids prediction probability distribution.  ``batch_tkids_pd`` has shape
-    ``(batch_size, seq_len, vocab_size)`` and ``dtype == torch.float``.
+    :math:`(B, S, V)` and ``dtype == torch.float``.
 
   Returns
   -------
   torch.Tensor
-    Perplexity per sequence in the batch.  Returned tensor has shape ``(batch_size)`` and ``dtype == torch.float``.
+    Perplexity per sequence in the batch.  Returned tensor has shape ``(B)`` and ``dtype == torch.float``.
   """
-  return cross_entropy_loss(batch_tkids, batch_tkids_pd).exp()
+  # Get target token id's probabilities.
+  # Use `batch_tkids` as indices to gather values from probability distribution.
+  # Since prediction has shape `(B, S, V)`, we need to gather along the `V` dimension.
+  # shape: (B, S).
+  batch_tkids_p = torch.gather(input=batch_tkids_pd, dim=2, index=batch_tkids.unsqueeze(2)).squeeze(2)
+
+  # Mask `PAD_TKID` with probability `1.0` since `log(1) = 0`.
+  mask = batch_tkids == PAD_TKID
+  batch_tkids_p.masked_fill_(mask=mask, value=1.0)
+
+  # Only non-masked positions can contribute to sequence length.
+  batch_seq_len = batch_tkids.size(1) - mask.sum(dim=1)
+
+  # Return `inf` when all token ids in the batch are `[pad]`.
+  if (~mask).sum() == 0:
+    return torch.tensor(float('inf'))
+
+  # Calculate perplexity per sequence in batch.
+  # Convert to log space for numerically save computation and exponentiate the results back to normal range.
+  # shape: (B)
+  return (-batch_tkids_p.log().sum(dim=1) / batch_seq_len).exp()
