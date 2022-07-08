@@ -404,7 +404,7 @@ def main(argv: List[str]) -> None:
   # Get learning rate scheduler.
   schdl = lmp.util.optim.get_scheduler(
     optim=optim,
-    total_step=args.n_epoch * len(data_loader) * math.ceil(args.max_seq_len // args.ctx_win),
+    total_step=args.n_epoch * len(data_loader) * math.ceil(args.max_seq_len / args.ctx_win),
     warmup_step=args.warmup_step,
   )
 
@@ -436,7 +436,7 @@ def main(argv: List[str]) -> None:
         if ctx_batch_tkids.size(1) == 1:
           break
 
-        # Skip all-padding batch.
+        # Skip all-paddings batch.
         if torch.all(ctx_batch_tkids == PAD_TKID):
           break
 
@@ -505,7 +505,10 @@ def main(argv: List[str]) -> None:
   del avg_loss
   del batch_cur_tkids
   del batch_next_tkids
+  del batch_prev_states
   del batch_tkids
+  del ctx_batch_tkids
+  del ctx_idx
   del data_loader
   del device
   del dset

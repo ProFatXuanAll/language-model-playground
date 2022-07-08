@@ -1,7 +1,7 @@
 r"""Use pre-trained language model checkpoints to calculate average perplexity on a dataset.
 
-One must first run the script :py:mod:`lmp.script.train_model` before running this script.  Use
-``pipenv run tensorboard`` to launch tensorboard and open browser with URL http://localhost:6006/ to see evaluation
+One must first run the script :py:mod:`lmp.script.train_model` before running this script.
+Use ``pipenv run tensorboard`` to launch tensorboard and open browser with URL http://localhost:6006/ to see evaluation
 results over selected model checkpoints.
 
 See Also
@@ -16,58 +16,60 @@ See Also
 Examples
 --------
 The following example evaluate language model experiment ``my_model_exp`` on :py:class:`lmp.dset.WikiText2` dataset
-with version ``valid``.  It evaluate on checkpoints number larger than or equal to ``5000``.
+with version ``valid``.
+It evaluates checkpoints whose numbers are larger than or equal to ``5000``.
 
 .. code-block::
 
-   python -m lmp.script.eval_dset_ppl wiki-text-2 \
-     --batch_size 32 \
-     --first_ckpt 5000 \
-     --exp_name my_model_exp \
-     --ver valid
+  python -m lmp.script.eval_dset_ppl wiki-text-2 \
+    --batch_size 32 \
+    --first_ckpt 5000 \
+    --exp_name my_model_exp \
+    --ver valid
 
 The following example only evaluate on the last checkpoint.
 
 .. code-block::
 
-   python -m lmp.script.eval_dset_ppl wiki-text-2 \
-     --batch_size 32 \
-     --first_ckpt -1 \
-     --exp_name my_model_exp \
-     --ver valid
+  python -m lmp.script.eval_dset_ppl wiki-text-2 \
+    --batch_size 32 \
+    --first_ckpt -1 \
+    --exp_name my_model_exp \
+    --ver valid
 
-Specify checkpoint range to be evaluated.
+There are many checkpoints to be evaluated.
+One can specify checkpoint range one want to evaluate.
 
 .. code-block::
 
-   python -m lmp.script.eval_dset_ppl wiki-text-2 \
-     --batch_size 32 \
-     --first_ckpt 5000 \
-     --exp_name my_model_exp \
-     --last_ckpt 10000 \
-     --ver valid
+  python -m lmp.script.eval_dset_ppl wiki-text-2 \
+    --batch_size 32 \
+    --first_ckpt 5000 \
+    --exp_name my_model_exp \
+    --last_ckpt 10000 \
+    --ver valid
 
 Since evaluation do not need to construct tensor graph when perform forward pass, model will consume less memory than
-training.  Thus we can use larger batch size to accelerate evaluation process.
+training.
+Thus we can use larger batch size to accelerate evaluation process.
 
 .. code-block::
 
-   python -m lmp.script.eval_dset_ppl wiki-text-2 \
-     --batch_size 128 \
-     --ckpt -1 \
-     --exp_name my_model_exp \
-     --ver valid
+  python -m lmp.script.eval_dset_ppl wiki-text-2 \
+    --batch_size 128 \
+    --ckpt -1 \
+    --exp_name my_model_exp \
+    --ver valid
 
 You can use ``-h`` or ``--help`` options to get a list of supported CLI arguments.
 
 .. code-block:: shell
 
-   python -m lmp.script.eval_dset_ppl -h
+  python -m lmp.script.eval_dset_ppl -h
 """
 
 import argparse
 import gc
-import os
 import sys
 from typing import List
 
@@ -86,6 +88,7 @@ import lmp.util.model
 import lmp.util.rand
 import lmp.util.tknzr
 import lmp.util.validate
+from lmp.tknzr._base import PAD_TKID
 
 
 def parse_args(argv: List[str]) -> argparse.Namespace:
@@ -142,22 +145,9 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
 
     # Optional arguments.
     dset_subparser.add_argument(
-      '--is_dset_in_memory',
-      action='store_true',
-      help='If set to true, then the whole dataset will be loaded in memory.  This will speed up text preprocessing.  '
-      'Default is ``False``.'
-    )
-    dset_subparser.add_argument(
       '--last_ckpt',
       default=-1,
       help='The last checkpoint of pre-trained language model to be evaluated.  Default is ``-1``.',
-      type=int,
-    )
-    dset_subparser.add_argument(
-      '--n_worker',
-      default=0,
-      help='Number of workers (processes) to use to preprocess text.  We recommand to set to ``0`` when your '
-      'mini-batch size is less than ``256``, set to ``4`` otherwise.  Default is ``0``.',
       type=int,
     )
     dset_subparser.add_argument(
@@ -198,15 +188,6 @@ def main(argv: List[str]) -> None:
   lmp.util.validate.raise_if_wrong_ordered(vals=[-1, args.first_ckpt], val_names=['-1', 'args.first_ckpt'])
   # `args.last_ckpt` validation.
   lmp.util.validate.raise_if_wrong_ordered(vals=[-1, args.last_ckpt], val_names=['-1', 'args.last_ckpt'])
-  # `args.n_worker` validation.
-  lmp.util.validate.raise_if_wrong_ordered(
-    vals=[0, args.n_worker, len(os.sched_getaffinity(0))],
-    val_names=['0', 'args.n_worker', 'number of available CPUs'],
-  )
-  lmp.util.validate.raise_if_wrong_ordered(
-    vals=[args.n_worker, args.batch_size],
-    val_names=['args.n_worker', 'args.batch_size'],
-  )
 
   # Set random seed for reproducibility.
   lmp.util.rand.set_seed(seed=args.seed)
@@ -222,31 +203,15 @@ def main(argv: List[str]) -> None:
   # Load pre-trained tokenizer instance.
   tknzr = lmp.util.tknzr.load(exp_name=model_cfg.tknzr_exp_name)
 
-  # Get dataset instance and convert samples to tensor.
-  if args.is_dset_in_memory:
-    dset: torch.utils.data.Dataset = lmp.util.dset.FastTensorDset(
-      dset=lmp.util.dset.load(**args.__dict__),
-      max_seq_len=model_cfg.max_seq_len,
-      tknzr=tknzr,
-    )
-  else:
-    dset = lmp.util.dset.SlowTensorDset(
-      dset=lmp.util.dset.load(**args.__dict__),
-      max_seq_len=model_cfg.max_seq_len,
-      tknzr=tknzr,
-    )
-
+  # Get dataset instance of specific version.
+  dset = lmp.util.dset.load(**args.__dict__)
   dset_size = len(dset)
 
-  # Mini-batch sampler.  Only when `args.n_worker > 0` we set `persisten_worker = True`.  We set
-  # `pin_memory = True` to speed up process (which only speed up a few seconds).
+  # Mini-batch sampler.
   data_loader = torch.utils.data.DataLoader(
     batch_size=args.batch_size,
     dataset=dset,
     shuffle=False,
-    num_workers=args.n_worker,
-    persistent_workers=bool(args.n_worker != 0),
-    pin_memory=True,
   )
 
   # Get tensorboard logger instance.
@@ -257,7 +222,8 @@ def main(argv: List[str]) -> None:
     # Load pre-trained model instance.
     model = lmp.util.model.load(ckpt=ckpt, exp_name=args.exp_name)
 
-    # Set model to evaluation model.  This turn off dropout layers in model.
+    # Set model to evaluation mode.
+    # This turn off dropout layers in model.
     model = model.eval()
 
     # Move model to running device.
@@ -265,28 +231,45 @@ def main(argv: List[str]) -> None:
 
     # Record average perplexity.
     avg_ppl = 0.0
-    for batch_tkids in tqdm(data_loader):
-      # Encode text into token ids.  We convert token ids into tensor and move to the same running device as model.
-      batch_tkids = batch_tkids.to(device)
+    for batch_txt in tqdm(data_loader):
+      # Encode batch text into batch token ids.
+      # We convert batch token ids into tensor and move to tensor to the same running device as model.
+      batch_tkids = torch.LongTensor(tknzr.batch_enc(batch_txt=batch_txt, max_seq_len=model_cfg.max_seq_len)).to(device)
 
-      # Format batch token ids to satisfy language model training format.
-      batch_cur_tkids = batch_tkids[..., :-1]
-      batch_next_tkids = batch_tkids[..., 1:]
-
-      # Loop over token ids to get next token id prediction probability distribution.
+      # Loop through mini-batch by context windows.
       batch_prev_states = None
-      batch_tkids_pd = []
-      for i in range(batch_cur_tkids.size(1)):
-        batch_next_tkids_pd, batch_prev_states = model.pred(
-          batch_cur_tkids=batch_cur_tkids[:, i],
-          batch_prev_states=batch_prev_states,
+      batch_tkids_pd_list = []
+      batch_next_tkids_list = []
+      for ctx_idx in range(0, model_cfg.max_seq_len, model_cfg.ctx_win):
+        # Fetch context window.
+        ctx_batch_tkids = batch_tkids[..., ctx_idx:ctx_idx + model_cfg.ctx_win + 1]
+
+        # Drop the remaining sequence-length-1 context window.
+        if ctx_batch_tkids.size(1) == 1:
+          break
+
+        # Skip all-paddings batch.
+        if torch.all(ctx_batch_tkids == PAD_TKID):
+          break
+
+        # Construct language model evaluation format.
+        batch_cur_tkids = ctx_batch_tkids[..., :-1]
+        batch_next_tkids = ctx_batch_tkids[..., 1:]
+
+        # Get next token id probability distribution.
+        batch_tkids_pd, batch_prev_states = model.pred(
+          batch_cur_tkids=batch_cur_tkids,
+          batch_prev_states=None,
         )
 
-        # Collect prediction probability distribution.
-        batch_tkids_pd.append(batch_next_tkids_pd)
+        batch_tkids_pd_list.append(batch_tkids_pd)
+        batch_next_tkids_list.append(batch_next_tkids)
 
       # Calculate perplexity.
-      batch_ppl = lmp.util.metric.ppl(batch_tkids=batch_next_tkids, batch_tkids_pd=torch.stack(batch_tkids_pd, dim=1))
+      batch_ppl = lmp.util.metric.ppl(
+        batch_tkids=torch.cat(batch_next_tkids_list, dim=1),
+        batch_tkids_pd=torch.cat(batch_tkids_pd_list, dim=1),
+      )
 
       # Accumulate average perplexity.
       avg_ppl += (batch_ppl / dset_size).sum().item()
@@ -295,17 +278,21 @@ def main(argv: List[str]) -> None:
     writer.add_scalar(f'ppl/{args.dset_name}/{args.ver}', avg_ppl, ckpt)
     print(f'checkpoint: {ckpt}, avg ppl: {avg_ppl}')
 
-  # Free memory.  This is only need for unit test.
+  # Free memory.
+  # This is only need for unit test.
   del args
   del avg_ppl
   del batch_cur_tkids
   del batch_next_tkids
-  del batch_next_tkids_pd
+  del batch_next_tkids_list
   del batch_ppl
   del batch_prev_states
   del batch_tkids
   del batch_tkids_pd
+  del batch_tkids_pd_list
   del ckpt
+  del ctx_batch_tkids
+  del ctx_idx
   del data_loader
   del device
   del dset

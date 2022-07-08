@@ -10,7 +10,7 @@ import re
 from typing import List
 
 import lmp.script.eval_dset_ppl
-from lmp.dset import WikiText2Dset
+from lmp.dset import DemoDset
 
 
 def test_ppl_output(
@@ -18,14 +18,12 @@ def test_ppl_output(
   capsys,
   ckpts: List[int],
   eval_log_dir_path: str,
-  is_dset_in_memory: bool,
   model_exp_name: str,
-  n_worker: int,
   seed: int,
 ) -> None:
   """Must correctly output perplexity."""
   argv = [
-    WikiText2Dset.dset_name,
+    DemoDset.dset_name,
     '--batch_size',
     str(batch_size),
     '--exp_name',
@@ -39,9 +37,6 @@ def test_ppl_output(
     '--ver',
     'valid',
   ]
-
-  if is_dset_in_memory:
-    argv.append('--is_dset_in_memory')
 
   lmp.script.eval_dset_ppl.main(argv=argv)
 
