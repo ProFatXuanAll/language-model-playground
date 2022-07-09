@@ -3,21 +3,55 @@ Glossary
 
 .. glossary::
 
+  back-propagation
+    A efficient way to calculate gradient of :term:`loss function` with respect to each :term:`model parameter`.
+    See the paper [1]_ for algorithm detail.
+
   batch size
-    Number of samples in a batch.
+    Number of samples in a :term:`mini-batch`.
 
   checkpoint
   checkpoints
-    In the process of training :term:`language models`, we need to save our training results (model parameters) for
-    later evaluation.
-    We don't want to save our training results only after training.
-    We want to save our training results every certain amount of update times.
-    The :term:`step` number triggering save process is called **checkpoint**.
+    When training :term:`language models`, we save :term:`model parameters` for later evaluation.
+    We save model parameters every certain amount of :term:`step`.
+    The step number triggering saving process is called **checkpoint**.
     All checkpoints will be saved at your :term:`experiment path` and named with format ``model-\d+.pt``, where
     ``\d+`` means checkpoint step.
 
   context window
-    TBD
+    When performing task with time-series data, one usually chuck a time-series data into frames and :term:`optimize`
+    :term:`model` on these frames.
+    The fancy name for a frame is called **context window**, and the size of each frames is called
+    **context window size**.
+    This helps to ease the :term:`optimization` problems like :term:`gradient explosion` and :term:`gradient vanishing`.
+
+  cross entropy
+  cross entropy loss
+  cross-entropy
+  cross-entropy loss
+    A :term:`loss function` used to :term:`optimize` classifiers.
+    Suppose that we are performing a :math:`C` classes classification task and a classifier produce a probability
+    distribution :math:`P = (P_1, \dots, P_C)` given a input :math:`x`.
+    If the ground truth correspond to :math:`x` is :math:`y` (note that :math:`y \in \set{1, \dots, C}`), then
+    **cross entropy loss** of :math:`(x, y)` is calculated as follow
+
+    .. math::
+
+      \operatorname{CE}(x, y) = -\log P_y.
+
+    When :math:`P_y \approx 1`, we have :math:`P_i \approx 0` for every other non-:math:`y`-th class :math:`i`.
+    Thus if one use cross entropy to optimize :term:`model`, then one is maximize model's loglikelihood.
+
+  CUDA
+    A GPU library developed by Nvidia.
+
+  dataset
+    In our project, a **dataset** is consist of text samples.
+
+    .. seealso::
+
+      :doc:`lmp.dset </dset/index>`
+        All available dataset.
 
   detokenize
   detokenization
@@ -30,43 +64,80 @@ Glossary
     statistics.
 
   experiment
-    May refer to :term:`tokenizer` training experiment or model training experiment.
-    One usually train a tokenizer first and then train a model.
+    May refer to :term:`tokenizer` training experiment or :term:`language model` training experiment.
+    One usually train a tokenizer first and then train a language model.
 
   experiment name
     Name of a particular :term:`experiment`.
 
   experiment path
+    All :term:`experiment` files are put under directory ``exp``.
     If :term:`experiment name` is ``my_exp``, then experiment path is ``exp/my_exp``.
-    All :term:`experiment` related files will be put under directory ``exp``.
+
+  forward pass
+    The process which a :term:`model` takes a input :term:`tensor` and calculates with its :term:`parameters` to
+    achieve certain goal is called **forward pass**.
+    In PyTorch_ framework this correspond to :py:meth:`forward()` method of :py:class:`torch.nn.Module`.
+
+  gradient descent
+    If we have a :term:`loss function` :math:`L`, then the direction of maximizing :math:`L` with respect to a
+    :term:`model parameter` :math:`W` is :math:`\nabla_W L`, the gradient of :math:`L` with respect to :math:`W`.
+    Thus to minimize :math:`L`, one has to go alone the opposite (negative) direction of gradient :math:`\nabla_W L`
+
+    .. math::
+
+      W_{\operatorname{new}} = W_{\operatorname{old}} - \eta \nabla_{W_{\operatorname{old}}} L.
+
+    Where :math:`\eta` is :term:`learning rate`.
+    We expect to have :math:`L(W_{\operatorname{new}}) \leq L(W_{\operatorname{old}})`.
+    To perform **gradient descent**, model need to first perform :term:`forward pass` to obtain prediction loss.
+    Currently the most efficient way to calculate gradients is by the algorithm :term:`back-propagation`.
+    After obtaining gradients we can then perform gradient descent.
+
+  gradient explosion
+  gradient vanishing
+    When perform :term:`gradient descent`, if the calculated gradients are large in magnitude, then
+    :term:`model parameters` will also be large in magnitude and results in values like Inf or NaN which makes model
+    malfunctioning.
+    This is called **gradient explosion**.
+    On the other extreme, if the calculated gradients are small in magnitude, then :term:`model parameters` will be
+    updated extremely slow.
+    This is called **gradient vanishing**.
+    These two cases happed all the times when :term:`optimize` deep learning :term:`model` by gradient descent,
+    especially when optimizing :term:`RNN` models.
+    One can use gradient clipping to enforce the magnitude of gradients fall within certain boundary.
+    Gradient clipping can ease the gradient explosion but not vanishing.
+    To solve gradient vanishing, one have to design is model structure so that gradients of parameters closed to input
+    layer is guarenteed to have almost identical scale.
+    For example, the internal state of :py:class:`lmp.model.LSTM1997` is one such mechanism.
+    Other mechanisms like residual connection [2]_ are also proposed.
 
   language model
   language models
-    A language model is a model which is capable of calculating the probability of a given text is comming from human
+    A **language model** is a :term:`model` which calculates the probability of a given text is comming from human
     language.
+    For example, the text "How are you?" is used in daily conversation and thus language model should output high
+    probability or equivalently low :term:`perplexity`.
+    On the other hand, the text "You how are?" is meaningless and thus language model should output low probability or
+    equivalently high perplexity.
 
-    For example, the text "how are you?" is used in daily conversation and thus language model should output high
-    probability (or equivalently low :term:`perplexity`).
-    On the other hand the text "you are how?" is meaningless and thus language model should output low probability (or
-    equivalently high :term:`perplexity`).
+    More precisely, language model is an algorithm which inputs text and outputs probability.
+    If a language model :math:`M` has :term:`model parameters` :math:`\theta` and takes a input text :math:`x`, then
+    we can interprete :math:`M(x; \theta)` by the following rules
 
-    More precisely, language model is an probabilistic algorithm which input is text and output is probability (or
-    :term:`perplexity`).
-    We denote language model as :math:`M` and input text as :math:`x`.
-    The hypothesis (expected behavior) of language models are:
+    - If :math:`M(x; \theta) \approx 1`, then :math:`x` is very likely comming from human language.
+    - If :math:`M(x; \theta) \approx 0`, then :math:`x` is unlikely comming from human language.
 
-    - If :math:`M(x) \approx 1`, then :math:`x` is very likely comming from human language.
-    - If :math:`M(x) \approx 0`, then :math:`x` is not likely comming from human language.
+    The usual way to evalute a language model is :term:`perplexity`.
+    In 1990s or earlier, language model are used to evaluate generated text from speech recognition.
+    More recently (after 2019), language models with huge parameters (like GPT_ and BERT_) have been shown to be useful
+    for a lots of downstream NLP tasks, including Natural Lanugage Understanding (NLU), Natural Language Generation
+    (NLG), Question Answering (QA), cloze test, etc.
 
-    The common way to evalute a language model is using :term:`perplexity`.
-    In early days language model are used to evaluate generated text from speech recognition.
-    More recently, language models like GPT_ and BERT_ have shown to be useful for lots of downstream NLP tasks
-    including Natural Lanugage Understanding (NLU), Natural Language Generation (NLG), Question Answering (QA), cloze
-    test, etc.
-
-    In this project we have provided script for training language model (:py:mod:`lmp.script.train_model`), evaluating
-    language model (:py:mod:`lmp.script.eval_dset_ppl`) and generate text using language model
-    (:py:mod:`lmp.script.gen_txt`).
+    In this project we provide scripts for training language model
+    (:doc:`lmp.script.train_model </script/train_model>`), evaluating language model
+    (:doc:`lmp.script.eval_dset_ppl </script/eval_dset_ppl>`) and generating continual text using language model
+    (:doc:`lmp.script.gen_txt </script/gen_txt>`).
 
     .. seealso::
 
@@ -75,14 +146,54 @@ Glossary
       :doc:`lmp.model </model/index>`
         All available language model.
 
-  NN
-  neural network
-    In this project we use famous deep learning framework PyTorch_ to implement our language models.
+  learning rate
+    Gradients of loss with respect to :term:`model parameters` is served as the direction of :term:`optimization`.
+    But the magnitude of gradients makes optimization hard [1]_.
+    Thus we multiply a small number to gradients, and this number is called **learning rate**.
+    If learning rate is small, then optimization process is longer but stable.
+    If learning rate is large, then optimization process is quicker but may not converge.
+    One rule to keep in mind is that one should use small learning rate when deal with huge number of
+    :term:`model parameters`.
+
+  log path
+    All :term:`experiment` log files are put under directory ``exp/log``.
+    If :term:`experiment name` is ``my_exp``, then experiment log path is ``exp/log/my_exp``.
+
+  loss
+  loss function
+    A function which is both used to :term:`optimize` and estimate the performance of :term:`model` is called a
+    **loss function**.
+    The input of loss function is consist of :term:`model parameters` and :term:`dataset` :term:`samples`.
+    The output of loss function is called **loss**.
+    In deep learning field one usually use two different functions for optimization and evaluation.
+    For example, we use :term:`cross entropy loss` to optimize :term:`language model` and use :term:`perplexity` to
+    evalute language model.
+    A loss function must have a lower bound so that the optimization process has a chance to approximate the lower
+    bound in finite number of times.
+    Without lower bound one cannot know the performance of model by the loss it produce.
+
+  mini-batch
+    We split dataset into little :term:`sample` chunks when (:term:`CUDA`) memory cannot fit entire :term:`dataset`.
+    Each sample chunk is called a **mini-batch**.
+    In deep learning field one usually use mini-batch to perform :term:`optimization` instead of entire dataset.
+
+  model
+  model parameter
+  model parameters
+  parameter
+  parameters
+    A **model** is an algorithm which takes a input text and performs calculation with certain numbers.
+    That certain numbers are called **model parameters** and are adjusted by :term:`optimization` process.
 
     .. seealso::
 
       :doc:`lmp.model </model/index>`
         All available language models.
+
+  NN
+  neural network
+    PyTorch_ is a famous deep learning framework that provides lots of **neural network** utilities.
+    In this project we use PyTorch to implement :term:`language models`.
 
   NFKC
     **Unicode normalization** is a process which converts full-width character into half-width, convert same glyph into
@@ -97,39 +208,60 @@ Glossary
 
   Optimization
   optimization
-  gradient descent
-    In the context of :term:`neural network` optimization we usually mean to perform **gradient descent** on
-    :term:`neural network`.
-    To perform gradient descent, model need to first perform **forward pass**.
-    During forward pass, model will take a input which is called **tensors** and pass tensors to deeper layers in model
-    for calculation.
-    Every path **tensor** flow throught the model will be recorded and construct a **tensor flowing graph**.
-    The output of forward pass is then used to calculate **loss** on **objective function** (or **loss function**).
-    We can say "we are optimizing our model on objective function by minimizing loss."
-    We can calculate gradient on loss with respect to model output.
-    Then we can use gradient from loss to perform **back-propagation** with the aid of tensor flowing graph.
-    After back-propagation, all parameters in model get their own gradients, then we can do **gradient descent**.
+  optimize
+    A process is called **optimization** if it takes a :term:`model` :math:`M` with :term:`parameter` :math:`\theta`
+    and a :term:`loss function` :math:`L`, continually adjust :math:`\theta` to make :math:`L` closed to its lower
+    bound in a finite number of times.
+    In the context of training :term:`neural network`, **optimization** usually means to perform
+    :term:`gradient descent`.
 
   perplexity
-    Perplexity is a way to evaluate :term:`language model`.
-    Given a text :math:`x` consist of :math:`n` tokens :math:`x_1, x_2, \dots, x_n`, we want to calculate the
-    probability of text :math:`x` is comming from human language:
+    **Perplexity** is a way to evaluate :term:`language model`.
+    Given a text :math:`x` consist of :math:`n` tokens :math:`x = (x_1, x_2, \dots, x_n)`.
+    For each :math:`i \in \set{1, \dots, n}`, the probability of next token being :math:`x_i` preceeded by
+    :math:`x_1, \dots, x_{i-1}` is denoted as :math:`P(x_i|x_1, \dots, x_{i-1})`.
+    The perplexity of :math:`x`, denoted as :math:`\operatorname{ppl}(x)`, is defined as follow
 
     .. math::
 
+      \newcommand{\pa}[1]{\left(#1\right)}
       \begin{align*}
-      ppl(x) &= \sqrt[n]{\dfrac{1}{P(x_1, x_2, \dots, x_n)}} \\
-      &= \bigg(P(x_1, x_2, \dots, x_n)\bigg)^{\dfrac{-1}{n}} \\
-      &= \bigg(P(x_1) P(x_2|x_1) P(x_3|x_1, x_2) \dots P(x_n|x_1, x_2, \dots, x_{n - 1})\bigg)^{\dfrac{-1}{n}} \\
-      &= \bigg(\prod_{i = 1}^n P(x_i|x_1, \dots, x_{i - 1})\bigg)^{\dfrac{-1}{n}} \\
-      &= e^{\log \prod_{i = 1}^n \big(P(x_i|x_1, \dots, x_{i - 1})\big)^{\dfrac{-1}{n}}} \\
-      &= e^{\dfrac{-1}{n}\log \prod_{i = 1}^n P(x_i|x_1, \dots, x_{i - 1})} \\
-      &= e^{\dfrac{-1}{n} \sum_{i = 1}^n \log P(x_i|x_1, \dots, x_{i - 1})} \\
-      &= \exp\bigg(\dfrac{-1}{n} \sum_{i = 1}^n \log P(x_i|x_1, \dots, x_{i - 1})\bigg)
+      \operatorname{ppl}(x) &= \pa{P(x_1, x_2, \dots, x_n)}^{\dfrac{-1}{n}}                                    \\
+                            &= \pa{P(x_1) \times P(x_2|x_1) \times P(x_3|x_1, x_2) \times \dots \times
+                               P(x_n|x_1, x_2, \dots, x_{n-1})}^{\dfrac{-1}{n}}                                \\
+                            &= \pa{\prod_{i=1}^n P(x_i|x_1, \dots, x_{i-1})}^{\dfrac{-1}{n}}                   \\
+                            &= \exp\pa{\ln \prod_{i=1}^n \big(P(x_i|x_1, \dots, x_{i-1})\big)^{\dfrac{-1}{n}}} \\
+                            &= \exp\pa{\dfrac{-1}{n}\log \prod_{i=1}^n P(x_i|x_1, \dots, x_{i-1})}             \\
+                            &= \exp\pa{\dfrac{-1}{n} \sum_{i=1}^n \log P(x_i|x_1, \dots, x_{i-1})}.
       \end{align*}
 
+    If all probabilities :math:`P(x_i|x_1, \dots, x_{i-1})` are high, then perplexity is low.
+    If all probabilities :math:`P(x_i|x_1, \dots, x_{i-1})` are low, then perplexity is high.
+    Thus we expect a well-trained language model to have low perplexity.
+
+  RNN
+  recurrent neural network
+    A :term:`neural network` which some of its nodes in later layers connect to nodes in earlier layers.
+
+    .. seealso::
+
+      :doc:`lmp.model </model/index>`
+        All available language models.
+
+  sample
+  samples
+    In our project a sample in :term:`dataset` is a text (character sequence).
+
   step
-    Refers to number of times a :term:`language model` has been updated.
+    Number of times a :term:`language model` has been updated.
+
+  tensor
+  tensors
+    A generalized version of matrix is called **tensor**.
+    In our scenario we means stacking matrix.
+    For example, if we have a list of matrix with shape :math:`(2, 3)` and there are :math:`5` matrices in the list,
+    then we can construct a tensor with shape :math:`(5, 2, 3)` by stacking all :math:`5` matrices together.
+    See PyTorch_ tensor :py:class:`torch.Tensor` for more coding example.
 
   token
   tokens
@@ -172,6 +304,14 @@ Glossary
     Those chosen tokens are referred as **known tokens**, and are collectivly called **vocabulary**.
     For the rest of the tokens (there are a lot of such tokens out there) not in the vocabulary are thus called
     :term:`out-of-vocabulary` tokens.
+
+References
+----------
+.. [1] Rumelhart, D., Hinton, G. & Williams, R. Learning representations by back-propagating errors. Nature 323,
+   533-536 (1986). https://doi.org/10.1038/323533a0
+.. [2] Kaiming He, Xiangyu Zhang, Shaoqing Ren, Jian Sun; Proceedings of the IEEE Conference on Computer Vision and
+   Pattern Recognition (CVPR), 2016, pp. 770-778
+   https://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
 
 .. _BERT: https://arxiv.org/abs/1810.04805
 .. _GPT: https://s3-us-west-2.amazonaws.com/openai-assets/research-covers/language-unsupervised/

@@ -436,7 +436,7 @@ def main(argv: List[str]) -> None:
         if ctx_batch_tkids.size(1) == 1:
           break
 
-        # Skip all-paddings batch.
+        # Skip all-paddings batches.
         if torch.all(ctx_batch_tkids == PAD_TKID):
           break
 
