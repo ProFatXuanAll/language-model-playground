@@ -14,24 +14,27 @@ from lmp.tknzr._base import EOS_TKID, PAD_TKID, BaseTknzr
 class TopKInfer(BaseInfer):
   """Top-K inference method.
 
-  For each inference step, this method pick the token id with the **top-K highest probability** from token id
-  probability distribution, and use that token id as the next token id prediction result.  It is a non-greedy algorithm
-  since the best prediction (which correspond to the highest probability) is not guaranteed to be chosen.  In exchange
-  it has higher diversity on generation results compare to :py:class:`lmp.infer.Top1Infer`.
+  For each inference step, this method pick the token id with the **top-K highest probability** from next token id
+  probability distribution over tokenizer's vocabulary, and use that token id as the next token id prediction.
+  It is a non-greedy algorithm since the best prediction (which corresponds to the highest probability) is not
+  guaranteed to be chosen.
+  In exchange it has higher diversity on generation results compare to :py:class:`lmp.infer.Top1Infer`.
 
   Parameters
   ----------
   k: int
     Number of token ids to be sampled.
   max_seq_len: str
-    Maximum length constraint on generated token list.  One can use larger contraint compare to training.
+    Maximum length constraint on generated token list.
+    One can use larger contraint compare to training.
   kwargs: typing.Any, optional
-    Useless parameter.  Intently left for subclasses inheritance.
+    Useless parameter.
+    Intently left for subclasses inheritance.
 
   Attributes
   ----------
   infer_name: ClassVar[str]
-    CLI name of top-k inference method is ``top-K``.
+    CLI name of top-K inference method is ``top-K``.
   k: int
     Number of token ids to be sampled.
 
@@ -101,10 +104,10 @@ class TopKInfer(BaseInfer):
     #. Encode input text as 1 sample batch.
     #. Remove token ids after ``[eos]`` since model is not trained to predict tokens after seeing ``[eos]``.
     #. Loop over conditioned token ids to generate conditioned hidden states.
-    #. Loop to generate token ids.  In each iteration, generated token id was choosed so that it is one of the top-K
-       highest probabilities from next token id prediction probability distribution.  Generating loop will stop early
-       if ``[eos]`` is generated, otherwise generating loop only stop when maximum length constraint enforced by
-       ``self.max_seq_len`` is violated.
+    #. Loop to generate token ids.
+       In each iteration, generated token id was choosed so that it is one of the top-K highest probabilities from next
+       token id probability distribution.
+       Generation loop stops when ``[eos]`` is generated or maximum length constraint is violated.
     #. Decode generated token ids into text and return.
 
     Parameters
@@ -112,7 +115,7 @@ class TopKInfer(BaseInfer):
     model: lmp.model.BaseModel
       Pre-trained language model which will be used to generate text.
     tknzr: lmp.tknzr.BaseTknzr
-      Pre-trained tokenizer which perform text encoding and decoding.
+      Pre-trained tokenizer which performs text encoding and decoding.
     txt: str
       Text segment which the generation process is conditioned on.
 
@@ -124,7 +127,8 @@ class TopKInfer(BaseInfer):
     # Get model running device.
     device = next(model.parameters()).device
 
-    # Encode as 1 sample batch.  We convert token ids to tensor and move tensor to the same running device as model.
+    # Encode as 1 sample batch.
+    # We convert token ids to tensor and move tensor to the same running device as model.
     # shape: (1, max_seq_len).
     batch_cur_tkids = torch.LongTensor(tknzr.batch_enc(batch_txt=[txt], max_seq_len=self.max_seq_len)).to(device)
 
@@ -136,39 +140,47 @@ class TopKInfer(BaseInfer):
     # Loop over conditioned token ids to generate conditioned hidden states.
     batch_prev_states = None
     for i in range(seq_len - 1):
-      _, batch_prev_states = model.pred(batch_cur_tkids=batch_cur_tkids[:, i], batch_prev_states=batch_prev_states)
+      _, batch_prev_states = model.pred(
+        batch_cur_tkids=batch_cur_tkids[:, i].unsqueeze(1),
+        batch_prev_states=batch_prev_states,
+      )
 
     # Calculate how many token at most can be generated.
     out_seq_len = self.max_seq_len - seq_len + 1
 
     # Generate token ids.
-    batch_cur_tkids = batch_cur_tkids[:, -1]
+    # shape: (1, 1).
+    batch_cur_tkids = batch_cur_tkids[:, -1].unsqueeze(1)
     gen_tkids: List[int] = []
     for _ in range(out_seq_len):
-      # Get next token id prediction probability distribution.
-      # shape: (1, vocab_size)
+      # Get next token id probability distribution.
+      # shape: (1, 1, V).
       batch_next_tkids_pd, batch_prev_states = model.pred(
         batch_cur_tkids=batch_cur_tkids,
         batch_prev_states=batch_prev_states,
       )
 
-      # Get top-K highest probabilities from next token id prediction probability distribution.
-      # shape: (1, k).
-      batch_next_tkids_topk_p, batch_next_tkids_topk = batch_next_tkids_pd.topk(k=self.k, dim=-1)
+      # Get top-K highest probabilities from next token id probability distribution.
+      # shape: (1, 1, k).
+      batch_next_tkids_topk_p, batch_next_tkids_topk = batch_next_tkids_pd.topk(k=self.k, dim=2)
 
-      # Use the top-K highest probabilities to construct multinomial distribution.  Then sample token id from
-      # multinomial distribution as the next token id prediction result.
+      # Reshape probability tensor to perform sampling.
+      # shape: (1, k).
+      batch_next_tkids_topk_p = batch_next_tkids_topk_p.reshape(-1, self.k)
+
+      # Use the top-K highest probabilities to construct multinomial distribution.
+      # Then sample token id from multinomial distribution as the next token id prediction.
       # `batch_next_tkids_topk_sample` shape: (1, 1).
       batch_next_tkids_topk_sample = torch.multinomial(batch_next_tkids_topk_p, num_samples=1)
 
       # Use sampled result to fetch next token id prediction.
-      # shape: (1).
+      # shape: (1, 1).
       batch_next_tkids = torch.gather(
         input=batch_next_tkids_topk,
-        dim=1,
-        index=batch_next_tkids_topk_sample,
+        dim=2,
+        index=batch_next_tkids_topk_sample.unsqueeze(2),
       ).squeeze(1)
-      gen_tkid = int(batch_next_tkids.item())
+      gen_tkid = int(batch_next_tkids[0, 0].item())
       gen_tkids.append(gen_tkid)
 
       # Update input token ids.

@@ -1,8 +1,8 @@
 r"""Use pre-trained language model checkpoint to generate continual text of given text segment.
 
-One must first run the script :py:mod:`lmp.script.train_model` before running this script.  This script use pre-trained
-language model checkpoint to generate continual text of given text segment.  Most inference (generation) methods are
-stochastic process, only some are deterministic.
+One must first run the script :py:mod:`lmp.script.train_model` before running this script.
+This script use pre-trained language model checkpoint to generate continual text of given text segment.
+Most inference (generation) methods are stochastic process, only some are deterministic.
 
 See Also
 --------
@@ -16,38 +16,39 @@ See Also
 Examples
 --------
 The following example use ``"Hello world"`` as conditioned text segment to generate continual text with pre-trained
-language model experiment ``my_model_exp``.  It use ``top-1`` inference method to generate continual text.
+language model experiment ``my_model_exp``.
+It use ``top-1`` inference method to generate continual text.
 
 .. code-block::
 
-   python -m lmp.script.gen_txt top-1 \
-     --ckpt 5000 \
-     --exp_name my_model_exp \
-     --max_seq_len 128 \
-     --txt "Hello world"
+  python -m lmp.script.gen_txt top-1 \
+    --ckpt 5000 \
+    --exp_name my_model_exp \
+    --max_seq_len 128 \
+    --txt "Hello world"
 
 The following example use the same conditioned text segment but inferencing with ``top-k`` inference method.
 
 .. code-block::
 
-   python -m lmp.script.gen_txt top-1 \
-     --ckpt 5000 \
-     --exp_name my_model_exp \
-     --k 10 \
-     --max_seq_len 128 \
-     --txt "Hello world"
+  python -m lmp.script.gen_txt top-1 \
+    --ckpt 5000 \
+    --exp_name my_model_exp \
+    --k 10 \
+    --max_seq_len 128 \
+    --txt "Hello world"
 
 You can use ``-h`` or ``--help`` options to get a list of available inference methods.
 
 .. code-block:: shell
 
-   python -m lmp.script.gen_txt -h
+  python -m lmp.script.gen_txt -h
 
 You can use ``-h`` or ``--help`` options on a specific inference method to get a list of supported CLI arguments.
 
 .. code-block:: shell
 
-   python -m lmp.script.gen_txt top-k -h
+  python -m lmp.script.gen_txt top-k -h
 """
 
 import argparse
@@ -169,7 +170,8 @@ def main(argv: List[str]) -> None:
   # Load pre-trained model instance.
   model = lmp.util.model.load(ckpt=args.ckpt, exp_name=args.exp_name)
 
-  # Set model to evaluation model.  This turn off dropout layers in model.
+  # Set model to evaluation model.
+  # This turn off dropout layers in model.
   model = model.eval()
 
   # Get model running device.
@@ -189,7 +191,8 @@ def main(argv: List[str]) -> None:
   # Output generate text.
   print(txt)
 
-  # Free memory.  This is only need for unit test.
+  # Free memory.
+  # This is only need for unit test.
   del args
   del device
   del infer

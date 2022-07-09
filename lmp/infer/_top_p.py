@@ -14,19 +14,22 @@ from lmp.tknzr._base import EOS_TKID, PAD_TKID, BaseTknzr
 class TopPInfer(BaseInfer):
   """Top-P inference method.
 
-  Top-P sampling, also called nucleus sampling [1]_, is similar to top-k sampling but :math:`k` changes during each
-  inference step.  :math:`p` is used as **cumulative probability threshold** and :math:`k` is choosed in so that the
-  top-k highest probabilities have **cumulative probability less than or equal to** :math:`p`.  top-P sampling is a
-  non-greedy algorithm.
+  Top-P sampling, also called nucleus sampling [1]_, is similar to top-K sampling but :math:`k` changes per inference
+  step.
+  :math:`p` is used as **cumulative probability threshold** and :math:`k` is choosed so that the top-K highest
+  probabilities have **cumulative probability less than or equal to** :math:`p`.
+  Top-P sampling is a non-greedy algorithm.
 
   Parameters
   ----------
   max_seq_len: str
-    Maximum length constraint on generated token list.  One can use larger contraint compare to training.
+    Maximum length constraint on generated token list.
+    One can use larger contraint compare to training.
   p: float
     Cumulative probability threshold.
   kwargs: typing.Any, optional
-    Useless parameter.  Intently left for subclasses inheritance.
+    Useless parameter.
+    Intently left for subclasses inheritance.
 
   Attributes
   ----------
@@ -40,7 +43,7 @@ class TopPInfer(BaseInfer):
   :doc:`lmp.infer </infer/index>`
     All available inference methods.
   lmp.infer.TopKInfer
-    Top-k inference method.
+    Top-K inference method.
   lmp.script.gen_txt
     Use pre-trained language model checkpoint to generate continual text of given text segment.
 
@@ -109,11 +112,11 @@ class TopPInfer(BaseInfer):
     #. Encode input text as 1 sample batch.
     #. Remove token ids after ``[eos]`` since model is not trained to predict tokens after seeing ``[eos]``.
     #. Loop over conditioned token ids to generate conditioned hidden states.
-    #. Loop to generate token ids.  In each iteration, generated token id was choosed so that it is one of the top-k
-       highest probabilities from next token id prediction probability distribution, where :math:`k` is the number of
-       token ids whose cumulative probability (after sorting probability in desending order) is less than or equal to
-       ``self.p``.  Generating loop will stop early if ``[eos]`` is generated, otherwise generating loop only stop when
-       maximum length constraint enforced by ``self.max_seq_len`` is violated.
+    #. Loop to generate token ids.
+       In each iteration, generated token id was choosed so that it is one of the top-K highest probabilities from next
+       token id probability distribution, where :math:`k` is the number of token ids whose cumulative probabilities
+       (probabilities are sorted in desending order) are less than or equal to ``self.p``.
+       Generation loop stops when ``[eos]`` is generated or maximum length constraint is violated.
     #. Decode generated token ids into text and return.
 
     Parameters
@@ -121,7 +124,7 @@ class TopPInfer(BaseInfer):
     model: lmp.model.BaseModel
       Pre-trained language model which will be used to generate text.
     tknzr: lmp.tknzr.BaseTknzr
-      Pre-trained tokenizer which perform text encoding and decoding.
+      Pre-trained tokenizer which performs text encoding and decoding.
     txt: str
       Text segment which the generation process is conditioned on.
 
@@ -133,7 +136,8 @@ class TopPInfer(BaseInfer):
     # Get model running device.
     device = next(model.parameters()).device
 
-    # Encode as 1 sample batch.  We convert token ids to tensor and move tensor to the same running device as model.
+    # Encode as 1 sample batch.
+    # We convert token ids to tensor and move tensor to the same running device as model.
     # shape: (1, max_seq_len).
     batch_cur_tkids = torch.LongTensor(tknzr.batch_enc(batch_txt=[txt], max_seq_len=self.max_seq_len)).to(device)
 
@@ -145,55 +149,65 @@ class TopPInfer(BaseInfer):
     # Loop over conditioned token ids to generate conditioned hidden states.
     batch_prev_states = None
     for i in range(seq_len - 1):
-      _, batch_prev_states = model.pred(batch_cur_tkids=batch_cur_tkids[:, i], batch_prev_states=batch_prev_states)
+      _, batch_prev_states = model.pred(
+        batch_cur_tkids=batch_cur_tkids[:, i].unsqueeze(1),
+        batch_prev_states=batch_prev_states,
+      )
 
     # Calculate how many token at most can be generated.
     out_seq_len = self.max_seq_len - seq_len + 1
 
     # Generate token ids.
-    batch_cur_tkids = batch_cur_tkids[:, -1]
+    # shape: (1, 1).
+    batch_cur_tkids = batch_cur_tkids[:, -1].unsqueeze(1)
     gen_tkids: List[int] = []
     for _ in range(out_seq_len):
       # Get next token id prediction probability distribution.
-      # shape: (1, vocab_size)
+      # shape: (1, 1, V).
       batch_next_tkids_pd, batch_prev_states = model.pred(
         batch_cur_tkids=batch_cur_tkids,
         batch_prev_states=batch_prev_states,
       )
 
       # Sort the probability distribution in descending order.
-      # shape: (1, vocab_size).
-      batch_next_tkids_sort_pd, batch_next_tkids_sort = batch_next_tkids_pd.sort(dim=1, descending=True)
+      # shape: (1, 1, V).
+      batch_next_tkids_sort_pd, batch_next_tkids_sort = batch_next_tkids_pd.sort(dim=2, descending=True)
 
       # Calculate cumulative probability distribution and retrieve indices which cumulative probability are smaller
       # than threshold `self.p`.
-      k = int((batch_next_tkids_sort_pd.cumsum(dim=1) <= self.p).sum().item())
+      k = int((batch_next_tkids_sort_pd.cumsum(dim=2) <= self.p).sum().item())
 
       # Sometimes the highest probability is larger than `self.p`, which means model is highly confident on predicting
-      # next token id.  Thus the above calculation will result in `k == 0`.  In that case we only choose the token id
-      # with the highest probability, we do this by setting `k = 1`.
+      # next token id.
+      # Thus the above calculation will result in `k == 0`.
+      # In that case we only choose the token id with the highest probability, we do this by setting `k = 1`.
       if k == 0:
         k = 1
 
       # The previous `k` token ids in `batch_next_tkids_sort` have cumulative probability less than or equal to
-      # `self.p`.  We fetch them and perform further sampling.
-      # shape: (1, k)
-      batch_next_tkids_sort_pd = batch_next_tkids_sort_pd[:, :k]
-      batch_next_tkids_sort = batch_next_tkids_sort[:, :k]
+      # `self.p`.
+      # We fetch them and perform further sampling.
+      # shape: (1, k).
+      batch_next_tkids_sort_pd = batch_next_tkids_sort_pd[..., :k]
+      batch_next_tkids_sort = batch_next_tkids_sort[..., :k]
 
-      # Use the top-k highest probabilities to construct multinomial distribution.  Then sample token id from
-      # multinomial distribution as the next token id prediction result.
+      # Reshape probability tensor to perform sampling.
+      # shape: (1, k).
+      batch_next_tkids_sort_pd = batch_next_tkids_sort_pd.reshape(-1, k)
+
+      # Use the top-K highest probabilities to construct multinomial distribution.
+      # Then sample token id from multinomial distribution as the next token id prediction.
       # `batch_next_tkids_topk_sample` shape: (1, 1).
       batch_next_tkids_topk_sample = torch.multinomial(batch_next_tkids_sort_pd, num_samples=1)
 
       # Use sampled result to fetch next token id prediction.
-      # shape: (1).
+      # shape: (1, 1).
       batch_next_tkids = torch.gather(
         input=batch_next_tkids_sort,
-        dim=1,
-        index=batch_next_tkids_topk_sample,
+        dim=2,
+        index=batch_next_tkids_topk_sample.unsqueeze(2),
       ).squeeze(1)
-      gen_tkid = int(batch_next_tkids.item())
+      gen_tkid = int(batch_next_tkids[0, 0].item())
       gen_tkids.append(gen_tkid)
 
       # Update input token ids.

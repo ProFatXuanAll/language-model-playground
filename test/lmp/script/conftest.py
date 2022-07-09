@@ -57,6 +57,7 @@ def model(tknzr: BaseTknzr) -> BaseModel:
 def model_exp_name(
   ckpts: List[int],
   clean_dir_finalizer_factory: Callable[[str], None],
+  ctx_win: int,
   exp_name: str,
   max_seq_len: int,
   model: BaseModel,
@@ -69,7 +70,7 @@ def model_exp_name(
     lmp.util.model.save(ckpt=ckpt, exp_name=exp_name, model=model)
 
   lmp.util.cfg.save(
-    args=argparse.Namespace(exp_name=exp_name, tknzr_exp_name=tknzr_exp_name, max_seq_len=max_seq_len),
+    args=argparse.Namespace(ctx_win=ctx_win, exp_name=exp_name, tknzr_exp_name=tknzr_exp_name, max_seq_len=max_seq_len),
     exp_name=exp_name
   )
 

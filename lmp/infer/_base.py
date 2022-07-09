@@ -20,14 +20,17 @@ class BaseInfer(abc.ABC):
   Parameters
   ----------
   max_seq_len: str
-    Maximum length constraint on generated token list.  One can use larger contraint compare to training.
+    Maximum length constraint on generated token list.
+    One can use larger contraint compare to training.
   kwargs: typing.Any, optional
-    Useless parameter.  Intently left for subclasses inheritance.
+    Useless parameter.
+    Intently left for subclasses inheritance.
 
   Attributes
   ----------
   infer_name: ClassVar[str]
-    CLI Display name of the inference method.  Only used to parse CLI arguments.
+    CLI name of the inference method.
+    Only used to parse CLI arguments.
   max_seq_len: str
     Maximum length constraint of generated token list.
 
@@ -77,7 +80,7 @@ class BaseInfer(abc.ABC):
     model: lmp.model.BaseModel
       Pre-trained language model which will be used to generate text.
     tknzr: lmp.tknzr.BaseTknzr
-      Pre-trained tokenizer which perform text encoding and decoding.
+      Pre-trained tokenizer which performs text encoding and decoding.
     txt: str
       Text segment which the generation process is conditioned on.
 

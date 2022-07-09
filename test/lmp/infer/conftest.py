@@ -24,13 +24,13 @@ def max_non_sp_tk(tknzr: BaseTknzr) -> str:
 
 @pytest.fixture
 def gen_max_non_sp_tk_model(max_non_sp_tk: str, tknzr: BaseTknzr) -> BaseModel:
-  """Language model which only generate `max_non_sp_tk`."""
+  """Language model which only generates `max_non_sp_tk`."""
   model = ElmanNet(d_emb=2, d_hid=2, p_emb=0.0, p_hid=0.0, tknzr=tknzr)
 
   # We initialize model to make it always predict `max_non_sp_tk`.
   torch.nn.init.zeros_(model.emb.weight)
   torch.nn.init.ones_(model.emb.weight[tknzr.tk2id[max_non_sp_tk]])
-  torch.nn.init.zeros_(model.proj_h2e[1].weight)
-  torch.nn.init.ones_(model.proj_h2e[1].bias)
+  torch.nn.init.zeros_(model.fc_h2e[1].weight)
+  torch.nn.init.ones_(model.fc_h2e[1].bias)
 
   return model

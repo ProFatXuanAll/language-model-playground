@@ -12,11 +12,10 @@ from lmp.tknzr._base import EOS_TKID, PAD_TKID, BaseTknzr
 class Top1Infer(BaseInfer):
   """Top-1 inference method.
 
-  For each inference step, this method pick the token id with **maximum probability (top-1)** from token id probability
-  distribution, and use that token id as the next token id prediction result.  If there are multiple token ids has the
-  same maximum probability, this method pick the token id with the **smallest index** (which correspond to the token
-  has higher occurrence count, see :py:meth:`lmp.tknzr.BaseTknzr.build_vocab`).  It is a greedy algorithm, very simple
-  but lack of diversity.
+  For each inference step, this method pick the token id with **maximum (top-1) probability** from next token id
+  probability distribution over tokenizer's vocabulary, and use that token id as the next token id prediction.
+  If there are multiple token ids having the same maximum probability, then this method pick the **smallest** token id.
+  It is a greedy algorithm, simple but lack of diversity.
 
   Attributes
   ----------
@@ -42,10 +41,10 @@ class Top1Infer(BaseInfer):
     #. Encode input text as 1 sample batch.
     #. Remove token ids after ``[eos]`` since model is not trained to predict tokens after seeing ``[eos]``.
     #. Loop over conditioned token ids to generate conditioned hidden states.
-    #. Loop to generate token ids.  In each iteration, generated token id was choosed so that it has maximum
-       probability from next token id prediction probability distribution.  Generating loop will stop early if
-       ``[eos]`` is generated, otherwise generating loop only stop when maximum length constraint enforced by
-       ``self.max_seq_len`` is violated.
+    #. Loop to generate token ids.
+       In each iteration, generated token id was choosed so that it has maximum probability from next token id
+       probability distribution.
+       Generation loop stops when ``[eos]`` is generated or maximum length constraint is violated.
     #. Decode generated token ids into text and return.
 
     Parameters
@@ -53,7 +52,7 @@ class Top1Infer(BaseInfer):
     model: lmp.model.BaseModel
       Pre-trained language model which will be used to generate text.
     tknzr: lmp.tknzr.BaseTknzr
-      Pre-trained tokenizer which perform text encoding and decoding.
+      Pre-trained tokenizer which performs text encoding and decoding.
     txt: str
       Text segment which the generation process is conditioned on.
 
@@ -70,7 +69,8 @@ class Top1Infer(BaseInfer):
     # Get model running device.
     device = next(model.parameters()).device
 
-    # Encode as 1 sample batch.  We convert token ids to tensor and move tensor to the same running device as model.
+    # Encode as 1 sample batch.
+    # We convert token ids to tensor and move tensor to the same running device as model.
     # shape: (1, max_seq_len).
     batch_cur_tkids = torch.LongTensor(tknzr.batch_enc(batch_txt=[txt], max_seq_len=self.max_seq_len)).to(device)
 
@@ -82,26 +82,30 @@ class Top1Infer(BaseInfer):
     # Loop over conditioned token ids to generate conditioned hidden states.
     batch_prev_states = None
     for i in range(seq_len - 1):
-      _, batch_prev_states = model.pred(batch_cur_tkids=batch_cur_tkids[:, i], batch_prev_states=batch_prev_states)
+      _, batch_prev_states = model.pred(
+        batch_cur_tkids=batch_cur_tkids[:, i].unsqueeze(1),
+        batch_prev_states=batch_prev_states,
+      )
 
     # Calculate how many token at most can be generated.
     out_seq_len = self.max_seq_len - seq_len + 1
 
     # Generate token ids.
-    batch_cur_tkids = batch_cur_tkids[:, -1]
+    # shape: (1, 1).
+    batch_cur_tkids = batch_cur_tkids[:, -1].unsqueeze(1)
     gen_tkids: List[int] = []
     for _ in range(out_seq_len):
-      # Get next token id prediction probability distribution.
-      # shape: (1, vocab_size)
+      # Get next token id probability distribution.
+      # shape: (1, 1, V).
       batch_next_tkids_pd, batch_prev_states = model.pred(
         batch_cur_tkids=batch_cur_tkids,
         batch_prev_states=batch_prev_states,
       )
 
-      # Fetch the token id with maximum probability from next token id prediction probability distribution.
-      # shape: (1).
-      batch_next_tkids = batch_next_tkids_pd.argmax(dim=1, keepdim=True).squeeze(1)
-      gen_tkid = int(batch_next_tkids.item())
+      # Fetch the token id with maximum probability from next token id probability distribution.
+      # shape: (1, 1).
+      batch_next_tkids = batch_next_tkids_pd.argmax(dim=2, keepdim=True).squeeze(1)
+      gen_tkid = int(batch_next_tkids[0, 0].item())
       gen_tkids.append(gen_tkid)
 
       # Update input token ids.
