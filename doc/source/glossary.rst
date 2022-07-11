@@ -19,11 +19,16 @@ Glossary
     ``\d+`` means checkpoint step.
 
   context window
-    When performing task with time-series data, one usually chuck a time-series data into frames and :term:`optimize`
-    :term:`model` on these frames.
-    The fancy name for a frame is called **context window**, and the size of each frames is called
+  context window size
+  context windows
+    When performing tasks with :term:`time-series` data, one sometimes have to deals with long :term:`sequence` and
+    cannot fit the whole sequence into memory.
+    In this case we usually chuck a time-series data into subsequences (or frames) and train :term:`model` on these
+    subsequences.
+    The fancy name for subsequences is **context window**, and the size of each subsequence is called
     **context window size**.
-    This helps to ease the :term:`optimization` problems like :term:`gradient explosion` and :term:`gradient vanishing`.
+    When optimize :term:`RNN` models, one usually need to optimize on subsequences instead of the whole sequence to
+    ease the :term:`optimization` problems like :term:`gradient explosion` and :term:`gradient vanishing`.
 
   cross entropy
   cross entropy loss
@@ -55,13 +60,11 @@ Glossary
 
   detokenize
   detokenization
-    Converts list of tokens back to one and only one text.
+    **Detokenization** is just the oppsite operation of :term:`tokenization`;
+    it converts token list into text.
 
-    For example, when we detokenize ``['a', 'b', 'c']`` based on **character**, we get ``'abc'``;
-    When we detokenize ``['a', 'b', 'c']`` base on **whitespace**, we get ``'a b c'``.
-
-    Detokenization is just the oppsite operation of :term:`tokenization`, and detokenization usually don't involve any
-    statistics.
+    For example, when we use character tokenizer to detokenize ``['a', 'b', 'c']`` we get ``'abc'``;
+    when we use whitespace tokenizer to detokenize ``['a', 'b', 'c']`` we get ``'a b c'``.
 
   experiment
     May refer to :term:`tokenizer` training experiment or :term:`language model` training experiment.
@@ -170,7 +173,7 @@ Glossary
     evalute language model.
     A loss function must have a lower bound so that the optimization process has a chance to approximate the lower
     bound in finite number of times.
-    Without lower bound one cannot know the performance of model by the loss it produce.
+    Without lower bound one cannot know the performance of model by the loss it produces.
 
   mini-batch
     We split dataset into little :term:`sample` chunks when (:term:`CUDA`) memory cannot fit entire :term:`dataset`.
@@ -196,15 +199,14 @@ Glossary
     In this project we use PyTorch to implement :term:`language models`.
 
   NFKC
-    **Unicode normalization** is a process which converts full-width character into half-width, convert same glyph into
-    same unicode, etc.
+    Many unicode characters can represent the same unicode character.
+    For example, a unicode character can have full-width (e.g. ``１``) and half-width (e.g. ``1``);
+    Japanese puts smaller character after another syllable to make syllable before longer
+    (e.g. ``ｱｲｳｴｵ`` and ``アイウエオ``).
+    **Unicode normalization** is a process which maps different representation of a unicode character to the same
+    unicode, and **NFKC** is a way to achieve unicode normalization.
     It is a standard tool to preprocess text.
-
-    See https://en.wikipedia.org/wiki/Unicode_equivalence for more detail.
-
-  OOV
-  out-of-vocabulary
-    Refers to :term:`tokens` which are **not** in :term:`vocabulary`.
+    See https://en.wikipedia.org/wiki/Unicode_equivalence and https://unicode.org/reports/tr15/ for more details.
 
   Optimization
   optimization
@@ -250,7 +252,11 @@ Glossary
 
   sample
   samples
-    In our project a sample in :term:`dataset` is a text (character sequence).
+    In our project a sample in a :term:`dataset` is a text (character :term:`sequence`).
+
+  sequence
+    A data structure which is ordered by integer index.
+    We use sequence and :term:`time-series` interchangably in this project.
 
   step
     Number of times a :term:`language model` has been updated.
@@ -263,47 +269,55 @@ Glossary
     then we can construct a tensor with shape :math:`(5, 2, 3)` by stacking all :math:`5` matrices together.
     See PyTorch_ tensor :py:class:`torch.Tensor` for more coding example.
 
+  time-series
+    A data structure which is ordered by integer index where indices are given the meaning of time.
+    Common **time-series** data are sounds and natural languages.
+    For example, the sentence "I like to eat apple." can be treated as a character sequence where the first character
+    (correspond to integer index ``0``) is "I", the second character (correspond to integer index ``1``) is whitespace
+    " ", and the last character (correspond to integer ``19``) is ".".
+    We use :term:`sequence` and time-series interchangably in this project.
+
   token
   tokens
   tokenize
+  tokenizer
+  tokenizers
   tokenization
-    Chunks text into small pieces (which are called **tokens**).
+    Computer treats everything as number.
+    To perform task related to text, one usually chunks text into small pieces (called **tokens**) so that computer can
+    easily process them.
 
     For example, when we tokenize text ``'abc 123'`` based on **character**, we get
     ``['a', 'b', 'c', ' ', '1', '2', '3']``;
     When we tokenize text ``'abc 123'`` base on **whitespace**, we get ``['abc', '123']``.
 
-    When processing text, one usually need a :term:`tokenizer` to convert bunch of long text (maybe a sentence, a
-    paragraph, a document or whole bunch of documents) into smaller tokens (may be characters, words, etc.) and thus
-    acquire statistic information (count tokens frequency, plot tokens distribution, etc.) to perform furthur
-    analyzations.
+    The tool to chunk text into tokens is called **tokenizer**.
+    How to tokenize is a research problem.
+    There are many tokenizer have been proposed (e.g. STANZA_, proposed by Stanford).
+    In this project our tokenizers provide utilities including tokenization, text normalization and
+    :term:`language model` training formation.
 
-    How to tokenize is a research problem, and there are many statistic-based tokenization models (which is called
-    :term:`tokenizer`) have been proposed.
-    One such famous example is STANZA_ proposed by Stanford.
+    .. seealso::
+
+      :doc:`lmp.tknzr </tknzr/index>`
+        All available tokenizers.
 
   token id
-    Since :term:`token` (a string) cannot be directly used to compute, we assign each token a **id** and replace tokens
-    with their own ids to perform furthur calculation.
-    Sometimes we also need a mechaism to convert token id back to their original token, in such cases we should assume
-    that the :term:`vocabulary` only consist of **unique** token and id pairs.
-
-    For example, we can use a token id to perform embedding matrix lookup, the lookup result is a vector (which we
-    suppose to) represent that token.
-
-  Tokenizer
-  tokenizer
-  tokenizers
-    Tools for text :term:`tokenization`.
-    It can refer to statistic-based tokenization models.
+  token ids
+    Since computer only compute numbers and :term:`tokens` are text, we have to assign each token an integer number
+    (called **token id**) and use token ids instead of tokens to perform computation.
+    In our project, assigning each token an unique integer is called building :term:`vocabulary`.
 
   Vocabulary
   vocabulary
-    When processing text, one have to choose how many :term:`tokens` need to be analyzed since we have limited memory
-    size.
-    Those chosen tokens are referred as **known tokens**, and are collectivly called **vocabulary**.
-    For the rest of the tokens (there are a lot of such tokens out there) not in the vocabulary are thus called
-    :term:`out-of-vocabulary` tokens.
+  OOV
+  out-of-vocabulary
+    A :term:`language model` is paired with a :term:`tokenizer`.
+    How many :term:`tokens` (characters, words, or else) a language model can learn is contrainted by model complexity
+    and memory size.
+    A tokens set learnt by a language model is called **vocabulary**.
+    The number of tokens in a vocabulary is called **vocabulary size**.
+    Tokens not in the vocabulary of a language model are called :term:`out-of-vocabulary` tokens.
 
 References
 ----------

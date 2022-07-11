@@ -24,7 +24,7 @@ Environment Prerequests
 
    .. code-block:: shell
 
-     apt install nvidia-driver-460
+     apt install nvidia-driver-470
 
    .. note::
 
