@@ -210,10 +210,13 @@ Glossary
 
   Optimization
   optimization
+  Optimize
   optimize
-    A process is called **optimization** if it takes a :term:`model` :math:`M` with :term:`parameter` :math:`\theta`
-    and a :term:`loss function` :math:`L`, continually adjust :math:`\theta` to make :math:`L` closed to its lower
-    bound in a finite number of times.
+  train
+  training
+    A process is called **optimization** or **training** if it takes a :term:`model` :math:`M` with :term:`parameter`
+    :math:`\theta` and a :term:`loss function` :math:`L`, continually adjust :math:`\theta` to make :math:`L` closed to
+    its lower bound in a finite number of times.
     In the context of training :term:`neural network`, **optimization** usually means to perform
     :term:`gradient descent`.
 
@@ -240,6 +243,10 @@ Glossary
     If all probabilities :math:`P(x_i|x_1, \dots, x_{i-1})` are high, then perplexity is low.
     If all probabilities :math:`P(x_i|x_1, \dots, x_{i-1})` are low, then perplexity is high.
     Thus we expect a well-trained language model to have low perplexity.
+
+  Pre-trained
+  pre-trained
+    Abbreviation for "previously trained".
 
   RNN
   recurrent neural network
@@ -268,6 +275,22 @@ Glossary
     For example, if we have a list of matrix with shape :math:`(2, 3)` and there are :math:`5` matrices in the list,
     then we can construct a tensor with shape :math:`(5, 2, 3)` by stacking all :math:`5` matrices together.
     See PyTorch_ tensor :py:class:`torch.Tensor` for more coding example.
+
+  text normalization
+    In this project, the term **text normalization** is a three steps process on a given text:
+
+    1. Perform :term:`NFKC` normalization on the given text.
+       For example, ``_１__２____３_`` is normalized into ``_1__2____3_``, where ``_`` are whitespaces.
+    2. Replace consequtive whitespaces with single whitespace.
+       For example, ``_1__2___3_`` will become ``_1_2_3_``, where ``_`` are whitespaces.
+    3. Strip (remove) leading and trailing whitespaces.
+       For example, ``_1_2_3_`` will become ``1_2_3``, where ``_`` are whitespaces.
+
+    One additional step may be applied depends on how you treat cases.
+    If cases do not matter (which is called **case-insensitive**), then text normalization will transform all uppercases
+    characters into lowercases.
+    For example, ``ABC``, ``AbC``, ``aBc`` will all become ``abc``.
+    If case do matter (which is called **case-sensitive**), then no additional steps will to be applied.
 
   time-series
     A data structure which is ordered by integer index where indices are given the meaning of time.

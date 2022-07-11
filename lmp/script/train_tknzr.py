@@ -81,7 +81,7 @@ In this script one can use ``--is_uncased`` to treat upper cases as same as lowe
 
 .. code-block:: shell
 
-  python -m lmp.script.train_tknzr whitespace
+  python -m lmp.script.train_tknzr whitespace \
     --dset_name wiki-text-2 \
     --exp_name my_tknzr_exp \
     --is_uncased \
