@@ -24,7 +24,7 @@ class WsTknzr(BaseTknzr):
   Parameters
   ----------
   is_uncased: bool
-    Set to ``True`` to convert text into lower cases.
+    Set to ``True`` to convert text into lowercase.
   max_vocab: int
     Maximum vocabulary size.
   min_count: int
@@ -106,13 +106,13 @@ class WsTknzr(BaseTknzr):
     group.add_argument(
       '--is_uncased',
       action='store_true',
-      help='Convert all text and tokens into lower cases if given.  Default is ``False``.',
+      help='Convert all text and tokens into lowercase if given.  Default is ``False``.',
     )
 
   def tknz(self, txt: str) -> List[str]:
     """Split text between whitespaces.
 
-    Text will first be normalized by :py:meth:`lmp.tknzr.BaseTknz.norm`, then be splited between whitespaces.
+    Text will first be normalized then be splited between whitespaces.
 
     Parameters
     ----------
@@ -128,7 +128,7 @@ class WsTknzr(BaseTknzr):
     --------
     lmp.tknzr.WsTknzr.dtknz
       Join text with whitespaces.
-    lmp.tknzr.BaseTknzr.norm
+    lmp.tknzr._base.BaseTknzr.norm
       Text normalization.
 
     Examples
@@ -141,15 +141,16 @@ class WsTknzr(BaseTknzr):
     # Perform normalization.
     txt = self.norm(txt)
 
-    # First we split text with special token pattern, then we strip text to convert stand alone whitespaces into empty
-    # string.  Finally we filter out empty string.
+    # First we split text using special token pattern.
+    # Then we strip text to convert stand alone whitespace into empty string.
+    # Finally we filter out empty string.
     return list(filter(bool, [tk.strip() for tk in SPLIT_PTTN.split(txt)]))
 
   def dtknz(self, tks: List[str]) -> str:
     """Join text with whitespaces.
 
     Insert whitespace between tokens.
-    Returned text is normalized by :py:meth:`lmp.tknzr.BaseTknz.norm`.
+    Returned text will be normalized.
 
     Parameters
     ----------
@@ -165,7 +166,7 @@ class WsTknzr(BaseTknzr):
     --------
     lmp.tknzr.WsTknzr.tknz
       Split text between whitespaces.
-    lmp.tknzr.BaseTknzr.norm
+    lmp.tknzr._base.BaseTknzr.norm
       Text normalization.
 
     Examples
@@ -175,5 +176,6 @@ class WsTknzr(BaseTknzr):
     >>> assert tknzr.dtknz(['a', 'b', 'c']) == 'a b c'
     >>> assert tknzr.dtknz(['abc', 'def']) == 'abc def'
     """
-    # First perform detokenization, then do normalization.  Order of these operation does not affect the output.
+    # First perform detokenization, then do normalization.
+    # Order of these operation does not affect the output.
     return self.norm(' '.join(tks))

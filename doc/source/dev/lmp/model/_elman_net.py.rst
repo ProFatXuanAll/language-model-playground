@@ -2,5 +2,7 @@
 ==============================
 
 .. automodule:: lmp.model._elman_net
-  :members:
+
+.. autoclass:: lmp.model._elman_net.ElmanNet
+  :members: add_CLI_args, forward, loss, params_init, pred
   :show-inheritance:

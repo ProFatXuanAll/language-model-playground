@@ -2,5 +2,5 @@ Top-K inference method
 ======================
 
 .. autoclass:: lmp.infer.TopKInfer
-  :members:
+  :members: add_CLI_args, gen
   :show-inheritance:

@@ -2,5 +2,7 @@
 =========================
 
 .. automodule:: lmp.infer._base
-  :members:
+
+.. autoclass:: lmp.infer._base.BaseInfer
+  :members: add_CLI_args, gen
   :show-inheritance:

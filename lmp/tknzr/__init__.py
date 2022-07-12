@@ -5,7 +5,7 @@ Attributes
 ALL_TKNZRS: list[lmp.tknzr.BaseTknzr]
   All available tokenizers.
 TKNZR_OPTS: typing.Final[dict[str, lmp.tknzr.BaseTknzr]]
-  Mapping tokenizer's name ``tknzr_name`` to tokenizer's class.
+  Mapping tokenizer name ``tknzr_name`` to tokenizer class.
 
 Examples
 --------

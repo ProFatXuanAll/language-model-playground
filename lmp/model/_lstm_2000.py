@@ -179,8 +179,6 @@ class LSTM2000(LSTM1997):
 
   See Also
   --------
-  :doc:`lmp.model.BaseModel </model/BaseModel>`
-    Language model utilities.
   :doc:`lmp.model.LSTM1997 </model/LSTM1997>`
     LSTM (1997 version) language model.
 

@@ -5,7 +5,7 @@ Attributes
 ALL_INFERS: List[:py:class:`lmp.model.BaseInfer`]
   All available language model inference methods.
 INFER_OPTS: Final[Dict[str, :py:class:`lmp.model.BaseInfer`]]
-  Mapping inference method's name ``infer_name`` to inference method's class.
+  Mapping inference method name ``infer_name`` to inference method class.
 
 Examples
 --------

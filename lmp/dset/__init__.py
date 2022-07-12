@@ -5,7 +5,7 @@ Attributes
 ALL_DSETS: list[lmp.dset.BaseDset]
   All available datasets.
 DSET_OPTS: typing.Final[dict[str, lmp.dset.BaseDset]]
-  Mapping dataset's name ``dset_name`` to dataset's class.
+  Mapping dataset name ``dset_name`` to dataset class.
 
 Examples
 --------

@@ -185,11 +185,6 @@ class LSTM1997(BaseModel):
   n_blk: int
     Number of memory cell blocks :math:`\nBlk`.
 
-  See Also
-  --------
-  :doc:`lmp.model.BaseModel </model/BaseModel>`
-    Language model utilities.
-
   References
   ----------
   .. [1] S. Hochreiter and J. Schmidhuber, "`Long Short-Term Memory`_," in Neural Computation, vol. 9, no. 8,

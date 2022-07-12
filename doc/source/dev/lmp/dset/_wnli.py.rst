@@ -2,5 +2,7 @@
 ========================
 
 .. automodule:: lmp.dset._wnli
-  :members:
+
+.. autoclass:: lmp.dset._wnli.WNLIDset
+  :members: download_file, download_dataset, norm
   :show-inheritance:

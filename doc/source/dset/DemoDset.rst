@@ -2,7 +2,6 @@ Demo Dataset
 ============
 
 .. autoclass:: lmp.dset.DemoDset
-  :inherited-members:
-  :members:
+  :members: download_file, norm
   :show-inheritance:
   :special-members: __getitem__, __iter__, __len__

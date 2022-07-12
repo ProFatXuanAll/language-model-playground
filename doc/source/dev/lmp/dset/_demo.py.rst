@@ -2,5 +2,7 @@
 ========================
 
 .. automodule:: lmp.dset._demo
-  :members:
+
+.. autoclass:: lmp.dset._demo.DemoDset
+  :members: download_file, norm
   :show-inheritance:

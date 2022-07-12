@@ -15,9 +15,9 @@ class WikiText2Dset(BaseDset):
   """Wiki-Text-2 dataset.
 
   Wiki-Text-2 [1]_ is part of the WikiText Long Term Dependency Language Modeling Dataset.
-  See WikiText_ for more details on dataset.
+  See `Wiki-Text`_ for more details.
 
-  .. _WikiText:
+  .. _`Wiki-Text`:
      https://www.salesforce.com/products/einstein/ai-research/the-wikitext-dependency-language-modeling-dataset/
 
   Here are the statistics of each supported version.

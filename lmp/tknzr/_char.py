@@ -23,7 +23,7 @@ class CharTknzr(BaseTknzr):
   Parameters
   ----------
   is_uncased: bool
-    Set to ``True`` to convert text into lower cases.
+    Set to ``True`` to convert text into lowercase.
   max_vocab: int
     Maximum vocabulary size.
   min_count: int
@@ -105,7 +105,7 @@ class CharTknzr(BaseTknzr):
     group.add_argument(
       '--is_uncased',
       action='store_true',
-      help='Convert all text and tokens into lower cases if given.  Default is ``False``.',
+      help='Convert all text and tokens into lowercase if given.  Default is ``False``.',
     )
 
   def tknz(self, txt: str) -> List[str]:
@@ -158,7 +158,7 @@ class CharTknzr(BaseTknzr):
     """Join list of characters back to text.
 
     Tokens will be joined without whitespaces.
-    Returned text is normalized by :py:meth:`lmp.tknzr.BaseTknz.norm`.
+    Returned text will be normalized.
 
     Parameters
     ----------
@@ -174,7 +174,7 @@ class CharTknzr(BaseTknzr):
     --------
     lmp.tknzr.CharTknzr.tknz
       Convert text into characters.
-    lmp.tknzr.BaseTknzr.norm
+    lmp.tknzr._base.BaseTknzr.norm
       Text normalization.
 
     Examples
@@ -184,5 +184,6 @@ class CharTknzr(BaseTknzr):
     >>> assert tknzr.dtknz(['a', 'b', 'c']) == 'abc'
     >>> assert tknzr.dtknz(['a', 'b', 'c', ' ', 'd', 'e', 'f']) == 'abc def'
     """
-    # First perform detokenization, then do normalization.  Order of these operation does not affect the output.
+    # First perform detokenization, then do normalization.
+    # Order of these operation does not affect the output.
     return self.norm(''.join(tks))

@@ -2,5 +2,7 @@
 =========================
 
 .. automodule:: lmp.model._base
-  :members:
+
+.. autoclass:: lmp.model._base.BaseModel
+  :members: add_CLI_args, forward, loss, params_init, pred
   :show-inheritance:

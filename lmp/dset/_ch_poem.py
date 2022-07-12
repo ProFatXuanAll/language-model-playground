@@ -159,10 +159,12 @@ class ChPoemDset(BaseDset):
     df = pd.read_csv(os.path.join(lmp.util.path.DATA_PATH, f'{self.ver}.csv'))
 
     # Normalize dataset.
-    self.spls = df['內容'].apply(str).apply(self.norm).tolist()
+    spls = df['內容'].apply(str).apply(self.norm).tolist()
 
     # Discard samples having fewer than 24 characters.
-    self.spls = list(filter(lambda spl: len(spl) >= 24, self.spls))
+    spls = list(filter(lambda spl: len(spl) >= 24, spls))
+
+    self.spls.extend(spls)
 
     # Sort dataset by length in ascending order.
     self.spls.sort(key=len)

@@ -2,6 +2,8 @@
 ========================
 
 .. automodule:: lmp.dset._base
-  :members:
+
+.. autoclass:: lmp.dset._base.BaseDset
+  :members: download_file, norm
   :show-inheritance:
   :special-members: __getitem__, __iter__, __len__
