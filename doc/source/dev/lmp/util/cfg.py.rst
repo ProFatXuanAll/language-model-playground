@@ -2,4 +2,4 @@
 ======================
 
 .. automodule:: lmp.util.cfg
-   :members:
+  :members:

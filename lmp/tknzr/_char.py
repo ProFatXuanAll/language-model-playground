@@ -41,8 +41,6 @@ class CharTknzr(BaseTknzr):
   --------
   :doc:`lmp.tknzr </tknzr/index>`
     All available tokenizers.
-  lmp.tknzr.BaseTknzr
-    Tokenizer utilities.
 
   Examples
   --------

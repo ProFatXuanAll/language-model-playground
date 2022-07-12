@@ -2,5 +2,5 @@
 ============================
 
 .. automodule:: lmp.script.gen_txt
-   :members:
-   :noindex:
+  :members:
+  :noindex:

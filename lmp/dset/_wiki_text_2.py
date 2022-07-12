@@ -56,8 +56,6 @@ class WikiText2Dset(BaseDset):
   --------
   :doc:`lmp.dset </dset/index>`
     All available datasets.
-  lmp.dset.BaseDset
-    Dataset utilities.
 
   References
   ----------

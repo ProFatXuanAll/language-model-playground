@@ -2,4 +2,5 @@
 ========================
 
 .. automodule:: lmp.dset._demo
-   :members:
+  :members:
+  :show-inheritance:

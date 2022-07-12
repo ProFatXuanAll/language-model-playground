@@ -2,4 +2,5 @@
 ===============================
 
 .. automodule:: lmp.dset._wiki_text_2
-   :members:
+  :members:
+  :show-inheritance:

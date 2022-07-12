@@ -2,4 +2,5 @@
 ==============================
 
 .. automodule:: lmp.model._elman_net
-   :members:
+  :members:
+  :show-inheritance:

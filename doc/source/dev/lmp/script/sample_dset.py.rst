@@ -2,5 +2,5 @@
 ================================
 
 .. automodule:: lmp.script.sample_dset
-   :members:
-   :noindex:
+  :members:
+  :noindex:

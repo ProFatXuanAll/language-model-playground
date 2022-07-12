@@ -2,5 +2,5 @@
 ================================
 
 .. automodule:: lmp.script.train_tknzr
-   :members:
-   :noindex:
+  :members:
+  :noindex:

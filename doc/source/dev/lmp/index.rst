@@ -2,16 +2,16 @@
 =============
 
 .. automodule:: lmp
-   :members:
+  :members:
 
 .. toctree::
-   :glob:
-   :maxdepth: 1
-   :caption: Submodules:
+  :glob:
+  :maxdepth: 1
+  :caption: Submodules:
 
-   dset/index
-   infer/index
-   model/index
-   script/index
-   tknzr/index
-   util/index
+  dset/index
+  infer/index
+  model/index
+  script/index
+  tknzr/index
+  util/index

@@ -2,4 +2,5 @@
 ==========================
 
 .. automodule:: lmp.infer._top_p
-   :members:
+  :members:
+  :show-inheritance:

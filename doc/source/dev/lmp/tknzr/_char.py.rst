@@ -2,4 +2,5 @@
 =========================
 
 .. automodule:: lmp.tknzr._char
-   :members:
+  :members:
+  :show-inheritance:

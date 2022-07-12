@@ -3,3 +3,4 @@ LSTM (2000 version)
 
 .. autoclass:: lmp.model.LSTM2000
   :members:
+  :show-inheritance:

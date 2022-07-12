@@ -2,4 +2,5 @@
 ===========================
 
 .. automodule:: lmp.dset._ch_poem
-   :members:
+  :members:
+  :show-inheritance:

@@ -2,4 +2,5 @@
 =========================
 
 .. automodule:: lmp.infer._base
-   :members:
+  :members:
+  :show-inheritance:

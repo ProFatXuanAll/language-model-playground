@@ -2,11 +2,11 @@
 ===================
 
 .. automodule:: lmp.infer
-   :members:
+  :members:
 
 .. toctree::
-   :caption: Submodules:
-   :glob:
-   :maxdepth: 1
+  :caption: Submodules:
+  :glob:
+  :maxdepth: 1
 
-   *
+  *

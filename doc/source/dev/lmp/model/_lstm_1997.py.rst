@@ -2,4 +2,5 @@
 ==============================
 
 .. automodule:: lmp.model._lstm_1997
-   :members:
+  :members:
+  :show-inheritance:

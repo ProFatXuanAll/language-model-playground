@@ -3,31 +3,34 @@ How To Document Guide
 
 .. note::
 
-   You need to install dev tools first by running
+  You need to install dev tools first by running
 
-   .. code-block:: shell
+  .. code-block:: shell
 
-      pipenv install --dev
+    pipenv install --dev
 
 Documentation Style Guide
 -------------------------
-We mostly follow numpydoc_ (which is extended from PEP257_) style guide.  Please RTFM.
+We mostly follow numpydoc_ (which is extended from PEP257_) style guide.
+Please RTFM.
 
 Autodoc
 -------
-We use `sphinx.ext.napoleon`_ (which uses `sphinx.ext.autodoc`_) extension to generate document from docstring.  All
-modules, classes, functions and scripts must be documented.  The following rules should be applied to document folder.
+We use `sphinx.ext.napoleon`_ (which uses `sphinx.ext.autodoc`_) extension to generate document from docstring.
+All modules, classes, functions and scripts must be documented.
+The following rules should be applied to document folder.
 
 - Put ``lmp`` documents under ``doc/source/lmp``.
 - Put ``test`` documents under ``doc/source/test``.
 
 Build Document
 --------------
-To build document, we use sphinx_ to generate document in HTML format.  Run the following script:
+To build document, we use sphinx_ to generate document in HTML format.
+Run the following script:
 
 .. code-block:: shell
 
-   pipenv run doc
+  pipenv run doc
 
 Generate Document Coverage Report
 ---------------------------------
@@ -35,7 +38,7 @@ Run the following command in project root directory:
 
 .. code-block:: shell
 
-   pipenv run doc-coverage
+  pipenv run doc-coverage
 
 TODOs
 ~~~~~

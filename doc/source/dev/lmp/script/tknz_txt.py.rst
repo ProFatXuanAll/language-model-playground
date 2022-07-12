@@ -2,5 +2,5 @@
 =============================
 
 .. automodule:: lmp.script.tknz_txt
-   :members:
-   :noindex:
+  :members:
+  :noindex:

@@ -1,8 +1,11 @@
 Language Models
 ===============
 
-All available language models are listed below:
+Overview
+--------
 
+All available language models
+-----------------------------
 .. toctree::
   :glob:
   :maxdepth: 1
