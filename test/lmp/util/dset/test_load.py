@@ -5,7 +5,7 @@ Test target:
 """
 
 import lmp.util.dset
-from lmp.dset import ChPoemDset, DemoDset, WikiText2Dset
+from lmp.dset import ChPoemDset, DemoDset, WNLIDset, WikiText2Dset
 
 
 def test_load_chinese_poem() -> None:
@@ -21,6 +21,14 @@ def test_load_demo() -> None:
   for ver in DemoDset.vers:
     dset = lmp.util.dset.load(dset_name=DemoDset.dset_name, ver=ver)
     assert isinstance(dset, DemoDset)
+    assert dset.ver == ver
+
+
+def test_load_wnli() -> None:
+  """Capable of loading WNLI datasets."""
+  for ver in WNLIDset.vers:
+    dset = lmp.util.dset.load(dset_name=WNLIDset.dset_name, ver=ver)
+    assert isinstance(dset, WNLIDset)
     assert dset.ver == ver
 
 

@@ -52,11 +52,6 @@ class WikiText2Dset(BaseDset):
   vers: typing.ClassVar[list[str]]
     Supported versions including ``'train'``, ``'test'`` and ``'valid'``.
 
-  See Also
-  --------
-  :doc:`lmp.dset </dset/index>`
-    All available datasets.
-
   References
   ----------
   .. [1] Stephen Merity, Caiming Xiong, James Bradbury, and Richard Socher. 2016. Pointer Sentinel Mixture Models

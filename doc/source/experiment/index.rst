@@ -5,9 +5,10 @@ All experiment results will be put under this directory. All arguments used in e
 reproduce experiment results.
 
 .. toctree::
-   :maxdepth: 1
-   :titlesonly:
-   :caption: Contents:
+  :maxdepth: 1
+  :titlesonly:
+  :caption: Contents:
 
-   Wiki-Text-2 Dataset/index
+  Wiki-Text-2 Dataset/index
+  WNLI Dataset/index
 
