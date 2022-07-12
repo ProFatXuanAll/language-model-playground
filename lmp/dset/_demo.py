@@ -8,28 +8,28 @@ from lmp.dset._base import BaseDset
 class DemoDset(BaseDset):
   r"""Demo dataset.
 
-  This dataset is consist of literatures of 2-digits additions.
-  The literatures are in the following format:
+  This dataset is consist of 2-digits addition literatures.
+  All literatures have the following format:
 
     If you add :math:`a` to :math:`b` you get :math:`a + b` .
 
   where :math:`a, b` are integers within :math:`0` to :math:`99` (inclusive).
 
   Here we describe the dataset in detail.
-  Let :math:`E_1 = \set{0, 2, \dots, 48}`, :math:`E_2 = \set{50, 52, \dots, 98}`, :math:`O_1 = \set{1, 3, \dots, 49}`
-  and :math:`O_2 = \set{51, 53, \dots, 99}`.
+  Let :math:`E = \set{0, 2, 4, \dots, 98}` be the set of non-negative, less than 100 even numbers, and let
+  :math:`E = \set{1, 3, 5, \dots, 99}` be the set of positive, less than 100 odd numbers.
 
-  +-----------+---------------------------------------+----------------------+-----------------------+
-  | Version   | Design Philosophy                     | Range of :math:`a`   | Range of :math:`b`    |
-  +-----------+---------------------------------------+----------------------+-----------------------+
-  | ``train`` | Train the model.                      | :math:`E_1 \cup O_2` | :math:`E_2 \cup O_1`  |
-  +-----------+---------------------------------------+----------------------+-----------------------+
-  | ``valid`` | Check whether model learn commutative | :math:`E_2 \cup O_1` | :math:`E_1 \cup O_2`  |
-  |           | law of 2-digits integer addition.     |                      |                       |
-  +-----------+---------------------------------------+----------------------+-----------------------+
-  | ``test``  | Check whether model learn to          | :math:`a = b` and                            |
-  |           | generalize 2-digits addition.         | :math:`a \in E_1 \cup E_2 \cup O_1 \cup O_2` |
-  +-----------+---------------------------------------+----------------------------------------------+
+  +-----------+---------------------------------------+--------------------+--------------------+
+  | Version   | Design Philosophy                     | Range of :math:`a` | Range of :math:`b` |
+  +-----------+---------------------------------------+--------------------+--------------------+
+  | ``train`` | Train the model.                      | :math:`a \in E`    | :math:`b \in O`    |
+  +-----------+---------------------------------------+--------------------+--------------------+
+  | ``valid`` | Check whether model learn commutative | :math:`a \in O`    | :math:`b \in E`    |
+  |           | law of 2-digits integer addition.     |                    |                    |
+  +-----------+---------------------------------------+--------------------+--------------------+
+  | ``test``  | Check whether model learn to          | :math:`a = b` and                       |
+  |           | generalize 2-digits addition.         | :math:`a \in E \cup O`                  |
+  +-----------+---------------------------------------+-----------------------------------------+
 
   Parameters
   ----------
@@ -76,23 +76,21 @@ class DemoDset(BaseDset):
     temp = 'If you add {} to {} you get {} .'
 
     # Number ranges in demo text.
-    even_0_48 = list(range(0, 50, 2))
-    even_50_98 = list(range(50, 100, 2))
-    odd_1_49 = list(range(1, 50, 2))
-    odd_51_99 = list(range(51, 100, 2))
+    even = list(range(0, 100, 2))
+    odd = list(range(1, 100, 2))
 
     if self.ver == 'train':
-      for num_1 in even_0_48 + odd_51_99:
-        for num_2 in even_50_98 + odd_1_49:
+      for num_1 in even:
+        for num_2 in odd:
           self.spls.append(temp.format(str(num_1), str(num_2), str(num_1 + num_2)))
     elif self.ver == 'valid':
       # Validation set is used to test commutitive law.
-      for num_1 in even_0_48 + odd_51_99:
-        for num_2 in even_50_98 + odd_1_49:
-          self.spls.append(temp.format(str(num_2), str(num_1), str(num_1 + num_2)))
+      for num_1 in odd:
+        for num_2 in even:
+          self.spls.append(temp.format(str(num_1), str(num_2), str(num_1 + num_2)))
     else:
       # Test set is used to test multiplication
-      for num in even_0_48 + even_50_98 + odd_1_49 + odd_51_99:
+      for num in even + odd:
         self.spls.append(temp.format(str(num), str(num), str(2 * num)))
 
     # Normalize dataset.

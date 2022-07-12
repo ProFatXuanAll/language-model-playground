@@ -99,7 +99,7 @@ class ChPoemDset(BaseDset):
     Version of the dataset.
   vers: typing.ClassVar[list[str]]
     All available versions of the dataset.
-    Versions are named after their appearing times, including ``元``, ``元末明初``, ``先秦``, ``南北朝``, ``唐``,
+    Versions are named after their appearing dynasty, including ``元``, ``元末明初``, ``先秦``, ``南北朝``, ``唐``,
     ``唐末宋初``, ``宋``, ``宋末元初``, ``宋末金初``, ``明``, ``明末清初``, ``民國末當代初``, ``清``, ``清末民國初``,
     ``清末近現代初``, ``漢``, ``當代``, ``秦``, ``近現代``, ``近現代末當代初``, ``遼``, ``金``, ``金末元初``, ``隋``,
     ``隋末唐初``, ``魏晉``, ``魏晉末南北朝初``.
@@ -108,7 +108,7 @@ class ChPoemDset(BaseDset):
   --------
   :doc:`lmp.dset </dset/index>`
     All available datasets.
-  lmp.dset.BaseDset
+  :doc:`lmp.dset.BaseDset </dset/BaseDset>`
     Dataset utilities.
 
   Examples

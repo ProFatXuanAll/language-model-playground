@@ -53,11 +53,11 @@ interesting in!
   :caption: Table of Contents:
 
   quickstart
-  dset/index
-  infer/index
-  model/index
-  tknzr/index
   script/index
+  dset/index
+  tknzr/index
+  model/index
+  infer/index
   experiment/index
   dev/index
   glossary

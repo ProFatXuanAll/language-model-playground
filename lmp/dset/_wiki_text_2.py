@@ -14,13 +14,13 @@ from lmp.tknzr._base import UNK_TK
 class WikiText2Dset(BaseDset):
   """Wiki-Text-2 dataset.
 
-  Wiki-Text-2 [1]_ is an English dataset which is part of the WikiText Long Term Dependency Language Modeling Dataset.
+  Wiki-Text-2 [1]_ is part of the WikiText Long Term Dependency Language Modeling Dataset.
   See WikiText_ for more details on dataset.
 
   .. _WikiText:
      https://www.salesforce.com/products/einstein/ai-research/the-wikitext-dependency-language-modeling-dataset/
 
-  Here are the statistics of the supported versions.
+  Here are the statistics of each supported version.
   Tokens are separated by whitespaces.
 
   +-----------+-------------------+--------------------------+--------------------------+

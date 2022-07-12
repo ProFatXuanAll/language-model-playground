@@ -220,11 +220,12 @@ We use :term:`pre-trained` :term:`language model` to generate continual text con
 
 .. code-block:: shell
 
-  python -m lmp.script.gen_txt top-1 \
-    --ckpt 5000 \
+  python -m lmp.script.gen_txt top-P \
+    --ckpt -1 \
     --exp_name my_model_exp \
     --max_seq_len 128 \
-    --txt "We are"
+    --p 0.9 \
+    --txt "I 'm on the highway to hell"
 
 .. seealso::
 

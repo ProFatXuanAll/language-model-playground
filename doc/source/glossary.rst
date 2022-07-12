@@ -10,6 +10,18 @@ Glossary
   batch size
     Number of samples in a :term:`mini-batch`.
 
+  BOS
+  BOS token
+  BOS tokens
+  begin-of-sentence
+  begin-of-sentence token
+  begin-of-sentence tokens
+    **BOS** token is a :term:`special token` which represent the begining of a sentence.
+    More generally, BOS token represent the begining of a given text passage.
+    BOS token is the 0th input of a :term:`language model`.
+    A language model is :term:`trained` so that when receives a BOS token it must predict the most possible token that
+    can appear at the start of a text passage.
+
   checkpoint
   checkpoints
     When training :term:`language models`, we save :term:`model parameters` for later evaluation.
@@ -65,6 +77,18 @@ Glossary
 
     For example, when we use character tokenizer to detokenize ``['a', 'b', 'c']`` we get ``'abc'``;
     when we use whitespace tokenizer to detokenize ``['a', 'b', 'c']`` we get ``'a b c'``.
+
+  EOS
+  EOS token
+  EOS tokens
+  end-of-sentence
+  end-of-sentence token
+  end-of-sentence tokens
+    **EOS** token is a :term:`special token` which represent the end of a sentence.
+    More generally, EOS token represent the end of a given text passage.
+    EOS token is the prediction target of the last input token of a :term:`language model`.
+    In this project, any tokens that follows EOS token can only be :term:`PAD` tokens, and language models are not
+    :term:`trained` to produced meaningful output when seeing EOS tokens and PAD tokens.
 
   experiment
     May refer to :term:`tokenizer` training experiment or :term:`language model` training experiment.
@@ -213,12 +237,27 @@ Glossary
   Optimize
   optimize
   train
+  trained
   training
     A process is called **optimization** or **training** if it takes a :term:`model` :math:`M` with :term:`parameter`
     :math:`\theta` and a :term:`loss function` :math:`L`, continually adjust :math:`\theta` to make :math:`L` closed to
     its lower bound in a finite number of times.
     In the context of training :term:`neural network`, **optimization** usually means to perform
     :term:`gradient descent`.
+
+  PAD
+  PAD token
+  PAD tokens
+  padded
+  padding
+  paddings
+  padding token
+  padding tokens
+    **PAD** token is a :term:`special token` which represent the padding tokens.
+    If a :term:`mini-batch` is consist of token :term:`sequences` with different lengths, then such mini-batch will be
+    appended with padding tokens so that token sequence have the same length.
+    This is needed since we are perform parallel computation when :term:`training` a :term:`language model`.
+    In this project, language models are not trained to produced meaningful output when seeing PAD tokens.
 
   perplexity
     **Perplexity** is a way to evaluate :term:`language model`.
@@ -262,8 +301,17 @@ Glossary
     In our project a sample in a :term:`dataset` is a text (character :term:`sequence`).
 
   sequence
+  sequences
     A data structure which is ordered by integer index.
     We use sequence and :term:`time-series` interchangably in this project.
+
+  Special token
+  Special tokens
+  special token
+  special tokens
+    A **special token** is an artifical :term:`token` which is used to perform specific computation.
+    In this project, special tokens are added to each :term:`sample` in :term:`dataset` when :term:`training`
+    :term:`language models`.
 
   step
     Number of times a :term:`language model` has been updated.
@@ -287,8 +335,8 @@ Glossary
        For example, ``_1_2_3_`` will become ``1_2_3``, where ``_`` are whitespaces.
 
     One additional step may be applied depends on how you treat cases.
-    If cases do not matter (which is called **case-insensitive**), then text normalization will transform all uppercases
-    characters into lowercases.
+    If cases do not matter (which is called **case-insensitive**), then text normalization will transform all uppercase
+    characters into lowercase characters.
     For example, ``ABC``, ``AbC``, ``aBc`` will all become ``abc``.
     If case do matter (which is called **case-sensitive**), then no additional steps will to be applied.
 
@@ -307,8 +355,8 @@ Glossary
   tokenizers
   tokenization
     Computer treats everything as number.
-    To perform task related to text, one usually chunks text into small pieces (called **tokens**) so that computer can
-    easily process them.
+    To perform text related tasks, one usually chunks text into smaller pieces (called **tokens**) and convert each
+    piece into number so that computer can easily process them.
 
     For example, when we tokenize text ``'abc 123'`` based on **character**, we get
     ``['a', 'b', 'c', ' ', '1', '2', '3']``;
@@ -330,6 +378,20 @@ Glossary
     Since computer only compute numbers and :term:`tokens` are text, we have to assign each token an integer number
     (called **token id**) and use token ids instead of tokens to perform computation.
     In our project, assigning each token an unique integer is called building :term:`vocabulary`.
+
+  truncate
+  truncation
+    In this project, this term is used to refer to :term:`truncate` a :term:`token` list into specified length.
+    This is the opposite operation of :term:`padding`.
+
+  UNK
+  unknown token
+  unknown tokens
+    **UNK** token is a :term:`special token` which represent the unknown token.
+    If :term:`tokenizer` encounter an :term:`out-of-vocabulary` token when convert tokens into :term:`token ids`,
+    tokenizer will treat such token as UNK token and convert it to UNK token id.
+    In this project, :term:`language models` are :term:`trained` to produced meaningful output when seeing UNK tokens.
+    When encounter a UNK token, lanugage model can only produce next token prediction based on tokens other than UNK.
 
   Vocabulary
   vocabulary

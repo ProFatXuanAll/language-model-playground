@@ -15,29 +15,33 @@ them.
 
 Import dataset module
 ---------------------
-All dataset class are collectively gathered as a module :py:mod:`lmp.dset`.
+All :term:`dataset` classes are collectively gathered under the module :py:mod:`lmp.dset`.
 One can import dataset module as usual Python_ module:
 
-.. code-block :: python
+.. code-block:: python
 
   import lmp.dset
 
-Create dataset instances
-------------------------
-After importing dataset module :py:mod:`lmp.dset`, one can create dataset instance through the class attributes of
+Create dataset instance
+-----------------------
+After importing :py:mod:`lmp.dset`, one can create :term:`dataset` instance through the class attributes of
 :py:mod:`lmp.dset`.
-For example, one can create demo dataset :py:class:`lmp.dset.DemoDset` as follow:
+For example, one can create demo dataset :py:class:`lmp.dset.DemoDset` and wiki-text-2 dataset
+:py:class:`lmp.dset.WikiText2Dset` as follow:
 
 .. code-block:: python
 
   import lmp.dset
 
   # Create demo dataset instance.
-  dataset = lmp.dset.DemoDset()
+  demo_dataset = lmp.dset.DemoDset()
 
-A dataset can have many different version.
-You can see all supported versions by the dataset class attribute ``vers``.
-For example, all the supported versions of :py:class:`lmp.dset.DemoDset` are ``test``, ``train`` and ``valid``.
+  # Create wiki-text-2 dataset instance.
+  wiki_dataset = lmp.dset.WikiText2Dset()
+
+A dataset can have many versions.
+You can see all supported versions by the class attribute ``vers`` of a dataset class.
+For example, all the supported versions of :py:class:`lmp.dset.DemoDset` are ``test``, ``train`` and ``valid``:
 
 .. code-block:: python
 
@@ -120,10 +124,9 @@ For example, we can iterate through each sample in :py:class:`lmp.dset.DemoDset`
 
 Download dataset
 ----------------
-We have provided downloading utilities so that if a dataset is not on your local machine it will be downloaded
-automatically.
+We provide downloading utilities so that if a dataset is not on your local machine it will be downloaded automatically.
 All downloaded files will be put under ``data`` directory.
-For example, to download the training set of :py:class:`lmp.dset.Wiki-text-2`, all you need to do is as follow:
+For example, to download the training set of :py:class:`lmp.dset.WikiText2Dset`, all you need to do is as follow:
 
 .. code-block:: python
 

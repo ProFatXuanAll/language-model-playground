@@ -49,7 +49,8 @@ def test_mutually_exclusive() -> None:
     total_size += len(dset)
     dsets.append(set(dset))
 
-  # Check mutually exclusive.  If different versions of dataset are mutually exclusive, then their union size must be
+  # Check mutually exclusive.
+  # If different versions of dataset are mutually exclusive, then their union size must be
   # the total number of dataset samples.
   dset_union = set()
   for dset in dsets:
@@ -76,3 +77,17 @@ def test_commutative() -> None:
     num_1 = match.group(1)
     num_2 = match.group(2)
     assert (num_2, num_1) in train_pool
+
+
+def test_multiply_by_2() -> None:
+  """Test sets are consist of a + a = 2a."""
+  pttn = re.compile(r'If you add (\d+) to (\d+) you get (\d+) \.')
+  test = lmp.dset._demo.DemoDset(ver='test')
+
+  for spl in test:
+    match = pttn.match(spl)
+    num_1 = match.group(1)
+    num_2 = match.group(2)
+    num_3 = match.group(3)
+    assert num_1 == num_2
+    assert 2 * int(num_1) == int(num_3)
