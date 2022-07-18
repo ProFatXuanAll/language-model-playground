@@ -55,7 +55,7 @@ class WNLIDset(BaseDset):
   References
   ----------
   .. [1] Alex Wang, Amanpreet Singh, Julian Michael, Felix Hill, Omer Levy and Samuel R. Bowman.  GLUE: A multi-task
-     benchmark and analysis platform for natural lanugage understanding.  ICLR 2019.
+     benchmark and analysis platform for natural language understanding.  ICLR 2019.
 
   Examples
   --------

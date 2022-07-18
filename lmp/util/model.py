@@ -19,7 +19,7 @@ def create(model_name: str, **kwargs: Any) -> BaseModel:
   Parameters
   ----------
   model_name: str
-    Name of the lanugage model to create.
+    Name of the language model to create.
   kwargs: typing.Any, optional
     Model's hyperparameters.
 

@@ -75,7 +75,7 @@ tokenize text into a whitespace-separated tokens:
   assert character_tokenizer.tknz(txt='abc') == ['a', 'b', 'c']
   assert whitespace_tokenizer.tknz(txt='a b c') == ['a', 'b', 'c']
 
-Each :term:`special token` will be treated as a unit.
+Each :term:`special token` will be treated as a unit no matter which tokenizer is used.
 
 .. code-block:: python
 
@@ -131,7 +131,7 @@ For example, when set ``is_uncased=True``, all uppercase characters will be conv
 
 Build vocabulary
 ----------------
-A tokenizer's :term:`vocabulary` can be built with the :py:meth:`lmp.tknzr._base.BaseTknzr.build_vocab` method.
+A tokenizer's :term:`vocabulary` can be built with the :py:meth:`build_vocab` method.
 One first choose a dataset then build vocabulary on top of the dataset.
 Vocabulary are saved as :py:class:`dict` structure which keys and values are :term:`tokens` and :term:`token ids`.
 One can access the vocabulary through the tokenizer instance attribute ``tk2id``.
@@ -213,7 +213,7 @@ When setting ``min_count=0`` no filtering will be performed.
 Language model training formation
 ---------------------------------
 After building :term:`vocabulary`, one can format a given text into :term:`language model` :term:`training` format.
-A lanugage model training format is consist of a :term:`BOS` token, followed by the token list and a :term:`EOS` token.
+A language model training format is consist of a :term:`BOS` token, followed by the token list and a :term:`EOS` token.
 For example, the text ``hello world`` can be format as ``[BOS] hello world [EOS]``.
 If there are tokens not in tokenizer's vocabulary, then tokenizer will treat these tokens as :term:`OOV` tokens and
 replace them with :term:`UNK` token.
@@ -223,8 +223,8 @@ In general, a language model training format looks like follow::
 
 :term:`PAD` tokens only exist when the length of token list is shorter than required.
 One can use ``max_seq_len`` parameter to specify required length.
-For example, one can use :py:meth:`lmp.tknzr._base.BaseTknzr.enc` to convert text into language model training format
-and convert each token into :term:`token id` at the same time.
+For example, one can use :py:meth:`enc` to convert text into language model training format and convert each token into
+:term:`token id` at the same time.
 
 .. code-block:: python
 
@@ -254,7 +254,7 @@ and convert each token into :term:`token id` at the same time.
     PAD_TKID,
   ]
 
-One use :py:meth:`lmp.tknzr._base.BaseTknzr.dec` to convert language model training format back to original text:
+One use :py:meth:`dec` to convert language model training format back to original text:
 
 .. code-block:: python
 
@@ -286,8 +286,8 @@ One use :py:meth:`lmp.tknzr._base.BaseTknzr.dec` to convert language model train
 
 When dealing a :term:`mini-batch` of text :term:`samples`, one have to first loop through each text sample to get the
 maximum length in a mini-batch, then loop again to encode each text sample.
-Fortunately, there is a batch version of encoding method :py:meth:`lmp.tknzr._base.BaseTknzr.batch_enc`.
-And similarly a batch version of decoding method :py:meth:`lmp.tknzr._base.BaseTknzr.batch_dec`.
+Fortunately, there is a batch version of encoding method :py:meth:`batch_enc`.
+And similarly a batch version of decoding method :py:meth:`batch_dec`.
 
 .. code-block:: python
 
