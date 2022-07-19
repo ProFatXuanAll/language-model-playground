@@ -90,6 +90,10 @@ Glossary
     In this project, any tokens that follows EOS token can only be :term:`PAD` tokens, and language models are not
     :term:`trained` to produced meaningful output when seeing EOS tokens and PAD tokens.
 
+  epoch
+  epochs
+    An iteration which loops through each :term:`sample` in a :term:`dataset` is called an **epoch**.
+
   experiment
     May refer to :term:`tokenizer` training experiment or :term:`language model` training experiment.
     One usually train a tokenizer first and then train a language model.
@@ -151,6 +155,16 @@ Glossary
     One usually set initial hidden states to zeros.
     One can also let initial hidden states be a part of :term:`model parameters`.
 
+  hyper-parameter
+  hyper-parameters
+  hyperparameter
+  hyperparameters
+    A :term:`model` can have the same structure with different number of layers and units.
+    The specific number of layers and units are called **hyper-parameters**.
+    Hyper-parameters must be decided before training.
+    In general, all experiment related parameters are hyper-parameters.
+    This includes training parameters, evaluation parameters and inference method parameters.
+
   language model
   language models
     A **language model** is a :term:`model` which calculates the probability of a given text is comming from human
@@ -167,7 +181,7 @@ Glossary
     - If :math:`M(x; \theta) \approx 1`, then :math:`x` is very likely comming from human language.
     - If :math:`M(x; \theta) \approx 0`, then :math:`x` is unlikely comming from human language.
 
-    The usual way to evalute a language model is :term:`perplexity`.
+    The usual way to evaluate a language model is :term:`perplexity`.
     In 1990s or earlier, language model are used to evaluate generated text from speech recognition.
     More recently (after 2019), language models with huge parameters (like GPT_ and BERT_) have been shown to be useful
     for a lots of downstream NLP tasks, including Natural Language Understanding (NLU), Natural Language Generation
@@ -206,7 +220,7 @@ Glossary
     The output of loss function is called **loss**.
     In deep learning field one usually use two different functions for optimization and evaluation.
     For example, we use :term:`cross entropy loss` to optimize :term:`language model` and use :term:`perplexity` to
-    evalute language model.
+    evaluate language model.
     A loss function must have a lower bound so that the optimization process has a chance to approximate the lower
     bound in finite number of times.
     Without lower bound one cannot know the performance of model by the loss it produces.
@@ -413,7 +427,7 @@ Glossary
     A :term:`language model` is paired with a :term:`tokenizer`.
     How many :term:`tokens` (characters, words, or else) a language model can learn is contrainted by model complexity
     and memory size.
-    A tokens set learnt by a language model is called **vocabulary**.
+    A token set learnt by a language model is called **vocabulary**.
     The number of tokens in a vocabulary is called **vocabulary size**.
     Tokens not in the vocabulary of a language model are called :term:`out-of-vocabulary` tokens.
 
