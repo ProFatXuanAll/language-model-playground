@@ -164,10 +164,10 @@ The following example train a LSTM (2000 version) based language model :py:mod:`
     --max_norm 1 \
     --max_seq_len 700 \
     --n_blk 8 \
-    --n_epoch 20 \
     --p_emb 0.1 \
     --p_hid 0.1 \
     --tknzr_exp_name my_tknzr_exp \
+    --total_step 50000 \
     --ver train \
     --warmup_step 10000 \
     --wd 1e-2

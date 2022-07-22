@@ -5,7 +5,7 @@ Test target:
 """
 
 import lmp.util.dset
-from lmp.dset import ChPoemDset, DemoDset, WNLIDset, WikiText2Dset
+from lmp.dset import ChPoemDset, DemoDset, WikiText2Dset, WNLIDset
 
 
 def test_load_chinese_poem() -> None:

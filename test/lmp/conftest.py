@@ -189,12 +189,6 @@ def n_blk(request) -> int:
   return request.param
 
 
-@pytest.fixture
-def n_epoch() -> int:
-  """Mock number of training epochs."""
-  return 2
-
-
 @pytest.fixture(params=[0.1, 0.5])
 def p_emb(request) -> float:
   """Mock embedding dropout probability."""
@@ -210,13 +204,13 @@ def p_hid(request) -> float:
 @pytest.fixture
 def total_step(warmup_step: int) -> float:
   """Mock total step."""
-  return warmup_step + 1000
+  return warmup_step * 2
 
 
 @pytest.fixture
-def warmup_step() -> float:
+def warmup_step(ckpt_step: int) -> float:
   """Mock warm up step."""
-  return 1000
+  return ckpt_step * 10
 
 
 @pytest.fixture

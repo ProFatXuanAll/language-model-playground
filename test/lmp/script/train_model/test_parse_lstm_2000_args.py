@@ -27,11 +27,11 @@ def test_lstm_2000_parse_results(
   max_norm: float,
   max_seq_len: int,
   n_blk: int,
-  n_epoch: int,
   p_emb: float,
   p_hid: float,
   seed: int,
   tknzr_exp_name: str,
+  total_step: int,
   warmup_step: int,
   wd: float,
 ) -> None:
@@ -70,8 +70,6 @@ def test_lstm_2000_parse_results(
         str(max_seq_len),
         '--n_blk',
         str(n_blk),
-        '--n_epoch',
-        str(n_epoch),
         '--p_emb',
         str(p_emb),
         '--p_hid',
@@ -80,6 +78,8 @@ def test_lstm_2000_parse_results(
         str(seed),
         '--tknzr_exp_name',
         str(tknzr_exp_name),
+        '--total_step',
+        str(total_step),
         '--ver',
         ver,
         '--warmup_step',
@@ -106,11 +106,11 @@ def test_lstm_2000_parse_results(
       assert args.max_seq_len == max_seq_len
       assert args.model_name == LSTM2000.model_name
       assert args.n_blk == n_blk
-      assert args.n_epoch == n_epoch
       assert math.isclose(args.p_emb, p_emb)
       assert math.isclose(args.p_hid, p_hid)
       assert args.seed == seed
       assert args.tknzr_exp_name == tknzr_exp_name
+      assert args.total_step == total_step
       assert args.ver == ver
       assert args.warmup_step == warmup_step
       assert math.isclose(args.wd, wd)

@@ -23,8 +23,8 @@ from typing import Dict, Final, List, Type
 from lmp.dset._base import BaseDset
 from lmp.dset._ch_poem import ChPoemDset
 from lmp.dset._demo import DemoDset
-from lmp.dset._wnli import WNLIDset
 from lmp.dset._wiki_text_2 import WikiText2Dset
+from lmp.dset._wnli import WNLIDset
 
 ALL_DSETS: Final[List[Type[BaseDset]]] = [
   ChPoemDset,

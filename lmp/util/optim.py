@@ -102,6 +102,11 @@ def get_scheduler(optim: torch.optim.AdamW, total_step: int, warmup_step: int) -
   """
   # `optim` validation.
   lmp.util.validate.raise_if_not_instance(val=optim, val_name='optim', val_type=torch.optim.AdamW)
+  # `total_step` and `warmup_step` validation.
+  lmp.util.validate.raise_if_wrong_ordered(
+    vals=[1, warmup_step, total_step],
+    val_names=['1', 'warmup_step', 'total_step'],
+  )
 
   def lr_lambda(step: int) -> float:
     # Warm up phase.

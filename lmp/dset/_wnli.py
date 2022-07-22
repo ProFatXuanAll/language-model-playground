@@ -1,12 +1,13 @@
 r"""WNLI dataset."""
 
+import io
 import os
 import re
-import io
-from typing import ClassVar, List, Optional
 import zipfile
+from typing import ClassVar, List, Optional
 
 import pandas as pd
+
 import lmp.util.path
 from lmp.dset._base import BaseDset
 

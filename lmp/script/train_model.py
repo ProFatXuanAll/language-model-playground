@@ -34,10 +34,10 @@ The following example script train Elman Net model :py:class:`lmp.model.ElmanNet
     --lr 1e-4 \
     --max_norm 1 \
     --max_seq_len 128 \
-    --n_epoch 10 \
     --p_emb 0.5 \
     --p_hid 0.1 \
     --tknzr_exp_name my_tknzr_exp \
+    --total_step 50000 \
     --ver train \
     --warmup_step 10000 \
     --wd 1e-2
@@ -45,8 +45,8 @@ The following example script train Elman Net model :py:class:`lmp.model.ElmanNet
 The training result will be save at path ``project_root/exp/my_model_exp`` and can be reused by other scripts.
 We only save checkpoints per ``--ckpt_step`` steps and log performance per ``--log_step`` steps.
 
-One can increase ``--n_epoch`` to train more epochs.
-Be careful model might overfit on datasets if model were trained with too many epochs.
+One can increase ``--total_step`` to train more steps.
+Be careful model might overfit on datasets if model were trained with too many steps.
 
 .. code-block:: shell
 
@@ -65,10 +65,10 @@ Be careful model might overfit on datasets if model were trained with too many e
     --lr 1e-4 \
     --max_norm 1 \
     --max_seq_len 128 \
-    --n_epoch 20 \
     --p_emb 0.5 \
     --p_hid 0.1 \
     --tknzr_exp_name my_tknzr_exp \
+    --total_step 100000 \
     --ver train \
     --warmup_step 10000 \
     --wd 1e-2
@@ -101,10 +101,10 @@ One can reduce overfitting with the following ways:
     --lr 1e-4 \
     --max_norm 1 \
     --max_seq_len 128 \
-    --n_epoch 10 \
     --p_emb 0.5 \
     --p_hid 0.5 \
     --tknzr_exp_name my_tknzr_exp \
+    --total_step 50000 \
     --ver train \
     --warmup_step 10000 \
     --wd 1e-1
@@ -130,10 +130,10 @@ We also use ``--max_norm`` to perform gradient clipping which avoids gradient ex
     --lr 5e-4 \
     --max_norm 0.1 \
     --max_seq_len 128 \
-    --n_epoch 10 \
     --p_emb 0.5 \
     --p_hid 0.1 \
     --tknzr_exp_name my_tknzr_exp \
+    --total_step 50000 \
     --ver train \
     --warmup_step 10000 \
     --wd 1e-2
@@ -154,7 +154,6 @@ You can use ``-h`` or ``--help`` options on a specific language model to get a l
 import argparse
 import copy
 import gc
-import math
 import sys
 from typing import List
 
@@ -283,16 +282,16 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
       type=int,
     )
     group.add_argument(
-      '--n_epoch',
-      help='Number of training epochs.',
-      required=True,
-      type=int,
-    )
-    group.add_argument(
       '--tknzr_exp_name',
       help='Name of the pre-trained tokenizer experiment.',
       required=True,
       type=str,
+    )
+    group.add_argument(
+      '--total_step',
+      help='Number of training steps.',
+      required=True,
+      type=int,
     )
     group.add_argument(
       '--ver',
@@ -355,8 +354,6 @@ def main(argv: List[str]) -> None:
   lmp.util.validate.raise_if_wrong_ordered(vals=[1, args.log_step], val_names=['1', 'args.log_step'])
   # `args.max_norm` validation.
   lmp.util.validate.raise_if_wrong_ordered(vals=[0, args.max_norm], val_names=['0', 'args.max_norm'])
-  # `args.n_epoch` validation.
-  lmp.util.validate.raise_if_wrong_ordered(vals=[1, args.n_epoch], val_names=['1', 'args.n_epoch'])
 
   # Save training configuration.
   lmp.util.cfg.save(args=args, exp_name=args.exp_name)
@@ -375,12 +372,11 @@ def main(argv: List[str]) -> None:
   # Get dataset instance of specific version.
   dset = lmp.util.dset.load(**args.__dict__)
 
-  # Mini-batch sampler.
-  # Note that we do not shuffle the dataset, but in practice one should shuffle to make model robust to sampling order.
+  # Mini-batch random sampler.
   data_loader = torch.utils.data.DataLoader(
     batch_size=args.batch_size,
     dataset=dset,
-    shuffle=False,
+    shuffle=True,
   )
 
   # Create new model instance and initialize model parameters.
@@ -404,7 +400,7 @@ def main(argv: List[str]) -> None:
   # Get learning rate scheduler.
   schdl = lmp.util.optim.get_scheduler(
     optim=optim,
-    total_step=args.n_epoch * len(data_loader) * math.ceil(args.max_seq_len / args.ctx_win),
+    total_step=args.total_step,
     warmup_step=args.warmup_step,
   )
 
@@ -412,16 +408,16 @@ def main(argv: List[str]) -> None:
   writer = lmp.util.log.get_tb_logger(exp_name=args.exp_name)
 
   # Log performance target.
-  pre_avg_loss = 0.0
   avg_loss = 0.0
+
+  # Get CLI logger instance.
+  cli_logger = tqdm(range(args.total_step), desc=f'loss: {avg_loss:.6f}', dynamic_ncols=True)
 
   # Global optimization step.
   step = 0
-  for epoch in range(args.n_epoch):
-    tqdm_data_loader = tqdm(data_loader, desc=f'epoch: {epoch}, loss: {pre_avg_loss:.6f}', dynamic_ncols=True)
-
-    # Loop through epoch by mini-batches.
-    for batch_txt in tqdm_data_loader:
+  while step < args.total_step:
+    # Loop through dataset by mini-batches.
+    for batch_txt in data_loader:
       # Encode batch text into batch token ids.
       # We convert batch token ids into tensor and move to tensor to the same running device as model.
       batch_tkids = torch.LongTensor(tknzr.batch_enc(batch_txt=batch_txt, max_seq_len=args.max_seq_len)).to(device)
@@ -483,21 +479,32 @@ def main(argv: List[str]) -> None:
           avg_loss = avg_loss / args.log_step
 
           # Log on CLI.
-          tqdm_data_loader.set_description(f'epoch: {epoch}, loss: {avg_loss:.6f}')
+          cli_logger.set_description(f'loss: {avg_loss:.6f}')
+          cli_logger.update(args.log_step)
 
           # Log on tensorboard.
           writer.add_scalar(f'train-loss/{args.dset_name}/{args.ver}', avg_loss, step)
           writer.add_scalar('lr', schdl.get_last_lr()[0], step)
 
           # Refresh log performance.
-          pre_avg_loss = avg_loss
           avg_loss = 0.0
+
+        # Only train certain number of steps.
+        if step >= args.total_step:
+          break
+
+      # Only train certain number of steps.
+      if step >= args.total_step:
+        break
 
   # Save last checkpoint.
   lmp.util.model.save(ckpt=step, exp_name=args.exp_name, model=copy.deepcopy(model).to('cpu'))
 
   # Close tensorboard logger.
   writer.close()
+
+  # Close CLI logger.
+  cli_logger.close()
 
   # Free memory.
   # This is only need for unit test.
@@ -515,11 +522,9 @@ def main(argv: List[str]) -> None:
   del loss
   del model
   del optim
-  del pre_avg_loss
   del schdl
   del step
   del tknzr
-  del tqdm_data_loader
   del writer
   torch.cuda.empty_cache()
   gc.collect()

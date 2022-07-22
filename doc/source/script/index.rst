@@ -163,11 +163,11 @@ wiki-text-2 dataset :py:class:`lmp.dset.WikiText2Dset`.
     --max_norm 1 \
     --max_seq_len 700 \
     --n_blk 8 \
-    --n_epoch 20 \
     --p_emb 0.1 \
     --p_hid 0.1 \
     --tknzr_exp_name my_tknzr_exp \
     --ver train \
+    --total_step 50000 \
     --warmup_step 10000 \
     --wd 1e-2
 
@@ -192,21 +192,23 @@ name ``my_tknzr_exp``.
 One usually use a tokenizer trained on the same dataset and the same version.
 Thus the above example use ``--dset_name wiki-text-2`` and ``--ver train`` as in the tokenizer training experiment.
 
-We set number of :term:`epoch` by ``--n_epoch``.
-In each epoch, we chunk dataset into :term:`mini-batch` to perform optimization.
-The :term:`batch size` is set by the argument ``--batch_size``.
-In the example above, we will fetch ``64`` samples from the wiki-text-2 dataset to perform optimization.
-Each sample in a mini-batch will be padded to have length equals to ``700``.
-This is done by setting ``--max_seq_len``.
-After padding, the mini-batch will be chunk into smaller :term:`context window` with length ``16`` in each context window.
-An optimization :term:`step` is performed on a context window.
-No padding tokens will contribute to loss.
-One can adjust context window size by changing the value of ``--ctx_win``.
-
 Optimization algorithm arguments
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 The optimization algorithm is :py:class:`torch.optim.AdamW`.
-The arguments related to :py:class:`torch.optim.AdamW` including ``--beta1``, ``--beta2``, ``--eps``, ``--lr`` and
+Due to memory size limit and computation cost, we chunk dataset into :term:`mini-batch` to perform optimization.
+The :term:`batch size` is set by the argument ``--batch_size``.
+In the example above, we will fetch ``64`` samples from the wiki-text-2 dataset to perform optimization.
+We sample dataset without repetitions util every sample has been used to train once.
+For the purpose of parallel computation, each sample in a mini-batch will be :term:`padded` to have the same length.
+This is done by setting ``--max_seq_len``.
+In the example above, a mini-batch will be padded to have length ``700``.
+After padding, a mini-batch in the example above will be chunked into smaller :term:`context window` with length ``16``
+in each context window.
+An optimization :term:`step` is performed on a context window.
+The total number of optimization steps is set by ``--total_step``.
+No padding tokens will contribute to loss.
+One can adjust context window size by changing the value of ``--ctx_win``.
+The arguments directly passed to :py:class:`torch.optim.AdamW` are ``--beta1``, ``--beta2``, ``--eps``, ``--lr`` and
 ``--wd``.
 The ``betas`` parameter for :py:class:`torch.optim.AdamW` are split into ``--beta1`` and ``--beta2``.
 The ``eps`` for :py:class:`torch.optim.AdamW` is given by ``--eps``.

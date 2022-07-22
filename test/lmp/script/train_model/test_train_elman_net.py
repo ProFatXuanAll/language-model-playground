@@ -7,6 +7,7 @@ Test target:
 
 import math
 import os
+import re
 
 import torch
 
@@ -35,11 +36,11 @@ def test_train_elman_net_on_demo(
   lr: float,
   max_norm: float,
   max_seq_len: int,
-  n_epoch: int,
   p_emb: float,
   p_hid: float,
   seed: int,
   tknzr_exp_name: str,
+  total_step: int,
   train_log_dir_path: str,
   warmup_step: int,
   wd: float,
@@ -75,8 +76,6 @@ def test_train_elman_net_on_demo(
     str(max_norm),
     '--max_seq_len',
     str(max_seq_len),
-    '--n_epoch',
-    str(n_epoch),
     '--p_emb',
     str(p_emb),
     '--p_hid',
@@ -85,6 +84,8 @@ def test_train_elman_net_on_demo(
     str(seed),
     '--tknzr_exp_name',
     str(tknzr_exp_name),
+    '--total_step',
+    str(total_step),
     '--ver',
     'valid',  # Make training faster.
     '--warmup_step',
@@ -120,11 +121,11 @@ def test_train_elman_net_on_demo(
   assert math.isclose(cfg.max_norm, max_norm)
   assert cfg.max_seq_len == max_seq_len
   assert cfg.model_name == ElmanNet.model_name
-  assert cfg.n_epoch == n_epoch
   assert math.isclose(cfg.p_emb, p_emb)
   assert math.isclose(cfg.p_hid, p_hid)
   assert cfg.seed == seed
   assert cfg.tknzr_exp_name == tknzr_exp_name
+  assert cfg.total_step == total_step
   assert cfg.ver == 'valid'
   assert cfg.warmup_step == warmup_step
   assert math.isclose(cfg.wd, wd)
@@ -136,7 +137,6 @@ def test_train_elman_net_on_demo(
   for p in model.parameters():
     assert p.device == device, 'Must save model parameters to CPU.'
 
-  # Must log training performance.
+  # Must log training performance to 6 digits after decimal point.
   captured = capsys.readouterr()
-  assert 'epoch' in captured.err
-  assert 'loss' in captured.err
+  assert re.search(r'loss: \d+\.\d{6}', captured.err)

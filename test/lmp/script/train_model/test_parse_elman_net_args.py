@@ -26,11 +26,11 @@ def test_elman_net_parse_results(
   lr: float,
   max_norm: float,
   max_seq_len: int,
-  n_epoch: int,
   p_emb: float,
   p_hid: float,
   seed: int,
   tknzr_exp_name: str,
+  total_step: int,
   warmup_step: int,
   wd: float,
 ) -> None:
@@ -67,8 +67,6 @@ def test_elman_net_parse_results(
         str(max_norm),
         '--max_seq_len',
         str(max_seq_len),
-        '--n_epoch',
-        str(n_epoch),
         '--p_emb',
         str(p_emb),
         '--p_hid',
@@ -77,6 +75,8 @@ def test_elman_net_parse_results(
         str(seed),
         '--tknzr_exp_name',
         str(tknzr_exp_name),
+        '--total_step',
+        str(total_step),
         '--ver',
         ver,
         '--warmup_step',
@@ -102,11 +102,11 @@ def test_elman_net_parse_results(
       assert math.isclose(args.max_norm, max_norm)
       assert args.max_seq_len == max_seq_len
       assert args.model_name == ElmanNet.model_name
-      assert args.n_epoch == n_epoch
       assert math.isclose(args.p_emb, p_emb)
       assert math.isclose(args.p_hid, p_hid)
       assert args.seed == seed
       assert args.tknzr_exp_name == tknzr_exp_name
+      assert args.total_step == total_step
       assert args.ver == ver
       assert args.warmup_step == warmup_step
       assert math.isclose(args.wd, wd)
