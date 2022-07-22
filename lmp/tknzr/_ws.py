@@ -128,7 +128,7 @@ class WsTknzr(BaseTknzr):
     --------
     lmp.tknzr.WsTknzr.dtknz
       Join text with whitespaces.
-    lmp.tknzr._base.BaseTknzr.norm
+    lmp.tknzr.BaseTknzr.norm
       Text normalization.
 
     Examples
@@ -166,7 +166,7 @@ class WsTknzr(BaseTknzr):
     --------
     lmp.tknzr.WsTknzr.tknz
       Split text between whitespaces.
-    lmp.tknzr._base.BaseTknzr.norm
+    lmp.tknzr.BaseTknzr.norm
       Text normalization.
 
     Examples

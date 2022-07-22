@@ -140,7 +140,7 @@ Glossary
     Gradient clipping can ease the gradient explosion but not vanishing.
     To solve gradient vanishing, one have to design is model structure so that gradients of parameters closed to input
     layer is guarenteed to have almost identical scale.
-    For example, the internal state of :py:class:`lmp.model.LSTM1997` is one such mechanism.
+    For example, the internal states of :py:class:`lmp.model.LSTM1997` is one such mechanism.
     Other mechanisms like residual connection [2]_ are also proposed.
 
   hidden states

@@ -60,15 +60,15 @@ class BaseTknzr(abc.ABC):
   ----------
   is_uncased: bool
     Set to ``True`` to convert text into lowercase.
-    Mainly used by :py:meth:`lmp.tknzr._base.BaseTknzr.norm`.
+    Mainly used by :py:meth:`lmp.tknzr.BaseTknzr.norm`.
   max_vocab: int
     Tokenizer's maximum vocabulary size.
     Set to ``-1`` to include as many tokens in vocabulary as possible.
-    Mainly used by :py:meth:`lmp.tknzr._base.BaseTknzr.build_vocab`.
+    Mainly used by :py:meth:`lmp.tknzr.BaseTknzr.build_vocab`.
   min_count: int
     Minimum token occurrence counts.
     Tokens have occurrence counts less than ``min_count`` will not be added to tokenizer's vocabulary.
-    Mainly used by :py:meth:`lmp.tknzr._base.BaseTknzr.build_vocab`.
+    Mainly used by :py:meth:`lmp.tknzr.BaseTknzr.build_vocab`.
   kwargs: typing.Any, optional
     Useless parameter.
     Intently left for subclasses inheritance.
@@ -150,7 +150,7 @@ class BaseTknzr(abc.ABC):
       Batch of token id lists to be decoded.
     rm_sp_tks: bool, default: False
       Whether to remove special tokens.
-      See :py:meth:`lmp.tknzr._base.BaseTknzr.dec` for ``rm_sp_tks`` usage.
+      See :py:meth:`lmp.tknzr.BaseTknzr.dec` for ``rm_sp_tks`` usage.
 
     Returns
     -------
@@ -159,9 +159,9 @@ class BaseTknzr(abc.ABC):
 
     See Also
     --------
-    lmp.tknzr._base.BaseTknzr.batch_enc
+    lmp.tknzr.BaseTknzr.batch_enc
       Encode batch of text into batch of token id lists.
-    lmp.tknzr._base.BaseTknzr.dec
+    lmp.tknzr.BaseTknzr.dec
       Decode token id list back to text.
     """
     # `batch_tkids` validation.
@@ -173,7 +173,7 @@ class BaseTknzr(abc.ABC):
   def batch_enc(self, batch_txt: List[str], max_seq_len: int) -> List[List[int]]:
     """Encode batch of text into batch of token id lists.
 
-    Each text in ``batch_txt`` will be encoded with :py:meth:`lmp.tknzr._base.BaseTknzr.enc`.
+    Each text in ``batch_txt`` will be encoded with :py:meth:`lmp.tknzr.BaseTknzr.enc`.
     All encoded token id lists will have the same length (which equals to ``max_seq_len``).
 
     Parameters
@@ -190,13 +190,13 @@ class BaseTknzr(abc.ABC):
 
     See Also
     --------
-    lmp.tknzr._base.BaseTknzr.pad_to_max
+    lmp.tknzr.BaseTknzr.pad_to_max
       Pad token id list to specified length.
-    lmp.tknzr._base.BaseTknzr.trunc_to_max
+    lmp.tknzr.BaseTknzr.trunc_to_max
       Truncate token id list to specified length.
-    lmp.tknzr._base.BaseTknzr.batch_dec
+    lmp.tknzr.BaseTknzr.batch_dec
       Decode batch of token id lists back to batch of text.
-    lmp.tknzr._base.BaseTknzr.enc
+    lmp.tknzr.BaseTknzr.enc
       Encode text into token id list.
     """
     # `batch_txt` validation.
@@ -227,11 +227,11 @@ class BaseTknzr(abc.ABC):
 
     See Also
     --------
-    lmp.tknzr._base.BaseTknzr.norm
+    lmp.tknzr.BaseTknzr.norm
       Perform normalization on text.
-    lmp.tknzr._base.BaseTknzr.tknz
+    lmp.tknzr.BaseTknzr.tknz
       Perform tokenization on text.
-    lmp.tknzr._base.BaseTknzr.vocab_size
+    lmp.tknzr.BaseTknzr.vocab_size
       Tokenizer's vocabulary size.
     """
     # `batch_txt` validation.
@@ -288,9 +288,9 @@ class BaseTknzr(abc.ABC):
 
     See Also
     --------
-    lmp.tknzr._base.BaseTknzr.dtknz
+    lmp.tknzr.BaseTknzr.dtknz
       Convert tokens back to text.
-    lmp.tknzr._base.BaseTknzr.enc
+    lmp.tknzr.BaseTknzr.enc
       Encode text into token id list.
 
     Note
@@ -338,9 +338,9 @@ class BaseTknzr(abc.ABC):
 
     See Also
     --------
-    lmp.tknzr._base.BaseTknzr.tknz
+    lmp.tknzr.BaseTknzr.tknz
       Tokenize text into list of tokens.
-    lmp.tknzr._base.BaseTknzr.norm
+    lmp.tknzr.BaseTknzr.norm
       Text normalization.
     """
     raise NotImplementedError
@@ -375,13 +375,13 @@ class BaseTknzr(abc.ABC):
 
     See Also
     --------
-    lmp.tknzr._base.BaseTknzr.dec
+    lmp.tknzr.BaseTknzr.dec
       Decode token id list back to text.
-    lmp.tknzr._base.BaseTknzr.pad_to_max
+    lmp.tknzr.BaseTknzr.pad_to_max
       Pad token id list to specified length.
-    lmp.tknzr._base.BaseTknzr.tknz
+    lmp.tknzr.BaseTknzr.tknz
       Perform tokenization on text.
-    lmp.tknzr._base.BaseTknzr.trunc_to_max
+    lmp.tknzr.BaseTknzr.trunc_to_max
       Truncate token id list to specified length.
     """
     # Prepend `[bos]` token id.
@@ -461,7 +461,7 @@ class BaseTknzr(abc.ABC):
 
     See Also
     --------
-    lmp.tknzr._base.BaseTknzr.trunc_to_max
+    lmp.tknzr.BaseTknzr.trunc_to_max
       Truncate token id list to specified length.
 
     Examples
@@ -499,9 +499,9 @@ class BaseTknzr(abc.ABC):
 
     See Also
     --------
-    lmp.tknzr._base.BaseTknzr.dtknz
+    lmp.tknzr.BaseTknzr.dtknz
       Detokenize list of tokens back to text.
-    lmp.tknzr._base.BaseTknzr.norm
+    lmp.tknzr.BaseTknzr.norm
       Text normalization.
     """
     raise NotImplementedError
@@ -526,7 +526,7 @@ class BaseTknzr(abc.ABC):
 
     See Also
     --------
-    lmp.tknzr._base.BaseTknzr.pad_to_max
+    lmp.tknzr.BaseTknzr.pad_to_max
       Pad token id list to specified length.
 
     Examples
@@ -553,7 +553,7 @@ class BaseTknzr(abc.ABC):
 
     See Also
     --------
-    lmp.tknzr._base.BaseTknzr.build_vocab
+    lmp.tknzr.BaseTknzr.build_vocab
       Build vocabulary for tokenizer.
     """
     return len(self.tk2id)

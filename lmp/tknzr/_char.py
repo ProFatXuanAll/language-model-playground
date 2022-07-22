@@ -174,7 +174,7 @@ class CharTknzr(BaseTknzr):
     --------
     lmp.tknzr.CharTknzr.tknz
       Convert text into characters.
-    lmp.tknzr._base.BaseTknzr.norm
+    lmp.tknzr.BaseTknzr.norm
       Text normalization.
 
     Examples

@@ -162,7 +162,7 @@ prediction loss.
 One can call the PyTorch_ built-in ``backward`` method to perform :term:`back-propagation`.
 The second item in the returned tuple is a list of :py:class:`torch.Tensor` which represents the current
 :term:`hidden states` of a language model.
-The current hidden state can be used as the initial hidden states of next input.
+The current hidden states can be used as the initial hidden states of next input.
 This is usually used when one can only process certain sequence length at a time.
 Each chucking sequence is called a :term:`context window`.
 For example, we can split the input in the above example into half as follow:
