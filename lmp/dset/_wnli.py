@@ -6,7 +6,9 @@ import re
 import zipfile
 from typing import ClassVar, List, Optional
 
-import pandas as pd
+# Typeshed for `pandas` is under development, we will ignore type check on `pandas` until `pandas` typeshed finish its
+# development and release stable version.
+import pandas as pd  # type: ignore
 
 import lmp.util.path
 from lmp.dset._base import BaseDset
