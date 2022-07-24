@@ -15,6 +15,6 @@ def tknzr(is_uncased: bool, max_vocab: int, min_count: int) -> BaseTknzr:
 
 
 @pytest.fixture
-def model(d_emb: int, d_hid: int, p_emb: float, p_hid: float, tknzr: BaseTknzr) -> BaseModel:
+def model(d_emb: int, d_hid: int, n_lyr: int, p_emb: float, p_hid: float, tknzr: BaseTknzr) -> BaseModel:
   """Save model example."""
-  return ElmanNet(d_emb=d_emb, d_hid=d_hid, p_emb=p_emb, p_hid=p_hid, tknzr=tknzr)
+  return ElmanNet(d_emb=d_emb, d_hid=d_hid, n_lyr=n_lyr, p_emb=p_emb, p_hid=p_hid, tknzr=tknzr)

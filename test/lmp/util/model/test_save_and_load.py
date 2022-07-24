@@ -35,12 +35,13 @@ def test_load_last(
   d_hid: int,
   exp_name: str,
   model: BaseModel,
+  n_lyr: int,
   p_emb: float,
   p_hid: float,
   tknzr: BaseTknzr,
 ) -> None:
   """Load the last checkpoint when ``ckpt == -1``."""
-  last_model = ElmanNet(d_emb=d_emb, d_hid=d_hid, p_emb=p_emb, p_hid=p_hid, tknzr=tknzr)
+  last_model = ElmanNet(d_emb=d_emb, d_hid=d_hid, n_lyr=n_lyr, p_emb=p_emb, p_hid=p_hid, tknzr=tknzr)
   lmp.util.model.save(ckpt=0, exp_name=exp_name, model=model)
   lmp.util.model.save(ckpt=1, exp_name=exp_name, model=last_model)
   load_model = lmp.util.model.load(ckpt=1, exp_name=exp_name)

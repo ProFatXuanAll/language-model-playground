@@ -34,6 +34,7 @@ The following example script train Elman Net model :py:class:`lmp.model.ElmanNet
     --lr 1e-4 \
     --max_norm 1 \
     --max_seq_len 128 \
+    --n_lyr 1 \
     --p_emb 0.5 \
     --p_hid 0.1 \
     --tknzr_exp_name my_tknzr_exp \
@@ -65,6 +66,7 @@ Be careful model might overfit on datasets if model were trained with too many s
     --lr 1e-4 \
     --max_norm 1 \
     --max_seq_len 128 \
+    --n_lyr 1 \
     --p_emb 0.5 \
     --p_hid 0.1 \
     --tknzr_exp_name my_tknzr_exp \
@@ -101,6 +103,7 @@ One can reduce overfitting with the following ways:
     --lr 1e-4 \
     --max_norm 1 \
     --max_seq_len 128 \
+    --n_lyr 1 \
     --p_emb 0.5 \
     --p_hid 0.5 \
     --tknzr_exp_name my_tknzr_exp \

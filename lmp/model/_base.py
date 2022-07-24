@@ -19,24 +19,23 @@ class BaseModel(abc.ABC, torch.nn.Module):
   .. math::
 
      \newcommand{\pa}[1]{\left( #1 \right)}
-     x = \pa{x[0], x[1], \dots, x[S]}.
+     x = \pa{x_0, x_1, \dots, x_S}.
 
   - :math:`x` has length :math:`S+1`.
-  - :math:`x[t]` is the :math:`t`\-th time step of :math:`x`, the range of :math:`t` is :math:`\set{0, \dots, S}`.
-  - :math:`x[0]` is the token id of ``[bos]``.
-  - :math:`x[S]` is the token id of ``[eos]``.
+  - :math:`x_t` is the :math:`t`\-th time step of :math:`x`, the range of :math:`t` is :math:`\set{0, \dots, S}`.
+  - :math:`x_0` is the token id of ``[bos]``.
+  - :math:`x_S` is the token id of ``[eos]``.
   - Each language model will be paired with one tokenizer.
     Let :math:`V` be the size of the paired tokenizer's vocabulary.
-    Then each :math:`x[t]` is assigned with an unique token in the tokenizer's vocabulary, i.e.,
-    :math:`x[t] \in \set{0, \dots, V-1}`.
+    Then :math:`x_t \in \set{0, \dots, V-1}`.
 
   The training goal of a language model with parameter :math:`\theta` is to find an optimal parameter
   :math:`\theta^{\star}`, such that when replace :math:`\theta` with :math:`\theta^{\star}`, it maximizes the
-  prediction probability of next token id :math:`x[t]` given :math:`x[0], \dots, x[t-1]`:
+  prediction probability of next token id :math:`x_t` given :math:`x_0, \dots, x_{t-1}`:
 
   .. math::
 
-     \theta^{\star} = \arg\max_{\theta} \prod_{x \in X} \prod_{t = 1}^S P(x[t] | x[0], \dots, x[t-1] ; \theta)
+     \theta^{\star} = \arg\max_{\theta} \prod_{x \in X} \prod_{t = 1}^S P(x_t | x_0, \dots, x_{t-1} ; \theta)
 
   Note that all token id lists in :math:`X` have the same length :math:`S+1`, and :math:`t` start with :math:`1`
   instead of :math:`0`.

@@ -50,7 +50,7 @@ def eval_log_dir_path(clean_dir_finalizer_factory: Callable[[str], None], model_
 @pytest.fixture
 def model(tknzr: BaseTknzr) -> BaseModel:
   """:py:class:`lmp.model.BaseModel` instance."""
-  return ElmanNet(d_emb=2, d_hid=2, p_emb=0.1, p_hid=0.1, tknzr=tknzr)
+  return ElmanNet(d_emb=2, d_hid=2, n_lyr=1, p_emb=0.1, p_hid=0.1, tknzr=tknzr)
 
 
 @pytest.fixture

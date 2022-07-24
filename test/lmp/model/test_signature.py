@@ -24,3 +24,7 @@ def test_module_attribute() -> None:
     lmp.model.LSTM2000.model_name: lmp.model.LSTM2000,
     lmp.model.LSTM2002.model_name: lmp.model.LSTM2002,
   }
+  assert hasattr(lmp.model, 'SUB_MODELS')
+  assert lmp.model.SUB_MODELS == [
+    lmp.model.ElmanNetLayer,
+  ]

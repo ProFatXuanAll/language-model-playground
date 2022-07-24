@@ -57,6 +57,7 @@ For example, one can create Elman-Net language model :py:class:`lmp.model.ElmanN
   model = lmp.model.ElmanNet(
     d_emb=100,
     d_hid=300,
+    n_lyr=1,
     p_emb=0.1,
     p_hid=0.1,
     tknzr=tokenizer,
@@ -80,6 +81,7 @@ All initialization utilities are collectively gathered under the module :py:mod:
   model = lmp.model.ElmanNet(
     d_emb=100,
     d_hid=300,
+    n_lyr=1,
     p_emb=0.1,
     p_hid=0.1,
     tknzr=lmp.tknzr.CharTknzr(
@@ -90,7 +92,7 @@ All initialization utilities are collectively gathered under the module :py:mod:
   )
 
   # Initialize model parameters.
-  torch.nn.init.zeros_(model.h_0)
+  torch.nn.init.zeros_(model.fc_e2h.bias)
 
 If you cannot decide how to initialize a :term:`language model`, we have provided an utility :py:meth:`params_init` for
 each language model to help you initialize model parameters.
@@ -103,6 +105,7 @@ each language model to help you initialize model parameters.
   model = lmp.model.ElmanNet(
     d_emb=100,
     d_hid=300,
+    n_lyr=1,
     p_emb=0.1,
     p_hid=0.1,
     tknzr=lmp.tknzr.CharTknzr(
@@ -134,6 +137,7 @@ For example,
   model = lmp.model.ElmanNet(
     d_emb=100,
     d_hid=300,
+    n_lyr=1,
     p_emb=0.1,
     p_hid=0.1,
     tknzr=tokenizer,
@@ -181,6 +185,7 @@ For example, we can split the input in the above example into half as follow:
   model = lmp.model.ElmanNet(
     d_emb=100,
     d_hid=300,
+    n_lyr=1,
     p_emb=0.1,
     p_hid=0.1,
     tknzr=tokenizer,
@@ -242,6 +247,7 @@ Just like the ``loss`` method, the current hidden states can be used as the :ter
   model = lmp.model.ElmanNet(
     d_emb=100,
     d_hid=300,
+    n_lyr=1,
     p_emb=0.1,
     p_hid=0.1,
     tknzr=tokenizer,

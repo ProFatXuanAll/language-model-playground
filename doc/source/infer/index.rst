@@ -69,6 +69,7 @@ The following example demonstrate the usage of generation without pre-training a
   model = lmp.model.ElmanNet(
     d_emb=10,
     d_hid=10,
+    n_lyr=1,
     p_emb=0.1,
     p_hid=0.1,
     tknzr=tokenizer,

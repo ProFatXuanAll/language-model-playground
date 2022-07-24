@@ -36,5 +36,6 @@ def test_prediction_result(elman_net: ElmanNet, batch_cur_tkids: torch.Tensor) -
     assert torch.allclose(accum, torch.ones_like(accum))
 
     assert isinstance(batch_prev_states, list)
-    assert len(batch_prev_states) == 1
-    assert batch_prev_states[0].size() == torch.Size([batch_cur_tkids.size(0), elman_net.h_0.size(1)])
+    assert len(batch_prev_states) == elman_net.n_lyr
+    for lyr_batch_prev_states in batch_prev_states:
+      assert lyr_batch_prev_states.size() == torch.Size([batch_cur_tkids.size(0), elman_net.d_hid])

@@ -44,9 +44,10 @@ def create(model_name: str, **kwargs: Any) -> BaseModel:
   >>> model = lmp.util.model.create(
   ...   d_emb=10,
   ...   d_hid=20,
+  ...   model_name='Elman-Net',
+  ...   n_lyr=1,
   ...   p_emb=0.5,
   ...   p_hid=0.1,
-  ...   model_name='Elman-Net',
   ...   tknzr=tknzr,
   ... )
   >>> assert isinstance(model, ElmanNet)
@@ -89,7 +90,7 @@ def save(ckpt: int, exp_name: str, model: BaseModel) -> None:
   >>> from lmp.tknzr import CharTknzr
   >>> import lmp.util.model
   >>> tknzr = CharTknzr(is_uncased=False, max_vocab=10, min_count=2)
-  >>> model = ElmanNet(d_emb=10, d_hid=20, p_emb=0.5, p_hid=0.1, tknzr=tknzr)
+  >>> model = ElmanNet(d_emb=10, d_hid=20, n_lyr=1, p_emb=0.5, p_hid=0.1, tknzr=tknzr)
   >>> lmp.util.model.save(ckpt=0, exp_name='test', model=model)
   None
   """
@@ -144,7 +145,7 @@ def load(ckpt: int, exp_name: str) -> BaseModel:
   >>> from lmp.tknzr import CharTknzr
   >>> import lmp.util.model
   >>> tknzr = CharTknzr(is_uncased=False, max_vocab=10, min_count=2)
-  >>> model = ElmanNet(d_emb=10, d_hid=20, p_emb=0.5, p_hid=0.1, tknzr=tknzr)
+  >>> model = ElmanNet(d_emb=10, d_hid=20, n_lyr=1, p_emb=0.5, p_hid=0.1, tknzr=tknzr)
   >>> lmp.util.model.save(ckpt=0, exp_name='test', model=model)
   >>> load_model = lmp.util.model.load(ckpt=0, exp_name='test')
   >>> assert torch.all(load_model.emb.weight == model.emb.weight)

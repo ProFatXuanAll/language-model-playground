@@ -189,6 +189,18 @@ def n_blk(request) -> int:
   return request.param
 
 
+@pytest.fixture(params=[1, 2])
+def n_lyr(request) -> int:
+  """Mock number of layers."""
+  return request.param
+
+
+@pytest.fixture(params=[1, 2])
+def n_feat(request) -> int:
+  """Mock number of features."""
+  return request.param
+
+
 @pytest.fixture(params=[0.1, 0.5])
 def p_emb(request) -> float:
   """Mock embedding dropout probability."""
