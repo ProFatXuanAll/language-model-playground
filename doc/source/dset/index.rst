@@ -3,10 +3,8 @@ Datasets
 
 Overview
 --------
-When :term:`training` a :term:`model`, one must first collect a :term:`dataset` and preprocess it so that
-text :term:`samples` have certain structure / format.
-In this project we have collect some datasets and provide utilities so that one can train :term:`language models` on
-them.
+When :term:`training` a :term:`model`, one must first collect a :term:`dataset` and preprocess it so that text :term:`samples` have certain structure / format.
+In this project we have collect some datasets and provide utilities so that one can train :term:`language models` on them.
 
 .. seealso::
 
@@ -24,10 +22,8 @@ One can import dataset module as usual Python_ module:
 
 Create dataset instance
 -----------------------
-After importing :py:mod:`lmp.dset`, one can create :term:`dataset` instance through the class attributes of
-:py:mod:`lmp.dset`.
-For example, one can create demo dataset :py:class:`lmp.dset.DemoDset` and wiki-text-2 dataset
-:py:class:`lmp.dset.WikiText2Dset` as follow:
+After importing :py:mod:`lmp.dset`, one can create :term:`dataset` instance through the class attributes of :py:mod:`lmp.dset`.
+For example, one can create demo dataset :py:class:`lmp.dset.DemoDset` and wiki-text-2 dataset :py:class:`lmp.dset.WikiText2Dset` as follow:
 
 .. code-block:: python
 
@@ -76,8 +72,7 @@ For example, the default version of :py:class:`DemoDset` is ``train``:
 
 Sample dataset
 --------------
-To access dataset :term:`samples`, one first need to create a dataset instance, then use integer indices to access
-dataset samples.
+To access dataset :term:`samples`, one first need to create a dataset instance, then use integer indices to access dataset samples.
 For example, we can access the 0th and 1st samples in the training set of :py:class:`lmp.dset.DemoDset` as follow:
 
 .. code-block:: python

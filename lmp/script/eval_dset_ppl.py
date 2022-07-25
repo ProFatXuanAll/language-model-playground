@@ -218,6 +218,8 @@ def main(argv: List[str]) -> None:
   writer = lmp.util.log.get_tb_logger(exp_name=args.exp_name)
 
   # Evaluate checkpoints within ranges.
+  best_ckpt = -1
+  best_avg_ppl = 0.0
   for ckpt in lmp.util.model.list_ckpts(exp_name=args.exp_name, first_ckpt=args.first_ckpt, last_ckpt=args.last_ckpt):
     # Load pre-trained model instance.
     model = lmp.util.model.load(ckpt=ckpt, exp_name=args.exp_name)
@@ -262,8 +264,8 @@ def main(argv: List[str]) -> None:
           batch_prev_states=None,
         )
 
-        batch_tkids_pd_list.append(batch_tkids_pd)
         batch_next_tkids_list.append(batch_next_tkids)
+        batch_tkids_pd_list.append(batch_tkids_pd)
 
       # Calculate perplexity.
       batch_ppl = lmp.util.metric.ppl(
@@ -278,6 +280,12 @@ def main(argv: List[str]) -> None:
     writer.add_scalar(f'ppl/{args.dset_name}/{args.ver}', avg_ppl, ckpt)
     print(f'checkpoint: {ckpt}, avg ppl: {avg_ppl}')
 
+    if best_avg_ppl > avg_ppl or best_ckpt == -1:
+      best_ckpt = ckpt
+      best_avg_ppl = avg_ppl
+
+  print(f'best checkpoint: {best_ckpt}, best avg ppl: {best_avg_ppl}')
+
   # Free memory.
   # This is only need for unit test.
   del args
@@ -290,6 +298,8 @@ def main(argv: List[str]) -> None:
   del batch_tkids
   del batch_tkids_pd
   del batch_tkids_pd_list
+  del best_avg_ppl
+  del best_ckpt
   del ckpt
   del ctx_batch_tkids
   del ctx_idx

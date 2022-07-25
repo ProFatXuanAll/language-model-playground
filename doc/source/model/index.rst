@@ -3,14 +3,10 @@ Language Models
 
 Overview
 --------
-In this project, a :term:`language model` is a deep learning :term:`model` which can predict next possible token
-conditioned on given tokens.
-Each language model has a :term:`loss function` which can be :term:`optimized` by the language model :term:`training`
-script :doc:`lmp.script.train_model </script/train_model>`.
-The goal of optimizing a language model objective function is to make a language model have low :term:`perplexity`,
-which serve as an indication of performing well on next token prediction.
-A language model must be paired with a :term:`tokenizer`, and once paired with a tokenizer it cannot change to pair
-with another tokenizer.
+In this project, a :term:`language model` is a deep learning :term:`model` which can predict next possible token conditioned on given tokens.
+Each language model has a :term:`loss function` which can be :term:`optimized` by the language model :term:`training` script :doc:`lmp.script.train_model </script/train_model>`.
+The goal of optimizing a language model objective function is to make a language model have low :term:`perplexity`, which serve as an indication of performing well on next token prediction.
+A language model must be paired with a :term:`tokenizer`, and once paired with a tokenizer it cannot change to pair with another tokenizer.
 A tokenizer will share its vocabulary with a language model.
 When construct a language model, one must first construct a tokenizer and then pass that tokenizer to model constructor.
 
@@ -38,8 +34,7 @@ One can import language model module as usual Python_ module:
 
 Create language model instance
 ------------------------------
-After importing :py:mod:`lmp.model`, one can create :term:`language model` instance through the class attributes of
-:py:mod:`lmp.model`.
+After importing :py:mod:`lmp.model`, one can create :term:`language model` instance through the class attributes of :py:mod:`lmp.model`.
 For example, one can create Elman-Net language model :py:class:`lmp.model.ElmanNet` as follow:
 
 .. code-block:: python
@@ -94,8 +89,7 @@ All initialization utilities are collectively gathered under the module :py:mod:
   # Initialize model parameters.
   torch.nn.init.zeros_(model.fc_e2h.bias)
 
-If you cannot decide how to initialize a :term:`language model`, we have provided an utility :py:meth:`params_init` for
-each language model to help you initialize model parameters.
+If you cannot decide how to initialize a :term:`language model`, we have provided an utility :py:meth:`params_init` for each language model to help you initialize model parameters.
 
 .. code-block:: python
 
@@ -158,14 +152,11 @@ For example,
 
 The method :py:meth:`loss` takes three input and returns a tuple.
 The ``batch_cur_tkids`` is the input :term:`token id` list and the ``batch_next_tkids`` is the prediction target.
-Both ``batch_cur_tkids`` and ``batch_next_tkids`` are long tensor and have the same shape :math:`(B, S)` where
-:math:`B` is the :term:`batch size` and :math:`S` is input sequence length.
+Both ``batch_cur_tkids`` and ``batch_next_tkids`` are long tensor and have the same shape :math:`(B, S)` where :math:`B` is the :term:`batch size` and :math:`S` is input sequence length.
 We set ``batch_prev_states=None`` to use :term:`initial hidden states`.
-The first item in the returned tuple is a :py:class:`torch.Tensor` which represents the mini-batch next token
-prediction loss.
+The first item in the returned tuple is a :py:class:`torch.Tensor` which represents the mini-batch next token prediction loss.
 One can call the PyTorch_ built-in ``backward`` method to perform :term:`back-propagation`.
-The second item in the returned tuple is a list of :py:class:`torch.Tensor` which represents the current
-:term:`hidden states` of a language model.
+The second item in the returned tuple is a list of :py:class:`torch.Tensor` which represents the current :term:`hidden states` of a language model.
 The current hidden states can be used as the initial hidden states of next input.
 This is usually used when one can only process certain sequence length at a time.
 Each chucking sequence is called a :term:`context window`.
@@ -224,13 +215,9 @@ The input of ``pred`` is almost the same as ``loss``, except that we do not inpu
 This is because when performing evaluation one do not and cannot know the prediction target.
 One set ``batch_prev_states=None`` to use :term:`initial hidden states` just like using ``loss``.
 The returned tuple have two items.
-The first item in the returned tuple is a :py:class:`torch.Tensor` which represent the next :term:`token id`
-probability distribution.
-The probability distribution tensor has shape :math:`(B, S, V)` where :math:`B` is :term:`batch size`, :math:`S` is
-input sequence length and :math:`V` is the :term:`vocabulary` size of the :term:`language model` pairing
-:term:`tokenizer`.
-The second item in the returned tuple is a list of :py:class:`torch.Tensor` which represents the current
-:term:`hidden states` of a language model.
+The first item in the returned tuple is a :py:class:`torch.Tensor` which represent the next :term:`token id` probability distribution.
+The probability distribution tensor has shape :math:`(B, S, V)` where :math:`B` is :term:`batch size`, :math:`S` is input sequence length and :math:`V` is the :term:`vocabulary` size of the :term:`language model` pairing :term:`tokenizer`.
+The second item in the returned tuple is a list of :py:class:`torch.Tensor` which represents the current :term:`hidden states` of a language model.
 Just like the ``loss`` method, the current hidden states can be used as the :term:`initial hidden states` of next input.
 
 .. code-block:: python

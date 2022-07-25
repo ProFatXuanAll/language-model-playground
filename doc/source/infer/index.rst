@@ -27,10 +27,8 @@ One can import inference method module as usual Python_ module:
 
 Create inference method instance
 --------------------------------
-After importing :py:mod:`lmp.infer`, one can create inference method instance through the class attributes of
-:py:mod:`lmp.infer`.
-For example, one can create top-1 inference method :py:class:`lmp.infer.Top1Infer` and top-K inference method
-:py:class:`lmp.infer.TopKInfer` as follow:
+After importing :py:mod:`lmp.infer`, one can create inference method instance through the class attributes of :py:mod:`lmp.infer`.
+For example, one can create top-1 inference method :py:class:`lmp.infer.Top1Infer` and top-K inference method :py:class:`lmp.infer.TopKInfer` as follow:
 
 .. code-block:: python
 
@@ -49,8 +47,7 @@ For example, top-K inference method has a parameter ``k`` which represent the fi
 
 Generate continual text
 -----------------------
-To generate continual text on a given text, one must provide a :term:`language model`, its paired :term:`tokenizer` and
-a text to an inference method.
+To generate continual text on a given text, one must provide a :term:`language model`, its paired :term:`tokenizer` and a text to an inference method.
 Only :term:`pre-trained` language model can generate meanful text.
 The following example demonstrate the usage of generation without pre-training a language model.
 

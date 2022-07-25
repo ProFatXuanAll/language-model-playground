@@ -61,8 +61,7 @@ The following list of items are the helps we needed.
 - Translate documents into traditional Chinese.
 - Require installation script.
   Currently python is undergone throught some major change on their package management system.
-  But we think its better to stick to ``setup.py`` solution and change to better solution after the change of package
-  management system.
+  But we think its better to stick to ``setup.py`` solution and change to better solution after the change of package management system.
 
 .. _`our GitHub issues`: https://github.com/ProFatXuanAll/language-model-playground/issues
 .. _`PEP 8`: https://www.python.org/dev/peps/pep-0008/

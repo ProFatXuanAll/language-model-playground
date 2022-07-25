@@ -3,8 +3,7 @@ Tokenizers
 
 Overview
 --------
-In this project, a :term:`tokenizer` is a collection of text preprocessing tools including text :term:`tokenization`,
-:term:`text normalization` and :term:`language model` :term:`training` formation.
+In this project, a :term:`tokenizer` is a collection of text preprocessing tools including text :term:`tokenization`, :term:`text normalization` and :term:`language model` :term:`training` formation.
 To obtain a tokenizer, one must first create an empty tokenizer, then pick a :term:`dataset` to train an empty tokenizer.
 
 .. seealso::
@@ -27,10 +26,8 @@ One can import tokenizer module as usual Python_ module:
 
 Create tokenizer instance
 -------------------------
-After importing :py:mod:`lmp.tknzr`, one can create :term:`tokenizer` instance through the class attributes of
-:py:mod:`lmp.tknzr`.
-For example, one can create character tokenizer :py:class:`lmp.tknzr.CharTknzr` and whitespace tokenizer
-:py:class:`lmp.tknzr.WsTknzr` as follow:
+After importing :py:mod:`lmp.tknzr`, one can create :term:`tokenizer` instance through the class attributes of :py:mod:`lmp.tknzr`.
+For example, one can create character tokenizer :py:class:`lmp.tknzr.CharTknzr` and whitespace tokenizer :py:class:`lmp.tknzr.WsTknzr` as follow:
 
 .. code-block:: python
 
@@ -53,8 +50,7 @@ For example, one can create character tokenizer :py:class:`lmp.tknzr.CharTknzr` 
 Tokenize text
 -------------
 A :term:`tokenizer` instance can, of course, tokenize text.
-For example, a character tokenizer can tokenize text into a list of character tokens, and a whitespace tokenizer can
-tokenize text into a whitespace-separated tokens:
+For example, a character tokenizer can tokenize text into a list of character tokens, and a whitespace tokenizer can tokenize text into a whitespace-separated tokens:
 
 .. code-block:: python
 
@@ -158,8 +154,7 @@ For example, we can build character-only vocabulary on top of :py:class:`lmp.dse
 
 One can decide how many tokens to include in a tokenizer's vocabulary.
 The parameter ``max_vocab`` is the maximum number of tokens to be included in a tokenizer's vocabulary.
-When setting ``max_vocab=-1``, one can have unlimited number (of course limited by the memory size) of tokens in a
-tokenizer's vocabulary.
+When setting ``max_vocab=-1``, one can have unlimited number (of course limited by the memory size) of tokens in a tokenizer's vocabulary.
 
 .. code-block:: python
 
@@ -183,8 +178,7 @@ tokenizer's vocabulary.
 
 Sometimes there are tokens which occur only one times or a few.
 These tokens are usually named entities or even worse, typos.
-One can filter out these tokens by deciding the minimum occurrence count for a token to be included in a tokenizer's
-vocabulary.
+One can filter out these tokens by deciding the minimum occurrence count for a token to be included in a tokenizer's vocabulary.
 The parameter ``min_count`` serve this purpose.
 When setting ``min_count=0`` no filtering will be performed.
 
@@ -215,16 +209,14 @@ Language model training formation
 After building :term:`vocabulary`, one can format a given text into :term:`language model` :term:`training` format.
 A language model training format is consist of a :term:`BOS` token, followed by the token list and a :term:`EOS` token.
 For example, the text ``hello world`` can be format as ``[BOS] hello world [EOS]``.
-If there are tokens not in tokenizer's vocabulary, then tokenizer will treat these tokens as :term:`OOV` tokens and
-replace them with :term:`UNK` token.
+If there are tokens not in tokenizer's vocabulary, then tokenizer will treat these tokens as :term:`OOV` tokens and replace them with :term:`UNK` token.
 In general, a language model training format looks like follow::
 
   [BOS] token_1 token_2 [UNK] ... token_N [EOS] [PAD] [PAD] ... [PAD]
 
 :term:`PAD` tokens only exist when the length of token list is shorter than required.
 One can use ``max_seq_len`` parameter to specify required length.
-For example, one can use :py:meth:`enc` to convert text into language model training format and convert each token into
-:term:`token id` at the same time.
+For example, one can use :py:meth:`enc` to convert text into language model training format and convert each token into :term:`token id` at the same time.
 
 .. code-block:: python
 
@@ -284,8 +276,7 @@ One use :py:meth:`dec` to convert language model training format back to origina
     PAD_TKID,
   ]) == f'{BOS_TK}ab{UNK_TK}{EOS_TK}{PAD_TK}'
 
-When dealing a :term:`mini-batch` of text :term:`samples`, one have to first loop through each text sample to get the
-maximum length in a mini-batch, then loop again to encode each text sample.
+When dealing a :term:`mini-batch` of text :term:`samples`, one have to first loop through each text sample to get the maximum length in a mini-batch, then loop again to encode each text sample.
 Fortunately, there is a batch version of encoding method :py:meth:`batch_enc`.
 And similarly a batch version of decoding method :py:meth:`batch_dec`.
 

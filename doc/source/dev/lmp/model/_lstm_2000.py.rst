@@ -3,7 +3,6 @@
 
 .. automodule:: lmp.model._lstm_2000
 
-
 .. autoclass:: lmp.model._lstm_2000.LSTM2000
   :members: add_CLI_args, forward, loss, params_init, pred
   :show-inheritance:

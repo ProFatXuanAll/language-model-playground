@@ -244,7 +244,7 @@ class ElmanNet(BaseModel):
       & \qquad  y_{t+1} \leftarrow \sof{E \cdot z_{t+1}}                                      \\
       & \quad  \textbf{end for}                                                               \\
       & \quad  y \leftarrow \cat{y_1, \dots, y_S}                                             \\
-      & \quad  \textbf{return} y                                                              \\
+      & \quad  \textbf{return } y                                                             \\
       & \textbf{end procedure}
     \end{align*}
 

@@ -43,8 +43,7 @@ Environment Prerequests
 
    .. note::
 
-     You might want to set environment variable ``PIPENV_VENV_IN_PROJECT=1`` to make virtual environment folders
-     always located in your Python_ projects.
+     You might want to set environment variable ``PIPENV_VENV_IN_PROJECT=1`` to make virtual environment folders always located in your Python_ projects.
      See pipenv_ document for details.
 
 Installation
@@ -104,9 +103,7 @@ In this example we use wiki-text-2 dataset :py:class:`lmp.dset.WikiText2Dset` as
 
 2. Train a Tokenizer
 ~~~~~~~~~~~~~~~~~~~~
-The following example use whitespace tokenizer :py:class:`lmp.tknzr.WsTknzr` to train on
-:py:class:`lmp.dset.WikiText2Dset` dataset since :term:`samples` in :py:class:`lmp.dset.WikiText2Dset` are English and
-words are separated by whitespace.
+The following example use whitespace tokenizer :py:class:`lmp.tknzr.WsTknzr` to train on :py:class:`lmp.dset.WikiText2Dset` dataset since :term:`samples` in :py:class:`lmp.dset.WikiText2Dset` are English and words are separated by whitespace.
 
 .. code-block:: shell
 
