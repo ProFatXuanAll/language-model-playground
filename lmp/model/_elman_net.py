@@ -21,9 +21,10 @@ class ElmanNetLayer(nn.Module):
 
   .. _`Finding Structure in Time`: https://onlinelibrary.wiley.com/doi/abs/10.1207/s15516709cog1402_1
 
-  Let :math:`x` be input features with shape :math:`(B, S, H)`, where :math:`B` is batch size, :math:`S` is sequence
-  length and :math:`H` is the number of features per time step in each sequence.
-  Let :math:`h_0` be the initial hidden states with shape :math:`(B, H)`.
+  Let :math:`x` be input features with shape :math:`(B, S, \newcommand{\hIn}{H_{\operatorname{in}}} \hIn)`, where
+  :math:`B` is batch size, :math:`S` is sequence length and :math:`\hIn` is the number of features per time step in
+  each sequence.
+  Let :math:`h_0` be the initial hidden states with shape :math:`(B, \newcommand{\hOut}{H_{\operatorname{out}}} \hOut)`.
 
   Elman Net layer is defined as follow:
 
@@ -34,7 +35,7 @@ class ElmanNetLayer(nn.Module):
     \newcommand{\eq}{\leftarrow}
     \newcommand{\sof}[1]{\operatorname{softmax}\pa{#1}}
     \begin{align*}
-      & \textbf{procedure } \text{ElmanNetLayer}(x, h_0)                  \\
+      & \textbf{procedure } \text{ElmanNetLayer}(x, [h_0])                \\
       & \hspace{1em} S \eq x.\text{size}(1)                               \\
       & \hspace{1em} \textbf{for } t \in \set{0, \dots, S-1} \textbf{ do} \\
       & \hspace{2em} h_{t+1} \eq \tanh\pa{W \cdot x_t + U \cdot h_t + b}  \\
@@ -44,85 +45,94 @@ class ElmanNetLayer(nn.Module):
       & \textbf{end procedure}
     \end{align*}
 
-  +------------------------------+---------------------------------+
-  | Trainable Parameters         | Nodes                           |
-  +-------------+----------------+-------------+-------------------+
-  | Parameter   | Shape          | Symbol      | Shape             |
-  +=============+================+=============+===================+
-  | :math:`h_0` | :math:`(1, H)` | :math:`x`   | :math:`(B, S, H)` |
-  +-------------+----------------+-------------+-------------------+
-  | :math:`W`   | :math:`(H, H)` | :math:`h_0` | :math:`(B, H)`    |
-  +-------------+----------------+-------------+-------------------+
-  | :math:`U`   | :math:`(H, H)` | :math:`x_t` | :math:`(B, H)`    |
-  +-------------+----------------+-------------+-------------------+
-  | :math:`b`   | :math:`(H)`    | :math:`h_t` | :math:`(B, H)`    |
-  +-------------+----------------+-------------+-------------------+
-  |                              | :math:`h`   | :math:`(B, S, H)` |
-  +------------------------------+-------------+-------------------+
+  +--------------------------------------+-------------------------------------+
+  | Trainable Parameters                 | Nodes                               |
+  +-------------+------------------------+-------------+-----------------------+
+  | Parameter   | Shape                  | Symbol      | Shape                 |
+  +=============+========================+=============+=======================+
+  | :math:`h_0` | :math:`(1, \hOut)`     | :math:`x`   | :math:`(B, S, \hIn)`  |
+  +-------------+------------------------+-------------+-----------------------+
+  | :math:`W`   | :math:`(\hOut, \hIn)`  | :math:`h_0` | :math:`(B, \hOut)`    |
+  +-------------+------------------------+-------------+-----------------------+
+  | :math:`U`   | :math:`(\hOut, \hOut)` | :math:`x_t` | :math:`(B, \hIn)`     |
+  +-------------+------------------------+-------------+-----------------------+
+  | :math:`b`   | :math:`(\hOut)`        | :math:`h_t` | :math:`(B, \hOut)`    |
+  +-------------+------------------------+-------------+-----------------------+
+  |                                      | :math:`h`   | :math:`(B, S, \hOut)` |
+  +--------------------------------------+-------------+-----------------------+
 
   - Our implementation use :math:`\tanh` as activation function instead of the sigmoid function as used in the paper.
     The consideration here is simply to allow embeddings have negative values.
 
   Parameters
   ----------
-  n_feat: int
-    Number of input features :math:`H`.
+  in_feat: int
+    Number of input features :math:`\hIn`.
   kwargs: typing.Any, optional
     Useless parameter.
     Intently left for subclasses inheritance.
+  out_feat: int
+    Number of output features :math:`\hOut`.
 
   Attributes
   ----------
   fc_x2h: torch.nn.Linear
     Fully connected layer with parameters :math:`W` and :math:`b` which connects input units to recurrent units.
-    Input shape: :math:`(B, S, H)`.
-    Output shape: :math:`(B, S, H)`.
+    Input shape: :math:`(B, S, \hIn)`.
+    Output shape: :math:`(B, S, \hOut)`.
   fc_h2h: torch.nn.Linear
     Fully connected layer :math:`U` which connects recurrent units to recurrent units.
-    Input shape: :math:`(B, H)`.
-    Output shape: :math:`(B, H)`.
+    Input shape: :math:`(B, \hOut)`.
+    Output shape: :math:`(B, \hOut)`.
   h_0: torch.nn.Parameter
     Initial hidden states :math:`h_0`.
-    Shape: :math:`(1, H)`
-  n_feat: int
-    Number of input features :math:`H`.
+    Shape: :math:`(1, \hOut)`
+  in_feat: int
+    Number of input features :math:`\hIn`.
+  out_feat: int
+    Number of output features :math:`\hOut`.
 
   References
   ----------
   .. [1] Elman, J. L. (1990). `Finding Structure in Time`_. Cognitive science, 14(2), 179-211.
   """
 
-  def __init__(self, n_feat: int, **kwargs: Any):
+  def __init__(self, in_feat: int, out_feat: int, **kwargs: Any):
     super().__init__()
 
-    # `n_feat` validation.
-    lmp.util.validate.raise_if_not_instance(val=n_feat, val_name='n_feat', val_type=int)
-    lmp.util.validate.raise_if_wrong_ordered(vals=[1, n_feat], val_names=['1', 'n_feat'])
-    self.n_feat = n_feat
+    # `in_feat` validation.
+    lmp.util.validate.raise_if_not_instance(val=in_feat, val_name='in_feat', val_type=int)
+    lmp.util.validate.raise_if_wrong_ordered(vals=[1, in_feat], val_names=['1', 'in_feat'])
+    self.in_feat = in_feat
+
+    # `out_feat` validation.
+    lmp.util.validate.raise_if_not_instance(val=out_feat, val_name='out_feat', val_type=int)
+    lmp.util.validate.raise_if_wrong_ordered(vals=[1, out_feat], val_names=['1', 'out_feat'])
+    self.out_feat = out_feat
 
     # Fully connected layer which connects input units to recurrent units.
-    self.fc_x2h = nn.Linear(in_features=n_feat, out_features=n_feat)
+    self.fc_x2h = nn.Linear(in_features=in_feat, out_features=out_feat)
 
     # Fully connected layer which connects recurrent units to recurrent units.
     # Set `bias=False` to share bias term with `self.fc_x2h` layer.
-    self.fc_h2h = nn.Linear(in_features=n_feat, out_features=n_feat, bias=False)
+    self.fc_h2h = nn.Linear(in_features=out_feat, out_features=out_feat, bias=False)
 
     # Initial hidden states.
     # First dimension is set to `1` to so that ``self.h_0`` can broadcast along batch dimension.
-    self.h_0 = nn.Parameter(torch.zeros(1, n_feat))
+    self.h_0 = nn.Parameter(torch.zeros(1, out_feat))
 
   def params_init(self) -> None:
     r"""Initialize model parameters.
 
     All weights and biases are initialized with uniform distribution
-    :math:`\mathcal{U}\pa{\dfrac{-1}{\sqrt{H}}, \dfrac{1}{\sqrt{H}}}`.
+    :math:`\mathcal{U}\pa{\dfrac{-1}{\sqrt{d}}, \dfrac{1}{\sqrt{d}}}` where :math:`d = \max(\hIn, \hOut)`.
 
     Returns
     -------
     None
     """
     # Initialize weights and biases with uniform distribution.
-    inv_sqrt_dim = 1 / math.sqrt(self.n_feat)
+    inv_sqrt_dim = 1 / math.sqrt(max(self.in_feat, self.out_feat))
 
     nn.init.uniform_(self.fc_x2h.weight, -inv_sqrt_dim, inv_sqrt_dim)
     nn.init.uniform_(self.fc_x2h.bias, -inv_sqrt_dim, inv_sqrt_dim)
@@ -132,8 +142,8 @@ class ElmanNetLayer(nn.Module):
   def forward(
     self,
     batch_x: torch.Tensor,
-    batch_prev_states: Optional[torch.Tensor] = None,
-  ) -> torch.Tensor:
+    batch_prev_states: Optional[List[torch.Tensor]] = None,
+  ) -> List[torch.Tensor]:
     r"""Calculate batch of hidden states for ``batch_x``.
 
     Below we describe the forward pass algorithm of Elman Net layer.
@@ -156,48 +166,51 @@ class ElmanNetLayer(nn.Module):
     ----------
     batch_x: torch.Tensor
       Batch input features.
-      ``batch_x`` has shape :math:`(B, S, H)` and ``dtype == torch.float``.
-    batch_prev_states: typing.Optional[torch.Tensor], default: None
-      Batch of previous hidden states.
-      ``batch_prev_states`` has shape :math:`(B, H)` and ``dtype == torch.float``.
+      ``batch_x`` has shape :math:`(B, S, \hIn)` and ``dtype == torch.float``.
+    batch_prev_states: typing.Optional[list[torch.Tensor]], default: None
+      There is only one tensor in the list.
+      The only tensor represents batch of previous hidden states.
+      Tensor has shape :math:`(B, \hOut)` and ``dtype == torch.float``.
       Set to ``None`` to use the initial hidden states :math:`h_0`.
 
     Returns
     -------
-    torch.Tensor
-      batch hidden states with shape :math:`(B, S, H)` and ``dtype == torch.float``.
+    list[torch.Tensor]
+      There is only one tensor in the list.
+      The only tensor represents batch of hidden states.
+      Batch hidden states has shape :math:`(B, S, \hOut)` and ``dtype == torch.float``.
     """
     if batch_prev_states is None:
-      batch_prev_states = self.h_0
+      batch_prev_states = [self.h_0]
 
-    h_prev = batch_prev_states
+    h_prev = batch_prev_states[0]
 
     # Sequence length.
     S = batch_x.size(1)
 
     # Transform input features.
-    # Shape: (B, S, H).
+    # Shape: (B, S, out_feat).
     x2h = self.fc_x2h(batch_x)
 
     # Perform recurrent calculation for `S` steps.
     h_all = []
     for t in range(S):
       # `x2h[:, t, :]` is the batch input features at time step `t`.
-      # Shape: (B, H).
+      # Shape: (B, out_feat).
       # `h_prev` is the hidden states at time step `t`.
-      # Shape: (B, H).
+      # Shape: (B, out_feat).
       # `h_cur` is the hidden states at time step `t + 1`.
-      # Shape: (B, H).
+      # Shape: (B, out_feat).
       h_cur = torch.tanh(x2h[:, t, :] + self.fc_h2h(h_prev))
 
       h_all.append(h_cur)
       h_prev = h_cur
 
     # Stack list of tensors into single tensor.
-    # In  shape: list of (B, H) with length equals to `S`.
-    # Out shape: (B, S, H).
+    # In  shape: list of (B, out_feat) with length equals to `S`.
+    # Out shape: (B, S, out_feat).
     h = torch.stack(h_all, dim=1)
-    return h
+    return [h]
 
 
 class ElmanNet(BaseModel):
@@ -233,21 +246,21 @@ class ElmanNet(BaseModel):
     \newcommand{\eq}{\leftarrow}
     \newcommand{\sof}[1]{\operatorname{softmax}\pa{#1}}
     \begin{align*}
-      & \textbf{procedure }\text{ElmanNet}\pa{x, \br{h_0^0, \dots, h_0^{\nLyr-1}}}          \\
-      & \hspace{1em} \textbf{for } t \in \set{0, \dots, S-1} \textbf{ do}                   \\
-      & \hspace{2em} e_t \eq (x_t)\text{-th row of } E \text{ but treated as column vector} \\
-      & \hspace{2em} h_t^{-1} \eq \tanh(W_h \cdot e_t + b_h)                                \\
-      & \hspace{1em} \textbf{end for}                                                       \\
-      & \hspace{1em} h^{-1} \eq \cat{h_0^{-1}, \dots, h_{S-1}^{-1}}                         \\
-      & \hspace{1em} \textbf{for } \ell \in \set{0, \dots, \nLyr-1} \textbf{ do}            \\
-      & \hspace{2em} h^\ell \eq \text{ElmanNetLayer}(x=h^{\ell-1}, h_0=h_0^\ell)            \\
-      & \hspace{1em} \textbf{end for}                                                       \\
-      & \hspace{1em} \textbf{for } t \in \set{0, \dots, S-1} \textbf{ do}                   \\
-      & \hspace{2em} z_{t+1} \eq \tanh\pa{W_z \cdot h_{t+1}^{\nLyr-1} + b_z}                \\
-      & \hspace{2em} y_{t+1} \eq \sof{E \cdot z_{t+1}}                                      \\
-      & \hspace{1em} \textbf{end for}                                                       \\
-      & \hspace{1em} y \eq \cat{y_1, \dots, y_S}                                            \\
-      & \hspace{1em} \textbf{return } \pa{y, \br{h_S^0, \dots, h_S^{\nLyr-1}}}              \\
+      & \textbf{procedure }\text{ElmanNet}\pa{x, \br{h_0^0, \dots, h_0^{\nLyr-1}}}           \\
+      & \hspace{1em} \textbf{for } t \in \set{0, \dots, S-1} \textbf{ do}                    \\
+      & \hspace{2em} e_t \eq (x_t)\text{-th row of } E \text{ but treated as column vector}  \\
+      & \hspace{2em} h_t^{-1} \eq \tanh(W_h \cdot e_t + b_h)                                 \\
+      & \hspace{1em} \textbf{end for}                                                        \\
+      & \hspace{1em} h^{-1} \eq \cat{h_0^{-1}, \dots, h_{S-1}^{-1}}                          \\
+      & \hspace{1em} \textbf{for } \ell \in \set{0, \dots, \nLyr-1} \textbf{ do}             \\
+      & \hspace{2em} h^\ell \eq \text{ElmanNetLayer}(x \eq h^{\ell-1}, [h_0] \eq [h_0^\ell]) \\
+      & \hspace{1em} \textbf{end for}                                                        \\
+      & \hspace{1em} \textbf{for } t \in \set{0, \dots, S-1} \textbf{ do}                    \\
+      & \hspace{2em} z_{t+1} \eq \tanh\pa{W_z \cdot h_{t+1}^{\nLyr-1} + b_z}                 \\
+      & \hspace{2em} y_{t+1} \eq \sof{E \cdot z_{t+1}}                                       \\
+      & \hspace{1em} \textbf{end for}                                                        \\
+      & \hspace{1em} y \eq \cat{y_1, \dots, y_S}                                             \\
+      & \hspace{1em} \textbf{return } \pa{y, \br{h_S^0, \dots, h_S^{\nLyr-1}}}               \\
       & \textbf{end procedure}
     \end{align*}
 
@@ -408,7 +421,7 @@ class ElmanNet(BaseModel):
     # Each RNN layer is followed by one dropout layer.
     self.stack_rnn = nn.ModuleList([])
     for _ in range(n_lyr):
-      self.stack_rnn.append(ElmanNetLayer(n_feat=d_hid))
+      self.stack_rnn.append(ElmanNetLayer(in_feat=d_hid, out_feat=d_hid))
       self.stack_rnn.append(nn.Dropout(p=p_hid))
 
     # Fully connected layer which transforms hidden states to next token embeddings.
@@ -591,7 +604,7 @@ class ElmanNet(BaseModel):
       # Apply dropout to the output.
       # In  shape: (B, S, d_hid).
       # Out shape: (B, S, d_hid).
-      rnn_lyr_out = rnn_lyr(batch_x=rnn_lyr_in, batch_prev_states=rnn_lyr_batch_prev_states)
+      rnn_lyr_out = rnn_lyr(batch_x=rnn_lyr_in, batch_prev_states=rnn_lyr_batch_prev_states)[0]
       rnn_lyr_out = dropout_lyr(rnn_lyr_out)
 
       # Record the last hidden states.

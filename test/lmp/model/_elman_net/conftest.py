@@ -14,9 +14,9 @@ def elman_net(d_emb: int, d_hid: int, n_lyr: int, p_emb: float, p_hid: float, tk
 
 
 @pytest.fixture
-def elman_net_layer(n_feat: int) -> ElmanNetLayer:
+def elman_net_layer(in_feat: int, out_feat: int) -> ElmanNetLayer:
   """:py:class:`lmp.model._elman_net.ElmanNetLayer` instance."""
-  return ElmanNetLayer(n_feat=n_feat)
+  return ElmanNetLayer(in_feat=in_feat, out_feat=out_feat)
 
 
 @pytest.fixture
@@ -43,5 +43,5 @@ def batch_next_tkids(batch_tkids: torch.Tensor) -> torch.Tensor:
 @pytest.fixture
 def batch_x(elman_net_layer: ElmanNetLayer) -> torch.Tensor:
   """Batch of input features."""
-  # Shape: (2, 3, n_feat)
-  return torch.rand((2, 3, elman_net_layer.n_feat))
+  # Shape: (2, 3, in_feat)
+  return torch.rand((2, 3, elman_net_layer.in_feat))

@@ -26,9 +26,12 @@ def test_elman_net_layer_forward_path(
       batch_prev_states=batch_prev_states,
     )
 
-    batch_prev_states = batch_cur_states.detach()[:, -1, :]
+    assert isinstance(batch_cur_states, list)
+    assert len(batch_cur_states) == 1
 
-    loss = batch_cur_states.sum()
+    batch_prev_states = [batch_cur_states[0].detach()[:, -1, :]]
+
+    loss = batch_cur_states[0].sum()
     loss.backward()
 
     assert loss.size() == torch.Size([])

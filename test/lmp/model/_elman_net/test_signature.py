@@ -2,7 +2,7 @@
 
 import inspect
 from inspect import Parameter, Signature
-from typing import Any, ClassVar, Optional, get_type_hints
+from typing import Any, ClassVar, List, Optional, get_type_hints
 
 import torch
 
@@ -50,7 +50,13 @@ def test_instance_method() -> None:
         default=Parameter.empty,
       ),
       Parameter(
-        name='n_feat',
+        name='in_feat',
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        default=Parameter.empty,
+        annotation=int,
+      ),
+      Parameter(
+        name='out_feat',
         kind=Parameter.POSITIONAL_OR_KEYWORD,
         default=Parameter.empty,
         annotation=int,
@@ -83,10 +89,10 @@ def test_instance_method() -> None:
         name='batch_prev_states',
         kind=Parameter.POSITIONAL_OR_KEYWORD,
         default=None,
-        annotation=Optional[torch.Tensor],
+        annotation=Optional[List[torch.Tensor]],
       ),
     ],
-    return_annotation=torch.Tensor,
+    return_annotation=List[torch.Tensor],
   )
 
   assert hasattr(lmp.model._elman_net.ElmanNetLayer, 'params_init')

@@ -15,31 +15,33 @@ from lmp.tknzr._base import PAD_TKID, BaseTknzr
 
 
 def test_elman_net_layer_parameters(
-  n_feat: int,
   elman_net_layer: ElmanNetLayer,
+  in_feat: int,
+  out_feat: int,
 ) -> None:
   """Must correctly construct parameters."""
   elman_net_layer.params_init()
-  inv_sqrt_dim = 1 / math.sqrt(n_feat)
+  inv_sqrt_dim = 1 / math.sqrt(max(in_feat, out_feat))
 
-  assert elman_net_layer.n_feat == n_feat
+  assert elman_net_layer.in_feat == in_feat
+  assert elman_net_layer.out_feat == out_feat
 
   assert hasattr(elman_net_layer, 'fc_x2h')
   assert isinstance(elman_net_layer.fc_x2h, nn.Linear)
-  assert elman_net_layer.fc_x2h.weight.size() == torch.Size([n_feat, n_feat])
-  assert elman_net_layer.fc_x2h.bias.size() == torch.Size([n_feat])
+  assert elman_net_layer.fc_x2h.weight.size() == torch.Size([out_feat, in_feat])
+  assert elman_net_layer.fc_x2h.bias.size() == torch.Size([out_feat])
   assert torch.all((-inv_sqrt_dim <= elman_net_layer.fc_x2h.weight) & (elman_net_layer.fc_x2h.weight <= inv_sqrt_dim))
   assert torch.all((-inv_sqrt_dim <= elman_net_layer.fc_x2h.bias) & (elman_net_layer.fc_x2h.bias <= inv_sqrt_dim))
 
   assert hasattr(elman_net_layer, 'fc_h2h')
   assert isinstance(elman_net_layer.fc_h2h, nn.Linear)
-  assert elman_net_layer.fc_h2h.weight.size() == torch.Size([n_feat, n_feat])
+  assert elman_net_layer.fc_h2h.weight.size() == torch.Size([out_feat, out_feat])
   assert elman_net_layer.fc_h2h.bias is None
   assert torch.all((-inv_sqrt_dim <= elman_net_layer.fc_h2h.weight) & (elman_net_layer.fc_h2h.weight <= inv_sqrt_dim))
 
   assert hasattr(elman_net_layer, 'h_0')
   assert isinstance(elman_net_layer.h_0, nn.Parameter)
-  assert elman_net_layer.h_0.size() == torch.Size([1, n_feat])
+  assert elman_net_layer.h_0.size() == torch.Size([1, out_feat])
   assert torch.all((-inv_sqrt_dim <= elman_net_layer.h_0) & (elman_net_layer.h_0 <= inv_sqrt_dim))
 
 
@@ -89,7 +91,8 @@ def test_elman_net_parameters(
   for lyr in range(n_lyr):
     rnn_lyr = elman_net.stack_rnn[2 * lyr]
     assert isinstance(rnn_lyr, ElmanNetLayer)
-    assert rnn_lyr.n_feat == d_hid
+    assert rnn_lyr.in_feat == d_hid
+    assert rnn_lyr.out_feat == d_hid
 
     dropout_lyr = elman_net.stack_rnn[2 * lyr + 1]
     assert isinstance(dropout_lyr, nn.Dropout)

@@ -202,8 +202,8 @@ def n_lyr(request) -> int:
 
 
 @pytest.fixture(params=[1, 2])
-def n_feat(request) -> int:
-  """Mock number of features."""
+def out_feat(request) -> int:
+  """Mock number of output features."""
   return request.param
 
 
