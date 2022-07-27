@@ -153,6 +153,7 @@ For example, we can train a LSTM (2000 version) language model :py:class:`lmp.mo
     --max_norm 1 \
     --max_seq_len 700 \
     --n_blk 8 \
+    --n_lyr 1 \
     --p_emb 0.1 \
     --p_hid 0.1 \
     --tknzr_exp_name my_tknzr_exp \
@@ -166,7 +167,7 @@ Language model arguments
 The first argument in the above example is the name of a language model.
 Language models have different structure.
 One can see a specific model :term:`hyper-parameters` using ``-h`` arguments.
-For example, one can see that ``--d_emb``, ``--d_blk``, ``--n_blk``, ``--p_emb`` and ``--p_hid`` are parts of the LSTM (2000 version) parameters using the following script:
+For example, one can see that ``--d_emb``, ``--d_blk``, ``--n_blk``, ``-n_lyr``, ``--p_emb`` and ``--p_hid`` are parts of the LSTM (2000 version) parameters using the following script:
 
 .. code-block:: shell
 

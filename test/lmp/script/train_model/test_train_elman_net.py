@@ -124,6 +124,7 @@ def test_train_elman_net_on_demo(
   assert math.isclose(cfg.max_norm, max_norm)
   assert cfg.max_seq_len == max_seq_len
   assert cfg.model_name == ElmanNet.model_name
+  assert cfg.n_lyr == n_lyr
   assert math.isclose(cfg.p_emb, p_emb)
   assert math.isclose(cfg.p_hid, p_hid)
   assert cfg.seed == seed

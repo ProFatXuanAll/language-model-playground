@@ -37,6 +37,7 @@ def test_train_lstm_2000_on_demo(
   max_norm: float,
   max_seq_len: int,
   n_blk: int,
+  n_lyr: int,
   p_emb: float,
   p_hid: float,
   seed: int,
@@ -79,6 +80,8 @@ def test_train_lstm_2000_on_demo(
     str(max_seq_len),
     '--n_blk',
     str(n_blk),
+    '--n_lyr',
+    str(n_lyr),
     '--p_emb',
     str(p_emb),
     '--p_hid',
@@ -125,6 +128,7 @@ def test_train_lstm_2000_on_demo(
   assert cfg.max_seq_len == max_seq_len
   assert cfg.model_name == LSTM2000.model_name
   assert cfg.n_blk == n_blk
+  assert cfg.n_lyr == n_lyr
   assert math.isclose(cfg.p_emb, p_emb)
   assert math.isclose(cfg.p_hid, p_hid)
   assert cfg.seed == seed

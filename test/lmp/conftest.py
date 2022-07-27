@@ -159,6 +159,12 @@ def host_port() -> int:
   return 42069
 
 
+@pytest.fixture(params=[1, 2])
+def in_feat(request) -> int:
+  """Mock number of input features."""
+  return request.param
+
+
 @pytest.fixture
 def log_step() -> int:
   """Log step."""

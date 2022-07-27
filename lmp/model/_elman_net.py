@@ -23,23 +23,24 @@ class ElmanNetLayer(nn.Module):
 
   Let :math:`x` be input features with shape :math:`(B, S, H)`, where :math:`B` is batch size, :math:`S` is sequence
   length and :math:`H` is the number of features per time step in each sequence.
-  Let :math:`h_0` be the initial hidden states.
+  Let :math:`h_0` be the initial hidden states with shape :math:`(B, H)`.
 
   Elman Net layer is defined as follow:
 
   .. math::
 
     \newcommand{\pa}[1]{\left( #1 \right)}
-    \newcommand{\sof}[1]{\operatorname{softmax}\pa{#1}}
     \newcommand{\cat}[1]{\operatorname{concate}\pa{#1}}
+    \newcommand{\eq}{\leftarrow}
+    \newcommand{\sof}[1]{\operatorname{softmax}\pa{#1}}
     \begin{align*}
       & \textbf{procedure } \text{ElmanNetLayer}(x, h_0)                  \\
-      & \quad  S \leftarrow x.\text{size}(1)                              \\
-      & \quad  \textbf{for } t \in \set{0, \dots, S-1} \textbf{ do}       \\
-      & \qquad h_{t+1} \leftarrow \tanh\pa{W \cdot x_t + U \cdot h_t + b} \\
-      & \quad  \textbf{end for}                                           \\
-      & \quad  h \leftarrow \cat{h_1, \dots, h_{t+1}}                     \\
-      & \quad  \textbf{return } h                                         \\
+      & \hspace{1em} S \eq x.\text{size}(1)                               \\
+      & \hspace{1em} \textbf{for } t \in \set{0, \dots, S-1} \textbf{ do} \\
+      & \hspace{2em} h_{t+1} \eq \tanh\pa{W \cdot x_t + U \cdot h_t + b}  \\
+      & \hspace{1em} \textbf{end for}                                     \\
+      & \hspace{1em} h \eq \cat{h_1, \dots, h_S}                          \\
+      & \hspace{1em} \textbf{return } h                                   \\
       & \textbf{end procedure}
     \end{align*}
 
@@ -48,9 +49,9 @@ class ElmanNetLayer(nn.Module):
   +-------------+----------------+-------------+-------------------+
   | Parameter   | Shape          | Symbol      | Shape             |
   +=============+================+=============+===================+
-  | :math:`h_0` | :math:`(1, H)` | :math:`h_0` | :math:`(B, H)`    |
+  | :math:`h_0` | :math:`(1, H)` | :math:`x`   | :math:`(B, S, H)` |
   +-------------+----------------+-------------+-------------------+
-  | :math:`W`   | :math:`(H, H)` | :math:`x`   | :math:`(B, S, H)` |
+  | :math:`W`   | :math:`(H, H)` | :math:`h_0` | :math:`(B, H)`    |
   +-------------+----------------+-------------+-------------------+
   | :math:`U`   | :math:`(H, H)` | :math:`x_t` | :math:`(B, H)`    |
   +-------------+----------------+-------------+-------------------+
@@ -72,7 +73,7 @@ class ElmanNetLayer(nn.Module):
 
   Attributes
   ----------
-  fc_x2h: torch.nn.Sequential
+  fc_x2h: torch.nn.Linear
     Fully connected layer with parameters :math:`W` and :math:`b` which connects input units to recurrent units.
     Input shape: :math:`(B, S, H)`.
     Output shape: :math:`(B, S, H)`.
@@ -154,7 +155,7 @@ class ElmanNetLayer(nn.Module):
     Parameters
     ----------
     batch_x: torch.Tensor
-      Batch of input features.
+      Batch input features.
       ``batch_x`` has shape :math:`(B, S, H)` and ``dtype == torch.float``.
     batch_prev_states: typing.Optional[torch.Tensor], default: None
       Batch of previous hidden states.
@@ -164,7 +165,7 @@ class ElmanNetLayer(nn.Module):
     Returns
     -------
     torch.Tensor
-      batch of hidden states with shape :math:`(B, S, H)` and ``dtype == torch.float``.
+      batch hidden states with shape :math:`(B, S, H)` and ``dtype == torch.float``.
     """
     if batch_prev_states is None:
       batch_prev_states = self.h_0
@@ -175,19 +176,19 @@ class ElmanNetLayer(nn.Module):
     S = batch_x.size(1)
 
     # Transform input features.
-    # shape: (B, S, H).
-    batch_x2h = self.fc_x2h(batch_x)
+    # Shape: (B, S, H).
+    x2h = self.fc_x2h(batch_x)
 
     # Perform recurrent calculation for `S` steps.
     h_all = []
     for t in range(S):
-      # `batch_x[:, t, :]` is the batch of input features at time step `t`.
-      # shape: (B, H).
+      # `x2h[:, t, :]` is the batch input features at time step `t`.
+      # Shape: (B, H).
       # `h_prev` is the hidden states at time step `t`.
-      # shape: (B, H).
+      # Shape: (B, H).
       # `h_cur` is the hidden states at time step `t + 1`.
-      # shape: (B, H).
-      h_cur = torch.tanh(batch_x2h[:, t, :] + self.fc_h2h(h_prev))
+      # Shape: (B, H).
+      h_cur = torch.tanh(x2h[:, t, :] + self.fc_h2h(h_prev))
 
       h_all.append(h_cur)
       h_prev = h_cur
@@ -226,25 +227,27 @@ class ElmanNet(BaseModel):
 
   .. math::
 
+    \newcommand{\br}[1]{\left[ #1 \right]}
     \newcommand{\pa}[1]{\left( #1 \right)}
-    \newcommand{\sof}[1]{\operatorname{softmax}\pa{#1}}
     \newcommand{\cat}[1]{\operatorname{concate}\pa{#1}}
+    \newcommand{\eq}{\leftarrow}
+    \newcommand{\sof}[1]{\operatorname{softmax}\pa{#1}}
     \begin{align*}
-      & \textbf{procedure }\text{ElmanNet}(x, [h_0^0, \dots, h_0^{\nLyr-1}])                  \\
-      & \quad  \textbf{for } t \in \set{0, \dots, S-1} \textbf{ do}                           \\
-      & \qquad  e_t \leftarrow (x_t)\text{-th row of } E \text{ but treated as column vector} \\
-      & \qquad  h_t^{-1} \leftarrow \tanh\pa{W_h \cdot e_t + b_h}                             \\
-      & \quad  \textbf{end for}                                                               \\
-      & \quad  h^{-1} \leftarrow \cat{h_0^{-1}, \dots, h_{S-1}^{-1}}                          \\
-      & \quad  \textbf{for } \ell \in \set{0, \dots, \nLyr-1} \textbf{ do}                    \\
-      & \qquad  h^\ell \leftarrow \text{ElmanNetLayer}(x=h^{\ell-1}, h_0=h_0^\ell)            \\
-      & \quad  \textbf{end for}                                                               \\
-      & \quad  \textbf{for } t \in \set{0, \dots, S-1} \textbf{ do}                           \\
-      & \qquad  z_{t+1} \leftarrow \tanh\pa{W_z \cdot h_{t+1}^{\nLyr-1} + b_z}                \\
-      & \qquad  y_{t+1} \leftarrow \sof{E \cdot z_{t+1}}                                      \\
-      & \quad  \textbf{end for}                                                               \\
-      & \quad  y \leftarrow \cat{y_1, \dots, y_S}                                             \\
-      & \quad  \textbf{return } y                                                             \\
+      & \textbf{procedure }\text{ElmanNet}\pa{x, \br{h_0^0, \dots, h_0^{\nLyr-1}}}          \\
+      & \hspace{1em} \textbf{for } t \in \set{0, \dots, S-1} \textbf{ do}                   \\
+      & \hspace{2em} e_t \eq (x_t)\text{-th row of } E \text{ but treated as column vector} \\
+      & \hspace{2em} h_t^{-1} \eq \tanh(W_h \cdot e_t + b_h)                                \\
+      & \hspace{1em} \textbf{end for}                                                       \\
+      & \hspace{1em} h^{-1} \eq \cat{h_0^{-1}, \dots, h_{S-1}^{-1}}                         \\
+      & \hspace{1em} \textbf{for } \ell \in \set{0, \dots, \nLyr-1} \textbf{ do}            \\
+      & \hspace{2em} h^\ell \eq \text{ElmanNetLayer}(x=h^{\ell-1}, h_0=h_0^\ell)            \\
+      & \hspace{1em} \textbf{end for}                                                       \\
+      & \hspace{1em} \textbf{for } t \in \set{0, \dots, S-1} \textbf{ do}                   \\
+      & \hspace{2em} z_{t+1} \eq \tanh\pa{W_z \cdot h_{t+1}^{\nLyr-1} + b_z}                \\
+      & \hspace{2em} y_{t+1} \eq \sof{E \cdot z_{t+1}}                                      \\
+      & \hspace{1em} \textbf{end for}                                                       \\
+      & \hspace{1em} y \eq \cat{y_1, \dots, y_S}                                            \\
+      & \hspace{1em} \textbf{return } \pa{y, \br{h_S^0, \dots, h_S^{\nLyr-1}}}              \\
       & \textbf{end procedure}
     \end{align*}
 
@@ -253,9 +256,9 @@ class ElmanNet(BaseModel):
   +------------------+------------------------+------------------+-------------------------+
   | Parameter        | Shape                  | Symbol           | Shape                   |
   +==================+========================+==================+=========================+
-  | :math:`h_0^\ell` | :math:`(1, \dHid)`     | :math:`h_0^\ell` | :math:`(B, \dHid)`      |
+  | :math:`h_0^\ell` | :math:`(1, \dHid)`     | :math:`x_t`      | :math:`(B, S)`          |
   +------------------+------------------------+------------------+-------------------------+
-  | :math:`E`        | :math:`(V, \dEmb)`     | :math:`x_t`      | :math:`(B, S)`          |
+  | :math:`E`        | :math:`(V, \dEmb)`     | :math:`h_0^\ell` | :math:`(B, \dHid)`      |
   +------------------+------------------------+------------------+-------------------------+
   | :math:`W_h`      | :math:`(\dHid, \dEmb)` | :math:`e_t`      | :math:`(B, S, \dEmb)`   |
   +------------------+------------------------+------------------+-------------------------+
@@ -458,7 +461,7 @@ class ElmanNet(BaseModel):
 
     See Also
     --------
-    :doc:`lmp.script.train_model </script/train_model>`
+    lmp.script.train_model
       Language model training script.
 
     Examples
@@ -542,7 +545,7 @@ class ElmanNet(BaseModel):
     Parameters
     ----------
     batch_cur_tkids: torch.Tensor
-      Batch of current input token ids.
+      Batch current input token ids.
       ``batch_cur_tkids`` has shape :math:`(B, S)` and ``dtype == torch.long``.
     batch_prev_states: typing.Optional[list[torch.Tensor]], default: None
       Batch of previous hidden states.
@@ -577,7 +580,7 @@ class ElmanNet(BaseModel):
     batch_cur_states = []
     for lyr in range(self.n_lyr):
       # Fetch previous hidden state of a layer.
-      # Shape: (B, S).
+      # Shape: (B, S, d_hid).
       rnn_lyr_batch_prev_states = batch_prev_states[lyr]
 
       # Get the `lyr`-th RNN layer and the `lyr`-th dropout layer.
@@ -614,13 +617,13 @@ class ElmanNet(BaseModel):
   ) -> Tuple[torch.Tensor, List[torch.Tensor]]:
     r"""Calculate language model prediction loss.
 
-    Loss is estimated by cross entropy.
+    We use cross entropy loss as our training objective.
     This method must only be used for training.
 
     Parameters
     ----------
     batch_cur_tkids: torch.Tensor
-      Batch of current input token ids.
+      Batch current input token ids.
       ``batch_cur_tkids`` has shape :math:`(B, S)` and ``dtype == torch.long``.
     batch_next_tkids: torch.Tensor
       Ground truth of each sample in the batch.
@@ -671,7 +674,7 @@ class ElmanNet(BaseModel):
     Parameters
     ----------
     batch_cur_tkids: torch.Tensor
-      Batch of current input token ids.
+      Batch current input token ids.
       ``batch_cur_tkids`` has shape :math:`(B, S)` and ``dtype == torch.long``.
     batch_prev_states: typing.Optional[list[torch.Tensor]], default: None
       Batch of previous hidden states.

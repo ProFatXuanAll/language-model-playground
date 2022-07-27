@@ -36,6 +36,9 @@ def test_prediction_result(lstm_1997: LSTM1997, batch_cur_tkids: torch.Tensor) -
     assert torch.allclose(accum, torch.ones_like(accum))
 
     assert isinstance(batch_prev_states, list)
-    assert len(batch_prev_states) == 2
-    assert batch_prev_states[0].size() == torch.Size([batch_cur_tkids.size(0), lstm_1997.d_hid])
-    assert batch_prev_states[1].size() == torch.Size([batch_cur_tkids.size(0), lstm_1997.n_blk, lstm_1997.d_blk])
+    assert len(batch_prev_states) == 2 * lstm_1997.n_lyr
+    for lyr in range(lstm_1997.n_lyr):
+      h = batch_prev_states[2 * lyr]
+      c = batch_prev_states[2 * lyr + 1]
+      assert h.size() == torch.Size([batch_cur_tkids.size(0), lstm_1997.d_hid])
+      assert c.size() == torch.Size([batch_cur_tkids.size(0), lstm_1997.n_blk, lstm_1997.d_blk])

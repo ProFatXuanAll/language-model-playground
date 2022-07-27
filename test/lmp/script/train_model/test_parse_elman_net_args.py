@@ -105,6 +105,7 @@ def test_elman_net_parse_results(
       assert math.isclose(args.max_norm, max_norm)
       assert args.max_seq_len == max_seq_len
       assert args.model_name == ElmanNet.model_name
+      assert args.n_lyr == n_lyr
       assert math.isclose(args.p_emb, p_emb)
       assert math.isclose(args.p_hid, p_hid)
       assert args.seed == seed

@@ -27,6 +27,7 @@ def test_lstm_2002_parse_results(
   max_norm: float,
   max_seq_len: int,
   n_blk: int,
+  n_lyr: int,
   p_emb: float,
   p_hid: float,
   seed: int,
@@ -70,6 +71,8 @@ def test_lstm_2002_parse_results(
         str(max_seq_len),
         '--n_blk',
         str(n_blk),
+        '--n_lyr',
+        str(n_lyr),
         '--p_emb',
         str(p_emb),
         '--p_hid',
@@ -106,6 +109,7 @@ def test_lstm_2002_parse_results(
       assert args.max_seq_len == max_seq_len
       assert args.model_name == LSTM2002.model_name
       assert args.n_blk == n_blk
+      assert args.n_lyr == n_lyr
       assert math.isclose(args.p_emb, p_emb)
       assert math.isclose(args.p_hid, p_hid)
       assert args.seed == seed

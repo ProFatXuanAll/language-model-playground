@@ -161,6 +161,7 @@ The following example train a LSTM (2000 version) based language model :py:mod:`
     --max_norm 1 \
     --max_seq_len 700 \
     --n_blk 8 \
+    --n_lyr 1 \
     --p_emb 0.1 \
     --p_hid 0.1 \
     --tknzr_exp_name my_tknzr_exp \

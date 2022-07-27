@@ -25,7 +25,9 @@ def test_elman_net_layer_forward_path(
       batch_x=batch_x[:, idx, :].unsqueeze(1),
       batch_prev_states=batch_prev_states,
     )
-    batch_prev_states = batch_cur_states.detach()
+
+    batch_prev_states = batch_cur_states.detach()[:, -1, :]
+
     loss = batch_cur_states.sum()
     loss.backward()
 
@@ -35,6 +37,11 @@ def test_elman_net_layer_forward_path(
     assert hasattr(elman_net_layer.fc_x2h.bias, 'grad')
     assert hasattr(elman_net_layer.fc_h2h.weight, 'grad')
     assert hasattr(elman_net_layer.h_0, 'grad')
+
+    if idx == 0:
+      assert hasattr(elman_net_layer.h_0, 'grad')
+
+    elman_net_layer.zero_grad()
 
 
 def test_elman_net_forward_path(
@@ -65,3 +72,5 @@ def test_elman_net_forward_path(
       assert hasattr(elman_net.stack_rnn[2 * lyr].fc_x2h.weight, 'grad')
     assert hasattr(elman_net.fc_h2e[0].weight, 'grad')
     assert hasattr(elman_net.fc_h2e[0].bias, 'grad')
+
+    elman_net.zero_grad()

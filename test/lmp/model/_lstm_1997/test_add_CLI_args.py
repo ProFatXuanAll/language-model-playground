@@ -10,7 +10,7 @@ import math
 from lmp.model._lstm_1997 import LSTM1997
 
 
-def test_arguments(d_blk: int, d_emb: int, n_blk: int, p_emb: float, p_hid: float) -> None:
+def test_arguments(d_blk: int, d_emb: int, n_blk: int, n_lyr: int, p_emb: float, p_hid: float) -> None:
   """Must have correct arguments."""
   parser = argparse.ArgumentParser()
   LSTM1997.add_CLI_args(parser=parser)
@@ -22,6 +22,8 @@ def test_arguments(d_blk: int, d_emb: int, n_blk: int, p_emb: float, p_hid: floa
       str(d_emb),
       '--n_blk',
       str(n_blk),
+      '--n_lyr',
+      str(n_lyr),
       '--p_emb',
       str(p_emb),
       '--p_hid',
@@ -31,5 +33,6 @@ def test_arguments(d_blk: int, d_emb: int, n_blk: int, p_emb: float, p_hid: floa
   assert args.d_blk == d_blk
   assert args.d_emb == d_emb
   assert args.n_blk == n_blk
+  assert args.n_lyr == n_lyr
   assert math.isclose(args.p_emb, p_emb)
   assert math.isclose(args.p_hid, p_hid)

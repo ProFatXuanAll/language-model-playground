@@ -27,4 +27,7 @@ def test_module_attribute() -> None:
   assert hasattr(lmp.model, 'SUB_MODELS')
   assert lmp.model.SUB_MODELS == [
     lmp.model.ElmanNetLayer,
+    lmp.model.LSTM1997Layer,
+    lmp.model.LSTM2000Layer,
+    lmp.model.LSTM2002Layer,
   ]
