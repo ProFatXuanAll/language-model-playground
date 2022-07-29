@@ -33,7 +33,6 @@ class ElmanNetLayer(nn.Module):
     \newcommand{\pa}[1]{\left( #1 \right)}
     \newcommand{\cat}[1]{\operatorname{concate}\pa{#1}}
     \newcommand{\eq}{\leftarrow}
-    \newcommand{\sof}[1]{\operatorname{softmax}\pa{#1}}
     \begin{align*}
       & \textbf{procedure } \text{ElmanNetLayer}(x, [h_0])                \\
       & \hspace{1em} S \eq x.\text{size}(1)                               \\
@@ -461,7 +460,7 @@ class ElmanNet(BaseModel):
 
   @classmethod
   def add_CLI_args(cls, parser: argparse.ArgumentParser) -> None:
-    """Add Elman Net language model constructor parameters to CLI arguments parser.
+    """Add Elman Net language model hyperparameters to CLI arguments parser.
 
     Parameters
     ----------
@@ -501,7 +500,7 @@ class ElmanNet(BaseModel):
     lmp.util.validate.raise_if_not_instance(val=parser, val_name='parser', val_type=argparse.ArgumentParser)
 
     # Required arguments.
-    group = parser.add_argument_group('Elman Net constructor arguments')
+    group = parser.add_argument_group('Elman Net hyperparameters')
     group.add_argument(
       '--d_emb',
       help='Token embedding dimension.',

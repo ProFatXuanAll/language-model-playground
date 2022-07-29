@@ -38,7 +38,6 @@ class LSTM2000Layer(LSTM1997Layer):
     \newcommand{\cat}[1]{\operatorname{concate}\pa{#1}}
     \newcommand{\eq}{\leftarrow}
     \newcommand{\fla}[1]{\operatorname{flatten}\pa{#1}}
-    \newcommand{\sof}[1]{\operatorname{softmax}\pa{#1}}
     \begin{align*}
       & \textbf{procedure } \text{LSTM2000Layer}(x, [h_0, c_0])                                    \\
       & \hspace{1em} S \eq x.\text{size}(1)                                                        \\
@@ -525,7 +524,7 @@ class LSTM2000(LSTM1997):
 
   @classmethod
   def add_CLI_args(cls, parser: argparse.ArgumentParser) -> None:
-    """CLI arguments parser for training LSTM (2000 version) language model.
+    """Add LSTM (2000 version) language model hyperparameters to CLI arguments parser.
 
     Parameters
     ----------
@@ -567,7 +566,7 @@ class LSTM2000(LSTM1997):
     lmp.util.validate.raise_if_not_instance(val=parser, val_name='parser', val_type=argparse.ArgumentParser)
 
     # Required arguments.
-    group = parser.add_argument_group('LSTM (2000 version) constructor arguments')
+    group = parser.add_argument_group('LSTM (2000 version) hyperparameters')
     group.add_argument(
       '--d_blk',
       help='Dimension of each memory cell block.',
