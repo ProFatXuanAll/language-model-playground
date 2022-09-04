@@ -15,3 +15,6 @@
   script/index
   tknzr/index
   util/index
+  vars
+
+.. footbibliography::

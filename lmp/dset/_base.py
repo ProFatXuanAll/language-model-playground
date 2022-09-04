@@ -8,8 +8,8 @@ from typing import ClassVar, Iterator, List, Optional
 import requests
 import torch.utils.data
 
-import lmp.util.path
 import lmp.util.validate
+import lmp.vars
 
 
 class BaseDset(torch.utils.data.Dataset):
@@ -17,14 +17,14 @@ class BaseDset(torch.utils.data.Dataset):
 
   Most datasets need to be downloaded from the web.
   Only some of them can be generated locally.
-  Datasets will be downloaded / generated automatically if they are not on your local machine.
-  Once dataset files existed they will not be downloaded / generated again.
+  Datasets are downloaded / generated automatically if they are not on your local machine.
+  No downloading or generation are executed if dataset files already exist on your local machine.
 
   Parameters
   ----------
   ver: Optional[str], default: None
     Version of the dataset.
-    Set to ``None`` to use default version ``self.__class__.df_ver``.
+    Set to ``None`` to use the default version ``self.__class__.df_ver``.
 
   Attributes
   ----------
@@ -63,6 +63,23 @@ class BaseDset(torch.utils.data.Dataset):
 
     self.spls: List[str] = []
 
+  def __getitem__(self, idx: int) -> str:
+    """Sample text using index.
+
+    Parameters
+    ----------
+    idx: int
+      Sample index.
+
+    Returns
+    -------
+    str
+      The sample whose index equals to ``idx``.
+    """
+    # `idx` validation.
+    lmp.util.validate.raise_if_not_instance(val=idx, val_name='idx', val_type=int)
+    return self.spls[idx]
+
   def __iter__(self) -> Iterator[str]:
     """Iterate through each sample in the dataset.
 
@@ -83,23 +100,6 @@ class BaseDset(torch.utils.data.Dataset):
       Number of samples in the dataset.
     """
     return len(self.spls)
-
-  def __getitem__(self, idx: int) -> str:
-    """Sample text using index.
-
-    Parameters
-    ----------
-    idx: int
-      Sample index.
-
-    Returns
-    -------
-    str
-      The sample whose index equals to ``idx``.
-    """
-    # `idx` validation.
-    lmp.util.validate.raise_if_not_instance(val=idx, val_name='idx', val_type=int)
-    return self.spls[idx]
 
   @staticmethod
   def download_file(mode: str, download_path: str, url: str) -> None:

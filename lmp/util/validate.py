@@ -12,7 +12,8 @@ def raise_if_empty_str(*, val: str, val_name: str) -> None:
   val: str
     Test target.
   val_name: str
-    Test target name.  Mainly used to create error message.
+    Test target name.
+    Mainly used to create error message.
 
   Raises
   ------
@@ -65,7 +66,8 @@ def raise_if_not_in(*, val: Any, val_name: str, val_range: List) -> None:
   val: Any
     Test target.
   val_name: str
-    Test target name.  Mainly used to create error message.
+    Test target name.
+    Mainly used to create error message.
   val_range: list
     Expected value range.
 
@@ -88,7 +90,8 @@ def raise_if_not_instance(*, val: Any, val_name: str, val_type: Type) -> None:
   val: Any
     Test target.
   val_name: str
-    Test target name.  Mainly used to create error message.
+    Test target name.
+    Mainly used to create error message.
   val_type: Type
     Expected target type.
 
@@ -109,7 +112,8 @@ def raise_if_wrong_ordered(*, vals: List[Union[float, int]], val_names: List[str
   vals: list[Union[float, int]]
     Test targets.
   val_names: list[str]
-    Test targets' names.  Mainly used to create error message.
+    Test targets' names.
+    Mainly used to create error message.
 
   Raises
   ------

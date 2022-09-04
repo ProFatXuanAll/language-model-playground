@@ -15,11 +15,11 @@ class BaseInfer(abc.ABC):
   """Inference method abstract base class.
 
   Implement basic functionalities for language model inference, including text generation and parsing inference
-  arguments.
+  hyperparameters.
 
   Parameters
   ----------
-  max_seq_len: str
+  max_seq_len: str, default: 32
     Maximum length constraint on generated token list.
     One can use larger contraint compare to training.
   kwargs: typing.Any, optional
@@ -42,7 +42,7 @@ class BaseInfer(abc.ABC):
 
   infer_name: ClassVar[str] = 'base'
 
-  def __init__(self, max_seq_len: int, **kwargs: Any):
+  def __init__(self, *, max_seq_len: int = 32, **kwargs: Any):
     # `max_seq_len` validation.
     lmp.util.validate.raise_if_not_instance(val=max_seq_len, val_name='max_seq_len', val_type=int)
     lmp.util.validate.raise_if_wrong_ordered(vals=[1, max_seq_len, 1024], val_names=['1', 'max_seq_len', '1024'])
@@ -51,12 +51,12 @@ class BaseInfer(abc.ABC):
 
   @classmethod
   def add_CLI_args(cls, parser: argparse.ArgumentParser) -> None:
-    """Add inference method constructor parameters to CLI arguments parser.
+    """Add inference method hyperparameters to CLI argument parser.
 
     Parameters
     ----------
     parser: argparse.ArgumentParser
-      CLI arguments parser.
+      CLI argument parser.
 
     Returns
     -------
@@ -77,9 +77,9 @@ class BaseInfer(abc.ABC):
 
     Parameters
     ----------
-    model: lmp.model.BaseModel
+    model: ~lmp.model.BaseModel
       Pre-trained language model which will be used to generate text.
-    tknzr: lmp.tknzr.BaseTknzr
+    tknzr: ~lmp.tknzr.BaseTknzr
       Pre-trained tokenizer which performs text encoding and decoding.
     txt: str
       Text segment which the generation process is conditioned on.

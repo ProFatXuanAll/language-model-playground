@@ -1,16 +1,14 @@
-"""Test perplexity calculation.
+"""Test -p log(p) calculation.
 
 Test target:
-- :py:meth:`lmp.util.metric.ppl`.
+- :py:meth:`lmp.util.metric.nplogp`.
 """
-
-import math
 
 import pytest
 import torch
 
 import lmp.util.metric
-from lmp.tknzr._base import BOS_TKID, EOS_TKID, PAD_TKID, UNK_TKID
+from lmp.vars import BOS_TKID, EOS_TKID, PAD_TKID, UNK_TKID
 
 
 @pytest.fixture
@@ -26,7 +24,7 @@ def batch_tkids() -> torch.Tensor:
 
 @pytest.fixture
 def batch_tkids_pd(batch_tkids: torch.Tensor) -> torch.Tensor:
-  """Mock token ids probability distribution with shape ``(B, S, V) == (2, 3, 4)``."""
+  """Mock token ids probability distribution with shape ``(B, S, V) == (2, 5, 4)``."""
   pd = torch.zeros(2, 5, 4)
   pd[0, 0, BOS_TKID] = 0.9
   pd[0, 1, UNK_TKID] = 0.8
@@ -42,27 +40,27 @@ def batch_tkids_pd(batch_tkids: torch.Tensor) -> torch.Tensor:
 
 
 @pytest.fixture
-def batch_ppl(batch_tkids: torch.Tensor, batch_tkids_pd: torch.Tensor) -> torch.Tensor:
+def batch_nplogp(batch_tkids: torch.Tensor, batch_tkids_pd: torch.Tensor) -> torch.Tensor:
   """Expect perplexity result.
 
   Must has shape ``(B) == (2)``.
   """
   # Paddings are masked.
-  b0 = math.log(0.9) + math.log(0.8) + math.log(0.7)
-  b0 = -b0 / 3
-  b1 = math.log(0.4) + math.log(0.3) + math.log(0.2) + math.log(0.1) + math.log(0.1)
-  b1 = -b1 / 5
-  return torch.exp(torch.tensor([b0, b1]))
+  p = torch.tensor([
+    [0.9, 0.8, 0.7, 1.0, 1.0],
+    [0.4, 0.3, 0.2, 0.1, 0.1],
+  ])
+  return -p * p.log2()
 
 
-def test_calculate_result(batch_ppl: torch.Tensor, batch_tkids: torch.Tensor, batch_tkids_pd: torch.Tensor) -> None:
+def test_calculate_result(batch_nplogp: torch.Tensor, batch_tkids: torch.Tensor, batch_tkids_pd: torch.Tensor) -> None:
   """Test perplexity calcuation result."""
   assert torch.all(
     torch.isclose(
-      input=lmp.util.metric.ppl(
+      input=lmp.util.metric.nplogp(
         batch_tkids=batch_tkids,
         batch_tkids_pd=batch_tkids_pd,
       ),
-      other=batch_ppl,
+      other=batch_nplogp,
     )
   )

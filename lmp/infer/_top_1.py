@@ -13,7 +13,7 @@ class Top1Infer(BaseInfer):
   """Top-1 inference method.
 
   For each inference step, this method pick the token id with **maximum (top-1) probability** from next token id
-  probability distribution over tokenizer's vocabulary, and use that token id as the next token id prediction.
+  probability distribution over tokenizer's vocabulary as the next token id prediction.
   If there are multiple token ids having the same maximum probability, then this method pick the **smallest** token id.
   It is a greedy algorithm, simple but lack of diversity.
 
@@ -26,7 +26,7 @@ class Top1Infer(BaseInfer):
   --------
   :doc:`lmp.infer </infer/index>`
     All available inference methods.
-  lmp.script.gen_txt
+  :doc:`lmp.script.gen_txt </script/gen_txt>`
     Use pre-trained language model checkpoint to generate continual text of given text segment.
   """
 
@@ -38,20 +38,20 @@ class Top1Infer(BaseInfer):
 
     Top-1 inference algorithm is structured as follow:
 
-    #. Encode input text as 1 sample batch.
-    #. Remove token ids after ``[eos]`` since model is not trained to predict tokens after seeing ``[eos]``.
-    #. Loop over conditioned token ids to generate conditioned hidden states.
+    #. Encode input text as 1 sequence batch.
+    #. Remove token ids after ``<eos>`` since model is not trained to predict tokens after seeing ``<eos>``.
+    #. Loop over conditional token ids to generate conditional hidden states.
     #. Loop to generate token ids.
        In each iteration, generated token id was choosed so that it has maximum probability from next token id
        probability distribution.
-       Generation loop stops when ``[eos]`` is generated or maximum length constraint is violated.
+       Generation loop stops when ``<eos>`` is generated or maximum length constraint is violated.
     #. Decode generated token ids into text and return.
 
     Parameters
     ----------
-    model: lmp.model.BaseModel
+    model: ~lmp.model.BaseModel
       Pre-trained language model which will be used to generate text.
-    tknzr: lmp.tknzr.BaseTknzr
+    tknzr: ~lmp.tknzr.BaseTknzr
       Pre-trained tokenizer which performs text encoding and decoding.
     txt: str
       Text segment which the generation process is conditioned on.
@@ -63,18 +63,18 @@ class Top1Infer(BaseInfer):
 
     See Also
     --------
-    lmp.script.gen_txt
+    :doc:`lmp.script.gen_txt </script/gen_txt>`
       Use pre-trained language model checkpoint to generate continual text of given text segment.
     """
     # Get model running device.
     device = next(model.parameters()).device
 
-    # Encode as 1 sample batch.
+    # Encode as 1 sequence batch.
     # We convert token ids to tensor and move tensor to the same running device as model.
-    # shape: (1, max_seq_len).
-    batch_cur_tkids = torch.LongTensor(tknzr.batch_enc(batch_txt=[txt], max_seq_len=self.max_seq_len)).to(device)
+    # shape: (1, S).
+    batch_cur_tkids = torch.LongTensor([tknzr.enc(txt=txt)]).to(device)
 
-    # Remove token ids after `[eos]` since model is not trained to predict tokens after seeing `[eos]`.
+    # Remove token ids after `<eos>` since model is not trained to predict tokens after seeing `<eos>`.
     mask = (batch_cur_tkids == EOS_TKID) | (batch_cur_tkids == PAD_TKID)
     seq_len = batch_cur_tkids.size(1) - mask.sum()
     batch_cur_tkids = batch_cur_tkids[:, :seq_len]
@@ -82,10 +82,13 @@ class Top1Infer(BaseInfer):
     # Loop over conditioned token ids to generate conditioned hidden states.
     batch_prev_states = None
     for i in range(seq_len - 1):
-      _, batch_prev_states = model.pred(
+      _, batch_cur_states = model.pred(
         batch_cur_tkids=batch_cur_tkids[:, i].unsqueeze(1),
         batch_prev_states=batch_prev_states,
       )
+
+      # Update hidden states.
+      batch_prev_states = batch_cur_states
 
     # Calculate how many token at most can be generated.
     out_seq_len = self.max_seq_len - seq_len + 1
@@ -97,7 +100,7 @@ class Top1Infer(BaseInfer):
     for _ in range(out_seq_len):
       # Get next token id probability distribution.
       # shape: (1, 1, V).
-      batch_next_tkids_pd, batch_prev_states = model.pred(
+      batch_next_tkids_pd, batch_cur_states = model.pred(
         batch_cur_tkids=batch_cur_tkids,
         batch_prev_states=batch_prev_states,
       )
@@ -111,9 +114,12 @@ class Top1Infer(BaseInfer):
       # Update input token ids.
       batch_cur_tkids = batch_next_tkids
 
-      # If the prediction token id is `[eos]`, then stop generation immediately.
+      # Update hidden states.
+      batch_prev_states = batch_cur_states
+
+      # If the prediction token id is `<eos>`, then stop generation immediately.
       if gen_tkid == EOS_TKID:
         break
 
     # Output generated text.
-    return tknzr.batch_dec(batch_tkids=[gen_tkids], rm_sp_tks=True)[0]
+    return tknzr.dec(tkids=gen_tkids, rm_sp_tks=True)

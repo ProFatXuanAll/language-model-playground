@@ -16,8 +16,8 @@ class DemoDset(BaseDset):
   where :math:`a, b` are integers within :math:`0` to :math:`99` (inclusive).
 
   Here we describe the dataset in detail.
-  Let :math:`E = \set{0, 2, 4, \dots, 98}` be the set of non-negative, less than 100 even numbers, and let
-  :math:`E = \set{1, 3, 5, \dots, 99}` be the set of positive, less than 100 odd numbers.
+  Let :math:`E = \set{0, 2, 4, \dots, 98}` be the set of non-negative even numbers which are less than :math:`100`, and
+  let :math:`O = \set{1, 3, 5, \dots, 99}` be the set of positive odd numbers which are less than :math:`100`.
 
   +-----------+---------------------------------------+--------------------+--------------------+
   | Version   | Design Philosophy                     | Range of :math:`a` | Range of :math:`b` |
@@ -35,7 +35,7 @@ class DemoDset(BaseDset):
   ----------
   ver: Optional[str], default: None
     Version of the dataset.
-    Set ``ver = ''`` to use default version.
+    Set to ``None`` to use the default version ``self.__class__.df_ver``.
 
   Attributes
   ----------
@@ -93,6 +93,3 @@ class DemoDset(BaseDset):
 
     # Normalize dataset.
     self.spls = list(map(self.norm, self.spls))
-
-    # Sort dataset by length in ascending order.
-    self.spls.sort(key=len)

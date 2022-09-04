@@ -4,8 +4,8 @@ import os
 import pickle
 from typing import Any, Final
 
-import lmp.util.path
 import lmp.util.validate
+import lmp.vars
 from lmp.tknzr import TKNZR_OPTS, BaseTknzr
 
 FILE_NAME: Final[str] = 'tknzr.pkl'
@@ -39,68 +39,20 @@ def create(tknzr_name: str, **kwargs: Any) -> BaseTknzr:
   >>> import lmp.util.tknzr
   >>> tknzr = lmp.util.tknzr.create(
   ...   is_uncased=False,
-  ...   max_vocab=-1,
-  ...   min_count=0,
+  ...   max_vocab=10,
+  ...   min_count=2,
   ...   tknzr_name=WsTknzr.tknzr_name,
   ... )
   >>> assert isinstance(tknzr, WsTknzr)
+  >>> assert not tknzr.is_uncased
+  >>> assert tknzr.max_vocab == 10
+  >>> assert tknzr.min_count == 2
   """
   # `tknzr_name` validation.
   lmp.util.validate.raise_if_not_instance(val=tknzr_name, val_name='tknzr_name', val_type=str)
   lmp.util.validate.raise_if_not_in(val=tknzr_name, val_name='tknzr_name', val_range=list(TKNZR_OPTS.keys()))
 
   return TKNZR_OPTS[tknzr_name](**kwargs)
-
-
-def save(exp_name: str, tknzr: BaseTknzr) -> None:
-  """Save tokenizer as pickle file.
-
-  .. danger::
-
-     This method overwrite existed files.  Make sure you know what you are doing before calling this method.
-
-  Parameters
-  ----------
-  exp_name: int
-    Tokenizer training experiment name.
-  tknzr: lmp.model.BaseTknzr
-    Tokenizer to be saved.
-
-  Returns
-  -------
-  None
-
-  See Also
-  --------
-  lmp.util.tknzr.load
-    Load pre-trained tokenizer instance by experiment name.
-
-  Examples
-  --------
-  >>> from lmp.tknzr import CharTknzr
-  >>> import lmp.util.tknzr
-  >>> tknzr = CharTknzr(is_uncased=False, max_vocab=10, min_count=2)
-  >>> lmp.util.tknzr.save(exp_name='test', tknzr=tknzr)
-  None
-  """
-  # `exp_name` validation.
-  lmp.util.validate.raise_if_not_instance(val=exp_name, val_name='exp_name', val_type=str)
-  lmp.util.validate.raise_if_empty_str(val=exp_name, val_name='exp_name')
-
-  # `dir_path` validation
-  dir_path = os.path.join(lmp.util.path.EXP_PATH, exp_name)
-  lmp.util.validate.raise_if_is_file(path=dir_path)
-
-  if not os.path.exists(dir_path):
-    os.makedirs(dir_path)
-
-  # `file_path` validation.
-  file_path = os.path.join(dir_path, FILE_NAME)
-  lmp.util.validate.raise_if_is_directory(path=file_path)
-
-  # Save tokenizer as pickle file.
-  with open(file_path, 'wb') as f:
-    pickle.dump(tknzr, f)
 
 
 def load(exp_name: str) -> BaseTknzr:
@@ -147,10 +99,62 @@ def load(exp_name: str) -> BaseTknzr:
   lmp.util.validate.raise_if_empty_str(val=exp_name, val_name='exp_name')
 
   # `file_path` validation
-  file_path = os.path.join(lmp.util.path.EXP_PATH, exp_name, FILE_NAME)
+  file_path = os.path.join(lmp.vars.EXP_PATH, exp_name, FILE_NAME)
   lmp.util.validate.raise_if_is_directory(path=file_path)
 
   # Load tokenizer from pickle.
   with open(file_path, 'rb') as f:
     tknzr = pickle.load(f)
   return tknzr
+
+
+def save(exp_name: str, tknzr: BaseTknzr) -> None:
+  """Save tokenizer as pickle file.
+
+  .. danger::
+
+    This method overwrite existing files.
+    Make sure you know what you are doing before calling this method.
+
+  Parameters
+  ----------
+  exp_name: int
+    Tokenizer training experiment name.
+  tknzr: lmp.model.BaseTknzr
+    Tokenizer to be saved.
+
+  Returns
+  -------
+  None
+
+  See Also
+  --------
+  ~load
+    Load pre-trained tokenizer instance by experiment name.
+
+  Examples
+  --------
+  >>> from lmp.tknzr import CharTknzr
+  >>> import lmp.util.tknzr
+  >>> tknzr = CharTknzr(is_uncased=False, max_vocab=10, min_count=2)
+  >>> lmp.util.tknzr.save(exp_name='test', tknzr=tknzr)
+  None
+  """
+  # `exp_name` validation.
+  lmp.util.validate.raise_if_not_instance(val=exp_name, val_name='exp_name', val_type=str)
+  lmp.util.validate.raise_if_empty_str(val=exp_name, val_name='exp_name')
+
+  # `dir_path` validation
+  dir_path = os.path.join(lmp.vars.EXP_PATH, exp_name)
+  lmp.util.validate.raise_if_is_file(path=dir_path)
+
+  if not os.path.exists(dir_path):
+    os.makedirs(dir_path)
+
+  # `file_path` validation.
+  file_path = os.path.join(dir_path, FILE_NAME)
+  lmp.util.validate.raise_if_is_directory(path=file_path)
+
+  # Save tokenizer as pickle file.
+  with open(file_path, 'wb') as f:
+    pickle.dump(tknzr, f)

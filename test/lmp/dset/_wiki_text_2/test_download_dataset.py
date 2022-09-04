@@ -7,7 +7,7 @@ Test target:
 import os
 
 import lmp.dset._wiki_text_2
-import lmp.util.path
+import lmp.vars
 
 
 def test_download_dataset() -> None:
@@ -17,6 +17,6 @@ def test_download_dataset() -> None:
   assert all(
     map(
       lambda file_path: os.path.exists(file_path),
-      [os.path.join(lmp.util.path.DATA_PATH, f'wiki.{ver}.tokens') for ver in lmp.dset._wiki_text_2.WikiText2Dset.vers],
+      [os.path.join(lmp.vars.DATA_PATH, f'wiki.{ver}.tokens') for ver in lmp.dset._wiki_text_2.WikiText2Dset.vers],
     )
   )

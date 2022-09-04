@@ -5,7 +5,7 @@ Glossary
 
   back-propagation
     A efficient way to calculate gradient of :term:`loss function` with respect to each :term:`model parameter`.
-    See the paper [1]_ for algorithm detail.
+    See :footcite:`rumelhart1986learning` for algorithm detail.
 
   batch size
     Number of samples in a :term:`mini-batch`.
@@ -13,12 +13,12 @@ Glossary
   BOS
   BOS token
   BOS tokens
-  begin-of-sentence
-  begin-of-sentence token
-  begin-of-sentence tokens
-    **BOS** token is a :term:`special token` which represent the begining of a sentence.
-    More generally, BOS token represent the begining of a given text passage.
-    BOS token is the 0th input of a :term:`language model`.
+  begin-of-sequence
+  begin-of-sequence token
+  begin-of-sequence tokens
+    **BOS** token is a :term:`special token` which represent the begining of a sequence.
+    In this project, BOS token represent the begining of a given text passage.
+    BOS token is the first input of a :term:`language model`.
     A language model is :term:`trained` so that when receives a BOS token it must predict the most possible token that can appear at the start of a text passage.
 
   checkpoint
@@ -31,24 +31,27 @@ Glossary
   context window
   context window size
   context windows
-    When performing tasks with :term:`time-series` data, one sometimes have to deals with long :term:`sequence` and cannot fit the whole sequence into memory.
+    When performing :term:`time-series` tasks, one sometimes need to deals with long :term:`sequences` and cannot fit the whole sequences into memory.
     In this case we usually chuck a time-series data into subsequences (or frames) and train :term:`model` on these subsequences.
     The fancy name for subsequences is **context window**, and the size of each subsequence is called **context window size**.
-    When optimize :term:`RNN` models, one usually need to optimize on subsequences instead of the whole sequence to ease the :term:`optimization` problems like :term:`gradient explosion` and :term:`gradient vanishing`.
+    When optimize :term:`RNN` models, one usually optimize performance on subsequences instead of the whole sequence to ease the :term:`optimization` problems like :term:`gradient explosion` and :term:`gradient vanishing`.
+    Context windows can have overlaps.
+    The number of overlapping tokens is called :term:`stride`.
+    Both context window size and stride are treated as preprocessing :term:`hyperparameters`.
 
   cross entropy
   cross entropy loss
   cross-entropy
   cross-entropy loss
     A :term:`loss function` used to :term:`optimize` classifiers.
-    Suppose that we are performing a :math:`C` classes classification task and a classifier produce a probability distribution :math:`P = (P_1, \dots, P_C)` given a input :math:`x`.
+    Suppose that we are performing a :math:`C` classes classification task and a classifier produce a probability distribution :math:`P(x) = \pa{P_1(x), \dots, P_C(x)}` given a input :math:`x`.
     If the ground truth correspond to :math:`x` is :math:`y` (note that :math:`y \in \set{1, \dots, C}`), then **cross entropy loss** of :math:`(x, y)` is calculated as follow
 
     .. math::
 
-      \operatorname{CE}(x, y) = -\log P_y.
+      \operatorname{CE}(x, y) = -\log P_y(x).
 
-    When :math:`P_y \approx 1`, we have :math:`P_i \approx 0` for every other non-:math:`y`-th class :math:`i`.
+    When :math:`P_y(x) \approx 1`, we have :math:`P_i(x) \approx 0` for every other non-:math:`y`-th class :math:`i`.
     Thus if one use cross entropy to optimize :term:`model`, then one is maximize model's loglikelihood.
 
   CUDA
@@ -73,11 +76,11 @@ Glossary
   EOS
   EOS token
   EOS tokens
-  end-of-sentence
-  end-of-sentence token
-  end-of-sentence tokens
-    **EOS** token is a :term:`special token` which represent the end of a sentence.
-    More generally, EOS token represent the end of a given text passage.
+  end-of-sequence
+  end-of-sequence token
+  end-of-sequence tokens
+    **EOS** token is a :term:`special token` which represent the end of a sequence.
+    In this project, EOS token represent the end of a given text passage.
     EOS token is the prediction target of the last input token of a :term:`language model`.
     In this project, any tokens that follows EOS token can only be :term:`PAD` tokens, and language models are not :term:`trained` to produced meaningful output when seeing EOS tokens and PAD tokens.
 
@@ -93,8 +96,8 @@ Glossary
     Name of a particular :term:`experiment`.
 
   experiment path
-    All :term:`experiment` files are put under directory ``exp``.
-    If :term:`experiment name` is ``my_exp``, then experiment path is ``exp/my_exp``.
+    All :term:`experiment` files are put under directory ``project_root/exp``.
+    If :term:`experiment name` is ``my_exp``, then experiment path is ``project_root/exp/my_exp``.
 
   forward pass
     The process which a :term:`model` takes a input :term:`tensor` and calculates with its :term:`parameters` to achieve certain goal is called **forward pass**.
@@ -116,37 +119,67 @@ Glossary
 
   gradient explosion
   gradient vanishing
-    When perform :term:`gradient descent`, if the calculated gradients are large in magnitude, then :term:`model parameters` will also be large in magnitude and results in values like Inf or NaN which makes model malfunctioning.
+    When perform :term:`gradient descent`, if the calculated gradients have large norm (large in magnitude), then :term:`model parameters` will also have large norm and results in values like Inf or NaN which makes model malfunctioning.
     This is called **gradient explosion**.
-    On the other extreme, if the calculated gradients are small in magnitude, then :term:`model parameters` will be updated extremely slow.
+    On the other extreme, if the calculated gradients have norm closed to zero, then :term:`model parameters` will be updated extremely slow.
     This is called **gradient vanishing**.
     These two cases happed all the times when :term:`optimize` deep learning :term:`model` by gradient descent, especially when optimizing :term:`RNN` models.
+
     One can use gradient clipping to enforce the magnitude of gradients fall within certain boundary.
+    We use ``--max_norm`` in :doc:`lmp.script.train_model </script/train_model>` to clip gradients.
     Gradient clipping can ease the gradient explosion but not vanishing.
-    To solve gradient vanishing, one have to design is model structure so that gradients of parameters closed to input layer is guarenteed to have almost identical scale.
-    For example, the internal states of :py:class:`lmp.model.LSTM1997` is one such mechanism.
-    Other mechanisms like residual connection [2]_ are also proposed.
+    To solve gradient vanishing, one have to design specific model structure so that gradients of parameters closed to input layer is guarenteed to have almost identical scale.
+    For example, the internal states of :py:class:`~lmp.model.LSTM1997` is one such mechanism.
+    Other mechanisms like residual connection :footcite:`he2016deep` are also proposed.
 
   hidden states
   initial hidden states
     When a :term:`model` receives a :term:`time-series` data, some of the early computation results can serve as future input and perform further computation.
     These computation results generated by the model on the fly are called **hidden states**.
     All hidden states for each time step have identical structure.
-    This means we can use for loops to calculate hidden states.
-    By the nature of for loops, we must provide **initial hidden states** to make for loops work.
+    This means we can use for-loops to calculate hidden states.
+    By the nature of for-loops, we must provide **initial hidden states** to make for-loops work.
     This means initial hidden states may not be generated on the fly but previously defined instead.
     One usually set initial hidden states to zeros.
     One can also let initial hidden states be a part of :term:`model parameters`.
+    For simplicity, we set initial hidden states to zeros in this project.
 
-  hyper-parameter
-  hyper-parameters
   hyperparameter
   hyperparameters
     A :term:`model` can have the same structure with different number of layers and units.
-    The specific number of layers and units are called **hyper-parameters**.
-    Hyper-parameters must be decided before training.
-    In general, all experiment related parameters are hyper-parameters.
-    This includes training parameters, evaluation parameters and inference method parameters.
+    The specific number of layers and units are called **hyperparameters**.
+    Hyperparameters are decided before training.
+    In general, all experiment related parameters are hyperparameters.
+    This includes cofiguration for evaluation and inference.
+
+  label smoothing
+    When performing classification, one usually optimized classifier model to predict correct label for the corresponding input with high confidence.
+    High confidence means that model will output :math:`0` or :math:`1` but nothing else.
+    Some argue that optimizing model to have high confidence is hard, but is comparatively easier to optimize for slightly lower confidence.
+    Optimizing model with slightly lower confidence is called **label smoothing**.
+
+    Precisely, suppose that we are given an input-ouput pairs :math:`(x, y)` and a possible anser range :math:`C`.
+    Suppose also that :math:`P(x) = \pa{P_1(x), \dots, P_C(x)}` is the classification probability distribution given input :math:`x`.
+    When optimizing model with high confidence, we are expecting model to output the following probability distribution:
+
+    .. math::
+
+      \forall i \in \set{1, \dots, C}, P_i(x) = \begin{cases}
+        1 & \text{if } i = y \\
+        0 & \text{otherwise}
+      \end{cases}.
+
+    When optimizing model with label smoothing, one expects model to output the following probability distribution:
+
+    .. math::
+
+      \forall i \in \set{1, \dots, C}, P_i(x) = \begin{cases}
+        1 - \epsilon            & \text{if } i = y \\
+        \dfrac{\epsilon}{C - 1} & \text{otherwise}
+      \end{cases}.
+
+    The value :math:`\epsilon` is given as hyperparameter and is typically a small positive number less than :math:`1`.
+    Observe that the two formulas above are identical when :math:`\epsilon = 0`.
 
   language model
   language models
@@ -161,8 +194,8 @@ Glossary
     - If :math:`M(x; \theta) \approx 0`, then :math:`x` is unlikely comming from human language.
 
     The usual way to evaluate a language model is :term:`perplexity`.
-    In 1990s or earlier, language model are used to evaluate generated text from speech recognition.
-    More recently (after 2019), language models with huge parameters (like GPT_ and BERT_) have been shown to be useful for a lots of downstream NLP tasks, including Natural Language Understanding (NLU), Natural Language Generation (NLG), Question Answering (QA), cloze test, etc.
+    In 1990s or earlier, language model are used to evaluate generated text from speech recognition and machine translation.
+    More recently (after 2019), language models with huge number of parameters (like GPT :footcite:`radford2018improving` and BERT :footcite:`devlin2019bert`) have been shown to be useful for a lots of downstream NLP tasks, including Natural Language Understanding (NLU), Natural Language Generation (NLG), Question Answering (QA), cloze test, etc.
 
     In this project we provide scripts for training language model (:doc:`lmp.script.train_model </script/train_model>`), evaluating language model (:doc:`lmp.script.eval_dset_ppl </script/eval_dset_ppl>`) and generating continual text using language model (:doc:`lmp.script.gen_txt </script/gen_txt>`).
 
@@ -175,19 +208,19 @@ Glossary
 
   learning rate
     Gradients of loss with respect to :term:`model parameters` is served as the direction of :term:`optimization`.
-    But the magnitude of gradients makes optimization hard [1]_.
-    Thus we multiply a small number to gradients, and this number is called **learning rate**.
-    If learning rate is small, then optimization process is longer but stable.
-    If learning rate is large, then optimization process is quicker but may not converge.
+    But large magnitude of gradients can make optimization hard :footcite:`rumelhart1986learning`.
+    Thus one scale down gradients by multiplying a small number called **learning rate**.
+    Setting learning rate to small number typically make optimization process longer but stable.
+    Setting learning rate to large number typically make optimization process quicker but divergent.
     One rule to keep in mind is that one should use small learning rate when deal with huge number of :term:`model parameters`.
 
   log path
-    All :term:`experiment` log files are put under directory ``exp/log``.
-    If :term:`experiment name` is ``my_exp``, then experiment log path is ``exp/log/my_exp``.
+    All :term:`experiment` log files are put under directory ``project_root/exp/log``.
+    If :term:`experiment name` is ``my_exp``, then experiment log path is ``project_root/exp/log/my_exp``.
 
   loss
   loss function
-    A function which is both used to :term:`optimize` and estimate the performance of :term:`model` is called a **loss function**.
+    A **loss function** is a function which is used to :term:`optimize` and estimate the performance of :term:`model`.
     The input of loss function is consist of :term:`model parameters` and :term:`dataset` :term:`samples`.
     The output of loss function is called **loss**.
     In deep learning field one usually use two different functions for optimization and evaluation.
@@ -206,7 +239,7 @@ Glossary
   parameter
   parameters
     A **model** is an algorithm which takes a input text and performs calculation with certain numbers.
-    That certain numbers are called **model parameters** and are adjusted by :term:`optimization` process.
+    That certain numbers are called **model parameters** and their values are adjusted by :term:`optimization` process.
 
     .. seealso::
 
@@ -258,19 +291,16 @@ Glossary
 
     .. math::
 
-      \newcommand{\pa}[1]{\left(#1\right)}
       \begin{align*}
-      \operatorname{ppl}(x) &= \pa{P(x_1, x_2, \dots, x_n)}^{\dfrac{-1}{n}}                                    \\
-                            &= \pa{P(x_1) \times P(x_2|x_1) \times P(x_3|x_1, x_2) \times \dots \times
-                               P(x_n|x_1, x_2, \dots, x_{n-1})}^{\dfrac{-1}{n}}                                \\
-                            &= \pa{\prod_{i=1}^n P(x_i|x_1, \dots, x_{i-1})}^{\dfrac{-1}{n}}                   \\
-                            &= \exp\pa{\ln \prod_{i=1}^n \big(P(x_i|x_1, \dots, x_{i-1})\big)^{\dfrac{-1}{n}}} \\
-                            &= \exp\pa{\dfrac{-1}{n}\log \prod_{i=1}^n P(x_i|x_1, \dots, x_{i-1})}             \\
-                            &= \exp\pa{\dfrac{-1}{n} \sum_{i=1}^n \log P(x_i|x_1, \dots, x_{i-1})}.
+      \operatorname{ppl}(x) &= \pa{P(x_1, x_2, \dots, x_n)}^{-1/n}                                                                             \\
+                            &= \pa{P(x_1) \times P(x_2|x_1) \times P(x_3|x_1, x_2) \times \dots \times P(x_n|x_1, x_2, \dots, x_{n-1})}^{-1/n} \\
+                            &= \pa{\prod_{i=1}^n P(x_i|x_1, \dots, x_{i-1})}^{-1/n}                                                            \\
+                            &= 2^{\displaystyle \pa{\log_2 \pa{\prod_{i=1}^n P(x_i|x_1, \dots, x_{i-1})}^{-1/n}}}                              \\
+                            &= 2^{\displaystyle \pa{\dfrac{-1}{n} \log_2 \pa{\prod_{i=1}^n P(x_i|x_1, \dots, x_{i-1})}}}                       \\
+                            &= 2^{\displaystyle \pa{\dfrac{-1}{n} \sum_{i=1}^n \log_2 P(x_i|x_1, \dots, x_{i-1})}}.
       \end{align*}
 
     If all probabilities :math:`P(x_i|x_1, \dots, x_{i-1})` are high, then perplexity is low.
-    If all probabilities :math:`P(x_i|x_1, \dots, x_{i-1})` are low, then perplexity is high.
     Thus we expect a well-trained language model to have low perplexity.
 
   Pre-trained
@@ -305,6 +335,19 @@ Glossary
   step
     Number of times a :term:`language model` has been updated.
 
+  stride
+    Number of overlapping tokens between two :term:`context windows`.
+    For example, suppose that we set context window size to ``4``, and set stride to ``2``.
+    Then the text ``hello world`` will be splited into ``5`` character subsequences as follow:
+
+    .. code-block::
+
+      hell
+      llo
+      lo w
+       wor
+      orld
+
   tensor
   tensors
     A generalized version of matrix is called **tensor**.
@@ -316,11 +359,11 @@ Glossary
     In this project, the term **text normalization** is a three steps process on a given text:
 
     1. Perform :term:`NFKC` normalization on the given text.
-       For example, ``_１__２____３_`` is normalized into ``_1__2____3_``, where ``_`` are whitespaces.
+       For example, ``_１__２____３_`` is normalized into ``_1__2____3_``, where ``_`` represents whitespace.
     2. Replace consequtive whitespaces with single whitespace.
-       For example, ``_1__2___3_`` will become ``_1_2_3_``, where ``_`` are whitespaces.
+       For example, ``_1__2___3_`` will become ``_1_2_3_``, where ``_`` represents whitespace.
     3. Strip (remove) leading and trailing whitespaces.
-       For example, ``_1_2_3_`` will become ``1_2_3``, where ``_`` are whitespaces.
+       For example, ``_1_2_3_`` will become ``1_2_3``, where ``_`` represents whitespace.
 
     One additional step may be applied depends on how you treat cases.
     If cases do not matter (which is called **case-insensitive**), then text normalization will transform all uppercase characters into lowercase characters.
@@ -384,16 +427,7 @@ Glossary
     The number of tokens in a vocabulary is called **vocabulary size**.
     Tokens not in the vocabulary of a language model are called :term:`out-of-vocabulary` tokens.
 
-References
-----------
-.. [1] Rumelhart, D., Hinton, G. & Williams, R. Learning representations by back-propagating errors. Nature 323,
-   533-536 (1986). https://doi.org/10.1038/323533a0
-.. [2] Kaiming He, Xiangyu Zhang, Shaoqing Ren, Jian Sun; Proceedings of the IEEE Conference on Computer Vision and
-   Pattern Recognition (CVPR), 2016, pp. 770-778
-   https://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
+.. footbibliography::
 
-.. _BERT: https://arxiv.org/abs/1810.04805
-.. _GPT: https://s3-us-west-2.amazonaws.com/openai-assets/research-covers/language-unsupervised/
-  language_understanding_paper.pdf
 .. _PyTorch: https://pytorch.org/
 .. _STANZA: https://stanfordnlp.github.io/stanza/tokenize.html

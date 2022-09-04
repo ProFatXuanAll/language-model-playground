@@ -6,3 +6,5 @@
 .. autoclass:: lmp.dset._ch_poem.ChPoemDset
   :members: download_file, download_dataset, norm
   :show-inheritance:
+
+.. footbibliography::

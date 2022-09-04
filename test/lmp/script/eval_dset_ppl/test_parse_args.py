@@ -8,6 +8,26 @@ import lmp.script.eval_dset_ppl
 from lmp.dset import DSET_OPTS
 
 
+def test_default_value() -> None:
+  """Ensure default value consistency."""
+  batch_size = 32
+  exp_name = 'my_model_exp'
+  first_ckpt = 0
+  last_ckpt = -1
+  seed = 42
+  ver = None
+  for dset_name in DSET_OPTS:
+    args = lmp.script.eval_dset_ppl.parse_args(argv=[dset_name])
+
+    assert args.batch_size == batch_size
+    assert args.dset_name == dset_name
+    assert args.exp_name == exp_name
+    assert args.first_ckpt == first_ckpt
+    assert args.last_ckpt == last_ckpt
+    assert args.seed == seed
+    assert args.ver == ver
+
+
 def test_parse_results(batch_size: int, exp_name: str, seed: int) -> None:
   """Must correctly parse all arguments."""
   for dset_name, dset_type in DSET_OPTS.items():

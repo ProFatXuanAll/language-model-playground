@@ -11,8 +11,8 @@ Tokenizer-related group has 2 scripts, :doc:`lmp.script.train_tknzr </script/tra
 The rest scripts belong to language-model-related group.
 One should first execute dataset-related script, then tokenizer-related scripts, and finally language-model-related scripts.
 
-Sample dataset
---------------
+Sample from dataset
+-------------------
 One can use :doc:`lmp.script.sample_dset </script/sample_dset>` to get a glimpse of :term:`dataset` :term:`samples`.
 For example, one can sample the demo dataset :py:class:`lmp.dset.DemoDset` as follow:
 
@@ -69,7 +69,7 @@ The tokenizer training results will be saved under the :term:`experiment path` `
 One can decide how many tokens to include in a tokenizer's vocabulary.
 The parameter ``--max_vocab`` is the maximum number of tokens to be included in a tokenizer's vocabulary.
 When setting ``--max_vocab -1``, one can have unlimited number (of course limited by the memory size) of tokens in a tokenizer's vocabulary.
-The following example results in vocabulary size around ``30000``:
+The following example results in vocabulary size around ``33000``:
 
 .. code-block:: shell
 
@@ -85,7 +85,7 @@ These tokens are usually named entities or even worse, typos.
 One can filter out these tokens by deciding the minimum occurrence count for a token to be included in a tokenizer's vocabulary.
 The parameter ``--min_count`` serve this purpose.
 When setting ``--min_count 0`` no filtering will be performed.
-The following example results in vocabulary size around ``13000``:
+The following example results in vocabulary size around ``14000``:
 
 .. code-block:: shell
 
@@ -98,7 +98,7 @@ The following example results in vocabulary size around ``13000``:
 
 Same character :term:`sequence` with different cases (for example, Apple and apple) will be treated as different tokens.
 One can make tokenizer case-insensitive using the argument ``--is_uncased``.
-The following example results in vocabulary size around ``12000``:
+The following example results in vocabulary size around ``13000``:
 
 .. code-block:: shell
 
@@ -133,7 +133,7 @@ Train a language model
 One can use a :term:`language model` to generate continual text on the given text.
 Before that, one have to first :term:`optimize` a language model's :term:`loss function` on a :term:`dataset`.
 To perform optimization, one can use the language model :term:`training` script :doc:`lmp.script.train_model </script/train_model>`.
-For example, we can train a LSTM (2000 version) language model :py:class:`lmp.model.LSTM2000` on the training set of wiki-text-2 dataset :py:class:`lmp.dset.WikiText2Dset`.
+For example, we can train a LSTM (2000 version) language model :py:class:`~lmp.model.LSTM2000` on the training set of wiki-text-2 dataset :py:class:`~lmp.dset.WikiText2Dset`.
 
 .. code-block:: shell
 
@@ -142,32 +142,39 @@ For example, we can train a LSTM (2000 version) language model :py:class:`lmp.mo
     --beta1 0.9 \
     --beta2 0.99 \
     --ckpt_step 1000 \
-    --ctx_win 16 \
     --d_blk 64 \
     --d_emb 300 \
     --dset_name wiki-text-2 \
     --eps 1e-8 \
     --exp_name my_model_exp \
+    --init_fb 1.0 \
+    --init_ib -1.0 \
+    --init_lower -0.1 \
+    --init_ob -1.0 \
+    --init_upper 0.1 \
+    --label_smoothing 0.0 \
     --log_step 200 \
     --lr 1e-4 \
     --max_norm 1 \
-    --max_seq_len 700 \
+    --max_seq_len 16 \
     --n_blk 8 \
     --n_lyr 1 \
     --p_emb 0.1 \
     --p_hid 0.1 \
+    --stride 16 \
     --tknzr_exp_name my_tknzr_exp \
     --ver train \
     --total_step 50000 \
     --warmup_step 10000 \
-    --wd 1e-2
+    --weight_decay 1e-2
 
 Language model arguments
 ~~~~~~~~~~~~~~~~~~~~~~~~
 The first argument in the above example is the name of a language model.
 Language models have different structure.
-One can see a specific model :term:`hyper-parameters` using ``-h`` arguments.
-For example, one can see that ``--d_emb``, ``--d_blk``, ``--n_blk``, ``-n_lyr``, ``--p_emb`` and ``--p_hid`` are parts of the LSTM (2000 version) parameters using the following script:
+One can see a specific model :term:`hyperparameters` using ``-h`` arguments.
+For example, hyperparameter of :py:class:`~lmp.model.LSTM2000` includes ``--d_emb``, ``--d_blk``, ``--init_fb``, ``--init_ib``, ``--init_lower``, ``--init_ob``, ``--init_upper``, ``--label_smoothing``, ``--n_blk``, ``-n_lyr``, ``--p_emb`` and ``--p_hid``.
+One can see the hyperparameter of :py:class:`~lmp.model.LSTM2000` using the following script:
 
 .. code-block:: shell
 
@@ -181,25 +188,32 @@ In the example above, we set ``--tknzr_exp_name my_tknzr_exp`` to use a :term:`p
 One usually use a tokenizer trained on the same dataset and the same version.
 Thus the above example use ``--dset_name wiki-text-2`` and ``--ver train`` as in the tokenizer training experiment.
 
+When preprocessing text in a dataset, each text sample in the training dataset is tokenized and encoded.
+After encoding text as token id sequence, we split token id sequence into multiple subsequences called :term:`context window`.
+Context windows are then used to train a language model.
+Context windows are collectively called "language model formatting dataset".
+Each context window have the same length which is defined to be ``--max_seq_len``.
+Context windows with length shorter than ``--max_seq_len`` will be :term:`padded` to have length equal to ``--max_seq_len``.
+Context windows may have overlaps.
+The number of overlapping tokens (or token ids) is controlled by ``--stride``.
+If one wish to have no overlappings, one can set ``--max_seq_len`` and ``--stride`` to the same number.
+
 Optimization algorithm arguments
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 The optimization algorithm is :py:class:`torch.optim.AdamW`.
 Due to memory size limit and computation cost, we chunk dataset into :term:`mini-batch` to perform optimization.
 The :term:`batch size` is set by the argument ``--batch_size``.
 In the example above, we will fetch ``64`` samples from the wiki-text-2 dataset to perform optimization.
-We sample dataset without repetitions util every sample has been used to train once.
-For the purpose of parallel computation, each sample in a mini-batch will be :term:`padded` to have the same length.
-This is done by setting ``--max_seq_len``.
-In the example above, a mini-batch will be padded to have length ``700``.
-After padding, a mini-batch in the example above will be chunked into smaller :term:`context window` with length ``16`` in each context window.
-An optimization :term:`step` is performed on a context window.
+We train language model by :term:`epoch`, i.e., we sample dataset without repetitions util every sample has been used to train once.
+
+An optimization :term:`step` is performed on a batch of context windows.
 The total number of optimization steps is set by ``--total_step``.
 No padding tokens will contribute to loss.
-One can adjust context window size by changing the value of ``--ctx_win``.
-The arguments directly passed to :py:class:`torch.optim.AdamW` are ``--beta1``, ``--beta2``, ``--eps``, ``--lr`` and ``--wd``.
+One can adjust context window size by changing the value of ``--max_seq_len``.
+The arguments directly passed to :py:class:`torch.optim.AdamW` are ``--beta1``, ``--beta2``, ``--eps``, ``--lr`` and ``--weight_decay``.
 The ``betas`` parameter for :py:class:`torch.optim.AdamW` are split into ``--beta1`` and ``--beta2``.
 The ``eps`` for :py:class:`torch.optim.AdamW` is given by ``--eps``.
-The ``weight_decay`` parameter is given by ``--wd``.
+The ``weight_decay`` parameter is given by ``--weight_decay``.
 The learning rate is given by ``--lr``.
 Learning rate is scheduled to linearly warmup to the value given by ``--lr`` and linearly decay to ``0`` after reaching the peak value.
 The number of steps to warmup is set by ``--warmup_step``.
@@ -211,7 +225,7 @@ Logging arguments
 For each ``1000`` steps, we will save the :term:`model parameters` under the :term:`experiment path` ``project_root/exp/my_model_exp``.
 This is done by setting ``--ckpt_step 1000`` and ``--exp_name my_model_exp``.
 Similarly, by setting ``--log_step 200``, we log model performance for each ``200`` steps.
-We use tensorboard to log the model performance.
+We log model performance on CLI and tensorboard.
 One can launch tensorboard and open browser with URL http://localhost:6006 to see the performance logs.
 Use the following script to launch tensorboard:
 
@@ -264,7 +278,7 @@ Use the following script to launch tensorboard:
 
 Evaluate text perplexity
 ------------------------
-To evaluate :term:`language model` :term:`perplexity` on a given text, one do not need to build a :term:`dataset` but instead use the script :doc:`lmp.script.eval_txt_ppl </script/eval_txt_ppl>`.
+To evaluate :term:`language model` :term:`perplexity` on a given text instead of a :term:`dataset`, one use the script :doc:`lmp.script.eval_txt_ppl </script/eval_txt_ppl>`.
 
 .. code-block:: shell
 
@@ -277,7 +291,7 @@ In the above example, we evaluate the character sequence ``"hello world"`` by se
 
 Generate continual text
 -----------------------
-Finally, one can use a :term:`pre-trained` :term:`language model` to generate continual text on the given text.
+One can use a :term:`pre-trained` :term:`language model` to generate continual text on the given text.
 One use the script :doc:`lmp.script.gen_txt </script/gen_txt>` and select a decoding strategy to generate continual text.
 
 .. code-block:: shell
@@ -314,3 +328,5 @@ To avoid non-stopping generation, one specify maximum length to generate by sett
   eval_dset_ppl
   eval_txt_ppl
   gen_txt
+
+.. footbibliography::

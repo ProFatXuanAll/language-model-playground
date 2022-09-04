@@ -5,8 +5,8 @@ Test target:
 - :py:meth:`lmp.tknzr._char.CharTknzr.enc`.
 """
 
-from lmp.tknzr._base import BOS_TK, BOS_TKID, EOS_TK, EOS_TKID, PAD_TK, PAD_TKID, UNK_TK, UNK_TKID
 from lmp.tknzr._char import CharTknzr
+from lmp.vars import BOS_TK, BOS_TKID, EOS_TK, EOS_TKID, PAD_TK, PAD_TKID, UNK_TK, UNK_TKID
 
 
 def test_cased_enc() -> None:
@@ -14,26 +14,14 @@ def test_cased_enc() -> None:
   tknzr = CharTknzr(is_uncased=False, max_vocab=-1, min_count=0)
   tknzr.build_vocab(batch_txt=['A', 'a'])
 
-  # Return `[bos] [eos]` when given empty input.
-  assert tknzr.enc(max_seq_len=2, txt='') == [BOS_TKID, EOS_TKID]
+  # Return `<bos> <eos>` when given empty input.
+  assert tknzr.enc(txt='') == [BOS_TKID, EOS_TKID]
 
   # Encoding format.
-  assert tknzr.enc(max_seq_len=4, txt='aA') == [BOS_TKID, tknzr.tk2id['a'], tknzr.tk2id['A'], EOS_TKID]
-
-  # Padding.
-  assert tknzr.enc(max_seq_len=5, txt='aA') == [BOS_TKID, tknzr.tk2id['a'], tknzr.tk2id['A'], EOS_TKID, PAD_TKID]
-
-  # Truncate.
-  assert tknzr.enc(max_seq_len=3, txt='aA') == [BOS_TKID, tknzr.tk2id['a'], tknzr.tk2id['A']]
+  assert tknzr.enc(txt='aA') == [BOS_TKID, tknzr.tk2id['a'], tknzr.tk2id['A'], EOS_TKID]
 
   # Unknown tokens.
-  assert tknzr.enc(max_seq_len=4, txt='bB') == [BOS_TKID, UNK_TKID, UNK_TKID, EOS_TKID]
-
-  # Unknown tokens with padding.
-  assert tknzr.enc(max_seq_len=5, txt='bB') == [BOS_TKID, UNK_TKID, UNK_TKID, EOS_TKID, PAD_TKID]
-
-  # Unknown tokens with truncation.
-  assert tknzr.enc(max_seq_len=2, txt='bB') == [BOS_TKID, UNK_TKID]
+  assert tknzr.enc(txt='bB') == [BOS_TKID, UNK_TKID, UNK_TKID, EOS_TKID]
 
 
 def test_uncased_enc() -> None:
@@ -41,26 +29,14 @@ def test_uncased_enc() -> None:
   tknzr = CharTknzr(is_uncased=True, max_vocab=-1, min_count=0)
   tknzr.build_vocab(batch_txt=['a'])
 
-  # Return `[bos] [eos]` when given empty input.
-  assert tknzr.enc(max_seq_len=2, txt='') == [BOS_TKID, EOS_TKID]
+  # Return `<bos> <eos>` when given empty input.
+  assert tknzr.enc(txt='') == [BOS_TKID, EOS_TKID]
 
   # Encoding format.
-  assert tknzr.enc(max_seq_len=4, txt='aA') == [BOS_TKID, tknzr.tk2id['a'], tknzr.tk2id['a'], EOS_TKID]
-
-  # Padding.
-  assert tknzr.enc(max_seq_len=5, txt='aA') == [BOS_TKID, tknzr.tk2id['a'], tknzr.tk2id['a'], EOS_TKID, PAD_TKID]
-
-  # Truncate.
-  assert tknzr.enc(max_seq_len=3, txt='aA') == [BOS_TKID, tknzr.tk2id['a'], tknzr.tk2id['a']]
+  assert tknzr.enc(txt='aA') == [BOS_TKID, tknzr.tk2id['a'], tknzr.tk2id['a'], EOS_TKID]
 
   # Unknown tokens.
-  assert tknzr.enc(max_seq_len=4, txt='bB') == [BOS_TKID, UNK_TKID, UNK_TKID, EOS_TKID]
-
-  # Unknown tokens with padding.
-  assert tknzr.enc(max_seq_len=5, txt='bB') == [BOS_TKID, UNK_TKID, UNK_TKID, EOS_TKID, PAD_TKID]
-
-  # Unknown tokens with truncation.
-  assert tknzr.enc(max_seq_len=2, txt='bB') == [BOS_TKID, UNK_TKID]
+  assert tknzr.enc(txt='bB') == [BOS_TKID, UNK_TKID, UNK_TKID, EOS_TKID]
 
 
 def test_dec() -> None:

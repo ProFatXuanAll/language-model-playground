@@ -1,8 +1,8 @@
 """Test :py:mod:`lmp.dset._wiki_text_2` signatures."""
 
 import inspect
-from inspect import Parameter, Signature
-from typing import Optional, get_type_hints
+from inspect import Signature
+from typing import get_type_hints
 
 import lmp.dset._wiki_text_2
 from lmp.dset._base import BaseDset
@@ -51,19 +51,4 @@ def test_class_method() -> None:
 def test_instance_method() -> None:
   """Ensure instance methods' signatures."""
   assert hasattr(lmp.dset._wiki_text_2.WikiText2Dset, '__init__')
-  assert inspect.signature(lmp.dset._wiki_text_2.WikiText2Dset.__init__) == Signature(
-    parameters=[
-      Parameter(
-        name='self',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=Parameter.empty,
-      ),
-      Parameter(
-        name='ver',
-        kind=Parameter.KEYWORD_ONLY,
-        annotation=Optional[str],
-        default=None,
-      ),
-    ],
-    return_annotation=Signature.empty,
-  )
+  assert inspect.signature(lmp.dset._wiki_text_2.WikiText2Dset.__init__) == inspect.signature(BaseDset.__init__)

@@ -1,8 +1,7 @@
 """LSTM (2002 version) language model."""
 
 import argparse
-import math
-from typing import Any, ClassVar, List, Optional
+from typing import Any, ClassVar, Optional, Tuple
 
 import torch
 import torch.nn as nn
@@ -13,118 +12,523 @@ from lmp.model._lstm_2000 import LSTM2000, LSTM2000Layer
 from lmp.tknzr._base import BaseTknzr
 
 
+class LSTM2002(LSTM2000):
+  r"""LSTM (2002 version) :footcite:`gers2002lstm` language model.
+
+  - Let :math:`x` be batch of token ids with batch size :math:`B` and per sequence length :math:`S`.
+  - Let :math:`V` be the vocabulary size of the paired tokenizer.
+    Each token id represents an unique token, i.e., :math:`x_t \in \set{1, \dots, V}`.
+  - Let :math:`E` be the token embedding lookup table.
+
+    - Let :math:`\dEmb` be the dimension of token embeddings.
+    - Let :math:`e_t` be the token embedding correspond to token id :math:`x_t`.
+    - Token embeddings have dropout probability :math:`\pEmb`.
+
+  - Let :math:`\nLyr` be the number of recurrent layers.
+  - Let :math:`\dBlk` be the number of units in a memory cell block.
+  - Let :math:`\nBlk` be the number of memory cell blocks.
+  - Let :math:`\dHid = \nBlk \times \dBlk`.
+  - Let :math:`h^\ell` be the hidden states of the :math:`\ell` th recurrent layer.
+
+    - Let :math:`h_t^\ell` be the :math:`t` th time step of :math:`h^\ell`.
+    - The initial hidden states :math:`h_0^\ell` are given as input.
+    - Hidden states have dropout probability :math:`\pHid`.
+
+  - Let :math:`c^\ell` be the memory cell internal states of the :math:`\ell` th recurrent layer.
+
+    - let :math:`c_t^\ell` be the :math:`t` th time step of :math:`c^\ell`.
+    - The memory cell initial internal states :math:`c_0^\ell` are given as input.
+
+  LSTM (2002 version) language model is defined as follow:
+
+  .. math::
+
+    \begin{align*}
+      & \algoProc{\LSTMZeroTwo}\pa{x, \pa{\br{c_0^1, \dots, c_0^{\nLyr}}, \br{h_0^1, \dots, h_0^{\nLyr}}}} \\
+      & \indent{1} \algoFor{t \in \set{1, \dots, S}}                                                       \\
+      & \indent{2} e_t \algoEq (x_t)\text{-th row of } E \text{ but treated as column vector}              \\
+      & \indent{2} \widehat{e_t} \algoEq \drop{e_t}{\pEmb}                                                 \\
+      & \indent{2} h_t^0 \algoEq \tanh\pa{W_h \cdot \widehat{e_t} + b_h}                                   \\
+      & \indent{1} \algoEndFor                                                                             \\
+      & \indent{1} h^0 \algoEq \cat{h_1^0, \dots, h_S^0}                                                   \\
+      & \indent{1} \widehat{h^0} \algoEq \drop{h^0}{\pHid}                                                 \\
+      & \indent{1} \algoFor{\ell \in \set{1, \dots, \nLyr}}                                                \\
+      & \indent{2} \pa{c^\ell, h^\ell} \algoEq \LSTMZeroTwoLayer\pa{
+                                                 x \algoEq \widehat{h^{\ell-1}},
+                                                 c_0 \algoEq c_0^\ell,
+                                                 h_0 \algoEq h_0^\ell
+                                               }                                                           \\
+      & \indent{2} \widehat{h^\ell} \algoEq \drop{h^\ell}{\pHid}                                           \\
+      & \indent{1} \algoEndFor                                                                             \\
+      & \indent{1} \algoFor{t \in \set{1, \dots, S}}                                                       \\
+      & \indent{2} z_t \algoEq \tanh\pa{W_z \cdot h_t^{\nLyr} + b_z}                                       \\
+      & \indent{2} \widehat{z_t} \algoEq \drop{z_t}{\pHid}                                                 \\
+      & \indent{2} y_t \algoEq \sof{E \cdot \widehat{z_t}}                                                 \\
+      & \indent{1} \algoEndFor                                                                             \\
+      & \indent{1} y \algoEq \cat{y_1, \dots, y_S}                                                         \\
+      & \indent{1} \algoReturn \pa{y, \pa{\br{c_S^1, \dots, c_S^{\nLyr}}, \br{h_S^1, \dots, h_S^{\nLyr}}}} \\
+      & \algoEndProc
+    \end{align*}
+
+  +-------------------------------------------+---------------------------------------------------------+
+  | Trainable Parameters                      | Nodes                                                   |
+  +------------------+------------------------+--------------------------+------------------------------+
+  | Parameter        | Shape                  | Symbol                   | Shape                        |
+  +==================+========================+==========================+==============================+
+  | :math:`E`        | :math:`(V, \dEmb)`     | :math:`c^\ell`           | :math:`(B, S, \nBlk, \dBlk)` |
+  +------------------+------------------------+--------------------------+------------------------------+
+  | :math:`W_h`      | :math:`(\dHid, \dEmb)` | :math:`c_t^\ell`         | :math:`(B, \nBlk, \dBlk)`    |
+  +------------------+------------------------+--------------------------+------------------------------+
+  | :math:`W_z`      | :math:`(\dEmb, \dHid)` | :math:`e_t`              | :math:`(B, S, \dEmb)`        |
+  +------------------+------------------------+--------------------------+------------------------------+
+  | :math:`b_h`      | :math:`(\dHid)`        | :math:`h^\ell`           | :math:`(B, S, \dHid)`        |
+  +------------------+------------------------+--------------------------+------------------------------+
+  | :math:`b_z`      | :math:`(\dEmb)`        | :math:`h_t^\ell`         | :math:`(B, \dHid)`           |
+  +------------------+------------------------+--------------------------+------------------------------+
+  | :math:`\LSTMZeroTwoLayer`                 | :math:`\widehat{h^\ell}` | :math:`(B, \dHid)`           |
+  +------------------+------------------------+--------------------------+------------------------------+
+  |                                           | :math:`x`                | :math:`(B, S)`               |
+  |                                           +--------------------------+------------------------------+
+  |                                           | :math:`x_t`              | :math:`(B)`                  |
+  |                                           +--------------------------+------------------------------+
+  |                                           | :math:`y`                | :math:`(B, S, V)`            |
+  |                                           +--------------------------+------------------------------+
+  |                                           | :math:`y_t`              | :math:`(B, V)`               |
+  |                                           +--------------------------+------------------------------+
+  |                                           | :math:`z_t`              | :math:`(B, \dEmb)`           |
+  |                                           +--------------------------+------------------------------+
+  |                                           | :math:`\widehat{z_t}`    | :math:`(B, \dEmb)`           |
+  +-------------------------------------------+--------------------------+------------------------------+
+
+  - The only differences between :py:class:`~lmp.model.LSTM2000` and :py:class:`~LSTM2002` are the underlying layers
+    :py:class:`~lmp.model.LSTM2000Layer` and :py:class:`~LSTM2002Layer`.
+    All other symbols are calculated as in :py:class:`~lmp.model.LSTM2000`.
+
+  Parameters
+  ----------
+  d_blk: int, default: 1
+    Number of units in a memory cell block :math:`\dBlk`.
+  d_emb: int, default: 1
+    Token embedding dimension :math:`\dEmb`.
+  init_ib: float, default: 1.0
+    Uniform distribution upper bound :math:`\init_{fb}` used to initialize forget gate biases.
+  init_ib: float, default: -1.0
+    Uniform distribution lower bound :math:`\init_{ib}` used to initialize input gate biases.
+  init_lower: float, default: -0.1
+    Uniform distribution lower bound :math:`\init_l` used to initialize model parameters.
+  init_ob: float, default: -1.0
+    Uniform distribution lower bound :math:`\init_{ob}` used to initialize output gate biases.
+  init_upper: float, default: 0.1
+    Uniform distribution upper bound :math:`\init_u` used to initialize model parameters.
+  kwargs: typing.Any, optional
+    Useless parameter.
+    Intently left for subclasses inheritance.
+  label_smoothing: float, default: 0.0
+    Smoothing applied on prediction target :math:`x_{t+1}`.
+  n_blk: int, default: 1
+    Number of memory cell blocks :math:`\nBlk`.
+  n_lyr: int, default: 1
+    Number of recurrent layers :math:`\nLyr`.
+  p_emb: float, default: 0.0
+    Embeddings dropout probability :math:`\pEmb`.
+  p_hid: float, default: 0.0
+    Hidden units dropout probability :math:`\pHid`.
+  tknzr: lmp.tknzr.BaseTknzr
+    Tokenizer instance.
+
+  Attributes
+  ----------
+  d_blk: int
+    Number of units in a memory cell block :math:`\dBlk`.
+  d_hid: int
+    Total number of memory cell units :math:`\dHid`.
+  emb: torch.nn.Embedding
+    Token embedding lookup table :math:`E`.
+    Input shape: :math:`(B, S)`.
+    Output shape: :math:`(B, S, \dEmb)`.
+  fc_e2h: torch.nn.Sequential
+    Fully connected layer :math:`W_h` and :math:`b_h` which connects input
+    units to the 1st recurrent layer's input.
+    Dropout with probability :math:`\pEmb` is applied to input.
+    Dropout with probability :math:`\pHid` is applied to output.
+    Input shape: :math:`(B, S, \dEmb)`.
+    Output shape: :math:`(B, S, \dHid)`.
+  fc_h2e: torch.nn.Sequential
+    Fully connected layer :math:`W_z` and :math:`b_z` which transforms hidden states to next token embeddings.
+    Dropout with probability :math:`\pHid` is applied to output.
+    Input shape: :math:`(B, S, \dHid)`.
+    Output shape: :math:`(B, S, \dEmb)`.
+  init_fb: float
+    Uniform distribution upper bound :math:`\init_{fb}` used to initialize forget gate biases.
+  init_ib: float
+    Uniform distribution lower bound :math:`\init_{ib}` used to initialize input gate biases.
+  init_lower: float
+    Uniform distribution lower bound :math:`\init_l` used to initialize model parameters.
+  init_ob: float
+    Uniform distribution lower bound :math:`\init_{ob}` used to initialize output gate biases.
+  init_upper: float
+    Uniform distribution upper bound :math:`\init_u` used to initialize model parameters.
+  label_smoothing: float
+    Smoothing applied on prediction target :math:`x_{t+1}`.
+  model_name: ClassVar[str]
+    CLI name of LSTM (2002 version) is ``LSTM-2002``.
+  n_blk: int
+    Number of memory cell blocks :math:`\nBlk`.
+  n_lyr: int
+    Number of recurrent layers :math:`\nLyr`.
+  p_emb: float
+    Embeddings dropout probability :math:`\pEmb`.
+  p_hid: float
+    Hidden units dropout probability :math:`\pHid`.
+  stack_rnn: torch.nn.ModuleList
+    :py:class:`~LSTM2002Layer` stacking layers.
+    Each LSTM (2002 version) layer is followed by a dropout layer with probability :math:`\pHid`.
+    The number of stacking layers is equal to :math:`2 \nLyr`.
+    Input shape: :math:`(B, S, \dHid)`.
+    Output shape: :math:`(B, S, \dHid)`.
+
+  See Also
+  --------
+  ~lmp.model.LSTM2000
+    LSTM (2000 version) language model.
+  ~lmp.model.LSTM2000Layer
+    LSTM (2000 version) recurrent neural network.
+  ~LSTM2002Layer
+    LSTM (2002 version) recurrent neural network.
+  """
+
+  model_name: ClassVar[str] = 'LSTM-2002'
+
+  def __init__(
+    self,
+    *,
+    d_blk: int = 1,
+    d_emb: int = 1,
+    init_fb: float = 1.0,
+    init_ib: float = -1.0,
+    init_lower: float = -0.1,
+    init_ob: float = -1.0,
+    init_upper: float = 0.1,
+    label_smoothing: float = 0.0,
+    n_blk: int = 1,
+    n_lyr: int = 1,
+    p_emb: float = 0.0,
+    p_hid: float = 0.0,
+    tknzr: BaseTknzr,
+    **kwargs: Any,
+  ):
+    super().__init__(
+      d_blk=d_blk,
+      d_emb=d_emb,
+      init_fb=init_fb,
+      init_ib=init_ib,
+      init_lower=init_lower,
+      init_ob=init_ob,
+      init_upper=init_upper,
+      label_smoothing=label_smoothing,
+      n_blk=n_blk,
+      n_lyr=n_lyr,
+      p_emb=p_emb,
+      p_hid=p_hid,
+      tknzr=tknzr,
+      **kwargs,
+    )
+
+    # Stacking LSTM (2002 version) layers.
+    # Each RNN layer is followed by one dropout layer.
+    self.stack_rnn = nn.ModuleList([])
+    for _ in range(n_lyr):
+      self.stack_rnn.append(
+        LSTM2002Layer(
+          d_blk=d_blk,
+          in_feat=self.d_hid,
+          init_fb=init_fb,
+          init_lower=init_lower,
+          init_ob=init_ob,
+          init_upper=init_upper,
+          n_blk=n_blk,
+        )
+      )
+      self.stack_rnn.append(nn.Dropout(p=p_hid))
+
+  @classmethod
+  def add_CLI_args(cls, parser: argparse.ArgumentParser) -> None:
+    """Add LSTM (2002 version) language model hyperparameters to CLI argument parser.
+
+    Parameters
+    ----------
+    parser: argparse.ArgumentParser
+      CLI argument parser.
+
+    Returns
+    -------
+    None
+
+    See Also
+    --------
+    :doc:`lmp.script.train_model </script/train_model>`
+      Language model training script.
+
+    Examples
+    --------
+    >>> import argparse
+    >>> import math
+    >>> from lmp.model import LSTM2002
+    >>> parser = argparse.ArgumentParser()
+    >>> LSTM2002.add_CLI_args(parser)
+    >>> args = parser.parse_args([
+    ...   '--d_blk', '64',
+    ...   '--d_emb', '100',
+    ...   '--init_fb', '0.1',
+    ...   '--init_ib', '-0.1',
+    ...   '--init_lower', '-0.01',
+    ...   '--init_ob', '-0.1',
+    ...   '--init_upper', '0.01',
+    ...   '--label_smoothing', '0.1',
+    ...   '--n_blk', '8',
+    ...   '--n_lyr', '2',
+    ...   '--p_emb', '0.5',
+    ...   '--p_hid', '0.1',
+    ... ])
+    >>> assert args.d_blk == 64
+    >>> assert args.d_emb == 100
+    >>> assert math.isclose(args.init_fb, 0.1)
+    >>> assert math.isclose(args.init_ib, -0.1)
+    >>> assert math.isclose(args.init_lower, -0.01)
+    >>> assert math.isclose(args.init_ob, -0.1)
+    >>> assert math.isclose(args.init_upper, 0.01)
+    >>> assert math.isclose(args.label_smoothing, 0.1)
+    >>> assert args.n_blk == 8
+    >>> assert args.n_lyr == 2
+    >>> assert math.isclose(args.p_emb, 0.5)
+    >>> assert math.isclose(args.p_hid, 0.1)
+    """
+    # `parser` validation.
+    lmp.util.validate.raise_if_not_instance(val=parser, val_name='parser', val_type=argparse.ArgumentParser)
+
+    # Add hyperparameters to CLI arguments.
+    group = parser.add_argument_group('LSTM (2002 version) language model hyperparameters')
+    group.add_argument(
+      '--d_blk',
+      default=1,
+      help='''
+      Dimension of each memory cell block.
+      Default is ``1``.
+      ''',
+      type=int,
+    )
+    group.add_argument(
+      '--d_emb',
+      default=1,
+      help='''
+      Token embedding dimension.
+      Default is ``1``.
+      ''',
+      type=int,
+    )
+    group.add_argument(
+      '--init_fb',
+      default=1.0,
+      help='''
+      Uniform distribution upper bound used to initialize forget gate biases.
+      Default is ``1.0``.
+      ''',
+      type=float,
+    )
+    group.add_argument(
+      '--init_ib',
+      default=-1.0,
+      help='''
+      Uniform distribution lower bound used to initialize input gate biases.
+      Default is ``-1.0``.
+      ''',
+      type=float,
+    )
+    group.add_argument(
+      '--init_lower',
+      default=-0.1,
+      help='''
+      Uniform distribution lower bound used to initialize model parameters.
+      Default is ``-0.1``.
+      ''',
+      type=float,
+    )
+    group.add_argument(
+      '--init_ob',
+      default=-1.0,
+      help='''
+      Uniform distribution lower bound used to initialize output gate biases.
+      Default is ``-1.0``.
+      ''',
+      type=float,
+    )
+    group.add_argument(
+      '--init_upper',
+      default=0.1,
+      help='''
+      Uniform distribution lower bound used to initialize model parameters.
+      Default is ``0.1``.
+      ''',
+      type=float,
+    )
+    group.add_argument(
+      '--label_smoothing',
+      default=0.0,
+      help='''
+      Label smoothing applied on cross entropy loss.
+      Default is ``0.0``.
+      ''',
+      type=float,
+    )
+    group.add_argument(
+      '--n_blk',
+      default=1,
+      help='''
+      Number of memory cell blocks.
+      Default is ``1``.
+      ''',
+      type=int,
+    )
+    group.add_argument(
+      '--n_lyr',
+      default=1,
+      help='''
+      Number of LSTM (2002 version) layers.
+      Default is ``1``.
+      ''',
+      type=int,
+    )
+    group.add_argument(
+      '--p_emb',
+      default=0.0,
+      help='''
+      Embeddings dropout probability.
+      Default is ``0.0``.
+      ''',
+      type=float,
+    )
+    group.add_argument(
+      '--p_hid',
+      default=0.0,
+      help='''
+      Hidden units dropout probability.
+      Default is ``0.0``.
+      ''',
+      type=float,
+    )
+
+
 class LSTM2002Layer(LSTM2000Layer):
-  r"""LSTM (2002 version) [1]_ recurrent neural network.
+  r"""LSTM (2002 version) :footcite:`gers2002lstm` recurrent neural network.
 
-  Implement RNN model in the paper `Learning Precise Timing with LSTM Recurrent Networks`_.
-
-  .. _`Learning Precise Timing with LSTM Recurrent Networks`: https://www.jmlr.org/papers/v3/gers02a.html
-
-  Let :math:`\newcommand{\dBlk}{d_{\operatorname{blk}}} \dBlk` be the number of units in a memory cell block.
-  Let :math:`\newcommand{\nBlk}{n_{\operatorname{blk}}} \nBlk` be the number of memory cell blocks.
-  Let :math:`x` be input features with shape :math:`(B, S, \newcommand{\hIn}{H_{\operatorname{in}}} \hIn)`, where
-  :math:`B` is batch size, :math:`S` is sequence length and :math:`\hIn` is the number of input features per time step
-  in each sequence.
-  Let :math:`h_0` be the initial hidden states with shape :math:`(B, \newcommand{\hOut}{H_{\operatorname{out}}} \hOut)`
-  where :math:`\hOut = \nBlk \times \dBlk`.
-  Let :math:`c_0` be the initial hidden states with shape :math:`(B, \nBlk, \dBlk)`.
+  - Let :math:`\hIn` be the number of input features per time step.
+  - Let :math:`\dBlk` be the number of units in a memory cell block.
+  - Let :math:`\nBlk` be the number of memory cell blocks.
+  - Let :math:`\hOut = \nBlk \times \dBlk` be the number of output features per time step.
+  - Let :math:`x` be a batch of sequences of input features with shape :math:`(B, S, \hIn)`, where :math:`B` is batch
+    size and :math:`S` is per sequence length.
+  - Let :math:`h_0` be the initial hidden states with shape :math:`(B, \hOut)`.
+  - Let :math:`c_0` be the memory cell initial internal states with shape :math:`(B, \nBlk, \dBlk)`.
 
   LSTM (2002 version) layer is defined as follow:
 
   .. math::
 
-    \newcommand{\pa}[1]{\left( #1 \right)}
-    \newcommand{\cat}[1]{\operatorname{concate}\pa{#1}}
-    \newcommand{\eq}{\leftarrow}
-    \newcommand{\fla}[1]{\operatorname{flatten}\pa{#1}}
     \begin{align*}
-      & \textbf{procedure } \text{LSTM2002Layer}(x, [h_0, c_0])                                                    \\
-      & \hspace{1em} S \eq x.\text{size}(1)                                                                        \\
-      & \hspace{1em} \textbf{for } t \in \set{0, \dots, S-1} \textbf{ do}                                          \\
-      & \hspace{2em} \textbf{for } k \in \set{0, \dots, \nBlk-1} \textbf{ do}                                      \\
-      & \hspace{3em} f_{t,k} \eq \sigma(W_{f,k} \cdot x_t + U_{f,k} \cdot h_t + V_{f,k} \cdot c_{t,k} + b_{f,k})
-        &&\tag{1}\label{1}                                                                                         \\
-      & \hspace{3em} i_{t,k} \eq \sigma(W_{i,k} \cdot x_t + U_{i,k} \cdot h_t + V_{i,k} \cdot c_{t,k} + b_{i,k})
-        &&\tag{2}\label{2}                                                                                         \\
-      & \hspace{3em} g_{t,k} = \tanh\pa{W_k \cdot x_t + U_k \cdot h_t + b_k}
-        &&\tag{3}\label{3}                                                                                         \\
-      & \hspace{3em} c_{t+1,k} = f_{t, k} \cdot c_{t,k} + i_{t,k} \cdot g_{t,k}                                    \\
-      & \hspace{3em} o_{t,k} \eq \sigma(W_{o,k} \cdot x_t + U_{o,k} \cdot h_t + V_{o,k} \cdot c_{t+1,k} + b_{o,k})
-        &&\tag{4}\label{4}                                                                                         \\
-      & \hspace{3em} h_{t+1,k} = o_{t,k} \cdot \tanh(c_{t+1,k})
-        &&\tag{5}\label{5}                                                                                         \\
-      & \hspace{2em} \textbf{end for}                                                                              \\
-      & \hspace{2em} c_{t+1} \eq \cat{c_{t+1,0}, \dots, c_{t+1,\nBlk-1}}                                           \\
-      & \hspace{2em} h_{t+1} \eq \fla{h_{t+1,0}, \dots, h_{t+1,\nBlk-1}}                                           \\
-      & \hspace{1em} \textbf{end for}                                                                              \\
-      & \hspace{1em} c \eq \cat{c_1, \dots, c_S}                                                                   \\
-      & \hspace{1em} h \eq \cat{h_1, \dots, h_S}                                                                   \\
-      & \hspace{1em} \textbf{return } [h, c]                                                                       \\
-      & \textbf{end procedure}
+      & \algoProc{\LSTMZeroTwoLayer}\pa{x, c_0, h_0}                                                                 \\
+      & \indent{1} S \algoEq x.\text{size}(1)                                                                        \\
+      & \indent{1} \algoFor{t \in \set{1, \dots, S}}                                                                 \\
+      & \indent{2} \algoFor{k \in \set{1, \dots, \nBlk}}                                                             \\
+      & \indent{3} f_{t,k} \algoEq \sigma\pa{
+                     W_{f,k} \cdot x_t + U_{f,k} \cdot h_{t-1} + V_{f,k} \cdot c_{t-1,k} + b_{f,k}
+                   }                                                                              &&\tag{1}\label{1} \\
+      & \indent{3} i_{t,k} \algoEq \sigma\pa{
+                     W_{i,k} \cdot x_t + U_{i,k} \cdot h_{t-1} + V_{i,k} \cdot c_{t-1,k} + b_{i,k}
+                   }                                                                              &&\tag{2}\label{2} \\
+      & \indent{3} g_{t,k} \algoEq \tanh\pa{W_k \cdot x_t + U_k \cdot h_{t-1} + b_k}              &&\tag{3}\label{3} \\
+      & \indent{3} c_{t,k} \algoEq f_{t, k} \cdot c_{t-1,k} + i_{t,k} \cdot g_{t,k}                                  \\
+      & \indent{3} o_{t,k} \algoEq \sigma\pa{
+                     W_{o,k} \cdot x_t + U_{o,k} \cdot h_{t-1} + V_{o,k} \cdot c_{t,k} + b_{o,k}
+                   }                                                                              &&\tag{4}\label{4} \\
+      & \indent{3} h_{t,k} \algoEq o_{t,k} \cdot \tanh\pa{c_{t,k}}                                &&\tag{5}\label{5} \\
+      & \indent{2} \algoEndFor                                                                                       \\
+      & \indent{2} c_t \algoEq \cat{c_{t,1}, \dots, c_{t,\nBlk}}                                                     \\
+      & \indent{2} h_t \algoEq \fla{h_{t,1}, \dots, h_{t,\nBlk}}                                                     \\
+      & \indent{1} \algoEndFor                                                                                       \\
+      & \indent{1} c \algoEq \cat{c_1, \dots, c_S}                                                                   \\
+      & \indent{1} h \algoEq \cat{h_1, \dots, h_S}                                                                   \\
+      & \indent{1} \algoReturn (c, h)                                                                                \\
+      & \algoEndProc
     \end{align*}
 
-  +---------------------------------------------+------------------------------------------------+
-  | Trainable Parameters                        | Nodes                                          |
-  +-----------------+---------------------------+-----------------+------------------------------+
-  | Parameter       | Shape                     | Symbol          | Shape                        |
-  +=================+===========================+=================+==============================+
-  | :math:`h_0`     | :math:`(1, \hOut)`        | :math:`x`       | :math:`(B, S, \hIn)`         |
-  +-----------------+---------------------------+-----------------+------------------------------+
-  | :math:`c_0`     | :math:`(1, \nBlk, \dBlk)` | :math:`h_0`     | :math:`(B, \hOut)`           |
-  +-----------------+---------------------------+-----------------+------------------------------+
-  | :math:`W_{f,k}` | :math:`(1, \hIn)`         | :math:`c_0`     | :math:`(B, \nBlk, \dBlk)`    |
-  +-----------------+---------------------------+-----------------+------------------------------+
-  | :math:`U_{f,k}` | :math:`(1, \hOut)`        | :math:`x_t`     | :math:`(B, \hIn)`            |
-  +-----------------+---------------------------+-----------------+------------------------------+
-  | :math:`V_{f,k}` | :math:`(1, \dBlk)`        | :math:`h_t`     | :math:`(B, \hOut)`           |
-  +-----------------+---------------------------+-----------------+------------------------------+
-  | :math:`b_{f,k}` | :math:`(\nBlk)`           | :math:`c_{t,k}` | :math:`(B, \dBlk)`           |
-  +-----------------+---------------------------+-----------------+------------------------------+
-  | :math:`W_{i,k}` | :math:`(1, \hIn)`         | :math:`f_{t,k}` | :math:`(B, 1)`               |
-  +-----------------+---------------------------+-----------------+------------------------------+
-  | :math:`U_{i,k}` | :math:`(1, \hOut)`        | :math:`i_{t,k}` | :math:`(B, 1)`               |
-  +-----------------+---------------------------+-----------------+------------------------------+
-  | :math:`V_{i,k}` | :math:`(1, \dBlk)`        | :math:`g_{t,k}` | :math:`(B, \dBlk)`           |
-  +-----------------+---------------------------+-----------------+------------------------------+
-  | :math:`b_{i,k}` | :math:`(\nBlk)`           | :math:`o_{t,k}` | :math:`(B, 1)`               |
-  +-----------------+---------------------------+-----------------+------------------------------+
-  | :math:`W_{o,k}` | :math:`(1, \hIn)`         | :math:`h_{t,k}` | :math:`(B, \dBlk)`           |
-  +-----------------+---------------------------+-----------------+------------------------------+
-  | :math:`U_{o,k}` | :math:`(1, \hOut)`        | :math:`c_t`     | :math:`(B, \nBlk, \dBlk)`    |
-  +-----------------+---------------------------+-----------------+------------------------------+
-  | :math:`V_{o,k}` | :math:`(1, \dBlk)`        | :math:`c`       | :math:`(B, S, \nBlk, \dBlk)` |
-  +-----------------+---------------------------+-----------------+------------------------------+
-  | :math:`b_{o,k}` | :math:`(\nBlk)`           | :math:`h`       | :math:`(B, S, \hOut)`        |
-  +-----------------+---------------------------+-----------------+------------------------------+
-  | :math:`W_k`     | :math:`(\hIn, \dBlk)`     |                                                |
-  +-----------------+---------------------------+                                                |
-  | :math:`U_k`     | :math:`(\hOut, \dBlk)`    |                                                |
-  +-----------------+---------------------------+                                                |
-  | :math:`b_k`     | :math:`(\dBlk)`           |                                                |
-  +-----------------+---------------------------+------------------------------------------------+
+  +------------------------------------------+------------------------------------------------+
+  | Trainable Parameters                     | Nodes                                          |
+  +-----------------+------------------------+-----------------+------------------------------+
+  | Parameter       | Shape                  | Symbol          | Shape                        |
+  +=================+========================+=================+==============================+
+  | :math:`U_{f,k}` | :math:`(1, \hOut)`     | :math:`c`       | :math:`(B, S, \nBlk, \dBlk)` |
+  +-----------------+------------------------+-----------------+------------------------------+
+  | :math:`U_{i,k}` | :math:`(1, \hOut)`     | :math:`c_t`     | :math:`(B, \nBlk, \dBlk)`    |
+  +-----------------+------------------------+-----------------+------------------------------+
+  | :math:`U_k`     | :math:`(\dBlk, \hOut)` | :math:`c_{t,k}` | :math:`(B, \dBlk)`           |
+  +-----------------+------------------------+-----------------+------------------------------+
+  | :math:`U_{o,k}` | :math:`(1, \hOut)`     | :math:`f_{t,k}` | :math:`(B, 1)`               |
+  +-----------------+------------------------+-----------------+------------------------------+
+  | :math:`V_{f,k}` | :math:`(1, \dBlk)`     | :math:`g_{t,k}` | :math:`(B, \dBlk)`           |
+  +-----------------+------------------------+-----------------+------------------------------+
+  | :math:`V_{i,k}` | :math:`(1, \dBlk)`     | :math:`h`       | :math:`(B, S, \hOut)`        |
+  +-----------------+------------------------+-----------------+------------------------------+
+  | :math:`V_{o,k}` | :math:`(1, \dBlk)`     | :math:`h_t`     | :math:`(B, \hOut)`           |
+  +-----------------+------------------------+-----------------+------------------------------+
+  | :math:`W_{f,k}` | :math:`(1, \hIn)`      | :math:`h_{t,k}` | :math:`(B, \dBlk)`           |
+  +-----------------+------------------------+-----------------+------------------------------+
+  | :math:`W_{i,k}` | :math:`(1, \hIn)`      | :math:`i_{t,k}` | :math:`(B, 1)`               |
+  +-----------------+------------------------+-----------------+------------------------------+
+  | :math:`W_k`     | :math:`(\dBlk, \hIn)`  | :math:`o_{t,k}` | :math:`(B, 1)`               |
+  +-----------------+------------------------+-----------------+------------------------------+
+  | :math:`W_{o,k}` | :math:`(1, \hIn)`      | :math:`x`       | :math:`(B, S, \hIn)`         |
+  +-----------------+------------------------+-----------------+------------------------------+
+  | :math:`b_{f,k}` | :math:`(1)`            | :math:`x_t`     | :math:`(B, \hIn)`            |
+  +-----------------+------------------------+-----------------+------------------------------+
+  | :math:`b_{i,k}` | :math:`(1)`            |                                                |
+  +-----------------+------------------------+                                                |
+  | :math:`b_k`     | :math:`(\dBlk)`        |                                                |
+  +-----------------+------------------------+                                                |
+  | :math:`b_{o,k}` | :math:`(1)`            |                                                |
+  +-----------------+------------------------+-----------------+------------------------------+
 
-  - The differences between :py:class:`lmp.model.LSTM2000Layer` and :py:class:`lmp.model.LSTM2002Layer` are list below:
+  - The differences between :py:class:`~lmp.model.LSTM2000Layer` and :py:class:`~LSTM2002Layer` are list below:
 
-    - Input, forget and output gate units have peephole connections connect to memory cell blocks' internal states.
-      See :math:`\eqref{eq1}\eqref{eq2}\eqref{eq4}`.
-    - Output gate units can be calculated only after updating memory cell blocks' internal states.
-      See :math:`\eqref{eq4}`.
+    - Input, forget and output gate units have peephole connections directly connect to memory cell internal states.
+      See :math:`\eqref{1}\eqref{2}\eqref{4}`.
+    - Output gate units can be calculated only after updating memory cell internal states.
+      See :math:`\eqref{4}`.
 
-  - The implementation in the paper use identity mappings in :math:`\eqref{eq3}\eqref{eq5}`.
+  - The implementation in the paper use identity mappings in :math:`\eqref{3}\eqref{5}`.
     Our implementation use :math:`\tanh` instead.
-    We argue that the changes in :math:`\eqref{eq3}\eqref{eq5}` make sure our model activations are bounded and the
-    paper implementation is unbounded.
+    We argue that the changes in :math:`\eqref{3}\eqref{5}` make model activations bounded and the paper implementation
+    is unbounded.
     Since one usually use much larger dimension to train language model compare to the paper (which use dimension
     :math:`1` on everything), activations of LSTM tend to grow to extremely positive / negative values without
     :math:`\tanh`.
 
   Parameters
   ----------
-  d_blk: int
+  d_blk: int, default: 1
     Dimension of each memory cell block :math:`\dBlk`.
-  in_feat: int
-    Number of input features :math:`\hIn`.
-  n_blk: int
+  in_feat: int, default: 1
+    Number of input features per time step :math:`\hIn`.
+  init_fb: float, default: 1.0
+    Uniform distribution upper bound :math:`\init_{fb}` used to initialize forget gate biases.
+  init_ib: float, default: -1.0
+    Uniform distribution lower bound :math:`\init_{ib}` used to initialize input gate biases.
+  init_lower: float, default: -0.1
+    Uniform distribution lower bound :math:`\init_l` used to initialize model parameters.
+  init_ob: float, default: -1.0
+    Uniform distribution lower bound :math:`\init_{ob}` used to initialize output gate biases.
+  init_upper: float, default: 0.1
+    Uniform distribution upper bound :math:`\init_u` used to initialize model parameters.
+  n_blk: int, default: 1
     Number of memory cell blocks :math:`\nBlk`.
   kwargs: typing.Any, optional
     Useless parameter.
@@ -132,88 +536,110 @@ class LSTM2002Layer(LSTM2000Layer):
 
   Attributes
   ----------
-  c_0: torch.nn.Parameter
+  c_0: torch.Tensor
     Memory cell blocks' initial internal states :math:`c_0`.
     Shape: :math:`(1, \nBlk, \dBlk)`.
   d_blk: int
-    Dimension of each memory cell block :math:`\dBlk`.
+    Number of units in a memory cell block :math:`\dBlk`.
   d_hid: int
     Total number of memory cell units :math:`\hOut`.
   fc_h2fg: torch.nn.Linear
-    Fully connected layers :math:`\pa{U_{f,0}, \dots, U_{f,\nBlk-1}}` which connect hidden states to memory cell's
-    forget gate units.
+    Fully connected layer :math:`\pa{U_{f,1}, \dots, U_{f,\nBlk}}` which connects hidden states to memory cell's forget
+    gate units.
     Input shape: :math:`(B, \dHid)`.
     Output shape: :math:`(B, \nBlk)`.
   fc_h2ig: torch.nn.Linear
-    Fully connected layers :math:`\pa{U_{i,0}, \dots, U_{i,\nBlk-1}}` which connect hidden states to memory cell's
-    input gate units.
+    Fully connected layer :math:`\pa{U_{i,1}, \dots, U_{i,\nBlk}}` which connects hidden states to memory cell's input
+    gate units.
     Input shape: :math:`(B, \dHid)`.
     Output shape: :math:`(B, \nBlk)`.
   fc_h2mc_in: torch.nn.Linear
-    Fully connected layers :math:`\pa{U_0, \dots, U_{\nBlk-1}}` which connect hidden states to memory cell blocks'
-    input activations.
+    Fully connected layers :math:`\pa{U_1, \dots, U_{\nBlk}}` which connect hidden states to memory cell blocks' input
+    activations.
     Input shape: :math:`(B, \dHid)`.
     Output shape: :math:`(B, \dHid)`.
   fc_h2og: torch.nn.Linear
-    Fully connected layers :math:`\pa{U_{o,0}, \dots, U_{o,\nBlk-1}}` which connect hidden states to memory cell's
-    output gate units.
+    Fully connected layer :math:`\pa{U_{o,1}, \dots, U_{o,\nBlk}}` which connects hidden states to memory cell's output
+    gate units.
     Input shape: :math:`(B, \dHid)`.
     Output shape: :math:`(B, \nBlk)`.
   fc_x2fg: torch.nn.Linear
-    Fully connected layers :math:`\pa{W_{f,0}, \dots, W_{f,\nBlk-1}}` and :math:`\pa{b_{f,0}, \dots, b_{f,\nBlk-1}}`
-    which connect input units to memory cell's forget gate units.
+    Fully connected layer :math:`\pa{W_{f,1}, \dots, W_{f,\nBlk}}` and :math:`\pa{b_{f,1}, \dots, b_{f,\nBlk}}` which
+    connects input units to memory cell's forget gate units.
     Input shape: :math:`(B, S, \hIn)`.
     Output shape: :math:`(B, S, \nBlk)`.
   fc_x2ig: torch.nn.Linear
-    Fully connected layers :math:`\pa{W_{i,0}, \dots, W_{i,\nBlk-1}}` and :math:`\pa{b_{i,0}, \dots, b_{i,\nBlk-1}}`
-    which connect input units to memory cell's input gate units.
+    Fully connected layer :math:`\pa{W_{i,1}, \dots, W_{i,\nBlk}}` and :math:`\pa{b_{i,1}, \dots, b_{i,\nBlk}}` which
+    connects input units to memory cell's input gate units.
     Input shape: :math:`(B, S, \hIn)`.
     Output shape: :math:`(B, S, \nBlk)`.
   fc_x2mc_in: torch.nn.Linear
-    Fully connected layers :math:`\pa{W_0, \dots, W_{\nBlk-1}}` and :math:`\pa{b_0, \dots, b_{\nBlk-1}}` which connect
+    Fully connected layers :math:`\pa{W_1, \dots, W_{\nBlk}}` and :math:`\pa{b_1, \dots, b_{\nBlk}}` which connects
     input units to memory cell blocks' input activations.
     Input shape: :math:`(B, S, \hIn)`.
     Output shape: :math:`(B, S, \dHid)`.
   fc_x2og: torch.nn.Linear
-    Fully connected layers :math:`\pa{W_{o,0}, \dots, W_{o,\nBlk-1}}` and :math:`\pa{b_{o,0}, \dots, b_{o,\nBlk-1}}`
-    which connect input units to memory cell's output gate units.
+    Fully connected layer :math:`\pa{W_{o,1}, \dots, W_{o,\nBlk}}` and :math:`\pa{b_{o,1}, \dots, b_{o,\nBlk}}` which
+    connects input units to memory cell's output gate units.
     Input shape: :math:`(B, S, \hIn)`.
     Output shape: :math:`(B, S, \nBlk)`.
-  h_0: torch.nn.Parameter
+  h_0: torch.Tensor
     Initial hidden states :math:`h_0`.
     Shape: :math:`(1, \dHid)`
   in_feat: int
-    Number of input features :math:`\hIn`.
+    Number of input features per time step :math:`\hIn`.
+  init_fb: float
+    Uniform distribution upper bound :math:`\init_{fb}` used to initialize forget gate biases.
+  init_ib: float
+    Uniform distribution lower bound :math:`\init_{ib}` used to initialize input gate biases.
+  init_lower: float
+    Uniform distribution lower bound :math:`\init_l` used to initialize model parameters.
+  init_ob: float
+    Uniform distribution lower bound :math:`\init_{ob}` used to initialize output gate biases.
+  init_upper: float
+    Uniform distribution upper bound :math:`\init_u` used to initialize model parameters.
   n_blk: int
     Number of memory cell blocks :math:`\nBlk`.
   pc_c2fg: torch.nn.Parameter
-    Peephole connections :math:`\pa{V_{f,0}, \dots, V_{f,\nBlk-1}}` which connect the :math:`k`-th memory cell
-    blocks' internal states to the :math:`k`-th forget gate units.
+    Peephole connections :math:`\pa{V_{f,1}, \dots, V_{f,\nBlk}}` which connect the :math:`k`-th memory cell blocks'
+    internal states to the :math:`k`-th forget gate units.
     Shape: :math:`(1, \nBlk, \dBlk)`.
   pc_c2ig: torch.nn.Parameter
-    Peephole connections :math:`\pa{V_{i,0}, \dots, V_{i,\nBlk-1}}` which connect the :math:`k`-th memory cell
-    blocks' internal states to the :math:`k`-th input gate units.
+    Peephole connections :math:`\pa{V_{i,1}, \dots, V_{i,\nBlk}}` which connect the :math:`k`-th memory cell blocks'
+    internal states to the :math:`k`-th input gate units.
     Shape: :math:`(1, \nBlk, \dBlk)`.
   pc_c2og: torch.nn.Parameter
-    Peephole connections :math:`\pa{V_{o,0}, \dots, V_{o,\nBlk-1}}` which connect the :math:`k`-th memory cell
-    blocks' internal states to the :math:`k`-th output gate units.
+    Peephole connections :math:`\pa{V_{o,1}, \dots, V_{o,\nBlk}}` which connect the :math:`k`-th memory cell blocks'
+    internal states to the :math:`k`-th output gate units.
     Shape: :math:`(1, \nBlk, \dBlk)`.
 
   See Also
   --------
-  lmp.model.LSTM2000Layer
+  ~lmp.model.LSTM2000Layer
     LSTM (2000 version) recurrent neural network.
-
-  References
-  ----------
-  .. [1] Gers, F. A., Schraudolph, N. N., & Schmidhuber, J. (2002). `Learning precise timing with LSTM recurrent
-         networks`_. Journal of machine learning research, 3(Aug), 115-143.
   """
 
-  def __init__(self, d_blk: int, in_feat: int, n_blk: int, **kwargs: Any):
+  def __init__(
+    self,
+    *,
+    d_blk: int = 1,
+    in_feat: int = 1,
+    init_fb: float = 1.0,
+    init_ib: float = -1.0,
+    init_lower: float = -0.1,
+    init_ob: float = -1.0,
+    init_upper: float = 0.1,
+    n_blk: int = 1,
+    **kwargs: Any,
+  ):
     super().__init__(
       d_blk=d_blk,
       in_feat=in_feat,
+      init_fb=init_fb,
+      init_ib=init_ib,
+      init_lower=init_lower,
+      init_ob=init_ob,
+      init_upper=init_upper,
       n_blk=n_blk,
       **kwargs,
     )
@@ -224,98 +650,85 @@ class LSTM2002Layer(LSTM2000Layer):
     self.pc_c2ig = nn.Parameter(torch.zeros(1, n_blk, d_blk))
     self.pc_c2og = nn.Parameter(torch.zeros(1, n_blk, d_blk))
 
-  def params_init(self) -> None:
-    r"""Initialize model parameters.
-
-    All weights and biases other than :math:`b_{f,k}, b_{i,k}, b_{o,k}` are initialized with uniform distribution
-    :math:`\mathcal{U}\pa{\dfrac{-1}{\sqrt{d}}, \dfrac{1}{\sqrt{d}}}` where :math:`d = \max(\hIn, \hOut)`.
-    :math:`b_{i,k}, b_{o,k}` are initialized with uniform distribution :math:`\mathcal{U}\pa{\dfrac{-1}{\sqrt{d}}, 0}`
-    so that input and output gates remain closed at the begining of training.
-    :math:`b_{f,k}` is initialized with uniform distribution :math:`\mathcal{U}\pa{0, \dfrac{1}{\sqrt{d}}}` so that
-    forget gates remain open at the begining of training.
-
-    Returns
-    -------
-    None
-    """
-    super().params_init()
-
-    # Initialize weights and biases with uniform distribution.
-    inv_sqrt_dim = 1 / math.sqrt(max(self.in_feat, self.d_hid))
-
-    nn.init.uniform_(self.pc_c2fg, -inv_sqrt_dim, inv_sqrt_dim)
-    nn.init.uniform_(self.pc_c2ig, -inv_sqrt_dim, inv_sqrt_dim)
-    nn.init.uniform_(self.pc_c2og, -inv_sqrt_dim, inv_sqrt_dim)
-
   def forward(
     self,
-    batch_x: torch.Tensor,
-    batch_prev_states: Optional[List[torch.Tensor]] = None,
-  ) -> List[torch.Tensor]:
-    r"""Calculate batch of hidden states for ``batch_x``.
+    x: torch.Tensor,
+    c_0: Optional[torch.Tensor] = None,
+    h_0: Optional[torch.Tensor] = None,
+  ) -> Tuple[torch.Tensor, torch.Tensor]:
+    r"""Calculate batch of hidden states for ``x``.
 
     Below we describe the forward pass algorithm of LSTM (2002 version) layer.
 
-    #. Let ``batch_x`` be batch input features :math:`x`.
-    #. Let ``batch_prev_states`` be the initial hidden states :math:`h_0` and the initial internal states :math:`c_0`.
-       If ``batch_prev_states is None``, use ``self.h_0`` and ``self.c_0`` instead.
-    #. Let ``batch_x.size(1)`` be sequence length :math:`S`.
-    #. Loop through :math:`\set{0, \dots, S-1}` with looping index :math:`t`.
+    #. Let ``x`` be a batch of sequences of input features :math:`x`.
+    #. Let ``x.size(1)`` be sequence length :math:`S`.
+    #. Let ``c_0`` be the memory cell initial internal states :math:`c_0`.
+       If ``c_0 is None``, use ``self.c_0`` instead.
+    #. Let ``h_0`` be the initial hidden states :math:`h_0`.
+       If ``h_0 is None``, use ``self.h_0`` instead.
+    #. Loop through :math:`\set{1, \dots, S}` with looping index :math:`t`.
 
-       #. Use :math:`x_t`, :math:`h_t`, :math:`c_t`, ``self.fc_x2fg``, ``self.fc_h2fg`` and ``self.pc_c2fg`` to get
-          forget gate units :math:`f_{t,0}, \dots, f_{t,\nBlk-1}`.
-       #. Use :math:`x_t`, :math:`h_t`, :math:`c_t`, ``self.fc_x2ig``, ``self.fc_h2ig`` and ``self.pc_c2ig`` to get
-          input gate units :math:`i_{t,0}, \dots, i_{t,\nBlk-1}`.
-       #. Use :math:`x_t`, :math:`h_t`, ``self.fc_x2mc_in`` and ``self.fc_h2mc_in`` to get memory cell input
-          activations :math:`g_{t,0}, \dots, g_{t,\nBlk-1}`.
-       #. Derive new internal state :math:`c_{t+1}` using forget gates units :math:`f_{t,0}, \dots, f_{t,\nBlk-1}`,
-          input gate units :math:`i_{t,0}, \dots, i_{t,\nBlk-1}` and memory cell input activations
-          :math:`g_{t,0}, \dots, g_{t,\nBlk-1}`.
-       #. Use :math:`x_t`, :math:`h_t`, :math:`c_{t+1}`, ``self.fc_x2og``, ``self.fc_h2og`` and ``self.pc_c2og`` to get
-          output gate units :math:`o_{t,0}, \dots, o_{t,\nBlk-1}`.
-       #. Derive new hidden states :math:`h_{t+1}` using output gate units :math:`o_{t,0}, \dots, o_{t,\nBlk-1}` and
-          new internal states :math:`c_{t+1}`.
+       #. Use :math:`x_t`, :math:`h_{t-1}`, :math:`c_{t-1}`, ``self.fc_x2fg``, ``self.fc_h2fg`` and ``self.pc_c2fg`` to
+          get forget gate units :math:`f_{t,1}, \dots, f_{t,\nBlk}`.
+       #. Use :math:`x_t`, :math:`h_{t-1}`, :math:`c_{t-1}`, ``self.fc_x2ig``, ``self.fc_h2ig`` and ``self.pc_c2ig`` to
+          get input gate units :math:`i_{t,1}, \dots, i_{t,\nBlk}`.
+       #. Use :math:`x_t`, :math:`h_{t-1}`, ``self.fc_x2mc_in`` and ``self.fc_h2mc_in`` to get memory cell input
+          activations :math:`g_{t,1}, \dots, g_{t,\nBlk}`.
+       #. Derive new internal state :math:`c_{t,1}, \dots, c_{t,\nBlk}` using forget gates units
+          :math:`f_{t,1}, \dots, f_{t,\nBlk}`, input gate units :math:`i_{t,1}, \dots, i_{t,\nBlk}` and memory cell
+          input activations :math:`g_{t,1}, \dots, g_{t,\nBlk}`.
+       #. Use :math:`x_t`, :math:`h_{t-1}`, :math:`c_{t,1}, \dots, c_{t,\nBlk}`, ``self.fc_x2og``, ``self.fc_h2og`` and
+          ``self.pc_c2og`` to get output gate units :math:`o_{t,1}, \dots, o_{t,\nBlk}`.
+       #. Derive new hidden states :math:`h_t` using output gate units :math:`o_{t,1}, \dots, o_{t,\nBlk}` and memory
+          cell new internal states :math:`c_{t,1}, \dots, c_{t,\nBlk}`.
 
-    #. Denote the concatenation of internal states :math:`c_1, \dots, c_S` as :math:`c`.
+    #. Denote the concatenation of memory cell internal states :math:`c_1, \dots, c_S` as :math:`c`.
     #. Denote the concatenation of hidden states :math:`h_1, \dots, h_S` as :math:`h`.
-    #. Return :math:`(h, c)`.
+    #. Return :math:`(c, h)`.
 
     Parameters
     ----------
-    batch_x: torch.Tensor
-      Batch input features.
-      ``batch_x`` has shape :math:`(B, S, \hIn)` and ``dtype == torch.float``.
-    batch_prev_states: typing.Optional[list[torch.Tensor]], default: None
-      Two items list containing batch previous hidden states and batch previous internal states.
-      ``batch_prev_states[0]`` has shape :math:`(B, \hOut)` and ``dtype == torch.float``.
-      ``batch_prev_states[0]`` has shape :math:`(B, \nBlk, \dBlk)` and ``dtype == torch.float``.
-      Set to ``None`` to use the initial hidden states :math:`h_0` and the initial internal state :math:`c_0`.
+    x: torch.Tensor
+      Batch of sequences of input features.
+      ``x`` has shape :math:`(B, S, \hIn)` and ``dtype == torch.float``.
+    c_0: typing.Optional[torch.Tensor], default: None
+      Batch of memory cell previous internal states.
+      The tensor has shape :math:`(B, \nBlk, \dBlk)` and ``dtype == torch.float``.
+      Set to ``None`` to use the initial memory internal state ``self.c_0``.
+    h_0: typing.Optional[torch.Tensor], default: None
+      Batch of previous hidden states.
+      The tensor has shape :math:`(B, \hOut)` and ``dtype == torch.float``.
+      Set to ``None`` to use the initial hidden states ``self.h_0``.
 
     Returns
     -------
-    list[torch.Tensor]
-      Two items list containing batch hidden states and batch internal states.
+    tuple[torch.Tensor, torch.Tensor]
+      The first tensor is batch of memory cell internal states and the second tensor is batch of hidden states.
+      Batch memory cell internal states has shape :math:`(B, S, \nBlk, \dBlk)` and ``dtype == torch.float``.
       Batch hidden states has shape :math:`(B, S, \hOut)` and ``dtype == torch.float``.
-      Batch internal states has shape :math:`(B, S, \nBlk, \dBlk)` and ``dtype == torch.float``.
     """
-    if batch_prev_states is None:
-      batch_prev_states = [self.h_0, self.c_0]
+    if c_0 is None:
+      c_prev = self.c_0
+    else:
+      c_prev = c_0
 
-    h_prev = batch_prev_states[0]
-    c_prev = batch_prev_states[1]
+    if h_0 is None:
+      h_prev = self.h_0
+    else:
+      h_prev = h_0
 
     # Sequence length.
-    S = batch_x.size(1)
+    S = x.size(1)
 
     # Transform input features to gate units.
     # Shape: (B, S, n_blk).
-    x2fg = self.fc_x2fg(batch_x)
-    x2ig = self.fc_x2ig(batch_x)
-    x2og = self.fc_x2og(batch_x)
+    x2fg = self.fc_x2fg(x)
+    x2ig = self.fc_x2ig(x)
+    x2og = self.fc_x2og(x)
 
     # Transform input features to memory cell block's input.
     # Shape: (B, S, d_hid).
-    x2mc_in = self.fc_x2mc_in(batch_x)
+    x2mc_in = self.fc_x2mc_in(x)
 
     # Perform recurrent calculation for `S` steps.
     c_all = []
@@ -341,7 +754,7 @@ class LSTM2002Layer(LSTM2000Layer):
       # Shape: (B, n_blk, d_blk).
       mc_in = torch.tanh(x2mc_in[:, t, :] + self.fc_h2mc_in(h_prev)).reshape(-1, self.n_blk, self.d_blk)
 
-      # Calculate memory cell blocks' new internal states.
+      # Calculate memory cell new internal states.
       # Shape: (B, n_blk, d_blk).
       c_cur = fg * c_prev + ig * mc_in
 
@@ -353,14 +766,14 @@ class LSTM2002Layer(LSTM2000Layer):
       # shape: (B, n_blk, 1).
       og = torch.sigmoid(x2og[:, t, :] + h2og + c2og).unsqueeze(-1)
 
-      # Calculate memory cell blocks' outputs and flatten to form the new hidden states.
+      # Calculate memory cell outputs and flatten to form the new hidden states.
       # Shape: (B, d_hid).
       h_cur = (og * torch.tanh(c_cur)).reshape(-1, self.d_hid)
 
       c_all.append(c_cur)
       h_all.append(h_cur)
 
-      # Update hidden states and memory cell blocks' internal states.
+      # Update hidden states and memory cell internal states.
       c_prev = c_cur
       h_prev = h_cur
 
@@ -374,209 +787,18 @@ class LSTM2002Layer(LSTM2000Layer):
     # Out shape: (B, S, n_blk, d_blk).
     c = torch.stack(c_all, dim=1)
 
-    return [h, c]
+    return (c, h)
 
+  def params_init(self) -> None:
+    r"""Initialize model parameters.
 
-class LSTM2002(LSTM2000):
-  r"""LSTM (2002 version) language model.
-
-  Implement RNN model in the paper `Learning Precise Timing with LSTM Recurrent Networks`_ as a language model.
-
-  .. _`Learning Precise Timing with LSTM Recurrent Networks`: https://www.jmlr.org/papers/v3/gers02a.html
-
-  - Let :math:`x` be batch of token ids with shape :math:`(B, S)`, where :math:`B` is batch size and :math:`S` is
-    sequence length.
-  - Let :math:`V` be the vocabulary size of the paired tokenizer.
-    Each token id represents an unique token, i.e., :math:`x_t \in \set{0, \dots, V -1}`.
-  - Let :math:`E` be the token embedding lookup table.
-
-    - Let :math:`\newcommand{\dEmb}{d_{\operatorname{emb}}} \dEmb` be the dimension of token embeddings.
-    - Let :math:`e_t` be the token embedding correspond to token id :math:`x_t`.
-
-  - Let :math:`\newcommand{\nLyr}{n_{\operatorname{lyr}}} \nLyr` be the number of recurrent layers.
-  - Let :math:`\newcommand{\dBlk}{d_{\operatorname{blk}}} \dBlk` be the number of units in a memory cell block.
-  - Let :math:`\newcommand{\nBlk}{n_{\operatorname{blk}}} \nBlk` be the number of memory cell blocks.
-  - Let :math:`\newcommand{\dHid}{d_{\operatorname{hid}}} \dHid = \nBlk \times \dBlk`.
-  - Let :math:`h^\ell` be the hidden states of the :math:`\ell` th recurrent layer, let :math:`h_t^\ell` be the
-    :math:`t` th time step of :math:`h^\ell` and let :math:`h_0^\ell` be the initial hidden states of the :math:`\ell`
-    th recurrent layer.
-    The initial hidden states are given as input.
-  - Let :math:`c^\ell` be the internal states of the :math:`\ell` th recurrent layer, let :math:`c_t^\ell` be the
-    :math:`t` th time step of :math:`c^\ell` and let :math:`c_0^\ell` be the initial internal states of the
-    :math:`\ell` th recurrent layer.
-    The initial internal states are given as input.
-
-  LSTM (2002 version) language model is defined as follow:
-
-  .. math::
-
-    \newcommand{\br}[1]{\left[ #1 \right]}
-    \newcommand{\eq}{\leftarrow}
-    \newcommand{\pa}[1]{\left( #1 \right)}
-    \newcommand{\cat}[1]{\operatorname{concate}\pa{#1}}
-    \newcommand{\sof}[1]{\operatorname{softmax}\pa{#1}}
-    \begin{align*}
-      & \textbf{procedure }\text{LSTM2002}\pa{x, \br{h_0^0, c_0^0, \dots, h_0^{\nLyr-1}, c_0^{\nLyr-1}}}              \\
-      & \hspace{1em} \textbf{for } t \in \set{0, \dots, S-1} \textbf{ do}                                             \\
-      & \hspace{2em} e_t \eq (x_t)\text{-th row of } E \text{ but treated as column vector}                           \\
-      & \hspace{2em} h_t^{-1} \eq \tanh(W_h \cdot e_t + b_h)                                                          \\
-      & \hspace{1em} \textbf{end for}                                                                                 \\
-      & \hspace{1em} h^{-1} \eq \cat{h_0^{-1}, \dots, h_{S-1}^{-1}}                                                   \\
-      & \hspace{1em} \textbf{for } \ell \in \set{0, \dots, \nLyr-1} \textbf{ do}                                      \\
-      & \hspace{2em} [h^\ell, c^\ell] \eq \text{LSTM2002Layer}(x \eq h^{\ell-1}, [h_0, c_0] \eq [h_0^\ell, c_0^\ell]) \\
-      & \hspace{1em} \textbf{end for}                                                                                 \\
-      & \hspace{1em} \textbf{for } t \in \set{0, \dots, S-1} \textbf{ do}                                             \\
-      & \hspace{2em} z_{t+1} \eq \tanh\pa{W_z \cdot h_{t+1}^{\nLyr-1} + b_z}                                          \\
-      & \hspace{2em} y_{t+1} \eq \sof{E \cdot z_{t+1}}                                                                \\
-      & \hspace{1em} \textbf{end for}                                                                                 \\
-      & \hspace{1em} y \eq \cat{y_1, \dots, y_S}                                                                      \\
-      & \hspace{1em} \textbf{return } \pa{y, \br{h_S^0, c_S^0, \dots, h_S^{\nLyr-1}, c_S^{\nLyr-1}}}                  \\
-      & \textbf{end procedure}
-    \end{align*}
-
-  +----------------------------------------------+-------------------------------------------------+
-  | Trainable Parameters                         | Nodes                                           |
-  +------------------+---------------------------+------------------+------------------------------+
-  | Parameter        | Shape                     | Symbol           | Shape                        |
-  +==================+===========================+==================+==============================+
-  | :math:`h_0^\ell` | :math:`(1, \dHid)`        | :math:`x_t`      | :math:`(B, S)`               |
-  +------------------+---------------------------+------------------+------------------------------+
-  | :math:`c_0^\ell` | :math:`(1, \nBlk, \dBlk)` | :math:`c_0^\ell` | :math:`(B, \nBlk, \dBlk)`    |
-  +------------------+---------------------------+------------------+------------------------------+
-  | :math:`E`        | :math:`(V, \dEmb)`        | :math:`h_0^\ell` | :math:`(B, \dHid)`           |
-  +------------------+---------------------------+------------------+------------------------------+
-  | :math:`W_h`      | :math:`(\dHid, \dEmb)`    | :math:`e_t`      | :math:`(B, S, \dEmb)`        |
-  +------------------+---------------------------+------------------+------------------------------+
-  | :math:`b_h`      | :math:`(\dHid)`           | :math:`h_t^{-1}` | :math:`(B, \dHid)`           |
-  +------------------+---------------------------+------------------+------------------------------+
-  | :math:`W_z`      | :math:`(\dEmb, \dHid)`    | :math:`h^{-1}`   | :math:`(B, S, \dHid)`        |
-  +------------------+---------------------------+------------------+------------------------------+
-  | :math:`b_z`      | :math:`(\dEmb)`           | :math:`h^\ell`   | :math:`(B, S, \dHid)`        |
-  +------------------+---------------------------+------------------+------------------------------+
-  | :math:`\text{LSTM2002Layer}`                 | :math:`h_t^\ell` | :math:`(B, \dHid)`           |
-  +----------------------------------------------+------------------+------------------------------+
-  |                                              | :math:`c^\ell`   | :math:`(B, S, \nBlk, \dBlk)` |
-  |                                              +------------------+------------------------------+
-  |                                              | :math:`c_t^\ell` | :math:`(B, \nBlk, \dBlk)`    |
-  |                                              +------------------+------------------------------+
-  |                                              | :math:`z_t`      | :math:`(B, \dEmb)`           |
-  |                                              +------------------+------------------------------+
-  |                                              | :math:`y_t`      | :math:`(B, V)`               |
-  |                                              +------------------+------------------------------+
-  |                                              | :math:`y`        | :math:`(B, S, V)`            |
-  +----------------------------------------------+------------------+------------------------------+
-
-  - The only differences between :py:class:`lmp.model.LSTM2000` and :py:class:`lmp.model.LSTM2002` are the underlying
-    layers :py:class:`lmp.model.LSTM2000Layer` and :py:class:`lmp.model.LSTM2002Layer`.
-    All other symbols are calculated as in :py:class:`lmp.model.LSTM2000`.
-
-  Parameters
-  ----------
-  d_blk: int
-    Dimension of each memory cell block :math:`\dBlk`.
-  d_emb: int
-    Token embedding dimension :math:`\dEmb`.
-  kwargs: typing.Any, optional
-    Useless parameter.
-    Intently left for subclasses inheritance.
-  n_blk: int
-    Number of memory cell blocks :math:`\nBlk`.
-  n_lyr: int
-    Number of recurrent layers :math:`\nLyr`.
-  p_emb: float
-    Embeddings dropout probability.
-  p_hid: float
-    Hidden units dropout probability.
-  tknzr: lmp.tknzr.BaseTknzr
-    Tokenizer instance.
-
-  Attributes
-  ----------
-  d_blk: int
-    Dimension of each memory cell block :math:`\dBlk`.
-  d_hid: int
-    Total number of memory cell units :math:`\dHid`.
-  emb: torch.nn.Embedding
-    Token embedding lookup table :math:`E`.
-    Input shape: :math:`(B, S)`.
-    Output shape: :math:`(B, S, \dEmb)`.
-  fc_e2h: torch.nn.Sequential
-    Fully connected layer :math:`W_h` and :math:`b_h` which connects input
-    units to the 0th recurrent layer's input.
-    Dropout with probability ``p_emb`` is applied to input.
-    Dropout with probability ``p_hid`` is applied to output.
-    Input shape: :math:`(B, S, \dEmb)`.
-    Output shape: :math:`(B, S, \dHid)`.
-  fc_h2e: torch.nn.Sequential
-    Fully connected layer :math:`W_z` and :math:`b_z` which transforms hidden states to next token embeddings.
-    Dropout with probability ``p_hid`` is applied to output.
-    Input shape: :math:`(B, S, \dHid)`.
-    Output shape: :math:`(B, S, \dEmb)`.
-  model_name: ClassVar[str]
-    CLI name of LSTM (2002 version) is ``LSTM-2002``.
-  n_blk: int
-    Number of memory cell blocks :math:`\nBlk`.
-  n_lyr: int
-    Number of recurrent layers :math:`\nLyr`.
-  p_emb: float
-    Embeddings dropout probability.
-  p_hid: float
-    Hidden units dropout probability.
-  stack_rnn: torch.nn.ModuleList
-    :py:class:`lmp.model.LSTM2002Layer` stacking layers.
-    Each LSTM (2002 version) layer is followed by a dropout layer with probability ``p_hid``.
-    The number of stacking layers is equal to ``2 * n_lyr``.
-    Input shape: :math:`(B, S, \dHid)`.
-    Output shape: :math:`(B, S, \dHid)`.
-
-  See Also
-  --------
-  lmp.model.LSTM2000
-    LSTM (2000 version) language model.
-  lmp.model.LSTM2002Layer
-    LSTM (2002 version) recurrent neural network.
-  """
-
-  model_name: ClassVar[str] = 'LSTM-2002'
-
-  def __init__(
-    self,
-    *,
-    d_blk: int,
-    d_emb: int,
-    n_blk: int,
-    n_lyr: int,
-    p_emb: float,
-    p_hid: float,
-    tknzr: BaseTknzr,
-    **kwargs: Any,
-  ):
-    super().__init__(
-      d_blk=d_blk,
-      d_emb=d_emb,
-      n_blk=n_blk,
-      n_lyr=n_lyr,
-      p_emb=p_emb,
-      p_hid=p_hid,
-      tknzr=tknzr,
-      **kwargs,
-    )
-
-    # Stacking LSTM (2002 version) layers.
-    # Each RNN layer is followed by one dropout layer.
-    self.stack_rnn = nn.ModuleList([])
-    for _ in range(n_lyr):
-      self.stack_rnn.append(LSTM2002Layer(d_blk=d_blk, in_feat=self.d_hid, n_blk=n_blk))
-      self.stack_rnn.append(nn.Dropout(p=p_hid))
-
-  @classmethod
-  def add_CLI_args(cls, parser: argparse.ArgumentParser) -> None:
-    """Add LSTM (2002 version) language model hyperparameters to CLI arguments parser.
-
-    Parameters
-    ----------
-    parser: argparse.ArgumentParser
-      CLI arguments parser.
+    All weights and biases other than :math:`b_f, b_i, b_o` are initialized with uniform distribution
+    :math:`\mathcal{U}\pa{\init_l, \init_u}`.
+    :math:`b_f` is initialized with uniform distribution :math:`\mathcal{U}\pa{0, \init_{fb}}`.
+    :math:`b_i` is initialized with uniform distribution :math:`\mathcal{U}\pa{\init_{ib}, 0}`.
+    :math:`b_o` is initialized with uniform distribution :math:`\mathcal{U}\pa{\init_{ob}, 0}`.
+    :math:`b_f` is initialized separatedly so that forget gates remain open at the start of training.
+    :math:`b_i, b_o` are initialized separatedly so that input and output gates remain closed at the start of training.
 
     Returns
     -------
@@ -584,69 +806,12 @@ class LSTM2002(LSTM2000):
 
     See Also
     --------
-    lmp.script.train_model
-      Language model training script.
-
-    Examples
-    --------
-    >>> import argparse
-    >>> import math
-    >>> from lmp.model import LSTM2002
-    >>> parser = argparse.ArgumentParser()
-    >>> LSTM2002.add_CLI_args(parser)
-    >>> args = parser.parse_args([
-    ...   '--d_blk', '64',
-    ...   '--d_emb', '100',
-    ...   '--n_blk', '8',
-    ...   '--n_lyr', '2',
-    ...   '--p_emb', '0.5',
-    ...   '--p_hid', '0.1',
-    ... ])
-    >>> assert args.d_blk == 64
-    >>> assert args.d_emb == 100
-    >>> assert args.n_blk == 8
-    >>> assert args.n_lyr == 2
-    >>> assert math.isclose(args.p_emb, 0.5)
-    >>> assert math.isclose(args.p_hid, 0.1)
+    ~lmp.model.LSTM2000Layer.params_init
+      LSTM (2000 version) layer parameter initialization.
     """
-    # `parser` validation.
-    lmp.util.validate.raise_if_not_instance(val=parser, val_name='parser', val_type=argparse.ArgumentParser)
+    super().params_init()
 
-    # Required arguments.
-    group = parser.add_argument_group('LSTM (2002 version) hyperparameters')
-    group.add_argument(
-      '--d_blk',
-      help='Dimension of each memory cell block.',
-      required=True,
-      type=int,
-    )
-    group.add_argument(
-      '--d_emb',
-      help='Token embedding dimension.',
-      required=True,
-      type=int,
-    )
-    group.add_argument(
-      '--n_blk',
-      help='Number of memory cell blocks.',
-      required=True,
-      type=int,
-    )
-    group.add_argument(
-      '--n_lyr',
-      help='Number of LSTM (2002 version) layers.',
-      required=True,
-      type=int,
-    )
-    group.add_argument(
-      '--p_emb',
-      help='Embeddings dropout probability.',
-      required=True,
-      type=float,
-    )
-    group.add_argument(
-      '--p_hid',
-      help='Hidden units dropout probability.',
-      required=True,
-      type=float,
-    )
+    # Initialize weights and biases with uniform distribution.
+    nn.init.uniform_(self.pc_c2fg, self.init_lower, self.init_upper)
+    nn.init.uniform_(self.pc_c2ig, self.init_lower, self.init_upper)
+    nn.init.uniform_(self.pc_c2og, self.init_lower, self.init_upper)

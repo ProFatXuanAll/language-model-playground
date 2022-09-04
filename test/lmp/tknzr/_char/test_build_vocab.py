@@ -7,8 +7,8 @@ Test target:
 
 import unicodedata
 
-from lmp.tknzr._base import BOS_TK, BOS_TKID, EOS_TK, EOS_TKID, PAD_TK, PAD_TKID, UNK_TK, UNK_TKID
 from lmp.tknzr._char import CharTknzr
+from lmp.vars import BOS_TK, BOS_TKID, EOS_TK, EOS_TKID, PAD_TK, PAD_TKID, UNK_TK, UNK_TKID
 
 
 def test_empty_build() -> None:

@@ -7,10 +7,23 @@ Test target:
 
 import lmp.dset
 import lmp.script.train_tknzr
+from lmp.dset import DemoDset
 from lmp.tknzr import CharTknzr
 
 
-def test_char_tknzr_parse_results(
+def test_default_values() -> None:
+  """Ensure default values consistency."""
+  args = lmp.script.train_tknzr.parse_args(argv=[CharTknzr.tknzr_name])
+  assert args.dset_name == DemoDset.dset_name
+  assert args.exp_name == 'my_tknzr_exp'
+  assert not args.is_uncased
+  assert args.max_vocab == -1
+  assert args.min_count == 0
+  assert args.seed == 42
+  assert args.ver == 'train'
+
+
+def test_parse_results(
   exp_name: str,
   is_uncased: bool,
   max_vocab: int,

@@ -3,15 +3,15 @@
 import pytest
 
 import lmp.util.cfg
-import lmp.util.path
 import lmp.util.tknzr
+import lmp.vars
 from lmp.tknzr import CharTknzr, WsTknzr
 
 
 @pytest.fixture
 def char_tknzr(exp_name: str, request, tknzr_file_path: None) -> CharTknzr:
   """Character tokenizer example."""
-  tknzr = CharTknzr(is_uncased=True, max_vocab=-1, min_count=0)
+  tknzr = CharTknzr()
   tknzr.build_vocab(batch_txt=['a', 'b', 'c'])
   lmp.util.tknzr.save(exp_name=exp_name, tknzr=tknzr)
   return tknzr
@@ -20,7 +20,7 @@ def char_tknzr(exp_name: str, request, tknzr_file_path: None) -> CharTknzr:
 @pytest.fixture
 def ws_tknzr(exp_name: str, request, tknzr_file_path: None) -> WsTknzr:
   """Whitespace tokenizer example."""
-  tknzr = WsTknzr(is_uncased=True, max_vocab=-1, min_count=0)
+  tknzr = WsTknzr()
   tknzr.build_vocab(batch_txt=['a', 'b', 'c'])
   lmp.util.tknzr.save(exp_name=exp_name, tknzr=tknzr)
   return tknzr

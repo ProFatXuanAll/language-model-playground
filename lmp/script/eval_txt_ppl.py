@@ -1,6 +1,6 @@
 r"""Use pre-trained language model to calculate perplexity on given text.
 
-One must first run the script :py:mod:`lmp.script.train_model` before running this script.
+One must first run the script :doc:`lmp.script.train_model </script/train_model>` before running this script.
 
 See Also
 --------
@@ -13,7 +13,7 @@ See Also
 
 Examples
 --------
-The following example used pre-trained language model under experiment ``my_model_exp`` to calculate perplexity of
+The following example used pre-trained language model under experiment ``my_model_exp`` to calculate perplexity of the
 given text ``"Hello world"``.
 It use checkpoint number ``5000`` to perform evaluation.
 
@@ -24,7 +24,7 @@ It use checkpoint number ``5000`` to perform evaluation.
     --exp_name my_model_exp \
     --txt "Hello world"
 
-The following example calculate perplexity using the last checkpoint.
+The following example calculate perplexity using the last checkpoint of experiment ``my_model_exp``.
 
 .. code-block::
 
@@ -41,7 +41,6 @@ You can use ``-h`` or ``--help`` options to get a list of supported CLI argument
 """
 
 import argparse
-import gc
 import sys
 from typing import List
 
@@ -54,7 +53,6 @@ import lmp.util.model
 import lmp.util.rand
 import lmp.util.tknzr
 import lmp.util.validate
-from lmp.tknzr._base import PAD_TKID
 
 
 def parse_args(argv: List[str]) -> argparse.Namespace:
@@ -81,31 +79,41 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
     description='Use pre-trained language model to calculate perplexity on given text.',
   )
 
-  # Required arguments.
   parser.add_argument(
     '--ckpt',
-    help='Pre-trained language model checkpoint.',
-    required=True,
+    default=-1,
+    help='''
+    Pre-trained language model checkpoint.
+    Set to ``-1`` to use the last checkpoint.
+    Default is ``-1``.
+    ''',
     type=int,
   )
   parser.add_argument(
     '--exp_name',
-    help='Pre-trained language model experiment name.',
-    required=True,
+    default='my_model_exp',
+    help='''
+    Pre-trained language model experiment name.
+    Default is ``my_model_exp``.
+    ''',
     type=str,
   )
   parser.add_argument(
     '--txt',
-    help='Text to calculate perplexity.',
-    required=True,
+    default='hello world',
+    help='''
+    Text to calculate perplexity.
+    Default is ``hello world``.
+    ''',
     type=str,
   )
-
-  # Optional arguments.
   parser.add_argument(
     '--seed',
     default=42,
-    help='Random seed.  Default is ``42``.',
+    help='''
+    Random seed.
+    Default is ``42``.
+    ''',
     type=int,
   )
 
@@ -158,22 +166,21 @@ def main(argv: List[str]) -> None:
 
   # Encode text into token ids.
   # We convert token ids into tensor and move to the same running device as model.
-  batch_tkids = torch.LongTensor(tknzr.batch_enc(batch_txt=[args.txt], max_seq_len=model_cfg.max_seq_len)).to(device)
+  # Shape: (1, S)
+  batch_tkids = torch.LongTensor([tknzr.enc(txt=args.txt)]).to(device)
+  S = batch_tkids.size(1)
 
-  # Loop through mini-batch by context windows.
+  # Record BPC and loop through mini-batch by context windows.
+  # In practice we can use word or subword as token, so we shall call it bit-per-token instead of BPC.
+  # Naming it as BPC is simply because the convention.
   batch_prev_states = None
-  batch_tkids_pd_list = []
-  batch_next_tkids_list = []
-  for ctx_idx in range(0, model_cfg.max_seq_len, model_cfg.ctx_win):
+  bpc = 0.0
+  for ctx_idx in range(0, model_cfg.max_seq_len, model_cfg.max_seq_len):
     # Fetch context window.
-    ctx_batch_tkids = batch_tkids[..., ctx_idx:ctx_idx + model_cfg.ctx_win + 1]
+    ctx_batch_tkids = batch_tkids[..., ctx_idx:ctx_idx + model_cfg.max_seq_len + 1]
 
     # Drop the remaining sequence-length-1 context window.
     if ctx_batch_tkids.size(1) == 1:
-      break
-
-    # Skip all-paddings batch.
-    if torch.all(ctx_batch_tkids == PAD_TKID):
       break
 
     # Construct language model evaluation format.
@@ -181,42 +188,25 @@ def main(argv: List[str]) -> None:
     batch_next_tkids = ctx_batch_tkids[..., 1:]
 
     # Get next token id probability distribution.
-    batch_tkids_pd, batch_prev_states = model.pred(
+    batch_tkids_pd, batch_cur_states = model.pred(
       batch_cur_tkids=batch_cur_tkids,
-      batch_prev_states=None,
+      batch_prev_states=batch_prev_states,
     )
 
-    batch_tkids_pd_list.append(batch_tkids_pd)
-    batch_next_tkids_list.append(batch_next_tkids)
+    # Calculate -p log p.
+    nplogp = lmp.util.metric.nplogp(batch_tkids=batch_next_tkids, batch_tkids_pd=batch_tkids_pd, use_log2=True)
 
-  # Calculate perplexity.
-  ppl = lmp.util.metric.ppl(
-    batch_tkids=torch.cat(batch_next_tkids_list, dim=1),
-    batch_tkids_pd=torch.cat(batch_tkids_pd_list, dim=1),
-  )
+    # Record BPC.
+    bpc += (nplogp / S).sum().item()
+
+    # Update hidden states.
+    batch_prev_states = batch_cur_states
+
+  # Convert BPC to perplexity.
+  ppl = pow(2, bpc)
 
   # Output perplexity on given sample.
-  print(ppl.item())
-
-  # Free memory.
-  # This is only need for unit test.
-  del args
-  del batch_cur_tkids
-  del batch_next_tkids
-  del batch_next_tkids_list
-  del batch_prev_states
-  del batch_tkids
-  del batch_tkids_pd
-  del batch_tkids_pd_list
-  del ctx_batch_tkids
-  del ctx_idx
-  del device
-  del model
-  del model_cfg
-  del ppl
-  del tknzr
-  torch.cuda.empty_cache()
-  gc.collect()
+  print(ppl)
 
 
 if __name__ == '__main__':

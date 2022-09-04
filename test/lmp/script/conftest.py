@@ -7,8 +7,8 @@ from typing import Callable, List
 import pytest
 
 import lmp.util.cfg
-import lmp.util.path
 import lmp.util.tknzr
+import lmp.vars
 from lmp.model import BaseModel, ElmanNet
 from lmp.tknzr import BaseTknzr, CharTknzr
 
@@ -19,7 +19,7 @@ def cfg_file_path(clean_dir_finalizer_factory: Callable[[str], None], exp_name: 
 
   After testing, clean up files and directories created during test.
   """
-  abs_dir_path = os.path.join(lmp.util.path.EXP_PATH, exp_name)
+  abs_dir_path = os.path.join(lmp.vars.EXP_PATH, exp_name)
   abs_file_path = os.path.join(abs_dir_path, lmp.util.cfg.FILE_NAME)
   request.addfinalizer(clean_dir_finalizer_factory(abs_dir_path))
   return abs_file_path
@@ -31,7 +31,7 @@ def ckpt_dir_path(clean_dir_finalizer_factory: Callable[[str], None], exp_name: 
 
   After testing, clean up files and directories created during test.
   """
-  abs_dir_path = os.path.join(lmp.util.path.EXP_PATH, exp_name)
+  abs_dir_path = os.path.join(lmp.vars.EXP_PATH, exp_name)
   request.addfinalizer(clean_dir_finalizer_factory(abs_dir_path))
   return abs_dir_path
 
@@ -42,7 +42,7 @@ def eval_log_dir_path(clean_dir_finalizer_factory: Callable[[str], None], model_
 
   After testing, clean up files and directories created during test.
   """
-  abs_dir_path = os.path.join(lmp.util.path.LOG_PATH, model_exp_name)
+  abs_dir_path = os.path.join(lmp.vars.LOG_PATH, model_exp_name)
   request.addfinalizer(clean_dir_finalizer_factory(abs_dir_path))
   return abs_dir_path
 
@@ -57,11 +57,11 @@ def model(tknzr: BaseTknzr) -> BaseModel:
 def model_exp_name(
   ckpts: List[int],
   clean_dir_finalizer_factory: Callable[[str], None],
-  ctx_win: int,
   exp_name: str,
   max_seq_len: int,
   model: BaseModel,
   request,
+  stride: int,
   tknzr_exp_name: str,
 ) -> str:
   """Language model experiment name."""
@@ -70,11 +70,16 @@ def model_exp_name(
     lmp.util.model.save(ckpt=ckpt, exp_name=exp_name, model=model)
 
   lmp.util.cfg.save(
-    args=argparse.Namespace(ctx_win=ctx_win, exp_name=exp_name, tknzr_exp_name=tknzr_exp_name, max_seq_len=max_seq_len),
+    args=argparse.Namespace(
+      exp_name=exp_name,
+      max_seq_len=max_seq_len,
+      stride=stride,
+      tknzr_exp_name=tknzr_exp_name,
+    ),
     exp_name=exp_name
   )
 
-  abs_dir_path = os.path.join(lmp.util.path.EXP_PATH, exp_name)
+  abs_dir_path = os.path.join(lmp.vars.EXP_PATH, exp_name)
   request.addfinalizer(clean_dir_finalizer_factory(abs_dir_path))
   return exp_name
 
@@ -82,7 +87,7 @@ def model_exp_name(
 @pytest.fixture
 def tknzr() -> BaseTknzr:
   """:py:class:`lmp.tknzr.BaseTknzr` instance."""
-  tknzr = CharTknzr(is_uncased=True, max_vocab=-1, min_count=0)
+  tknzr = CharTknzr()
   tknzr.build_vocab(batch_txt=['a', 'b', 'c'])
   return tknzr
 
@@ -98,7 +103,7 @@ def tknzr_exp_name(
   exp_name = f'{exp_name}-tokenizer'
   lmp.util.tknzr.save(exp_name=exp_name, tknzr=tknzr)
 
-  abs_dir_path = os.path.join(lmp.util.path.EXP_PATH, exp_name)
+  abs_dir_path = os.path.join(lmp.vars.EXP_PATH, exp_name)
   request.addfinalizer(clean_dir_finalizer_factory(abs_dir_path))
   return exp_name
 
@@ -109,7 +114,7 @@ def tknzr_file_path(clean_dir_finalizer_factory: Callable[[str], None], exp_name
 
   After testing, clean up files and directories created during test.
   """
-  abs_dir_path = os.path.join(lmp.util.path.EXP_PATH, exp_name)
+  abs_dir_path = os.path.join(lmp.vars.EXP_PATH, exp_name)
   abs_file_path = os.path.join(abs_dir_path, lmp.util.tknzr.FILE_NAME)
   request.addfinalizer(clean_dir_finalizer_factory(abs_dir_path))
   return abs_file_path
@@ -121,6 +126,6 @@ def train_log_dir_path(clean_dir_finalizer_factory: Callable[[str], None], exp_n
 
   After testing, clean up files and directories created during test.
   """
-  abs_dir_path = os.path.join(lmp.util.path.LOG_PATH, exp_name)
+  abs_dir_path = os.path.join(lmp.vars.LOG_PATH, exp_name)
   request.addfinalizer(clean_dir_finalizer_factory(abs_dir_path))
   return abs_dir_path

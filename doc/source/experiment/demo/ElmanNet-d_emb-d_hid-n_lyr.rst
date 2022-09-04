@@ -79,7 +79,7 @@ Script was called as below:
     --total_step 30000 \
     --ver train \
     --warmup_step 5000 \
-    --wd 1e-2
+    --weight_decay 1e-2
 
 Model evaluation settings
 ~~~~~~~~~~~~~~~~~~~~~~~~~

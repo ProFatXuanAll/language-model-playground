@@ -5,3 +5,5 @@ Wiki-Text-2 Dataset
   :members: download_file, download_dataset, norm
   :show-inheritance:
   :special-members: __getitem__, __iter__, __len__
+
+.. footbibliography::

@@ -6,11 +6,11 @@ SPLIT_PTTN: typing.Final[re.Pattern]
   Special tokens and whitespaces matching pattern.
 """
 
-import argparse
 import re
 from typing import ClassVar, Final, List
 
-from lmp.tknzr._base import SP_TKS, BaseTknzr
+from lmp.tknzr._base import BaseTknzr
+from lmp.vars import SP_TKS
 
 SPLIT_PTTN: Final[re.Pattern] = re.compile('(' + '|'.join(map(re.escape, SP_TKS)) + r'|\s+' + ')')
 
@@ -23,18 +23,33 @@ class WsTknzr(BaseTknzr):
 
   Parameters
   ----------
-  is_uncased: bool
+  is_uncased: bool, default: False
     Set to ``True`` to convert text into lowercase.
-  max_vocab: int
-    Maximum vocabulary size.
-  min_count: int
+    Mainly used by :py:meth:`~norm`.
+  max_vocab: int, default: -1
+    Tokenizer's maximum vocabulary size.
+    Set to ``-1`` to include as many tokens in vocabulary as possible.
+    Mainly used by :py:meth:`~build_vocab`.
+  min_count: int, default: 0
     Minimum token occurrence counts.
+    Tokens have occurrence counts less than ``min_count`` will not be added to tokenizer's vocabulary.
+    Mainly used by :py:meth:`~build_vocab`.
   kwargs: typing.Any, optional
     Useless parameter.
     Intently left for subclasses inheritance.
 
   Attributes
   ----------
+  id2tk: dict[int, str]
+    Token-to-id inverse lookup table.
+  is_uncased: bool
+    Convert text into lowercase if set to ``True``.
+  max_vocab: int
+    Tokenizer's maximum vocabulary size.
+  min_count: int
+    Minimum token occurrence counts.
+  tk2id: dict[str, int]
+    Token-to-id lookup table.
   tknzr_name: typing.ClassVar[str]
     CLI name of whitespace tokenizer is ``whitespace``.
 
@@ -46,73 +61,17 @@ class WsTknzr(BaseTknzr):
   Examples
   --------
   >>> from lmp.tknzr import WsTknzr
-  >>> tknzr = WsTknzr(is_uncased=False, max_vocab=10, min_count=2)
+  >>> tknzr = WsTknzr()
   >>> assert tknzr.tknz('a b c') == ['a', 'b', 'c']
   >>> assert tknzr.dtknz(['a', 'b', 'c']) == 'a b c'
   """
 
   tknzr_name: ClassVar[str] = 'whitespace'
 
-  @classmethod
-  def add_CLI_args(cls, parser: argparse.ArgumentParser) -> None:
-    """Add whitespace tokenizer constructor parameters to CLI arguments parser.
-
-    Parameters
-    ----------
-    parser: argparse.ArgumentParser
-      CLI arguments parser.
-
-    Returns
-    -------
-    None
-
-    See Also
-    --------
-    :doc:`lmp.script.train_tknzr </script/train_tknzr>`
-      Tokenizer training script.
-
-    Examples
-    --------
-    >>> import argparse
-    >>> from lmp.tknzr import WsTknzr
-    >>> parser = argparse.ArgumentParser()
-    >>> WsTknzr.add_CLI_args(parser)
-    >>> args = parser.parse_args([
-    ...   '--max_vocab', '10',
-    ...   '--min_count', '2',
-    ... ])
-    >>> assert args.is_uncased == False
-    >>> assert args.max_vocab == 10
-    >>> assert args.min_count == 2
-    """
-    super().add_CLI_args(parser=parser)
-
-    # Required arguments.
-    group = parser.add_argument_group('whitespace tokenizer constructor arguments')
-    group.add_argument(
-      '--max_vocab',
-      help='Maximum vocabulary size.  Set to `-1` to include any tokens.',
-      required=True,
-      type=int,
-    )
-    group.add_argument(
-      '--min_count',
-      help='Minimum token occurrence count.  Set to `0` to disable.',
-      required=True,
-      type=int,
-    )
-
-    # Optional arguments.
-    group.add_argument(
-      '--is_uncased',
-      action='store_true',
-      help='Convert all text and tokens into lowercase if given.  Default is ``False``.',
-    )
-
   def tknz(self, txt: str) -> List[str]:
-    """Split text between whitespaces.
+    """Split text on whitespaces.
 
-    Text will first be normalized then be splited between whitespaces.
+    Text is first normalized then splited on whitespaces.
 
     Parameters
     ----------
@@ -126,15 +85,15 @@ class WsTknzr(BaseTknzr):
 
     See Also
     --------
-    lmp.tknzr.WsTknzr.dtknz
+    ~dtknz
       Join text with whitespaces.
-    lmp.tknzr.BaseTknzr.norm
+    ~norm
       Text normalization.
 
     Examples
     --------
     >>> from lmp.tknzr import WsTknzr
-    >>> tknzr = WsTknzr(is_uncased=False, max_vocab=10, min_count=2)
+    >>> tknzr = WsTknzr()
     >>> assert tknzr.tknz('a b c') == ['a', 'b', 'c']
     >>> assert tknzr.tknz('abc def') == ['abc', 'def']
     """
@@ -147,15 +106,15 @@ class WsTknzr(BaseTknzr):
     return list(filter(bool, [tk.strip() for tk in SPLIT_PTTN.split(txt)]))
 
   def dtknz(self, tks: List[str]) -> str:
-    """Join text with whitespaces.
+    """Join tokens with whitespaces.
 
     Insert whitespace between tokens.
-    Returned text will be normalized.
+    Returned text is normalized.
 
     Parameters
     ----------
     tks: list[str]
-      token list to be joint.
+      Token list to be joint.
 
     Returns
     -------
@@ -164,15 +123,15 @@ class WsTknzr(BaseTknzr):
 
     See Also
     --------
-    lmp.tknzr.WsTknzr.tknz
-      Split text between whitespaces.
-    lmp.tknzr.BaseTknzr.norm
+    ~tknz
+      Split text on whitespaces.
+    ~norm
       Text normalization.
 
     Examples
     --------
     >>> from lmp.tknzr import WsTknzr
-    >>> tknzr = WsTknzr(is_uncased=False, max_vocab=10, min_count=2)
+    >>> tknzr = WsTknzr()
     >>> assert tknzr.dtknz(['a', 'b', 'c']) == 'a b c'
     >>> assert tknzr.dtknz(['abc', 'def']) == 'abc def'
     """

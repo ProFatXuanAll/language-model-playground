@@ -3,3 +3,5 @@
 
 .. automodule:: lmp.util.rand
   :members:
+
+.. footbibliography::

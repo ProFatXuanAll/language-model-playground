@@ -6,8 +6,8 @@ from typing import Any, List
 
 import torch
 
-import lmp.util.path
 import lmp.util.validate
+import lmp.vars
 from lmp.model import MODEL_OPTS, BaseModel
 
 
@@ -25,7 +25,7 @@ def create(model_name: str, **kwargs: Any) -> BaseModel:
 
   Returns
   -------
-  lmp.model.BaseModel
+  ~lmp.model.BaseModel
     Language model instance.
 
   See Also
@@ -40,16 +40,8 @@ def create(model_name: str, **kwargs: Any) -> BaseModel:
   >>> from lmp.model import ElmanNet
   >>> from lmp.tknzr import CharTknzr
   >>> import lmp.util.model
-  >>> tknzr = CharTknzr(is_uncased=False, max_vocab=10, min_count=2)
-  >>> model = lmp.util.model.create(
-  ...   d_emb=10,
-  ...   d_hid=20,
-  ...   model_name='Elman-Net',
-  ...   n_lyr=1,
-  ...   p_emb=0.5,
-  ...   p_hid=0.1,
-  ...   tknzr=tknzr,
-  ... )
+  >>> tknzr = CharTknzr()
+  >>> model = lmp.util.model.create(model_name=ElmanNet.model_name, tknzr=tknzr)
   >>> assert isinstance(model, ElmanNet)
   """
   # `model_name` validation.
@@ -64,7 +56,8 @@ def save(ckpt: int, exp_name: str, model: BaseModel) -> None:
 
   .. danger::
 
-     This method overwrite existed files.  Make sure you know what you are doing before calling this method.
+    This method overwrite existing files.
+    Make sure you know what you are doing before calling this method.
 
   Parameters
   ----------
@@ -81,7 +74,7 @@ def save(ckpt: int, exp_name: str, model: BaseModel) -> None:
 
   See Also
   --------
-  lmp.util.model.load
+  ~load
     Load pre-trained language model instance by checkpoint and experiment name.
 
   Examples
@@ -89,8 +82,8 @@ def save(ckpt: int, exp_name: str, model: BaseModel) -> None:
   >>> from lmp.model import ElmanNet
   >>> from lmp.tknzr import CharTknzr
   >>> import lmp.util.model
-  >>> tknzr = CharTknzr(is_uncased=False, max_vocab=10, min_count=2)
-  >>> model = ElmanNet(d_emb=10, d_hid=20, n_lyr=1, p_emb=0.5, p_hid=0.1, tknzr=tknzr)
+  >>> tknzr = CharTknzr()
+  >>> model = ElmanNet(tknzr=tknzr)
   >>> lmp.util.model.save(ckpt=0, exp_name='test', model=model)
   None
   """
@@ -103,7 +96,7 @@ def save(ckpt: int, exp_name: str, model: BaseModel) -> None:
   lmp.util.validate.raise_if_empty_str(val=exp_name, val_name='exp_name')
 
   # `save_dir_path` validation
-  save_dir_path = os.path.join(lmp.util.path.EXP_PATH, exp_name)
+  save_dir_path = os.path.join(lmp.vars.EXP_PATH, exp_name)
   lmp.util.validate.raise_if_is_file(path=save_dir_path)
 
   if not os.path.exists(save_dir_path):
@@ -125,13 +118,14 @@ def load(ckpt: int, exp_name: str) -> BaseModel:
   Parameters
   ----------
   ckpt: int
-    Saving checkpoint number.  Set to ``-1`` to load the last checkpoint.
+    Saving checkpoint number.
+    Set to ``-1`` to load the last checkpoint.
   exp_name: str
     Pre-trained language model experiment name.
 
   Returns
   -------
-  lmp.model.BaseModel
+  ~lmp.model.BaseModel
     Pre-trained language model instance.
 
   See Also
@@ -144,8 +138,8 @@ def load(ckpt: int, exp_name: str) -> BaseModel:
   >>> from lmp.model import ElmanNet
   >>> from lmp.tknzr import CharTknzr
   >>> import lmp.util.model
-  >>> tknzr = CharTknzr(is_uncased=False, max_vocab=10, min_count=2)
-  >>> model = ElmanNet(d_emb=10, d_hid=20, n_lyr=1, p_emb=0.5, p_hid=0.1, tknzr=tknzr)
+  >>> tknzr = CharTknzr()
+  >>> model = ElmanNet(tknzr=tknzr)
   >>> lmp.util.model.save(ckpt=0, exp_name='test', model=model)
   >>> load_model = lmp.util.model.load(ckpt=0, exp_name='test')
   >>> assert torch.all(load_model.emb.weight == model.emb.weight)
@@ -159,7 +153,7 @@ def load(ckpt: int, exp_name: str) -> BaseModel:
   lmp.util.validate.raise_if_empty_str(val=exp_name, val_name='exp_name')
 
   # `ckpt_dir_path` validation.
-  ckpt_dir_path = os.path.join(lmp.util.path.EXP_PATH, exp_name)
+  ckpt_dir_path = os.path.join(lmp.vars.EXP_PATH, exp_name)
   lmp.util.validate.raise_if_is_file(path=ckpt_dir_path)
 
   # Load the last checkpoint if `ckpt == -1`.
@@ -187,14 +181,17 @@ def list_ckpts(exp_name: str, first_ckpt: int, last_ckpt: int) -> List[int]:
   exp_name: str
     Pre-trained language model experiment name.
   first_ckpt: int
-    First checkpoint to include.  Set to ``-1`` to include only the last checkpoint.
+    First checkpoint to include.
+    Set to ``-1`` to include only the last checkpoint.
   last_ckpt: int
-    Last checkpoint to include.  Set to ``-1`` to include all checkpoints whose number is greater than ``first_ckpt``.
+    Last checkpoint to include.
+    Set to ``-1`` to include all checkpoints whose number is greater than ``first_ckpt``.
 
   Returns
   -------
   list[int]
-    All available checkpoints of the experiment.  Checkpoints are sorted in ascending order.
+    All available checkpoints of the experiment.
+    Checkpoints are sorted in ascending order.
   """
   # `exp_name` validation.
   lmp.util.validate.raise_if_not_instance(val=exp_name, val_name='exp_name', val_type=str)
@@ -209,7 +206,7 @@ def list_ckpts(exp_name: str, first_ckpt: int, last_ckpt: int) -> List[int]:
   lmp.util.validate.raise_if_wrong_ordered(vals=[-1, last_ckpt], val_names=['-1', 'last_ckpt'])
 
   # `ckpt_dir_path` validation.
-  ckpt_dir_path = os.path.join(lmp.util.path.EXP_PATH, exp_name)
+  ckpt_dir_path = os.path.join(lmp.vars.EXP_PATH, exp_name)
   lmp.util.validate.raise_if_is_file(path=ckpt_dir_path)
 
   ckpt_list = []

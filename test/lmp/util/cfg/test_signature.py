@@ -20,29 +20,30 @@ def test_module_method() -> None:
   assert inspect.signature(lmp.util.cfg.load) == Signature(
     parameters=[
       Parameter(
-        name='exp_name',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=Parameter.empty,
         annotation=str,
+        default=Parameter.empty,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        name='exp_name',
       ),
     ],
     return_annotation=argparse.Namespace,
   )
+
   assert hasattr(lmp.util.cfg, 'save')
   assert inspect.isfunction(lmp.util.cfg.save)
   assert inspect.signature(lmp.util.cfg.save) == Signature(
     parameters=[
       Parameter(
-        name='args',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=Parameter.empty,
         annotation=argparse.Namespace,
+        default=Parameter.empty,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        name='args',
       ),
       Parameter(
-        name='exp_name',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=Parameter.empty,
         annotation=str,
+        default=Parameter.empty,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        name='exp_name',
       ),
     ],
     return_annotation=None,

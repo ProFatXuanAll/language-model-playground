@@ -2,7 +2,7 @@
 
 import inspect
 from inspect import Parameter, Signature
-from typing import Optional, get_type_hints
+from typing import get_type_hints
 
 import lmp.dset._ch_poem
 from lmp.dset._base import BaseDset
@@ -73,10 +73,10 @@ def test_class_method() -> None:
   assert inspect.signature(lmp.dset._ch_poem.ChPoemDset.download_dataset) == Signature(
     parameters=[
       Parameter(
-        name='ver',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=Parameter.empty,
         annotation=str,
+        default=Parameter.empty,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        name='ver',
       ),
     ],
     return_annotation=None,
@@ -86,19 +86,4 @@ def test_class_method() -> None:
 def test_instance_method() -> None:
   """Ensure instance methods' signatures."""
   assert hasattr(lmp.dset._ch_poem.ChPoemDset, '__init__')
-  assert inspect.signature(lmp.dset._ch_poem.ChPoemDset.__init__) == Signature(
-    parameters=[
-      Parameter(
-        name='self',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=Parameter.empty,
-      ),
-      Parameter(
-        name='ver',
-        kind=Parameter.KEYWORD_ONLY,
-        annotation=Optional[str],
-        default=None,
-      ),
-    ],
-    return_annotation=Signature.empty,
-  )
+  assert inspect.signature(lmp.dset._ch_poem.ChPoemDset.__init__) == inspect.signature(BaseDset.__init__)

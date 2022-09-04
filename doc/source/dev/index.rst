@@ -12,3 +12,5 @@ Normal users do not need to read this document.
   how_to_doc
   how_to_test
   lmp/index
+
+.. footbibliography::

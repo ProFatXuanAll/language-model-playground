@@ -7,6 +7,14 @@ Test target:
 import lmp.script.tknz_txt
 
 
+def test_default_values() -> None:
+  """Ensure default values consistency."""
+  args = lmp.script.tknz_txt.parse_args(argv=[])
+  assert args.exp_name == 'my_tknzr_exp'
+  assert args.seed == 42
+  assert args.txt == ''
+
+
 def test_parse_results(exp_name: str, seed: int) -> None:
   """Must correctly parse all arguments."""
   txt = 'abc'

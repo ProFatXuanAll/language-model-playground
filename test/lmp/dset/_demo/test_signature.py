@@ -1,8 +1,7 @@
 """Test :py:mod:`lmp.dset._demo` signatures."""
 
 import inspect
-from inspect import Parameter, Signature
-from typing import Optional, get_type_hints
+from typing import get_type_hints
 
 import lmp.dset._demo
 from lmp.dset._base import BaseDset
@@ -44,19 +43,4 @@ def test_inherent_static_method() -> None:
 def test_instance_method() -> None:
   """Ensure instance methods' signatures."""
   assert hasattr(lmp.dset._demo.DemoDset, '__init__')
-  assert inspect.signature(lmp.dset._demo.DemoDset.__init__) == Signature(
-    parameters=[
-      Parameter(
-        name='self',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=Parameter.empty,
-      ),
-      Parameter(
-        name='ver',
-        kind=Parameter.KEYWORD_ONLY,
-        annotation=Optional[str],
-        default=None,
-      ),
-    ],
-    return_annotation=Signature.empty,
-  )
+  assert inspect.signature(lmp.dset._demo.DemoDset.__init__) == inspect.signature(BaseDset.__init__)

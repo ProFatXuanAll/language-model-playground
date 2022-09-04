@@ -2,19 +2,17 @@
 
 import io
 import os
-import re
 import zipfile
 from typing import ClassVar, List, Optional
 
-import lmp.util.path
+import lmp.vars
 from lmp.dset._base import BaseDset
-from lmp.tknzr._base import UNK_TK
 
 
 class WikiText2Dset(BaseDset):
   """Wiki-Text-2 dataset.
 
-  Wiki-Text-2 [1]_ is part of the WikiText Long Term Dependency Language Modeling Dataset.
+  Wiki-Text-2 :footcite:`merity2017pointer` is part of the WikiText Long Term Dependency Language Modeling Dataset.
   See `Wiki-Text`_ for more details.
 
   .. _`Wiki-Text`:
@@ -26,18 +24,18 @@ class WikiText2Dset(BaseDset):
   +-----------+-------------------+--------------------------+--------------------------+
   | Version   | Number of samples | Maximum number of tokens | Minimum number of tokens |
   +===========+===================+==========================+==========================+
-  | ``train`` | 14628             | 699                      | 10                       |
+  | ``test``  | 60                | 14299                    | 461                      |
   +-----------+-------------------+--------------------------+--------------------------+
-  | ``test``  | 1718              | 481                      | 10                       |
+  | ``train`` | 600               | 17706                    | 281                      |
   +-----------+-------------------+--------------------------+--------------------------+
-  | ``valid`` | 1533              | 429                      | 10                       |
+  | ``valid`` | 60                | 18855                    | 778                      |
   +-----------+-------------------+--------------------------+--------------------------+
 
   Parameters
   ----------
   ver: Optional[str], default: None
     Version of the dataset.
-    Set ``ver = ''`` to use default version.
+    Set to ``None`` to use the default version ``self.__class__.df_ver``.
 
   Attributes
   ----------
@@ -52,16 +50,12 @@ class WikiText2Dset(BaseDset):
   vers: typing.ClassVar[list[str]]
     Supported versions including ``'train'``, ``'test'`` and ``'valid'``.
 
-  References
-  ----------
-  .. [1] Stephen Merity, Caiming Xiong, James Bradbury, and Richard Socher. 2016. Pointer Sentinel Mixture Models
-
   Examples
   --------
   >>> from lmp.dset import WikiText2Dset
   >>> dset = WikiText2Dset(ver='test')
   >>> dset[0][:31]
-  'Robert [unk] is an English film'
+  'Robert <unk> is an English film'
   """
 
   df_ver: ClassVar[str] = 'train'
@@ -75,37 +69,40 @@ class WikiText2Dset(BaseDset):
     self.download_dataset()
 
     # Read dataset from the specified version.
-    with open(os.path.join(lmp.util.path.DATA_PATH, f'wiki.{self.ver}.tokens'), 'r') as text_file:
-      lines = [line.strip() for line in text_file.readlines()]
+    # Each line is normalized.
+    with open(os.path.join(lmp.vars.DATA_PATH, f'wiki.{self.ver}.tokens'), 'r') as text_file:
+      lines = [self.norm(line) for line in text_file.readlines()]
 
-    for line in lines:
-      # Perform text normalization.
-      line = self.norm(line)
-
+    # Wiki-text-2 is consist of Wiki articles.
+    # Each article is consist of one main section, many subsections and nested subsections.
+    # A main section is begin with a single `=` and end with a single `=`.
+    # A subsection is begin with `= =` and end with `= =`.
+    # A nested subsection is begin with more than 2 `=` and end with the same amount of `=`.
+    # We treat an article as one text passage.
+    # Thus we loop through lines to find all sections and subsections of an article.
+    article = ''
+    for line_idx, line in enumerate(lines):
       # Discard empty lines.
       if not line:
         continue
-      # Discard section titles.
-      if line.startswith('=') and line.endswith('='):
-        continue
-      # Discard samples consist mainly non-alphabetic words.
-      if len(re.findall(r'(<formula>|<unk>|[^a-zA-Z])', line)) / len(line) >= 0.3:
-        continue
-      # Discard samples having fewer than 10 words.
-      if len(line.split(' ')) < 10:
-        continue
 
-      # Replace `@.@` token with middle character.
-      line = re.sub(r'@(.)@', r'\1', line)
+      # Each article is treated as a text passage.
+      # The first line is empty, so `article` is added as condition.
+      # Some lines start and end with single `=` but is not section title.
+      # Thus `not lines[line_idx - 1] and not lines[line_idx + 1]` is added as condition.
+      if (
+        article and line.startswith('=') and not line.startswith('= =') and line.endswith('=') and
+        not lines[line_idx - 1] and not lines[line_idx + 1]
+      ):
+        # Flush previous article and start recording new article.
+        self.spls.append(article.strip())
+        article = line + ' '
+      else:
+        # Record article.
+        article += line + ' '
 
-      # Replace unknown token `<unk>` with `[unk]`.
-      line = re.sub(r'<unk>', UNK_TK, line)
-
-      # Add the preprocessed line to dataset.
-      self.spls.append(line)
-
-    # Sort dataset by length in ascending order.
-    self.spls.sort(key=len)
+    # Flush the last remaining article.
+    self.spls.append(article)
 
   @classmethod
   def download_dataset(cls) -> None:
@@ -121,14 +118,14 @@ class WikiText2Dset(BaseDset):
     None
     """
     # Download zip file path.
-    zip_file_path = os.path.join(lmp.util.path.DATA_PATH, 'wiki-text-2.zip')
+    zip_file_path = os.path.join(lmp.vars.DATA_PATH, 'wiki-text-2.zip')
     # Original source is no longer available.
     url = 'https://s3.amazonaws.com/research.metamind.io/wikitext/wikitext-2-v1.zip'
 
     # Avoid duplicated download by checking whether all raw files exists.
     already_downloaded = True
     for ver in cls.vers:
-      raw_file_path = os.path.join(lmp.util.path.DATA_PATH, f'wiki.{ver}.tokens')
+      raw_file_path = os.path.join(lmp.vars.DATA_PATH, f'wiki.{ver}.tokens')
       if not os.path.exists(raw_file_path):
         already_downloaded = False
 
@@ -144,7 +141,7 @@ class WikiText2Dset(BaseDset):
         with io.TextIOWrapper(input_zipfile.open(f'wikitext-2/wiki.{ver}.tokens', 'r')) as input_binary_file:
           data = input_binary_file.read()
 
-        with open(os.path.join(lmp.util.path.DATA_PATH, f'wiki.{ver}.tokens'), 'w') as output_text_file:
+        with open(os.path.join(lmp.vars.DATA_PATH, f'wiki.{ver}.tokens'), 'w') as output_text_file:
           output_text_file.write(data)
 
     # Remove downloaded zip file.

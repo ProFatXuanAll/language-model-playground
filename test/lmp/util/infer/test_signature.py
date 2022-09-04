@@ -15,15 +15,16 @@ def test_module_method() -> None:
   assert inspect.signature(lmp.util.infer.create) == Signature(
     parameters=[
       Parameter(
-        name='infer_name',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=Parameter.empty,
         annotation=str,
+        default=Parameter.empty,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        name='infer_name',
       ),
       Parameter(
-        name='kwargs',
-        kind=Parameter.VAR_KEYWORD,
         annotation=Any,
+        default=Parameter.empty,
+        kind=Parameter.VAR_KEYWORD,
+        name='kwargs',
       ),
     ],
     return_annotation=BaseInfer,

@@ -14,31 +14,25 @@ def test_char_tknzr(capsys, char_tknzr: CharTknzr, exp_name: str, seed: int) -> 
   """Ensure tokenize script output consistency when using :py:class:`lmp.tknzr.CharTknzr`."""
   txt = 'abc'
 
-  lmp.script.tknz_txt.main(argv=[
+  assert lmp.script.tknz_txt.main(argv=[
     '--exp_name',
     exp_name,
     '--seed',
     str(seed),
     '--txt',
     txt,
-  ])
-
-  captured = capsys.readouterr()
-  assert str(char_tknzr.tknz(txt=txt)) in captured.out
+  ]) == char_tknzr.tknz(txt=txt)
 
 
 def test_ws_tknzr(capsys, ws_tknzr: WsTknzr, exp_name: str, seed: int) -> None:
   """Ensure tokenize script output consistency when using :py:class:`lmp.tknzr.WsTknzr`."""
   txt = 'a b c'
 
-  lmp.script.tknz_txt.main(argv=[
+  assert lmp.script.tknz_txt.main(argv=[
     '--exp_name',
     exp_name,
     '--seed',
     str(seed),
     '--txt',
     txt,
-  ])
-
-  captured = capsys.readouterr()
-  assert str(ws_tknzr.tknz(txt=txt)) in captured.out
+  ]) == ws_tknzr.tknz(txt=txt)

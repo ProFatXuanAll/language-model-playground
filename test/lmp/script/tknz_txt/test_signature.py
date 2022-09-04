@@ -15,24 +15,25 @@ def test_module_method() -> None:
   assert inspect.signature(lmp.script.tknz_txt.parse_args) == Signature(
     parameters=[
       Parameter(
-        name='argv',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=Parameter.empty,
         annotation=List[str],
+        default=Parameter.empty,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        name='argv',
       ),
     ],
     return_annotation=argparse.Namespace,
   )
+
   assert hasattr(lmp.script.tknz_txt, 'main')
   assert inspect.isfunction(lmp.script.tknz_txt.main)
   assert inspect.signature(lmp.script.tknz_txt.main) == Signature(
     parameters=[
       Parameter(
-        name='argv',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=Parameter.empty,
         annotation=List[str],
+        default=Parameter.empty,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        name='argv',
       ),
     ],
-    return_annotation=None,
+    return_annotation=str,
   )

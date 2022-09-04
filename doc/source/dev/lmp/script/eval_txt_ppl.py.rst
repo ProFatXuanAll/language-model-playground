@@ -4,3 +4,5 @@
 .. automodule:: lmp.script.eval_txt_ppl
   :members:
   :noindex:
+
+.. footbibliography::

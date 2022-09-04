@@ -13,10 +13,10 @@ def test_module_method() -> None:
   assert inspect.signature(lmp.util.rand.set_seed) == Signature(
     parameters=[
       Parameter(
-        name='seed',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=Parameter.empty,
         annotation=int,
+        default=Parameter.empty,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        name='seed',
       ),
     ],
     return_annotation=None,

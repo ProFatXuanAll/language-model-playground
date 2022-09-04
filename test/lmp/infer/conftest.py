@@ -4,8 +4,8 @@ import pytest
 import torch
 
 from lmp.model import BaseModel, ElmanNet
-from lmp.tknzr import CharTknzr
-from lmp.tknzr._base import BOS_TK, EOS_TK, PAD_TK, UNK_TK, BaseTknzr
+from lmp.tknzr import BaseTknzr, CharTknzr
+from lmp.vars import BOS_TK, EOS_TK, PAD_TK, UNK_TK
 
 
 @pytest.fixture

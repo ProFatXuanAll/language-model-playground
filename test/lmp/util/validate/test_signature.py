@@ -14,111 +14,116 @@ def test_module_method():
   assert inspect.signature(lmp.util.validate.raise_if_not_instance) == Signature(
     parameters=[
       Parameter(
-        name='val',
-        kind=Parameter.KEYWORD_ONLY,
-        default=Parameter.empty,
         annotation=Any,
+        default=Parameter.empty,
+        kind=Parameter.KEYWORD_ONLY,
+        name='val',
       ),
       Parameter(
-        name='val_name',
-        kind=Parameter.KEYWORD_ONLY,
-        default=Parameter.empty,
         annotation=str,
+        default=Parameter.empty,
+        kind=Parameter.KEYWORD_ONLY,
+        name='val_name',
       ),
       Parameter(
-        name='val_type',
-        kind=Parameter.KEYWORD_ONLY,
-        default=Parameter.empty,
         annotation=Type,
+        default=Parameter.empty,
+        kind=Parameter.KEYWORD_ONLY,
+        name='val_type',
       ),
     ],
     return_annotation=None,
   )
+
   assert hasattr(lmp.util.validate, 'raise_if_empty_str')
   assert inspect.isfunction(lmp.util.validate.raise_if_empty_str)
   assert inspect.signature(lmp.util.validate.raise_if_empty_str) == Signature(
     parameters=[
       Parameter(
-        name='val',
-        kind=Parameter.KEYWORD_ONLY,
-        default=Parameter.empty,
         annotation=str,
+        default=Parameter.empty,
+        kind=Parameter.KEYWORD_ONLY,
+        name='val',
       ),
       Parameter(
-        name='val_name',
-        kind=Parameter.KEYWORD_ONLY,
-        default=Parameter.empty,
         annotation=str,
+        default=Parameter.empty,
+        kind=Parameter.KEYWORD_ONLY,
+        name='val_name',
       ),
     ],
     return_annotation=None,
   )
+
   assert hasattr(lmp.util.validate, 'raise_if_not_in')
   assert inspect.isfunction(lmp.util.validate.raise_if_not_in)
   assert inspect.signature(lmp.util.validate.raise_if_not_in) == Signature(
     parameters=[
       Parameter(
-        name='val',
-        kind=Parameter.KEYWORD_ONLY,
-        default=Parameter.empty,
         annotation=Any,
+        default=Parameter.empty,
+        kind=Parameter.KEYWORD_ONLY,
+        name='val',
       ),
       Parameter(
-        name='val_name',
-        kind=Parameter.KEYWORD_ONLY,
-        default=Parameter.empty,
         annotation=str,
+        default=Parameter.empty,
+        kind=Parameter.KEYWORD_ONLY,
+        name='val_name',
       ),
       Parameter(
-        name='val_range',
-        kind=Parameter.KEYWORD_ONLY,
-        default=Parameter.empty,
         annotation=List,
+        default=Parameter.empty,
+        kind=Parameter.KEYWORD_ONLY,
+        name='val_range',
       ),
     ],
     return_annotation=None,
   )
+
   assert hasattr(lmp.util.validate, 'raise_if_is_directory')
   assert inspect.isfunction(lmp.util.validate.raise_if_is_directory)
   assert inspect.signature(lmp.util.validate.raise_if_is_directory) == Signature(
     parameters=[
       Parameter(
-        name='path',
-        kind=Parameter.KEYWORD_ONLY,
-        default=Parameter.empty,
         annotation=str,
+        default=Parameter.empty,
+        kind=Parameter.KEYWORD_ONLY,
+        name='path',
       ),
     ],
     return_annotation=None,
   )
+
   assert hasattr(lmp.util.validate, 'raise_if_is_file')
   assert inspect.isfunction(lmp.util.validate.raise_if_is_file)
   assert inspect.signature(lmp.util.validate.raise_if_is_file) == Signature(
     parameters=[
       Parameter(
-        name='path',
-        kind=Parameter.KEYWORD_ONLY,
-        default=Parameter.empty,
         annotation=str,
+        default=Parameter.empty,
+        kind=Parameter.KEYWORD_ONLY,
+        name='path',
       ),
     ],
     return_annotation=None,
   )
+
   assert hasattr(lmp.util.validate, 'raise_if_wrong_ordered')
   assert inspect.isfunction(lmp.util.validate.raise_if_wrong_ordered)
   assert inspect.signature(lmp.util.validate.raise_if_wrong_ordered) == Signature(
     parameters=[
       Parameter(
-        name='vals',
-        kind=Parameter.KEYWORD_ONLY,
-        default=Parameter.empty,
         annotation=List[Union[float, int]],
+        default=Parameter.empty,
+        kind=Parameter.KEYWORD_ONLY,
+        name='vals',
       ),
       Parameter(
-        name='val_names',
-        kind=Parameter.KEYWORD_ONLY,
-        default=Parameter.empty,
         annotation=List[str],
+        default=Parameter.empty,
+        kind=Parameter.KEYWORD_ONLY,
+        name='val_names',
       ),
     ],
     return_annotation=None,

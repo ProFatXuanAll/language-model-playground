@@ -15,10 +15,10 @@ def test_module_function():
   assert inspect.signature(lmp.util.log.get_tb_logger) == Signature(
     parameters=[
       Parameter(
-        name='exp_name',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=Parameter.empty,
         annotation=str,
+        default=Parameter.empty,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        name='exp_name',
       ),
     ],
     return_annotation=tensorboardX.SummaryWriter,

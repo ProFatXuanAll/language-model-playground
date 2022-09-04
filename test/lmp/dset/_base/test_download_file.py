@@ -10,7 +10,7 @@ from typing import Callable
 import pytest
 
 import lmp.dset._base
-import lmp.util.path
+import lmp.vars
 
 
 @pytest.fixture
@@ -26,7 +26,7 @@ def file_path(clean_dir_finalizer_factory: Callable[[str], None], exp_name: str,
   After testing, clean up files and directories created during test.
   """
   # Create temporary directory.
-  abs_dir_path = os.path.join(lmp.util.path.DATA_PATH, exp_name)
+  abs_dir_path = os.path.join(lmp.vars.DATA_PATH, exp_name)
 
   if not os.path.exists(abs_dir_path):
     os.makedirs(abs_dir_path)

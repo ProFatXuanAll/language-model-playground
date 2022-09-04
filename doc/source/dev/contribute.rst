@@ -63,6 +63,8 @@ The following list of items are the helps we needed.
   Currently python is undergone throught some major change on their package management system.
   But we think its better to stick to ``setup.py`` solution and change to better solution after the change of package management system.
 
+.. footbibliography::
+
 .. _`our GitHub issues`: https://github.com/ProFatXuanAll/language-model-playground/issues
 .. _`PEP 8`: https://www.python.org/dev/peps/pep-0008/
 .. _`PEP 484`: https://www.python.org/dev/peps/pep-0484/

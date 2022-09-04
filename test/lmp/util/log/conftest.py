@@ -5,12 +5,12 @@ from typing import Callable
 
 import pytest
 
-import lmp.util.path
+import lmp.vars
 
 
 @pytest.fixture
 def log_dir_path(clean_dir_finalizer_factory: Callable[[str], None], exp_name: str, request) -> str:
   r"""Clean up tensorboard loggings."""
-  abs_dir_path = os.path.join(lmp.util.path.LOG_PATH, exp_name)
+  abs_dir_path = os.path.join(lmp.vars.LOG_PATH, exp_name)
   request.addfinalizer(clean_dir_finalizer_factory(abs_dir_path))
   return abs_dir_path

@@ -6,3 +6,5 @@
 .. autoclass:: lmp.dset._demo.DemoDset
   :members: download_file, norm
   :show-inheritance:
+
+.. footbibliography::

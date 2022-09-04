@@ -1,6 +1,18 @@
 r"""Use pre-trained tokenizer to tokenize text.
 
-One must first run the script :py:mod:`lmp.script.train_tknzr` before running this script.
+One must first run the script :doc:`lmp.script.train_tknzr </script/train_tknzr>` before running this script.
+
+The following example used pre-trained tokenizer under experiment ``my_tknzr_exp`` to tokenize text ``'Hello World'``.
+
+.. code-block:: shell
+
+  python -m lmp.script.tknz_txt --exp_name my_tknzr_exp --txt "Hello World"
+
+You can use ``-h`` or ``--help`` options to get a list of supported CLI arguments.
+
+.. code-block:: shell
+
+  python -m lmp.script.tknz_txt -h
 
 See Also
 --------
@@ -8,26 +20,9 @@ See Also
   Train tokenizer.
 :doc:`lmp.tknzr </tknzr/index>`
   All available tokenizers.
-
-Examples
---------
-The following example used pre-trained tokenizer under experiment ``my_tknzr_exp`` to tokenize text ``'hello world'``.
-
-.. code-block:: shell
-
-  python -m lmp.script.tknz_txt \
-    --exp_name my_tknzr_exp \
-    --txt "Hello World"
-
-You can use ``-h`` or ``--help`` options to get a list of supported CLI arguments.
-
-.. code-block:: shell
-
-  python -m lmp.script.tknz_txt -h
 """
 
 import argparse
-import gc
 import sys
 from typing import List
 
@@ -65,29 +60,36 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
   # Required arguments.
   parser.add_argument(
     '--exp_name',
-    help='Pre-trained tokenizer experiment name.',
-    required=True,
+    default='my_tknzr_exp',
+    help='''
+    Pre-trained tokenizer experiment name.
+    Default is ``my_tknzr_exp``.
+    ''',
     type=str,
   )
-  parser.add_argument(
-    '--txt',
-    help='Text to be tokenized.',
-    required=True,
-    type=str,
-  )
-
-  # Optional arguments.
   parser.add_argument(
     '--seed',
     default=42,
-    help='Random seed.  Default is ``42``.',
+    help='''
+    Random seed.
+    Default is ``42``.
+    ''',
     type=int,
+  )
+  parser.add_argument(
+    '--txt',
+    default='',
+    help='''
+    Text to be tokenized.
+    Default is empty string.
+    ''',
+    type=str,
   )
 
   return parser.parse_args(argv)
 
 
-def main(argv: List[str]) -> None:
+def main(argv: List[str]) -> str:
   """Script entry point.
 
   Parameters
@@ -112,14 +114,9 @@ def main(argv: List[str]) -> None:
   tknzr = lmp.util.tknzr.load(exp_name=args.exp_name)
 
   # Tokenize text.
-  print(tknzr.tknz(args.txt))
-
-  # Free memory.
-  # This is only need for unit test.
-  del args
-  del tknzr
-  gc.collect()
+  return tknzr.tknz(args.txt)
 
 
 if __name__ == '__main__':
-  main(argv=sys.argv[1:])
+  tks = main(argv=sys.argv[1:])
+  print(tks)

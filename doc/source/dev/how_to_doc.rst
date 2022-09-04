@@ -47,6 +47,8 @@ We list some of the todos in the follow:
 - Add ``pandas`` typeshed (mainly used by :py:class:`lmp.dset.ChPoemDset`) if it is stable.
 - Remove ``# type: ignore`` on ``**kwargs`` if ``mypy`` can handle those checking (which may no happen forever).
 
+.. footbibliography::
+
 .. _numpydoc: https://numpydoc.readthedocs.io/en/latest/format.html#docstring-standard
 .. _PEP257: https://www.python.org/dev/peps/pep-0257/
 .. _sphinx: https://www.sphinx-doc.org/en/master/#

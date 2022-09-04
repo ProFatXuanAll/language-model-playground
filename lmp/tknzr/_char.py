@@ -6,11 +6,11 @@ SP_TKS_PTTN: typing.Final[re.Pattern]
   Special tokens matching pattern.
 """
 
-import argparse
 import re
 from typing import ClassVar, Final, List
 
-from lmp.tknzr._base import SP_TKS, BaseTknzr
+from lmp.tknzr._base import BaseTknzr
+from lmp.vars import SP_TKS
 
 SP_TKS_PTTN: Final[re.Pattern] = re.compile('(' + '|'.join(map(re.escape, SP_TKS)) + ')')
 
@@ -22,18 +22,33 @@ class CharTknzr(BaseTknzr):
 
   Parameters
   ----------
-  is_uncased: bool
+  is_uncased: bool, default: False
     Set to ``True`` to convert text into lowercase.
-  max_vocab: int
-    Maximum vocabulary size.
-  min_count: int
-    Minimum token occurrence counts.
+    Mainly used by :py:meth:`~norm`.
+  max_vocab: int, default: -1
+    Tokenizer's maximum vocabulary size.
+    Set to ``-1`` to include as many characters in vocabulary as possible.
+    Mainly used by :py:meth:`~build_vocab`.
+  min_count: int, default: 0
+    Minimum character occurrence counts.
+    Characters have occurrence counts less than ``min_count`` will not be added to tokenizer's vocabulary.
+    Mainly used by :py:meth:`~build_vocab`.
   kwargs: typing.Any, optional
     Useless parameter.
     Intently left for subclasses inheritance.
 
   Attributes
   ----------
+  id2tk: dict[int, str]
+    Character-to-id inverse lookup table.
+  is_uncased: bool
+    Convert text into lowercase if set to ``True``.
+  max_vocab: int
+    Tokenizer's maximum vocabulary size.
+  min_count: int
+    Minimum character occurrence counts.
+  tk2id: dict[str, int]
+    Character-to-id lookup table.
   tknzr_name: typing.ClassVar[str]
     CLI name of character tokenizer is ``character``.
 
@@ -45,74 +60,18 @@ class CharTknzr(BaseTknzr):
   Examples
   --------
   >>> from lmp.tknzr import CharTknzr
-  >>> tknzr = CharTknzr(is_uncased=False, max_vocab=10, min_count=2)
+  >>> tknzr = CharTknzr()
   >>> assert tknzr.tknz('abc') == ['a', 'b', 'c']
   >>> assert tknzr.dtknz(['a', 'b', 'c']) == 'abc'
   """
 
   tknzr_name: ClassVar[str] = 'character'
 
-  @classmethod
-  def add_CLI_args(cls, parser: argparse.ArgumentParser) -> None:
-    """Add character tokenizer constructor parameters to CLI arguments parser.
-
-    Parameters
-    ----------
-    parser: argparse.ArgumentParser
-      CLI arguments parser.
-
-    Returns
-    -------
-    None
-
-    See Also
-    --------
-    :doc:`lmp.script.train_tknzr </script/train_tknzr>`
-      Tokenizer training script.
-
-    Examples
-    --------
-    >>> import argparse
-    >>> from lmp.tknzr import CharTknzr
-    >>> parser = argparse.ArgumentParser()
-    >>> CharTknzr.add_CLI_args(parser)
-    >>> args = parser.parse_args([
-    ...   '--max_vocab', '10',
-    ...   '--min_count', '2',
-    ... ])
-    >>> assert args.is_uncased == False
-    >>> assert args.max_vocab == 10
-    >>> assert args.min_count == 2
-    """
-    super().add_CLI_args(parser=parser)
-
-    # Required arguments.
-    group = parser.add_argument_group('character tokenizer constructor arguments')
-    group.add_argument(
-      '--max_vocab',
-      help='Maximum vocabulary size.  Set to `-1` to include any tokens.',
-      required=True,
-      type=int,
-    )
-    group.add_argument(
-      '--min_count',
-      help='Minimum token occurrence count.  Set to `0` to disable.',
-      required=True,
-      type=int,
-    )
-
-    # Optional arguments.
-    group.add_argument(
-      '--is_uncased',
-      action='store_true',
-      help='Convert all text and tokens into lowercase if given.  Default is ``False``.',
-    )
-
   def tknz(self, txt: str) -> List[str]:
-    """Convert text into list of characters.
+    """Convert text into character list.
 
-    Text will first be normalized by :py:meth:`lmp.tknzr.BaseTknz.norm`, then be splitted into list of characters.
-    Special tokens will not be splitted.
+    Text is first normalized then splitted into character list.
+    Each special token is treated as a character and thus is not splitted.
 
     Parameters
     ----------
@@ -126,15 +85,15 @@ class CharTknzr(BaseTknzr):
 
     See Also
     --------
-    lmp.tknzr.CharTknzr.dtknz
-      Join characters back to text.
-    lmp.tknzr.BaseTknzr.norm
+    ~dtknz
+      Convert character list back to text.
+    ~norm
       Text normalization.
 
     Examples
     --------
     >>> from lmp.tknzr import CharTknzr
-    >>> tknzr = CharTknzr(is_uncased=False, max_vocab=10, min_count=2)
+    >>> tknzr = CharTknzr()
     >>> assert tknzr.tknz('abc') == ['a', 'b', 'c']
     >>> assert tknzr.tknz('abc def') == ['a', 'b', 'c', ' ', 'd', 'e', 'f']
     """
@@ -155,32 +114,32 @@ class CharTknzr(BaseTknzr):
     return tks
 
   def dtknz(self, tks: List[str]) -> str:
-    """Join list of characters back to text.
+    """Convert character list back to text.
 
-    Tokens will be joined without whitespaces.
-    Returned text will be normalized.
+    Character list is joined without whitespaces.
+    Returned text is normalized.
 
     Parameters
     ----------
     tks: list[str]
-      Token list to be joint.
+      Character list to be joint.
 
     Returns
     -------
     str
-      Normalized text without additional whitespaces other than the ones in the token list.
+      Normalized text without additional whitespaces other than the ones in the character list.
 
     See Also
     --------
-    lmp.tknzr.CharTknzr.tknz
+    ~tknz
       Convert text into characters.
-    lmp.tknzr.BaseTknzr.norm
+    ~norm
       Text normalization.
 
     Examples
     --------
     >>> from lmp.tknzr import CharTknzr
-    >>> tknzr = CharTknzr(is_uncased=False, max_vocab=10, min_count=2)
+    >>> tknzr = CharTknzr()
     >>> assert tknzr.dtknz(['a', 'b', 'c']) == 'abc'
     >>> assert tknzr.dtknz(['a', 'b', 'c', ' ', 'd', 'e', 'f']) == 'abc def'
     """

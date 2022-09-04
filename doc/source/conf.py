@@ -38,7 +38,53 @@ extensions = [
   'sphinx.ext.todo',
   'sphinx.ext.viewcode',
   'sphinx_copybutton',
+  'sphinxcontrib.bibtex',
 ]
+
+# Generating bibtex automatically.
+bibtex_bibfiles = ['refs.bib']
+
+# Customize latex commands.
+mathjax3_config = {
+  'tex':
+    {
+      'macros':
+        {
+          'ElmanNet': r'\operatorname{ElmanNet}',
+          'ElmanNetLayer': r'\operatorname{ElmanNetLayer}',
+          'LSTMNineSeven': r'\operatorname{LSTM1997}',
+          'LSTMNineSevenLayer': r'\operatorname{LSTM1997Layer}',
+          'LSTMZeroZero': r'\operatorname{LSTM2000}',
+          'LSTMZeroZeroLayer': r'\operatorname{LSTM2000Layer}',
+          'LSTMZeroTwo': r'\operatorname{LSTM2002}',
+          'LSTMZeroTwoLayer': r'\operatorname{LSTM2002Layer}',
+          'algoEndFor': r'\textbf{end for}',
+          'algoEndProc': r'\textbf{end procedure}',
+          'algoEq': r'\leftarrow',
+          'algoFor': [r'\textbf{for } #1 \textbf{ do}', 1],
+          'algoProc': [r'\textbf{procedure} #1', 1],
+          'algoReturn': r'\textbf{return }',
+          'br': [r'{\left[ #1 \right]}', 1],
+          'cat': [r'\operatorname{concate}\pa{#1}', 1],
+          'drop': [r'\operatorname{dropout}\pa{#1, #2}', 2],
+          'dBlk': r'd_{\operatorname{blk}}',
+          'dEmb': r'd_{\operatorname{emb}}',
+          'dHid': r'd_{\operatorname{hid}}',
+          'fla': [r'\operatorname{flatten}\pa{#1}', 1],
+          'hIn': r'H_{\operatorname{in}}',
+          'hOut': r'H_{\operatorname{out}}',
+          'indent': [r'\hspace{#1em}', 1],
+          'init': r'\operatorname{init}',
+          'loss': r'\operatorname{Loss}',
+          'nBlk': r'n_{\operatorname{blk}}',
+          'nLyr': r'n_{\operatorname{lyr}}',
+          'pa': [r'{\left( #1 \right)}', 1],
+          'pEmb': r'p_{\operatorname{emb}}',
+          'pHid': r'p_{\operatorname{hid}}',
+          'sof': [r'\operatorname{softmax}\pa{#1}', 1],
+        }
+    }
+}
 
 # Generate automatic links to following projects.
 intersphinx_mapping = {

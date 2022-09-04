@@ -9,7 +9,7 @@ from typing import ClassVar, List, Optional
 # development and release stable version.
 import pandas as pd  # type: ignore
 
-import lmp.util.path
+import lmp.vars
 from lmp.dset._base import BaseDset
 
 
@@ -85,7 +85,7 @@ class ChPoemDset(BaseDset):
   ----------
   ver: Optional[str], default: None
     Version of the dataset.
-    Set ``ver = ''`` to use default version.
+    Set to ``None`` to use the default version ``self.__class__.df_ver``.
 
   Attributes
   ----------
@@ -156,7 +156,7 @@ class ChPoemDset(BaseDset):
     self.download_dataset(ver=self.ver)
 
     # Read text file inside chinese poem zip file.
-    df = pd.read_csv(os.path.join(lmp.util.path.DATA_PATH, f'{self.ver}.csv'))
+    df = pd.read_csv(os.path.join(lmp.vars.DATA_PATH, f'{self.ver}.csv'))
 
     # Normalize dataset.
     spls = df['內容'].apply(str).apply(self.norm).tolist()
@@ -166,16 +166,13 @@ class ChPoemDset(BaseDset):
 
     self.spls.extend(spls)
 
-    # Sort dataset by length in ascending order.
-    self.spls.sort(key=len)
-
   @classmethod
   def download_dataset(cls, ver: str) -> None:
     """Download Chinese poem dataset.
 
-    Download zip files from GitHub and extract raw file from zip file.
-    Raw files are named as ``ver.csv``, where ``ver`` is the version of the dataset.
-    After extracting raw files the downloaded zip file will be deleted.
+    Download zip file from GitHub and extract raw file from zip file.
+    Raw file is named as ``ver.csv``, where ``ver`` is the version of the dataset.
+    Zip file is deleted after extracting raw file.
 
     Parameters
     ----------
@@ -191,12 +188,12 @@ class ChPoemDset(BaseDset):
     lmp.util.validate.raise_if_not_in(val=ver, val_name='ver', val_range=cls.vers)
 
     # Download zip file path.
-    zip_file_path = os.path.join(lmp.util.path.DATA_PATH, f'{ver}.csv.zip')
+    zip_file_path = os.path.join(lmp.vars.DATA_PATH, f'{ver}.csv.zip')
     # We host this dataset on GitHub.
     url = f'https://github.com/ProFatXuanAll/demo-dataset/raw/main/ch-poem/{ver}.csv.zip'
 
     # Avoid duplicated download by checking whether raw file exists.
-    raw_file_path = os.path.join(lmp.util.path.DATA_PATH, f'{ver}.csv')
+    raw_file_path = os.path.join(lmp.vars.DATA_PATH, f'{ver}.csv')
     if os.path.exists(raw_file_path):
       return
 
@@ -207,7 +204,7 @@ class ChPoemDset(BaseDset):
     with zipfile.ZipFile(os.path.join(zip_file_path), 'r') as input_zipfile:
       with io.TextIOWrapper(input_zipfile.open(f'{ver}.csv', 'r'), encoding='utf-8') as input_binary_file:
         data = input_binary_file.read()
-      with open(os.path.join(lmp.util.path.DATA_PATH, f'{ver}.csv'), 'w') as output_text_file:
+      with open(os.path.join(lmp.vars.DATA_PATH, f'{ver}.csv'), 'w') as output_text_file:
         output_text_file.write(data)
 
     # Remove downloaded zip file.

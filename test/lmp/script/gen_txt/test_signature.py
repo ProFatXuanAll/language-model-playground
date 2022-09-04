@@ -15,23 +15,24 @@ def test_module_method() -> None:
   assert inspect.signature(lmp.script.gen_txt.parse_args) == Signature(
     parameters=[
       Parameter(
-        name='argv',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=Parameter.empty,
         annotation=List[str],
+        default=Parameter.empty,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        name='argv',
       ),
     ],
     return_annotation=argparse.Namespace,
   )
+
   assert hasattr(lmp.script.gen_txt, 'main')
   assert inspect.isfunction(lmp.script.gen_txt.main)
   assert inspect.signature(lmp.script.gen_txt.main) == Signature(
     parameters=[
       Parameter(
-        name='argv',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=Parameter.empty,
         annotation=List[str],
+        default=Parameter.empty,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        name='argv',
       ),
     ],
     return_annotation=None,

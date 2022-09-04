@@ -16,16 +16,14 @@ def test_prediction_result(lstm_2002: LSTM2002, batch_cur_tkids: torch.Tensor) -
 
   batch_prev_states = None
   for idx in range(seq_len):
-    batch_next_tkids_pd, batch_prev_states = lstm_2002.pred(
+    batch_next_tkids_pd, batch_cur_states = lstm_2002.pred(
       batch_cur_tkids=batch_cur_tkids[..., idx].reshape(-1, 1),
       batch_prev_states=batch_prev_states,
     )
 
-    # Output float tensor.
-    assert batch_next_tkids_pd.dtype == torch.float
-
-    # Shape: (B, 1, V).
+    assert isinstance(batch_next_tkids_pd, torch.Tensor)
     assert batch_next_tkids_pd.size() == torch.Size([batch_cur_tkids.shape[0], 1, lstm_2002.emb.num_embeddings])
+    assert batch_next_tkids_pd.dtype == torch.float
 
     # Probabilities are values within range [0, 1].
     assert torch.all(0 <= batch_next_tkids_pd).item()
@@ -35,10 +33,22 @@ def test_prediction_result(lstm_2002: LSTM2002, batch_cur_tkids: torch.Tensor) -
     accum = batch_next_tkids_pd.sum(dim=-1)
     assert torch.allclose(accum, torch.ones_like(accum))
 
-    assert isinstance(batch_prev_states, list)
-    assert len(batch_prev_states) == 2 * lstm_2002.n_lyr
+    assert isinstance(batch_cur_states, tuple)
+    assert len(batch_cur_states) == 2
+    assert isinstance(batch_cur_states[0], list)
+    assert len(batch_cur_states[0]) == lstm_2002.n_lyr
+    assert isinstance(batch_cur_states[1], list)
+    assert len(batch_cur_states[1]) == lstm_2002.n_lyr
+
     for lyr in range(lstm_2002.n_lyr):
-      h = batch_prev_states[2 * lyr]
-      c = batch_prev_states[2 * lyr + 1]
-      assert h.size() == torch.Size([batch_cur_tkids.size(0), lstm_2002.d_hid])
+      c = batch_cur_states[0][lyr]
+      h = batch_cur_states[1][lyr]
+
+      assert isinstance(c, torch.Tensor)
       assert c.size() == torch.Size([batch_cur_tkids.size(0), lstm_2002.n_blk, lstm_2002.d_blk])
+      assert c.dtype == torch.float
+      assert isinstance(h, torch.Tensor)
+      assert h.size() == torch.Size([batch_cur_tkids.size(0), lstm_2002.d_hid])
+      assert h.dtype == torch.float
+
+    batch_prev_states = batch_cur_states

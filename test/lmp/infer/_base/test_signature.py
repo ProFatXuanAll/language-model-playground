@@ -34,10 +34,10 @@ def test_class_method() -> None:
   assert inspect.signature(lmp.infer._base.BaseInfer.add_CLI_args) == Signature(
     parameters=[
       Parameter(
-        name='parser',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=Parameter.empty,
         annotation=argparse.ArgumentParser,
+        default=Parameter.empty,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        name='parser',
       ),
     ],
     return_annotation=None,
@@ -50,48 +50,51 @@ def test_instance_method() -> None:
   assert inspect.signature(lmp.infer._base.BaseInfer.__init__) == Signature(
     parameters=[
       Parameter(
+        annotation=Parameter.empty,
+        default=Parameter.empty,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
         name='self',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=Parameter.empty,
       ),
       Parameter(
-        name='max_seq_len',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=Parameter.empty,
         annotation=int,
+        default=32,
+        kind=Parameter.KEYWORD_ONLY,
+        name='max_seq_len',
       ),
       Parameter(
-        name='kwargs',
-        kind=Parameter.VAR_KEYWORD,
         annotation=Any,
+        kind=Parameter.VAR_KEYWORD,
+        name='kwargs',
       ),
     ],
     return_annotation=Signature.empty,
   )
+
   assert hasattr(lmp.infer._base.BaseInfer, 'gen')
   assert 'gen' in lmp.infer._base.BaseInfer.__abstractmethods__
   assert inspect.signature(lmp.infer._base.BaseInfer.gen) == Signature(
     parameters=[
       Parameter(
+        annotation=Parameter.empty,
+        default=Parameter.empty,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
         name='self',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=Parameter.empty,
       ),
       Parameter(
-        name='model',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=Parameter.empty,
         annotation=BaseModel,
+        default=Parameter.empty,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        name='model',
       ),
       Parameter(
-        name='tknzr',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
         annotation=BaseTknzr,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        name='tknzr',
       ),
       Parameter(
-        name='txt',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
         annotation=str,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        name='txt',
       ),
     ],
     return_annotation=str,

@@ -16,65 +16,66 @@ def test_module_method() -> None:
   assert inspect.signature(lmp.util.optim.get_optimizer) == Signature(
     parameters=[
       Parameter(
+        annotation=float,
+        default=Parameter.empty,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
         name='beta1',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=Parameter.empty,
-        annotation=float,
       ),
       Parameter(
+        annotation=float,
+        default=Parameter.empty,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
         name='beta2',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=Parameter.empty,
-        annotation=float,
       ),
       Parameter(
+        annotation=float,
+        default=Parameter.empty,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
         name='eps',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=Parameter.empty,
-        annotation=float,
       ),
       Parameter(
+        annotation=float,
+        default=Parameter.empty,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
         name='lr',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=Parameter.empty,
-        annotation=float,
       ),
       Parameter(
-        name='model',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=Parameter.empty,
         annotation=BaseModel,
+        default=Parameter.empty,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        name='model',
       ),
       Parameter(
-        name='wd',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=Parameter.empty,
         annotation=float,
+        default=Parameter.empty,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        name='weight_decay',
       ),
     ],
     return_annotation=torch.optim.AdamW,
   )
+
   assert hasattr(lmp.util.optim, 'get_scheduler')
   assert inspect.isfunction(lmp.util.optim.get_scheduler)
   assert inspect.signature(lmp.util.optim.get_scheduler) == Signature(
     parameters=[
       Parameter(
-        name='optim',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=Parameter.empty,
         annotation=torch.optim.AdamW,
+        default=Parameter.empty,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        name='optim',
       ),
       Parameter(
+        annotation=int,
+        default=Parameter.empty,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
         name='total_step',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=Parameter.empty,
-        annotation=int,
       ),
       Parameter(
-        name='warmup_step',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=Parameter.empty,
         annotation=int,
+        default=Parameter.empty,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        name='warmup_step',
       ),
     ],
     return_annotation=torch.optim.lr_scheduler.LambdaLR,

@@ -4,3 +4,5 @@
 .. automodule:: lmp.script.train_tknzr
   :members:
   :noindex:
+
+.. footbibliography::

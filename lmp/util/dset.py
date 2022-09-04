@@ -1,9 +1,105 @@
 """Dataset utilities."""
 
-from typing import Any
+from typing import Any, Tuple
+
+import torch
+import torch.utils.data
 
 import lmp.util.validate
 from lmp.dset import DSET_OPTS, BaseDset
+from lmp.tknzr import BaseTknzr
+from lmp.vars import EOS_TKID, PAD_TKID
+
+
+class LMFormatDset(torch.utils.data.Dataset):
+  """Covert dataset samples into token id sequence.
+
+  Parameters
+  ----------
+  max_seq_len: int
+    Context window size applied on dataset samples.
+  stride: int
+    Context windows may have overlaps.
+    Number of overlapping tokens between subsamples is called stride.
+
+  Attributes
+  ----------
+  batch_cur_tkids: list[torch.Tensor]
+    Language model input token ids.
+  batch_next_tkids: list[torch.Tensor]
+    Language model prediction target.
+  n_tk: int
+    Total number of tokens in the dataset.
+    This number will be affected by `stride`.
+    Overlapping tokens are repeatly counted.
+    To get the correct number of tokens in the dataset, set ``stride == max_seq_len``.
+    Padding tokens are not included.
+  """
+
+  def __init__(self, *, dset: BaseDset, max_seq_len: int, stride: int, tknzr: BaseTknzr):
+    # `dset` validation.
+    lmp.util.validate.raise_if_not_instance(val=dset, val_name='dset', val_type=BaseDset)
+    # `max_seq_len` and `stride` validation.
+    lmp.util.validate.raise_if_not_instance(val=max_seq_len, val_name='max_seq_len', val_type=int)
+    lmp.util.validate.raise_if_not_instance(val=stride, val_name='stride', val_type=int)
+    lmp.util.validate.raise_if_wrong_ordered(vals=[1, stride, max_seq_len], val_names=['1', 'stride', 'max_seq_len'])
+    # `tknzr` validation.
+    lmp.util.validate.raise_if_not_instance(val=tknzr, val_name='tknzr', val_type=BaseTknzr)
+
+    self.batch_cur_tkids = []
+    self.batch_next_tkids = []
+    self.n_tk = 0
+
+    # Slice token sequence into context windows with each length equals to `max_seq_len`.
+    # Context windows shorter than `max_seq_len` are padded at the end.
+    # Context windows may have overlaps.
+    # Number of overlapping tokens are determined by `stride`.
+    for txt in dset:
+      tkids = tknzr.enc(txt=txt)
+      for idx in range(0, len(tkids), stride):
+        cur_tkids = tknzr.pad_to_max(max_seq_len=max_seq_len, tkids=tkids[idx:idx + max_seq_len])
+        next_tkids = tknzr.pad_to_max(max_seq_len=max_seq_len, tkids=tkids[idx + 1:idx + 1 + max_seq_len])
+
+        # Skip sequence starting with EOS.
+        if cur_tkids[0] == EOS_TKID:
+          continue
+
+        # If we share tensor's memory here, we can save huge memory consumption.
+        # However this means every time we need to fetch different parts of shared memory we have to index.
+        # And Pytorch is such at indexing (much slower on CUDA then CPU).
+        # Thus to make computation fast, we do not share tensor's memory here.
+        self.batch_cur_tkids.append(torch.LongTensor(cur_tkids))
+        self.batch_next_tkids.append(torch.LongTensor(next_tkids))
+
+        # Record total number of tokens.
+        self.n_tk += torch.sum(self.batch_cur_tkids[-1] != PAD_TKID).item()
+
+  def __getitem__(self, idx: int) -> Tuple[torch.Tensor, torch.Tensor]:
+    """Sample context window using index.
+
+    Parameters
+    ----------
+    idx: int
+      Sample index.
+
+    Returns
+    -------
+    tuple[torch.Tensor, torch.Tensor]
+      The context window whose index equals to ``idx``.
+      The first tensor in the returned tuple represent the current context window.
+      The second tensor in the returned tuple represent the prediction target of the current context window.
+    """
+    return self.batch_cur_tkids[idx], self.batch_next_tkids[idx]
+
+  def __len__(self) -> int:
+    """Get dataset size.
+
+    Returns
+    -------
+    int
+      Number of context window in the dataset.
+    """
+    return len(self.batch_cur_tkids)
 
 
 def load(dset_name: str, ver: str, **kwargs: Any) -> BaseDset:
@@ -12,9 +108,9 @@ def load(dset_name: str, ver: str, **kwargs: Any) -> BaseDset:
   Parameters
   ----------
   dset_name: str
-    Name of the dataset to be loaded.
+    Name of the dataset to load.
   ver: str
-    Version of the dataset to be loaded.
+    Version of the dataset to load.
 
   Returns
   -------

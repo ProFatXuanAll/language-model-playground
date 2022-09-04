@@ -73,7 +73,7 @@ Installation
      pipenv shell
 
 5. Now you can run any scripts provided by this project!
-   For example, you can take a look at chinese poem dataset by running :py:mod:`lmp.script.sample_dset`
+   For example, you can take a look at chinese poem dataset by running :doc:`lmp.script.sample_dset </script/sample_dset>` :
 
    .. code-block:: shell
 
@@ -92,7 +92,7 @@ We now demonstrate a typical :term:`language model` training pipline.
 1. Choose a Dataset
 ~~~~~~~~~~~~~~~~~~~
 One have to choose a :term:`dataset` to :term:`train` a :term:`tokenizer` and a :term:`language model`.
-In this example we use wiki-text-2 dataset :py:class:`lmp.dset.WikiText2Dset` as demonstration.
+In this example we use wiki-text-2 dataset :py:class:`~lmp.dset.WikiText2Dset` as demonstration.
 
 .. seealso::
 
@@ -103,7 +103,7 @@ In this example we use wiki-text-2 dataset :py:class:`lmp.dset.WikiText2Dset` as
 
 2. Train a Tokenizer
 ~~~~~~~~~~~~~~~~~~~~
-The following example use whitespace tokenizer :py:class:`lmp.tknzr.WsTknzr` to train on :py:class:`lmp.dset.WikiText2Dset` dataset since :term:`samples` in :py:class:`lmp.dset.WikiText2Dset` are English and words are separated by whitespace.
+The following example use whitespace tokenizer :py:class:`~lmp.tknzr.WsTknzr` to train on :py:class:`~lmp.dset.WikiText2Dset` dataset since :term:`samples` in :py:class:`~lmp.dset.WikiText2Dset` are English and words are separated by whitespace.
 
 .. code-block:: shell
 
@@ -141,7 +141,7 @@ In the following example we tokenize the sentence ``hello world`` into string li
 4. Train a Language Model
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 Now we :term:`train` our :term:`language model` with the help of :term:`pre-trained` :term:`tokenizer`.
-The following example train a LSTM (2000 version) based language model :py:mod:`lmp.model.LSTM2000`:
+The following example train a LSTM (2000 version) based language model :py:class:`~lmp.model.LSTM2000`:
 
 .. code-block:: shell
 
@@ -150,25 +150,31 @@ The following example train a LSTM (2000 version) based language model :py:mod:`
     --beta1 0.9 \
     --beta2 0.99 \
     --ckpt_step 1000 \
-    --ctx_win 16 \
     --d_blk 64 \
     --d_emb 300 \
     --dset_name wiki-text-2 \
     --eps 1e-8 \
     --exp_name my_model_exp \
+    --init_fb 1.0 \
+    --init_ib -1.0 \
+    --init_lower -0.1 \
+    --init_ob -1.0 \
+    --init_upper 0.1 \
+    --label_smoothing 0.0 \
     --log_step 200 \
     --lr 1e-4 \
     --max_norm 1 \
-    --max_seq_len 700 \
+    --max_seq_len 16 \
     --n_blk 8 \
     --n_lyr 1 \
     --p_emb 0.1 \
     --p_hid 0.1 \
+    --stride 16 \
     --tknzr_exp_name my_tknzr_exp \
     --total_step 50000 \
     --ver train \
     --warmup_step 10000 \
-    --wd 1e-2
+    --weight_decay 1e-2
 
 We log the training process with tensorboard_.
 You can launch tensorboard and open browser with URL http://localhost:6006 to see the performance logs.
@@ -214,7 +220,7 @@ Use the following script to launch tensorboard:
 
 6. Generate Continual Text
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
-We use :term:`pre-trained` :term:`language model` to generate continual text conditioned on given text segment "We are".
+We use :term:`pre-trained` :term:`language model` to generate continual text conditioned on given text segment ``I 'm on the highway to hell``.
 
 .. code-block:: shell
 
@@ -284,6 +290,8 @@ This is for developer only.
    .. code-block:: shell
 
      pipenv run test-coverage
+
+.. footbibliography::
 
 .. _PyTorch: https://pytorch.org/
 .. _Python: https://www.python.org/

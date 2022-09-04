@@ -60,7 +60,7 @@ Models Shared Parameters
 +----------------+------------+
 | p_hid          | 0.1        |
 +----------------+------------+
-| wd             | 1e-2       |
+| weight_decay   | 1e-2       |
 +----------------+------------+
 
 Models Loss Performance

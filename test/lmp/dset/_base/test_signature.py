@@ -31,57 +31,68 @@ def test_class_attribute() -> None:
 def test_instance_method() -> None:
   """Ensure instance methods' signatures."""
   assert hasattr(lmp.dset._base.BaseDset, '__getitem__')
+  assert inspect.isfunction(lmp.dset._base.BaseDset.__getitem__)
   assert inspect.signature(lmp.dset._base.BaseDset.__getitem__) == Signature(
     parameters=[
       Parameter(
-        name='self',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        annotation=Parameter.empty,
         default=Parameter.empty,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        name='self',
       ),
       Parameter(
-        name='idx',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=Parameter.empty,
         annotation=int,
+        default=Parameter.empty,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        name='idx',
       )
     ],
     return_annotation=str,
   )
+
   assert hasattr(lmp.dset._base.BaseDset, '__init__')
+  assert inspect.isfunction(lmp.dset._base.BaseDset.__init__)
   assert inspect.signature(lmp.dset._base.BaseDset.__init__) == Signature(
     parameters=[
       Parameter(
-        name='self',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        annotation=Parameter.empty,
         default=Parameter.empty,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        name='self',
       ),
       Parameter(
-        name='ver',
-        kind=Parameter.KEYWORD_ONLY,
         annotation=Optional[str],
         default=None,
+        kind=Parameter.KEYWORD_ONLY,
+        name='ver',
       ),
     ],
     return_annotation=Signature.empty,
   )
+
   assert hasattr(lmp.dset._base.BaseDset, '__iter__')
+  assert inspect.isfunction(lmp.dset._base.BaseDset.__iter__)
   assert inspect.signature(lmp.dset._base.BaseDset.__iter__) == Signature(
     parameters=[
       Parameter(
-        name='self',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        annotation=Parameter.empty,
         default=Parameter.empty,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        name='self',
       ),
     ],
     return_annotation=Iterator[str],
   )
+
   assert hasattr(lmp.dset._base.BaseDset, '__len__')
+  assert inspect.isfunction(lmp.dset._base.BaseDset.__len__)
   assert inspect.signature(lmp.dset._base.BaseDset.__len__) == Signature(
     parameters=[
       Parameter(
-        name='self',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        annotation=Parameter.empty,
         default=Parameter.empty,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        name='self',
       ),
     ],
     return_annotation=int,
@@ -95,35 +106,36 @@ def test_static_method() -> None:
   assert inspect.signature(lmp.dset._base.BaseDset.download_file) == Signature(
     parameters=[
       Parameter(
+        annotation=str,
+        default=Parameter.empty,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
         name='mode',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=Parameter.empty,
-        annotation=str,
       ),
       Parameter(
+        annotation=str,
+        default=Parameter.empty,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
         name='download_path',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=Parameter.empty,
-        annotation=str,
       ),
       Parameter(
-        name='url',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=Parameter.empty,
         annotation=str,
+        default=Parameter.empty,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        name='url',
       ),
     ],
     return_annotation=None,
   )
+
   assert hasattr(lmp.dset._base.BaseDset, 'norm')
   assert inspect.isfunction(lmp.dset._base.BaseDset.norm)
   assert inspect.signature(lmp.dset._base.BaseDset.norm) == Signature(
     parameters=[
       Parameter(
-        name='txt',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=Parameter.empty,
         annotation=str,
+        default=Parameter.empty,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        name='txt',
       ),
     ],
     return_annotation=str,

@@ -4,3 +4,5 @@
 .. automodule:: lmp.script.tknz_txt
   :members:
   :noindex:
+
+.. footbibliography::

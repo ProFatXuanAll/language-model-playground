@@ -1,93 +1,51 @@
 r"""Use this script to train tokenizer on a dataset.
 
-This script is usually run before training language model.
+This script must be run before training language model.
+Once a tokenizer is trained it can be shared throughout different scripts.
 
-See Also
---------
-:doc:`lmp.dset </dset/index>`
-  All available datasets.
-:doc:`lmp.script.sample_dset </script/sample_dset>`
-  Get a glimpse on all available datasets.
-:doc:`lmp.script.tknz_txt </script/tknz_txt>`
-  Use pre-trained tokenizer to perform tokenization on given text.
-:doc:`lmp.tknzr </tknzr/index>`
-  All available tokenizers.
-
-Examples
---------
-The following example script train a whitespace tokenizer :py:class:`lmp.tknzr.WsTknzr` on Wiki-Text-2 dataset
-:py:class:`lmp.dset.WikiText2Dset` with ``train`` version.
+The following script train a character tokenizer :py:class:`~lmp.tknzr.CharTknzr` on demo dataset
+:py:class:`~lmp.dset.DemoDset`.
 
 .. code-block:: shell
 
-  python -m lmp.script.train_tknzr whitespace \
-    --dset_name wiki-text-2 \
-    --exp_name my_tknzr_exp \
-    --max_vocab 10 \
-    --min_count 2 \
-    --ver train
+  python -m lmp.script.train_tknzr character
 
+The tokenizer training experiment is named as ``my_tknzr_exp``.
 The training result will be saved at path ``project_root/exp/my_tknzr_exp`` and can be reused by other scripts.
-
-One can increase ``--max_vocab`` to allow tokenizer to include more tokens into its vocabulary:
-
-.. code-block:: shell
-
-  python -m lmp.script.train_tknzr whitespace \
-    --dset_name wiki-text-2 \
-    --exp_name my_tknzr_exp \
-    --max_vocab 10000 \
-    --min_count 2 \
-    --ver train
-
-Set ``--max_vocab`` to ``-1`` to include all tokens in :py:class:`lmp.dset.WikiText2Dset` into tokenizer's vocabulary:
+To use different name, one can set the ``--exp_name`` argument.
 
 .. code-block:: shell
 
-  python -m lmp.script.train_tknzr whitespace \
-    --dset_name wiki-text-2 \
-    --exp_name my_tknzr_exp \
-    --max_vocab -1 \
-    --min_count 2 \
-    --ver train
+  python -m lmp.script.train_tknzr character --exp_name other_name
 
-Tokens have low occurrence counts may indicate typos, named entities (people, locations, organizations, etc.) or random
-character combinations (emojis, glyphs, etc.).
-Sometimes one does not want to include tokens have low occurrence counts.
-Use ``--min_count`` to filter out tokens have occurrence counts lower than ``--min_count``.
+One might need to train tokenizer on different dataset.
+This can be achieved using ``--dset_name`` argument.
 
 .. code-block:: shell
 
-  python -m lmp.script.train_tknzr whitespace \
-    --dset_name wiki-text-2 \
-    --exp_name my_tknzr_exp \
-    --max_vocab 10000 \
-    --min_count 5 \
-    --ver train
+  python -m lmp.script.train_tknzr character --dset_name wiki-text-2
 
-Sometimes cases do not matter, sometimes they do matter.
-For example:
-
-  I ate an apple.
-  Apple is a fruit.
-  Apple is a company.
-
-The words `apple` and `Apple` in the first two sentences have the meaning of edible fruit regardless of `apple` being
-upper case `Apple` or lower case `apple`.
-But in the third sentence the word `Apple` has the meaning of smartphone company and can only be upper case (which
-represents the name of an entity).
-Thus when processing text one must decide whether to treat cases as a whole or differently.
-In this script one can use ``--is_uncased`` to treat upper cases as same as lower cases.
+Tokenizer's hyperparameters can be passed as arguments.
+For example, one can set ``max_vocab`` and ``min_count`` using ``--max_vocab`` and ``--min_count`` arguments.
 
 .. code-block:: shell
 
-  python -m lmp.script.train_tknzr whitespace \
-    --dset_name wiki-text-2 \
-    --exp_name my_tknzr_exp \
-    --is_uncased \
-    --max_vocab 10000 \
-    --min_count 5 \
-    --ver train
+  python -m lmp.script.train_tknzr character --max_vocab 100 --min_count 2
+
+Note that boolean hyperparameters are set to ``False`` if not given, and set to ``True`` if given.
+
+.. code-block:: shell
+
+  # Setting `is_uncased=False`.
+  python -m lmp.script.train_tknzr character
+  # Setting `is_uncased=True`.
+  python -m lmp.script.train_tknzr character --is_uncased
+
+To train a different tokenizer, change the first argument to the specific tokenizer's name.
+
+.. code-block:: shell
+
+  python -m lmp.script.train_tknzr whitespace
 
 You can use ``-h`` or ``--help`` options to get a list of available tokenizers.
 
@@ -100,10 +58,20 @@ You can use ``-h`` or ``--help`` options on a specific tokenizer to get a list o
 .. code-block:: shell
 
   python -m lmp.script.train_tknzr whitespace -h
+
+See Also
+--------
+:doc:`lmp.dset </dset/index>`
+  All available datasets.
+:doc:`lmp.script.sample_dset </script/sample_dset>`
+  Get a glimpse on all available datasets.
+:doc:`lmp.script.tknz_txt </script/tknz_txt>`
+  Use pre-trained tokenizer to perform tokenization on given text.
+:doc:`lmp.tknzr </tknzr/index>`
+  All available tokenizers.
 """
 
 import argparse
-import gc
 import sys
 from typing import List
 
@@ -145,33 +113,43 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
     )
 
     # Required arguments.
-    group = tknzr_subparser.add_argument_group('tokenizer training arguments')
+    group = tknzr_subparser.add_argument_group('tokenizer training hyperparameters')
     group.add_argument(
       '--dset_name',
       choices=lmp.dset.DSET_OPTS.keys(),
-      help='Name of the dataset which will be used to train tokenizer.',
-      required=True,
+      default=lmp.dset.DemoDset.dset_name,
+      help=f'''
+      Name of the dataset which will be used to train tokenizer.
+      Default is ``{lmp.dset.DemoDset.dset_name}``.
+      ''',
       type=str,
     )
     group.add_argument(
       '--exp_name',
-      help='Name of the tokenizer training experiment.',
-      required=True,
+      default='my_tknzr_exp',
+      help='''
+      Name of the tokenizer training experiment.
+      Default is ``my_tknzr_exp``.
+      ''',
       type=str,
     )
-    group.add_argument(
-      '--ver',
-      help='Version of the dataset.',
-      required=True,
-      type=str,
-    )
-
-    # Optional arguments.
     group.add_argument(
       '--seed',
       default=42,
-      help='Random seed.  Default is ``42``.',
+      help='''
+      Random seed.
+      Default is ``42``.
+      ''',
       type=int,
+    )
+    group.add_argument(
+      '--ver',
+      default='train',
+      help='''
+      Version of the dataset.
+      Default is ``train``.
+      ''',
+      type=str,
     )
 
     # Add tokenizer specific arguments.
@@ -212,13 +190,6 @@ def main(argv: List[str]) -> None:
 
   # Save training result.
   lmp.util.tknzr.save(exp_name=args.exp_name, tknzr=tknzr)
-
-  # Free memory.
-  # This is only need for unit test.
-  del args
-  del dset
-  del tknzr
-  gc.collect()
 
 
 if __name__ == '__main__':

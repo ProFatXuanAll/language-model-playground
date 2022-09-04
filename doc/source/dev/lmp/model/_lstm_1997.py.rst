@@ -4,9 +4,11 @@
 .. automodule:: lmp.model._lstm_1997
 
 .. autoclass:: lmp.model._lstm_1997.LSTM1997
-  :members: add_CLI_args, forward, loss, params_init, pred
+  :members: add_CLI_args, cal_loss, forward, params_init, pred
   :show-inheritance:
 
 .. autoclass:: lmp.model._lstm_1997.LSTM1997Layer
   :members: forward, params_init
   :show-inheritance:
+
+.. footbibliography::

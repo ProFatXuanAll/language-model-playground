@@ -14,7 +14,7 @@ import torch
 import lmp.script.train_model
 import lmp.util.cfg
 import lmp.util.model
-import lmp.util.path
+import lmp.vars
 from lmp.dset import DemoDset
 from lmp.model import LSTM1997
 
@@ -27,11 +27,15 @@ def test_train_lstm_1997_on_demo(
   cfg_file_path: str,
   ckpt_dir_path: str,
   ckpt_step: int,
-  ctx_win: int,
   d_blk: int,
   d_emb: int,
   eps: float,
   exp_name: str,
+  init_ib: float,
+  init_lower: float,
+  init_ob: float,
+  init_upper: float,
+  label_smoothing: float,
   log_step: int,
   lr: float,
   max_norm: float,
@@ -41,11 +45,12 @@ def test_train_lstm_1997_on_demo(
   p_emb: float,
   p_hid: float,
   seed: int,
+  stride: int,
   tknzr_exp_name: str,
   total_step: int,
   train_log_dir_path: str,
   warmup_step: int,
-  wd: float,
+  weight_decay: float,
 ) -> None:
   """Successfully train model :py:class:`lmp.model.LSTM1997` on :py:class:`lmp.dset.DemoDset` dataset."""
   argv = [
@@ -58,8 +63,6 @@ def test_train_lstm_1997_on_demo(
     str(beta2),
     '--ckpt_step',
     str(ckpt_step),
-    '--ctx_win',
-    str(ctx_win),
     '--d_blk',
     str(d_blk),
     '--d_emb',
@@ -70,6 +73,16 @@ def test_train_lstm_1997_on_demo(
     str(eps),
     '--exp_name',
     exp_name,
+    '--init_ib',
+    str(init_ib),
+    '--init_lower',
+    str(init_lower),
+    '--init_ob',
+    str(init_ob),
+    '--init_upper',
+    str(init_upper),
+    '--label_smoothing',
+    str(label_smoothing),
     '--log_step',
     str(log_step),
     '--lr',
@@ -88,6 +101,8 @@ def test_train_lstm_1997_on_demo(
     str(p_hid),
     '--seed',
     str(seed),
+    '--stride',
+    str(stride),
     '--tknzr_exp_name',
     str(tknzr_exp_name),
     '--total_step',
@@ -96,8 +111,8 @@ def test_train_lstm_1997_on_demo(
     'valid',  # Make training faster.
     '--warmup_step',
     str(warmup_step),
-    '--wd',
-    str(wd),
+    '--weight_decay',
+    str(weight_decay),
   ]
 
   lmp.script.train_model.main(argv=argv)
@@ -116,12 +131,16 @@ def test_train_lstm_1997_on_demo(
   assert math.isclose(cfg.beta1, beta1)
   assert math.isclose(cfg.beta2, beta2)
   assert cfg.ckpt_step == ckpt_step
-  assert cfg.ctx_win == ctx_win
   assert cfg.d_blk == d_blk
   assert cfg.d_emb == d_emb
   assert cfg.dset_name == DemoDset.dset_name
   assert math.isclose(cfg.eps, eps)
   assert cfg.exp_name == exp_name
+  assert math.isclose(cfg.init_ib, init_ib)
+  assert math.isclose(cfg.init_lower, init_lower)
+  assert math.isclose(cfg.init_ob, init_ob)
+  assert math.isclose(cfg.init_upper, init_upper)
+  assert math.isclose(cfg.label_smoothing, label_smoothing)
   assert cfg.log_step == log_step
   assert math.isclose(cfg.lr, lr)
   assert math.isclose(cfg.max_norm, max_norm)
@@ -132,11 +151,12 @@ def test_train_lstm_1997_on_demo(
   assert math.isclose(cfg.p_emb, p_emb)
   assert math.isclose(cfg.p_hid, p_hid)
   assert cfg.seed == seed
+  assert cfg.stride == stride
   assert cfg.tknzr_exp_name == tknzr_exp_name
   assert cfg.total_step == total_step
   assert cfg.ver == 'valid'
   assert cfg.warmup_step == warmup_step
-  assert math.isclose(cfg.wd, wd)
+  assert math.isclose(cfg.weight_decay, weight_decay)
 
   model = lmp.util.model.load(ckpt=-1, exp_name=exp_name)
   assert isinstance(model, LSTM1997)

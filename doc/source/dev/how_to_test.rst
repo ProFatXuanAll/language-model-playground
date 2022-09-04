@@ -39,5 +39,7 @@ Run the following command in project root directory:
 
   Add more test writing guide line.
 
+.. footbibliography::
+
 .. _pytest: https://docs.pytest.org/en/reorganize-docs/contents.html
 .. _coverage: https://coverage.readthedocs.io/en/coverage-5.3/index.html

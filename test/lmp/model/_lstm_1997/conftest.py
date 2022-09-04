@@ -11,6 +11,11 @@ from lmp.tknzr._base import BaseTknzr
 def lstm_1997(
   d_blk: int,
   d_emb: int,
+  init_ib: float,
+  init_lower: float,
+  init_ob: float,
+  init_upper: float,
+  label_smoothing: float,
   n_blk: int,
   n_lyr: int,
   p_emb: float,
@@ -18,13 +23,42 @@ def lstm_1997(
   tknzr: BaseTknzr,
 ) -> LSTM1997:
   """:py:class:`lmp.model._lstm_1997.LSTM1997` instance."""
-  return LSTM1997(d_blk=d_blk, d_emb=d_emb, n_blk=n_blk, n_lyr=n_lyr, p_emb=p_emb, p_hid=p_hid, tknzr=tknzr)
+  return LSTM1997(
+    d_blk=d_blk,
+    d_emb=d_emb,
+    init_ib=init_ib,
+    init_lower=init_lower,
+    init_ob=init_ob,
+    init_upper=init_upper,
+    label_smoothing=label_smoothing,
+    n_blk=n_blk,
+    n_lyr=n_lyr,
+    p_emb=p_emb,
+    p_hid=p_hid,
+    tknzr=tknzr,
+  )
 
 
 @pytest.fixture
-def lstm_1997_layer(d_blk: int, in_feat: int, n_blk: int) -> LSTM1997Layer:
+def lstm_1997_layer(
+  d_blk: int,
+  in_feat: int,
+  init_ib: float,
+  init_lower: float,
+  init_ob: float,
+  init_upper: float,
+  n_blk: int,
+) -> LSTM1997Layer:
   """:py:class:`lmp.model._lstm_1997.LSTM1997Layer` instance."""
-  return LSTM1997Layer(d_blk=d_blk, in_feat=in_feat, n_blk=n_blk)
+  return LSTM1997Layer(
+    d_blk=d_blk,
+    in_feat=in_feat,
+    init_ib=init_ib,
+    init_lower=init_lower,
+    init_ob=init_ob,
+    init_upper=init_upper,
+    n_blk=n_blk,
+  )
 
 
 @pytest.fixture
@@ -49,7 +83,7 @@ def batch_next_tkids(batch_tkids: torch.Tensor) -> torch.Tensor:
 
 
 @pytest.fixture
-def batch_x(lstm_1997_layer: LSTM1997Layer) -> torch.Tensor:
+def x(lstm_1997_layer: LSTM1997Layer) -> torch.Tensor:
   """Batch of input features."""
   # Shape: (2, 3, in_feat)
   return torch.rand((2, 3, lstm_1997_layer.in_feat))

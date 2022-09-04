@@ -10,3 +10,5 @@
   :maxdepth: 1
 
   *
+
+.. footbibliography::

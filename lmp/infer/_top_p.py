@@ -14,18 +14,18 @@ from lmp.tknzr._base import EOS_TKID, PAD_TKID, BaseTknzr
 class TopPInfer(BaseInfer):
   """Top-P inference method.
 
-  Top-P sampling, also called nucleus sampling [1]_, is similar to top-K sampling but :math:`k` changes per inference
-  step.
+  Top-P sampling, also called nucleus sampling :footcite:`holtzman2020the`, is similar to top-K sampling but :math:`k`
+  changes in each inference step.
   :math:`p` is used as **cumulative probability threshold** and :math:`k` is choosed so that the top-K highest
   probabilities have **cumulative probability less than or equal to** :math:`p`.
   Top-P sampling is a non-greedy algorithm.
 
   Parameters
   ----------
-  max_seq_len: str
+  max_seq_len: str, default: 32
     Maximum length constraint on generated token list.
     One can use larger contraint compare to training.
-  p: float
+  p: float, default: 0.9
     Cumulative probability threshold.
   kwargs: typing.Any, optional
     Useless parameter.
@@ -42,22 +42,15 @@ class TopPInfer(BaseInfer):
   --------
   :doc:`lmp.infer </infer/index>`
     All available inference methods.
-  lmp.infer.TopKInfer
-    Top-K inference method.
-  lmp.script.gen_txt
+  :doc:`lmp.script.gen_txt </script/gen_txt>`
     Use pre-trained language model checkpoint to generate continual text of given text segment.
-
-  References
-  ----------
-  .. [1] Holtzman, A., Buys, J., Du, L., Forbes, M., & Choi, Y. (2019, September).
-     `The Curious Case of Neural Text Degeneration`_. In International Conference on Learning Representations.
-
-  .. _`The Curious Case of Neural Text Degeneration`: https://openreview.net/forum?id=rygGQyrFvH
+  :py:class:`~lmp.infer.TopKInfer`
+    Top-K inference method.
   """
 
   infer_name: ClassVar[str] = 'top-P'
 
-  def __init__(self, max_seq_len: int, p: float, **kwargs: Any):
+  def __init__(self, *, max_seq_len: int = 32, p: float = 0.9, **kwargs: Any):
     super().__init__(max_seq_len=max_seq_len)
     # `p` validation.
     lmp.util.validate.raise_if_not_instance(val=p, val_name='p', val_type=float)
@@ -66,12 +59,12 @@ class TopPInfer(BaseInfer):
 
   @classmethod
   def add_CLI_args(cls, parser: argparse.ArgumentParser) -> None:
-    """Add top-P inference method constructor parameters to CLI arguments parser.
+    """Add top-P inference method hyperparameters to CLI argument parser.
 
     Parameters
     ----------
     parser: argparse.ArgumentParser
-      CLI arguments parser.
+      CLI argument parser.
 
     Returns
     -------
@@ -98,8 +91,11 @@ class TopPInfer(BaseInfer):
     group = parser.add_argument_group('top-P inference method arguments')
     group.add_argument(
       '--p',
-      help='Cumulative probability threshold.',
-      required=True,
+      default=0.9,
+      help='''
+      Cumulative probability threshold.
+      Default is ``0.9``.
+      ''',
       type=float,
     )
 
@@ -109,21 +105,21 @@ class TopPInfer(BaseInfer):
 
     Top-P inference algorithm is structured as follow:
 
-    #. Encode input text as 1 sample batch.
-    #. Remove token ids after ``[eos]`` since model is not trained to predict tokens after seeing ``[eos]``.
-    #. Loop over conditioned token ids to generate conditioned hidden states.
+    #. Encode input text as 1 sequence batch.
+    #. Remove token ids after ``<eos>`` since model is not trained to predict tokens after seeing ``<eos>``.
+    #. Loop over conditional token ids to generate conditional hidden states.
     #. Loop to generate token ids.
        In each iteration, generated token id was choosed so that it is one of the top-K highest probabilities from next
        token id probability distribution, where :math:`k` is the number of token ids whose cumulative probabilities
        (probabilities are sorted in desending order) are less than or equal to ``self.p``.
-       Generation loop stops when ``[eos]`` is generated or maximum length constraint is violated.
+       Generation loop stops when ``<eos>`` is generated or maximum length constraint is violated.
     #. Decode generated token ids into text and return.
 
     Parameters
     ----------
-    model: lmp.model.BaseModel
+    model: ~lmp.model.BaseModel
       Pre-trained language model which will be used to generate text.
-    tknzr: lmp.tknzr.BaseTknzr
+    tknzr: ~lmp.tknzr.BaseTknzr
       Pre-trained tokenizer which performs text encoding and decoding.
     txt: str
       Text segment which the generation process is conditioned on.
@@ -136,12 +132,12 @@ class TopPInfer(BaseInfer):
     # Get model running device.
     device = next(model.parameters()).device
 
-    # Encode as 1 sample batch.
+    # Encode as 1 sequence batch.
     # We convert token ids to tensor and move tensor to the same running device as model.
-    # shape: (1, max_seq_len).
-    batch_cur_tkids = torch.LongTensor(tknzr.batch_enc(batch_txt=[txt], max_seq_len=self.max_seq_len)).to(device)
+    # shape: (1, S).
+    batch_cur_tkids = torch.LongTensor([tknzr.enc(txt=txt)]).to(device)
 
-    # Remove token ids after `[eos]` since model is not trained to predict tokens after seeing `[eos]`.
+    # Remove token ids after `<eos>` since model is not trained to predict tokens after seeing `<eos>`.
     mask = (batch_cur_tkids == EOS_TKID) | (batch_cur_tkids == PAD_TKID)
     seq_len = batch_cur_tkids.size(1) - mask.sum()
     batch_cur_tkids = batch_cur_tkids[:, :seq_len]
@@ -149,10 +145,13 @@ class TopPInfer(BaseInfer):
     # Loop over conditioned token ids to generate conditioned hidden states.
     batch_prev_states = None
     for i in range(seq_len - 1):
-      _, batch_prev_states = model.pred(
+      _, batch_cur_states = model.pred(
         batch_cur_tkids=batch_cur_tkids[:, i].unsqueeze(1),
         batch_prev_states=batch_prev_states,
       )
+
+      # Update hidden states.
+      batch_prev_states = batch_cur_states
 
     # Calculate how many token at most can be generated.
     out_seq_len = self.max_seq_len - seq_len + 1
@@ -164,7 +163,7 @@ class TopPInfer(BaseInfer):
     for _ in range(out_seq_len):
       # Get next token id prediction probability distribution.
       # shape: (1, 1, V).
-      batch_next_tkids_pd, batch_prev_states = model.pred(
+      batch_next_tkids_pd, batch_cur_states = model.pred(
         batch_cur_tkids=batch_cur_tkids,
         batch_prev_states=batch_prev_states,
       )
@@ -213,9 +212,12 @@ class TopPInfer(BaseInfer):
       # Update input token ids.
       batch_cur_tkids = batch_next_tkids
 
-      # If the prediction token id is `[eos]`, then stop generation immediately.
+      # Update hidden states.
+      batch_prev_states = batch_cur_states
+
+      # If the prediction token id is `<eos>`, then stop generation immediately.
       if gen_tkid == EOS_TKID:
         break
 
     # Output generated text.
-    return tknzr.batch_dec(batch_tkids=[gen_tkids], rm_sp_tks=True)[0]
+    return tknzr.dec(tkids=gen_tkids, rm_sp_tks=True)

@@ -38,26 +38,27 @@ def test_instance_method() -> None:
   assert inspect.signature(lmp.infer._top_k.TopKInfer.__init__) == Signature(
     parameters=[
       Parameter(
+        annotation=Parameter.empty,
+        default=Parameter.empty,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
         name='self',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=Parameter.empty,
       ),
       Parameter(
+        annotation=int,
+        default=5,
+        kind=Parameter.KEYWORD_ONLY,
         name='k',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=Parameter.empty,
-        annotation=int,
       ),
       Parameter(
+        annotation=int,
+        default=32,
+        kind=Parameter.KEYWORD_ONLY,
         name='max_seq_len',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=Parameter.empty,
-        annotation=int,
       ),
       Parameter(
-        name='kwargs',
-        kind=Parameter.VAR_KEYWORD,
         annotation=Any,
+        kind=Parameter.VAR_KEYWORD,
+        name='kwargs',
       ),
     ],
     return_annotation=Signature.empty,

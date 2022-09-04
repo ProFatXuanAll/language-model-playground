@@ -5,9 +5,9 @@ Overview
 --------
 In this project, a :term:`language model` is a deep learning :term:`model` which can predict next possible token conditioned on given tokens.
 Each language model has a :term:`loss function` which can be :term:`optimized` by the language model :term:`training` script :doc:`lmp.script.train_model </script/train_model>`.
-The goal of optimizing a language model objective function is to make a language model have low :term:`perplexity`, which serve as an indication of performing well on next token prediction.
-A language model must be paired with a :term:`tokenizer`, and once paired with a tokenizer it cannot change to pair with another tokenizer.
-A tokenizer will share its vocabulary with a language model.
+The optimization goal of a language model is to have low :term:`perplexity`, which serve as an indication of performing well on next token prediction.
+A language model is paired with one and only one :term:`tokenizer`.
+A language model always predict tokens contained in the paired tokenizer's :term:`vocabulary`.
 When construct a language model, one must first construct a tokenizer and then pass that tokenizer to model constructor.
 
 .. seealso::
@@ -32,10 +32,10 @@ One can import language model module as usual Python_ module:
 
   import lmp.model
 
-Create language model instance
-------------------------------
+Create language model instances
+-------------------------------
 After importing :py:mod:`lmp.model`, one can create :term:`language model` instance through the class attributes of :py:mod:`lmp.model`.
-For example, one can create Elman-Net language model :py:class:`lmp.model.ElmanNet` as follow:
+For example, one can create Elman-Net language model :py:class:`~lmp.model.ElmanNet` as follow:
 
 .. code-block:: python
 
@@ -43,24 +43,14 @@ For example, one can create Elman-Net language model :py:class:`lmp.model.ElmanN
   import lmp.tknzr
 
   # Create tokenizer instance.
-  tokenizer = lmp.tknzr.CharTknzr(
-    is_uncased=False,
-    max_vocab=-1,
-    min_count=0,
-  )
+  tokenizer = lmp.tknzr.CharTknzr()
+
   # Create language model instance.
-  model = lmp.model.ElmanNet(
-    d_emb=100,
-    d_hid=300,
-    n_lyr=1,
-    p_emb=0.1,
-    p_hid=0.1,
-    tknzr=tokenizer,
-  )
+  model = lmp.model.ElmanNet(tknzr=tokenizer)
 
 Each language model is an instance of :py:class:`torch.nn.Module`.
-Each language model must be paired with a :term:`tokenizer`.
-In the example above we show that an Elman-Net language model can be paired with a character tokenizer.
+Each language model is paired with one and only one :term:`tokenizer`.
+In the example above we see that an Elman-Net language model can be paired with a character tokenizer.
 
 Initialize language model parameters
 ------------------------------------
@@ -73,48 +63,28 @@ All initialization utilities are collectively gathered under the module :py:mod:
   import lmp.tknzr
   import torch
 
-  model = lmp.model.ElmanNet(
-    d_emb=100,
-    d_hid=300,
-    n_lyr=1,
-    p_emb=0.1,
-    p_hid=0.1,
-    tknzr=lmp.tknzr.CharTknzr(
-      is_uncased=False,
-      max_vocab=-1,
-      min_count=0,
-    ),
-  )
+  # Create language model instance.
+  model = lmp.model.ElmanNet(tknzr=lmp.tknzr.CharTknzr())
 
   # Initialize model parameters.
   torch.nn.init.zeros_(model.fc_e2h.bias)
 
-If you cannot decide how to initialize a :term:`language model`, we have provided an utility :py:meth:`params_init` for each language model to help you initialize model parameters.
+If you cannot decide how to initialize a :term:`language model`, we have provided an utility :py:meth:`~lmp.model.BaseModel.params_init` for each language model to help you initialize model parameters.
 
 .. code-block:: python
 
   import lmp.model
   import lmp.tknzr
 
-  model = lmp.model.ElmanNet(
-    d_emb=100,
-    d_hid=300,
-    n_lyr=1,
-    p_emb=0.1,
-    p_hid=0.1,
-    tknzr=lmp.tknzr.CharTknzr(
-      is_uncased=False,
-      max_vocab=-1,
-      min_count=0,
-    ),
-  )
+  # Create language model instance.
+  model = lmp.model.ElmanNet(tknzr=lmp.tknzr.CharTknzr())
 
   # Initialize model parameters.
   model.params_init()
 
-Calculate loss function
------------------------
-One can calculate :term:`mini-batch` :term:`loss` of a :term:`language model` using :py:meth:`loss` function.
+Calculate prediction loss
+-------------------------
+One can calculate :term:`mini-batch` :term:`loss` of a :term:`language model` using :py:meth:`~lmp.model.BaseModel.cal_loss` function.
 For example,
 
 .. code-block:: python
@@ -123,102 +93,56 @@ For example,
   import lmp.tknzr
   import torch
 
-  tokenizer = lmp.tknzr.CharTknzr(
-    is_uncased=False,
-    max_vocab=-1,
-    min_count=0,
-  )
-  model = lmp.model.ElmanNet(
-    d_emb=100,
-    d_hid=300,
-    n_lyr=1,
-    p_emb=0.1,
-    p_hid=0.1,
-    tknzr=tokenizer,
-  )
+  # Create tokenizer instance.
+  tokenizer = lmp.tknzr.CharTknzr()
 
-  # Encode mini-batch.
+  # Build tokenizer vocabulary.
   batch_txt = ['hello world', 'how are you']
   tokenizer.build_vocab(batch_txt=batch_txt)
-  batch_tkids = tokenizer.batch_enc(batch_txt=batch_txt, max_seq_len=15)
+
+  # Encode mini-batch.
+  batch_tkids = []
+  for txt in batch_txt:
+    tkids = tokenizer.enc(txt=txt)
+    tkids = tokenizer.pad_to_max(max_seq_len=20, tkids=tkids)
+    batch_tkids.append(tkids)
+
+  # Convert mini-batch to tensor.
   batch_tkids = torch.LongTensor(batch_tkids)
 
+  # Create language model instance.
+  model = lmp.model.ElmanNet(tknzr=tokenizer)
+
   # Calculate mini-batch loss.
-  loss, batch_cur_states = model.loss(
+  loss, batch_cur_states = model.cal_loss(
     batch_cur_tkids=batch_tkids[:, :-1],
     batch_next_tkids=batch_tkids[:, 1:],
     batch_prev_states=None,
   )
 
-The method :py:meth:`loss` takes three input and returns a tuple.
+The method :py:meth:`~lmp.model.BaseModel.cal_loss` takes three input and returns a tuple.
 The ``batch_cur_tkids`` is the input :term:`token id` list and the ``batch_next_tkids`` is the prediction target.
 Both ``batch_cur_tkids`` and ``batch_next_tkids`` are long tensor and have the same shape :math:`(B, S)` where :math:`B` is the :term:`batch size` and :math:`S` is input sequence length.
 We set ``batch_prev_states=None`` to use :term:`initial hidden states`.
 The first item in the returned tuple is a :py:class:`torch.Tensor` which represents the mini-batch next token prediction loss.
-One can call the PyTorch_ built-in ``backward`` method to perform :term:`back-propagation`.
-The second item in the returned tuple is a list of :py:class:`torch.Tensor` which represents the current :term:`hidden states` of a language model.
+One can call the PyTorch_ built-in :py:meth:`torch.Tensor.backward` method to perform :term:`back-propagation`.
+The second item in the returned tuple represents the current :term:`hidden states` of a language model.
+The exact structure of current hidden states depends on which language model is used.
 The current hidden states can be used as the initial hidden states of next input.
-This is usually used when one can only process certain sequence length at a time.
-Each chucking sequence is called a :term:`context window`.
-For example, we can split the input in the above example into half as follow:
-
-.. code-block:: python
-
-  import lmp.model
-  import lmp.tknzr
-  import torch
-
-  tokenizer = lmp.tknzr.CharTknzr(
-    is_uncased=False,
-    max_vocab=-1,
-    min_count=0,
-  )
-  model = lmp.model.ElmanNet(
-    d_emb=100,
-    d_hid=300,
-    n_lyr=1,
-    p_emb=0.1,
-    p_hid=0.1,
-    tknzr=tokenizer,
-  )
-
-  # Encode mini-batch.
-  batch_txt = ['hello world', 'how are you']
-  tokenizer.build_vocab(batch_txt=batch_txt)
-  batch_tkids = tokenizer.batch_enc(batch_txt=batch_txt, max_seq_len=15)
-  batch_tkids = torch.LongTensor(batch_tkids)
-
-  # Calculate mini-batch first-half loss.
-  loss_1, batch_cur_states = model.loss(
-    batch_cur_tkids=batch_tkids[:, 0:8],
-    batch_next_tkids=batch_tkids[:, 1:9],
-    batch_prev_states=None,
-  )
-
-  # Perform back-propagation.
-  loss_1.backward()
-
-  # Calculate mini-batch second-half loss.
-  loss_2, _ = model.loss(
-    batch_cur_tkids=batch_tkids[:, 8:-1],
-    batch_next_tkids=batch_tkids[:, 9:],
-    batch_prev_states=batch_cur_states,
-  )
-
-  # Perform back-propagation.
-  loss_2.backward()
+This is done by pass current hidden states as ``batch_prev_states``.
+This is needed since one can only process certain sequence length at a time.
 
 Predict next token
 ------------------
-Next token prediction can be done by the ``pred`` method.
-The input of ``pred`` is almost the same as ``loss``, except that we do not input the prediction target.
+Next token prediction can be done by the :py:meth:`~lmp.model.BaseModel.pred` method.
+The input of :py:meth:`~lmp.model.BaseModel.pred` is almost the same as :py:meth:`~lmp.model.BaseModel.cal_loss`, except that we do not input the prediction target.
 This is because when performing evaluation one do not and cannot know the prediction target.
-One set ``batch_prev_states=None`` to use :term:`initial hidden states` just like using ``loss``.
+One set ``batch_prev_states=None`` to use :term:`initial hidden states` just as in :py:meth:`~lmp.model.BaseModel.cal_loss`.
 The returned tuple have two items.
 The first item in the returned tuple is a :py:class:`torch.Tensor` which represent the next :term:`token id` probability distribution.
 The probability distribution tensor has shape :math:`(B, S, V)` where :math:`B` is :term:`batch size`, :math:`S` is input sequence length and :math:`V` is the :term:`vocabulary` size of the :term:`language model` pairing :term:`tokenizer`.
-The second item in the returned tuple is a list of :py:class:`torch.Tensor` which represents the current :term:`hidden states` of a language model.
-Just like the ``loss`` method, the current hidden states can be used as the :term:`initial hidden states` of next input.
+The second item in the returned tuple represents the current :term:`hidden states` of a language model.
+One should compare this with :py:meth:`~lmp.model.BaseModel.cal_loss`.
 
 .. code-block:: python
 
@@ -226,25 +150,25 @@ Just like the ``loss`` method, the current hidden states can be used as the :ter
   import lmp.tknzr
   import torch
 
-  tokenizer = lmp.tknzr.CharTknzr(
-    is_uncased=False,
-    max_vocab=-1,
-    min_count=0,
-  )
-  model = lmp.model.ElmanNet(
-    d_emb=100,
-    d_hid=300,
-    n_lyr=1,
-    p_emb=0.1,
-    p_hid=0.1,
-    tknzr=tokenizer,
-  )
+  # Create tokenizer instance.
+  tokenizer = lmp.tknzr.CharTknzr()
 
-  # Encode mini-batch.
+  # Build tokenizer vocabulary.
   batch_txt = ['hello world', 'how are you']
   tokenizer.build_vocab(batch_txt=batch_txt)
-  batch_tkids = tokenizer.batch_enc(batch_txt=batch_txt, max_seq_len=15)
+
+  # Encode mini-batch.
+  batch_tkids = []
+  for txt in batch_txt:
+    tkids = tokenizer.enc(txt=txt)
+    tkids = tokenizer.pad_to_max(max_seq_len=20, tkids=tkids)
+    batch_tkids.append(tkids)
+
+  # Convert mini-batch to tensor.
   batch_tkids = torch.LongTensor(batch_tkids)
+
+  # Create language model instance.
+  model = lmp.model.ElmanNet(tknzr=tokenizer)
 
   # Calculate next token prediction.
   pred, batch_cur_states = model.pred(
@@ -259,6 +183,8 @@ All available language models
   :maxdepth: 1
 
   *
+
+.. footbibliography::
 
 .. _Python: https://www.python.org/
 .. _PyTorch: https://pytorch.org/

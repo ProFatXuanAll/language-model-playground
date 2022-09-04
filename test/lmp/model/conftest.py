@@ -8,7 +8,7 @@ from lmp.tknzr import BaseTknzr, CharTknzr
 @pytest.fixture
 def tknzr() -> BaseTknzr:
   """:py:class:`lmp.tknzr.BaseTknzr` instance."""
-  tknzr = CharTknzr(is_uncased=True, max_vocab=-1, min_count=0)
+  tknzr = CharTknzr()
   tknzr.build_vocab(batch_txt=['a', 'b', 'c'])
   return tknzr
 

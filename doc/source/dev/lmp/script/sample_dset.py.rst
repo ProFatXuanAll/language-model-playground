@@ -4,3 +4,5 @@
 .. automodule:: lmp.script.sample_dset
   :members:
   :noindex:
+
+.. footbibliography::

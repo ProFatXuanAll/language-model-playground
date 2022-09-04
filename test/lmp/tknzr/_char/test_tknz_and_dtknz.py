@@ -9,8 +9,8 @@ import unicodedata
 
 import pytest
 
-from lmp.tknzr._base import BOS_TK, EOS_TK, PAD_TK, UNK_TK
 from lmp.tknzr._char import CharTknzr
+from lmp.vars import BOS_TK, EOS_TK, PAD_TK, UNK_TK
 
 
 @pytest.fixture

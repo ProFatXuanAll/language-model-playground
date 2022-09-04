@@ -117,12 +117,6 @@ def ckpt_step() -> int:
   return 10
 
 
-@pytest.fixture
-def ctx_win(max_seq_len: int) -> int:
-  """Context window size."""
-  return max_seq_len // 2
-
-
 @pytest.fixture(params=[1, 2])
 def d_blk(request) -> int:
   """Mock memory cell block dimension."""
@@ -162,6 +156,42 @@ def host_port() -> int:
 @pytest.fixture(params=[1, 2])
 def in_feat(request) -> int:
   """Mock number of input features."""
+  return request.param
+
+
+@pytest.fixture(params=[1.0, 0.1])
+def init_fb(request) -> float:
+  """Mock forget gate biases initialization upper bound."""
+  return request.param
+
+
+@pytest.fixture(params=[-1.0, -0.1])
+def init_ib(request) -> float:
+  """Mock input gate biases initialization lower bound."""
+  return request.param
+
+
+@pytest.fixture(params=[-1.0, -0.1])
+def init_lower(request) -> float:
+  """Mock initialization lower bound."""
+  return request.param
+
+
+@pytest.fixture(params=[-1.0, -0.1])
+def init_ob(request) -> float:
+  """Mock output gate biases initialization lower bound."""
+  return request.param
+
+
+@pytest.fixture(params=[1.0, 0.1])
+def init_upper(request) -> float:
+  """Mock initialization upper bound."""
+  return request.param
+
+
+@pytest.fixture(params=[0.0, 0.1])
+def label_smoothing(request) -> float:
+  """Mock label smoothing."""
   return request.param
 
 
@@ -220,6 +250,12 @@ def p_hid(request) -> float:
 
 
 @pytest.fixture
+def stride(max_seq_len: int) -> int:
+  """Mock number of overlapping tokens."""
+  return max(1, max_seq_len // 2)
+
+
+@pytest.fixture
 def total_step(warmup_step: int) -> float:
   """Mock total step."""
   return warmup_step * 2
@@ -232,7 +268,7 @@ def warmup_step(ckpt_step: int) -> float:
 
 
 @pytest.fixture
-def wd() -> float:
+def weight_decay() -> float:
   """Mock weight decay."""
   return 1e-2
 

@@ -10,18 +10,16 @@ from typing import ClassVar, List, Optional
 # development and release stable version.
 import pandas as pd  # type: ignore
 
-import lmp.util.path
+import lmp.vars
 from lmp.dset._base import BaseDset
 
 
 class WNLIDset(BaseDset):
   """Winograd NLI dataset.
 
-  Winograd NLI [1]_ is a relaxation of the `Winograd Schema Challenge`_ proposed as part of the GLUE_ benchmark.
+  Winograd NLI is a relaxation of the Winograd Schema Challenge :footcite:`levesque2012winograd` proposed as part of
+  the GLUE :footcite:`wang2018glue` benchmark.
   This dataset only extract sentences from WNLI and no NLI labels were used.
-
-  .. _`Winograd Schema Challenge`: https://cs.nyu.edu/~davise/papers/WinogradSchemas/WS.html
-  .. _GLUE: https://gluebenchmark.com/
 
   Here are the statistics of each supported version.
   Tokens are separated by whitespaces.
@@ -40,7 +38,7 @@ class WNLIDset(BaseDset):
   ----------
   ver: Optional[str], default: None
     Version of the dataset.
-    Set ``ver = ''`` to use default version.
+    Set to ``None`` to use the default version ``self.__class__.df_ver``.
 
   Attributes
   ----------
@@ -54,11 +52,6 @@ class WNLIDset(BaseDset):
     Version of the dataset.
   vers: typing.ClassVar[list[str]]
     Supported versions including ``'train'``, ``'dev'`` and ``'test'``.
-
-  References
-  ----------
-  .. [1] Alex Wang, Amanpreet Singh, Julian Michael, Felix Hill, Omer Levy and Samuel R. Bowman.  GLUE: A multi-task
-     benchmark and analysis platform for natural language understanding.  ICLR 2019.
 
   Examples
   --------
@@ -79,7 +72,7 @@ class WNLIDset(BaseDset):
     self.download_dataset()
 
     # Read text from WNLI tsv file.
-    df = pd.read_csv(os.path.join(lmp.util.path.DATA_PATH, f'wnli.{self.ver}.tsv'), sep='\t')
+    df = pd.read_csv(os.path.join(lmp.vars.DATA_PATH, f'wnli.{self.ver}.tsv'), sep='\t')
 
     # Extract all sentences and perform text normalization.
     spls = df['sentence1'].apply(self.norm).tolist() + df['sentence2'].apply(self.norm).tolist()
@@ -90,9 +83,6 @@ class WNLIDset(BaseDset):
     spls = list(map(lambda spl: re.sub(r'(\w)(\'\w)\s+', r'\1 \2 ', spl), spls))
 
     self.spls.extend(spls)
-
-    # Sort dataset by length in ascending order.
-    self.spls.sort(key=len)
 
   @classmethod
   def download_dataset(cls) -> None:
@@ -107,14 +97,14 @@ class WNLIDset(BaseDset):
     None
     """
     # Download zip file path.
-    zip_file_path = os.path.join(lmp.util.path.DATA_PATH, 'WNLI.zip')
+    zip_file_path = os.path.join(lmp.vars.DATA_PATH, 'WNLI.zip')
     # Original source is no longer available.
     url = 'https://dl.fbaipublicfiles.com/glue/data/WNLI.zip'
 
     # Avoid duplicated download by checking whether all raw files exists.
     already_downloaded = True
     for ver in cls.vers:
-      raw_file_path = os.path.join(lmp.util.path.DATA_PATH, f'wnli.{ver}')
+      raw_file_path = os.path.join(lmp.vars.DATA_PATH, f'wnli.{ver}')
       if not os.path.exists(raw_file_path):
         already_downloaded = False
 
@@ -130,7 +120,7 @@ class WNLIDset(BaseDset):
         with io.TextIOWrapper(input_zipfile.open(f'WNLI/{ver}.tsv', 'r')) as input_binary_file:
           data = input_binary_file.read()
 
-        with open(os.path.join(lmp.util.path.DATA_PATH, f'wnli.{ver}.tsv'), 'w') as output_text_file:
+        with open(os.path.join(lmp.vars.DATA_PATH, f'wnli.{ver}.tsv'), 'w') as output_text_file:
           output_text_file.write(data)
 
     # Remove downloaded zip file.

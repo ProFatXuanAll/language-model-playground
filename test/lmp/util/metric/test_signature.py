@@ -10,38 +10,27 @@ import lmp.util.metric
 
 def test_module_method() -> None:
   """Ensure module methods' signatures."""
-  assert hasattr(lmp.util.metric, 'cross_entropy_loss')
-  assert inspect.isfunction(lmp.util.metric.cross_entropy_loss)
-  assert inspect.signature(lmp.util.metric.cross_entropy_loss) == Signature(
+  assert hasattr(lmp.util.metric, 'nplogp')
+  assert inspect.isfunction(lmp.util.metric.nplogp)
+  assert inspect.signature(lmp.util.metric.nplogp) == Signature(
     parameters=[
       Parameter(
-        name='batch_tkids',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        annotation=torch.Tensor,
         default=Parameter.empty,
-        annotation=torch.Tensor,
-      ),
-      Parameter(
-        name='batch_tkids_pd',
         kind=Parameter.POSITIONAL_OR_KEYWORD,
-        annotation=torch.Tensor,
-      ),
-    ],
-    return_annotation=torch.Tensor,
-  )
-  assert hasattr(lmp.util.metric, 'ppl')
-  assert inspect.isfunction(lmp.util.metric.ppl)
-  assert inspect.signature(lmp.util.metric.ppl) == Signature(
-    parameters=[
-      Parameter(
         name='batch_tkids',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=Parameter.empty,
-        annotation=torch.Tensor,
       ),
       Parameter(
-        name='batch_tkids_pd',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
         annotation=torch.Tensor,
+        default=Parameter.empty,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        name='batch_tkids_pd',
+      ),
+      Parameter(
+        annotation=bool,
+        default=True,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        name='use_log2',
       ),
     ],
     return_annotation=torch.Tensor,

@@ -3,7 +3,7 @@
 import argparse
 import inspect
 from inspect import Parameter, Signature
-from typing import Any, ClassVar, List, Optional, Tuple, get_type_hints
+from typing import Any, ClassVar, Tuple, get_type_hints
 
 import torch
 
@@ -34,10 +34,10 @@ def test_class_method() -> None:
   assert inspect.signature(lmp.model._base.BaseModel.add_CLI_args) == Signature(
     parameters=[
       Parameter(
-        name='parser',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=Parameter.empty,
         annotation=argparse.ArgumentParser,
+        default=Parameter.empty,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        name='parser',
       ),
     ],
     return_annotation=None,
@@ -51,17 +51,52 @@ def test_instance_method() -> None:
   assert inspect.signature(lmp.model._base.BaseModel.__init__) == Signature(
     parameters=[
       Parameter(
-        name='self',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        annotation=Parameter.empty,
         default=Parameter.empty,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        name='self',
       ),
       Parameter(
-        name='kwargs',
-        kind=Parameter.VAR_KEYWORD,
         annotation=Any,
+        default=Parameter.empty,
+        kind=Parameter.VAR_KEYWORD,
+        name='kwargs',
       ),
     ],
     return_annotation=Signature.empty,
+  )
+
+  assert hasattr(lmp.model._base.BaseModel, 'cal_loss')
+  assert inspect.isfunction(lmp.model._base.BaseModel.cal_loss)
+  assert 'cal_loss' in lmp.model._base.BaseModel.__abstractmethods__
+  assert inspect.signature(lmp.model._base.BaseModel.cal_loss) == Signature(
+    parameters=[
+      Parameter(
+        annotation=Parameter.empty,
+        default=Parameter.empty,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        name='self',
+      ),
+      Parameter(
+        annotation=torch.Tensor,
+        default=Parameter.empty,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        name='batch_cur_tkids',
+      ),
+      Parameter(
+        annotation=torch.Tensor,
+        default=Parameter.empty,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        name='batch_next_tkids',
+      ),
+      Parameter(
+        annotation=Any,
+        default=None,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        name='batch_prev_states',
+      ),
+    ],
+    return_annotation=Tuple[torch.Tensor, Any],
   )
 
   assert hasattr(lmp.model._base.BaseModel, 'forward')
@@ -70,53 +105,25 @@ def test_instance_method() -> None:
   assert inspect.signature(lmp.model._base.BaseModel.forward) == Signature(
     parameters=[
       Parameter(
-        name='self',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        annotation=Parameter.empty,
         default=Parameter.empty,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        name='self',
       ),
       Parameter(
-        name='batch_cur_tkids',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
         annotation=torch.Tensor,
+        default=Parameter.empty,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        name='batch_cur_tkids',
       ),
       Parameter(
-        name='batch_prev_states',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        annotation=Optional[List[torch.Tensor]],
+        annotation=Any,
         default=None,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        name='batch_prev_states',
       ),
     ],
-    return_annotation=Tuple[torch.Tensor, List[torch.Tensor]],
-  )
-
-  assert hasattr(lmp.model._base.BaseModel, 'loss')
-  assert inspect.isfunction(lmp.model._base.BaseModel.loss)
-  assert 'loss' in lmp.model._base.BaseModel.__abstractmethods__
-  assert inspect.signature(lmp.model._base.BaseModel.loss) == Signature(
-    parameters=[
-      Parameter(
-        name='self',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        default=Parameter.empty,
-      ),
-      Parameter(
-        name='batch_cur_tkids',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        annotation=torch.Tensor,
-      ),
-      Parameter(
-        name='batch_next_tkids',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        annotation=torch.Tensor,
-      ),
-      Parameter(
-        name='batch_prev_states',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        annotation=Optional[List[torch.Tensor]],
-        default=None,
-      ),
-    ],
-    return_annotation=Tuple[torch.Tensor, List[torch.Tensor]],
+    return_annotation=Tuple[torch.Tensor, Any],
   )
 
   assert hasattr(lmp.model._base.BaseModel, 'params_init')
@@ -125,9 +132,10 @@ def test_instance_method() -> None:
   assert inspect.signature(lmp.model._base.BaseModel.params_init) == Signature(
     parameters=[
       Parameter(
-        name='self',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        annotation=Parameter.empty,
         default=Parameter.empty,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        name='self',
       ),
     ],
     return_annotation=None,
@@ -139,21 +147,23 @@ def test_instance_method() -> None:
   assert inspect.signature(lmp.model._base.BaseModel.pred) == Signature(
     parameters=[
       Parameter(
-        name='self',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        annotation=Parameter.empty,
         default=Parameter.empty,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        name='self',
       ),
       Parameter(
-        name='batch_cur_tkids',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
         annotation=torch.Tensor,
+        default=Parameter.empty,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        name='batch_cur_tkids',
       ),
       Parameter(
-        name='batch_prev_states',
-        kind=Parameter.POSITIONAL_OR_KEYWORD,
-        annotation=Optional[List[torch.Tensor]],
+        annotation=Any,
         default=None,
+        kind=Parameter.POSITIONAL_OR_KEYWORD,
+        name='batch_prev_states',
       ),
     ],
-    return_annotation=Tuple[torch.Tensor, List[torch.Tensor]],
+    return_annotation=Tuple[torch.Tensor, Any],
   )

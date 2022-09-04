@@ -6,3 +6,5 @@
 .. autoclass:: lmp.dset._wnli.WNLIDset
   :members: download_file, download_dataset, norm
   :show-inheritance:
+
+.. footbibliography::

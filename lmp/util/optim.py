@@ -12,7 +12,7 @@ def get_optimizer(
   eps: float,
   lr: float,
   model: BaseModel,
-  wd: float,
+  weight_decay: float,
 ) -> torch.optim.AdamW:
   """Get AdamW optimizer.
 
@@ -28,7 +28,7 @@ def get_optimizer(
     Learning rate of gradient descent.
   model: lmp.model.BaseModel
     Language model to be optimized.
-  wd: float
+  weight_decay: float
     Weight decay coefficient.
 
   Returns
@@ -60,16 +60,16 @@ def get_optimizer(
   # `model` validation.
   lmp.util.validate.raise_if_not_instance(val=model, val_name='model', val_type=BaseModel)
 
-  # `wd` validation.
-  lmp.util.validate.raise_if_not_instance(val=wd, val_name='wd', val_type=float)
-  lmp.util.validate.raise_if_wrong_ordered(vals=[0.0, wd], val_names=['0.0', 'wd'])
+  # `weight_decay` validation.
+  lmp.util.validate.raise_if_not_instance(val=weight_decay, val_name='weight_decay', val_type=float)
+  lmp.util.validate.raise_if_wrong_ordered(vals=[0.0, weight_decay], val_names=['0.0', 'weight_decay'])
 
   # Remove weight decay on bias and layer-norm.  This can only be done after moving model to running device.
   no_decay = ['bias', 'LayerNorm.weight']
   optim_group_params = [
     {
       'params': [param for name, param in model.named_parameters() if not any(nd in name for nd in no_decay)],
-      'weight_decay': wd,
+      'weight_decay': weight_decay,
     },
     {
       'params': [param for name, param in model.named_parameters() if any(nd in name for nd in no_decay)],

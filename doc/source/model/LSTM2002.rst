@@ -2,9 +2,11 @@ LSTM (2002 version)
 ===================
 
 .. autoclass:: lmp.model.LSTM2002
-  :members: add_CLI_args, forward, loss, params_init, pred
+  :members: add_CLI_args, cal_loss, forward, params_init, pred
   :show-inheritance:
 
 .. autoclass:: lmp.model.LSTM2002Layer
   :members: forward, params_init
   :show-inheritance:
+
+.. footbibliography::

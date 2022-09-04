@@ -18,9 +18,9 @@ def test_scheduler(
   model: BaseModel,
   total_step: int,
   warmup_step: int,
-  wd: float,
+  weight_decay: float,
 ) -> None:
   """Test construction for :py:class:`torch.optim.lr_scheduler.LambdaLR`."""
-  optim = lmp.util.optim.get_optimizer(beta1=beta1, beta2=beta2, eps=eps, lr=lr, model=model, wd=wd)
+  optim = lmp.util.optim.get_optimizer(beta1=beta1, beta2=beta2, eps=eps, lr=lr, model=model, weight_decay=weight_decay)
   schdl = lmp.util.optim.get_scheduler(optim=optim, total_step=total_step, warmup_step=warmup_step)
   assert isinstance(schdl, torch.optim.lr_scheduler.LambdaLR)

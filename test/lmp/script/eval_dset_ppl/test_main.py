@@ -45,19 +45,19 @@ def test_ppl_output(
   captured = capsys.readouterr()
   assert captured.err
 
-  avg_ppls = []
+  ppls = []
   for line in re.split(r'\n', captured.out):
     if not line:
       continue
 
-    match_1 = re.match(r'checkpoint: (\d+), avg ppl: (\d*.?\d*)', line)
-    match_2 = re.match(r'best checkpoint: (\d+), best avg ppl: (\d*.?\d*)', line)
+    match_1 = re.match(r'checkpoint: (\d+), ppl: (\d*.?\d*)', line)
+    match_2 = re.match(r'best checkpoint: (\d+), best ppl: (\d*.?\d*)', line)
     assert match_1 or match_2
 
     if match_1:
       assert int(match_1.group(1)) in ckpts
       assert not math.isnan(float(match_1.group(2)))
-      avg_ppls.append(match_1.group(2))
+      ppls.append(match_1.group(2))
     if match_2:
       assert int(match_2.group(1)) in ckpts
-      assert match_2.group(2) in avg_ppls
+      assert match_2.group(2) in ppls

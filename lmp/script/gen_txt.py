@@ -1,6 +1,6 @@
 r"""Use pre-trained language model checkpoint to generate continual text of given text segment.
 
-One must first run the script :py:mod:`lmp.script.train_model` before running this script.
+One must first run the script :doc:`lmp.script.train_model </script/train_model>` before running this script.
 This script use pre-trained language model checkpoint to generate continual text of given text segment.
 Most inference (generation) methods are stochastic process, only some are deterministic.
 
@@ -52,7 +52,6 @@ You can use ``-h`` or ``--help`` options on a specific inference method to get a
 """
 
 import argparse
-import gc
 import sys
 from typing import List
 
@@ -97,38 +96,51 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
   for infer_name, infer_type in lmp.infer.INFER_OPTS.items():
     infer_subparser = subparsers.add_parser(infer_name, description=f'Use {infer_type.__name__} as inference method.')
 
-    # Required arguments.
-    group = infer_subparser.add_argument_group('language model inference arguments')
+    group = infer_subparser.add_argument_group('language model inference hyperparameters')
     group.add_argument(
       '--ckpt',
-      help='Pre-trained language model checkpoint.',
-      required=True,
+      default=-1,
+      help='''
+      Pre-trained language model checkpoint.
+      Set to ``-1`` to use the last checkpoint.
+      Default is ``-1``.
+      ''',
       type=int,
     )
     group.add_argument(
       '--exp_name',
-      help='Pre-trained language model experiment name.',
-      required=True,
+      default='my_model_exp',
+      help='''
+      Pre-trained language model experiment name.
+      Default is ``my_model_exp``.
+      ''',
       type=str,
     )
     group.add_argument(
       '--max_seq_len',
-      help='Maximum sequence length constraint.',
-      required=True,
+      default=32,
+      help='''
+      Maximum sequence length constraint.
+      Default is ``32``.
+      ''',
       type=int,
     )
     group.add_argument(
       '--txt',
-      help='Text segment which the generation process is condition on.',
-      required=True,
+      default='',
+      help='''
+      Text segment which the generation process is condition on.
+      Default is empty string.
+      ''',
       type=str,
     )
-
-    # Optional arguments.
     group.add_argument(
       '--seed',
       default=42,
-      help='Random seed.  Default is ``42``.',
+      help='''
+      Random seed.
+      Default is ``42``.
+      ''',
       type=int,
     )
 
@@ -156,7 +168,7 @@ def main(argv: List[str]) -> None:
   # `args.ckpt` validation.
   lmp.util.validate.raise_if_wrong_ordered(vals=[-1, args.ckpt], val_names=['-1', 'args.ckpt'])
   # `args.txt` validation.
-  lmp.util.validate.raise_if_empty_str(val=args.txt, val_name='args.txt')
+  lmp.util.validate.raise_if_not_instance(val=args.txt, val_name='args.txt', val_type=str)
 
   # Set random seed for reproducibility.
   lmp.util.rand.set_seed(seed=args.seed)
@@ -190,18 +202,6 @@ def main(argv: List[str]) -> None:
 
   # Output generate text.
   print(txt)
-
-  # Free memory.
-  # This is only need for unit test.
-  del args
-  del device
-  del infer
-  del model
-  del model_cfg
-  del tknzr
-  del txt
-  torch.cuda.empty_cache()
-  gc.collect()
 
 
 if __name__ == '__main__':

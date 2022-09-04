@@ -13,7 +13,7 @@ def test_chinese_poem_sample(capsys) -> None:
   lmp.script.sample_dset.main(argv=[ChPoemDset.dset_name])
 
   captured = capsys.readouterr()
-  assert '別路雲初起,離亭葉正飛。所嗟人異雁,不作一行歸。' in captured.out
+  assert '風淅淅。夜雨連雲黑。滴滴。窗外芭蕉燈下客。除非魂夢到鄉國。免被關山隔。憶憶。一句枕前爭忘得。' in captured.out
 
 
 def test_demo_sample(capsys) -> None:
@@ -29,4 +29,4 @@ def test_wiki_text_2_sample(capsys) -> None:
   lmp.script.sample_dset.main(argv=[WikiText2Dset.dset_name])
 
   captured = capsys.readouterr()
-  assert 'Was it a vision , or a waking dream ?' in captured.out
+  assert '= Valkyria Chronicles III =' in captured.out

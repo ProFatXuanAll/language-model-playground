@@ -25,30 +25,48 @@ One can import inference method module as usual Python_ module:
 
   import lmp.infer
 
-Create inference method instance
---------------------------------
+Create inference method instances
+---------------------------------
 After importing :py:mod:`lmp.infer`, one can create inference method instance through the class attributes of :py:mod:`lmp.infer`.
-For example, one can create top-1 inference method :py:class:`lmp.infer.Top1Infer` and top-K inference method :py:class:`lmp.infer.TopKInfer` as follow:
+For example, one can create top-1 inference method :py:class:`~lmp.infer.Top1Infer` and top-K inference method :py:class:`~lmp.infer.TopKInfer` as follow:
 
 .. code-block:: python
 
   import lmp.infer
 
   # Create top-1 inference method instance.
-  top_1_infer = lmp.infer.Top1Infer(max_seq_len=512)
+  top_1_infer = lmp.infer.Top1Infer()
 
   # Create top-K inference method instance.
-  top_k_infer = lmp.infer.TopKInfer(k=5, max_seq_len=512)
+  top_k_infer = lmp.infer.TopKInfer()
 
 The ``max_seq_len`` parameters is provided to avoid non-stopping generation.
 The maximum value of ``max_seq_len`` is ``1024``.
-Different inference methods have different parameters.
+
+.. code-block:: python
+
+  import lmp.infer
+
+  # Create top-1 inference method instance.
+  top_1_infer = lmp.infer.Top1Infer(max_seq_len=128)
+
+  # Create top-K inference method instance.
+  top_k_infer = lmp.infer.TopKInfer(max_seq_len=128)
+
+Different inference methods have different hyperparameters.
 For example, top-K inference method has a parameter ``k`` which represent the first ``k`` possible tokens to sample.
+
+.. code-block:: python
+
+  import lmp.infer
+
+  # Create top-K inference method instance.
+  top_k_infer = lmp.infer.TopKInfer(k=5)
 
 Generate continual text
 -----------------------
 To generate continual text on a given text, one must provide a :term:`language model`, its paired :term:`tokenizer` and a text to an inference method.
-Only :term:`pre-trained` language model can generate meanful text.
+Meaningful generation result can only be achieve through :term:`pre-trained` language models.
 The following example demonstrate the usage of generation without pre-training a language model.
 
 .. code-block:: python
@@ -57,20 +75,9 @@ The following example demonstrate the usage of generation without pre-training a
   import lmp.model
   import lmp.tknzr
 
-  inference = lmp.infer.Top1Infer(max_seq_len=512)
-  tokenizer = lmp.tknzr.CharTknzr(
-    is_uncased=True,
-    max_vocab=-1,
-    min_count=0,
-  )
-  model = lmp.model.ElmanNet(
-    d_emb=10,
-    d_hid=10,
-    n_lyr=1,
-    p_emb=0.1,
-    p_hid=0.1,
-    tknzr=tokenizer,
-  )
+  inference = lmp.infer.Top1Infer()
+  tokenizer = lmp.tknzr.CharTknzr()
+  model = lmp.model.ElmanNet(tknzr=tokenizer)
 
   # Generate continual text.
   generated_txt = inference.gen(model=model, tknzr=tokenizer, txt='abc')
@@ -83,5 +90,7 @@ All available inference methods
   :maxdepth: 1
 
   *
+
+.. footbibliography::
 
 .. _Python: https://www.python.org/

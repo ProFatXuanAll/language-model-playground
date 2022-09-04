@@ -7,7 +7,7 @@ Test target:
 import os
 
 import lmp.dset._ch_poem
-import lmp.util.path
+import lmp.vars
 
 
 def test_download_dataset() -> None:
@@ -18,6 +18,6 @@ def test_download_dataset() -> None:
   assert all(
     map(
       lambda file_path: os.path.exists(file_path),
-      [os.path.join(lmp.util.path.DATA_PATH, f'{ver}.csv') for ver in lmp.dset._ch_poem.ChPoemDset.vers],
+      [os.path.join(lmp.vars.DATA_PATH, f'{ver}.csv') for ver in lmp.dset._ch_poem.ChPoemDset.vers],
     )
   )

@@ -6,3 +6,5 @@
 .. autoclass:: lmp.infer._top_1.Top1Infer
   :members: add_CLI_args, gen
   :show-inheritance:
+
+.. footbibliography::
