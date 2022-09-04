@@ -178,7 +178,19 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
       type=str,
     )
 
-  return parser.parse_args(argv)
+  args = parser.parse_args(argv)
+
+  # `args.batch_size` validation.
+  lmp.util.validate.raise_if_wrong_ordered(vals=[1, args.batch_size], val_names=['1', 'args.batch_size'])
+  # `args.first_ckpt` validation.
+  lmp.util.validate.raise_if_wrong_ordered(vals=[-1, args.first_ckpt], val_names=['-1', 'args.first_ckpt'])
+  # `args.last_ckpt` validation.
+  lmp.util.validate.raise_if_wrong_ordered(vals=[-1, args.last_ckpt], val_names=['-1', 'args.last_ckpt'])
+
+  if args.ver is None:
+    args.ver = lmp.util.dset.DSET_OPTS[args.dset_name].df_ver
+
+  return args
 
 
 def main(argv: List[str]) -> None:
@@ -195,13 +207,6 @@ def main(argv: List[str]) -> None:
   """
   # Parse CLI arguments.
   args = parse_args(argv=argv)
-
-  # `args.batch_size` validation.
-  lmp.util.validate.raise_if_wrong_ordered(vals=[1, args.batch_size], val_names=['1', 'args.batch_size'])
-  # `args.first_ckpt` validation.
-  lmp.util.validate.raise_if_wrong_ordered(vals=[-1, args.first_ckpt], val_names=['-1', 'args.first_ckpt'])
-  # `args.last_ckpt` validation.
-  lmp.util.validate.raise_if_wrong_ordered(vals=[-1, args.last_ckpt], val_names=['-1', 'args.last_ckpt'])
 
   # Set random seed for reproducibility.
   lmp.util.rand.set_seed(seed=args.seed)
@@ -286,6 +291,10 @@ def main(argv: List[str]) -> None:
       best_ppl = ppl
 
   print(f'best checkpoint: {best_ckpt}, best ppl: {best_ppl}')
+
+  # Close tensorboard logger.
+  writer.flush()
+  writer.close()
 
 
 if __name__ == '__main__':

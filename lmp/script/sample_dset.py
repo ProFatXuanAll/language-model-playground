@@ -104,7 +104,12 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
       type=str,
     )
 
-  return parser.parse_args(argv)
+  args = parser.parse_args(argv)
+
+  # `args.idx` validation.
+  lmp.util.validate.raise_if_wrong_ordered(vals=[0, args.idx], val_names=['0', 'args.idx'])
+
+  return args
 
 
 def main(argv: List[str]) -> None:
@@ -121,9 +126,6 @@ def main(argv: List[str]) -> None:
   """
   # Parse CLI arguments.
   args = parse_args(argv=argv)
-
-  # `args.idx` validation.
-  lmp.util.validate.raise_if_wrong_ordered(vals=[0, args.idx], val_names=['0', 'args.idx'])
 
   # Set random seed for reproducibility.
   lmp.util.rand.set_seed(seed=args.seed)

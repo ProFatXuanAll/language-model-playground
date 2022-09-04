@@ -147,7 +147,14 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
     # Add inference method specific arguments.
     infer_type.add_CLI_args(parser=infer_subparser)
 
-  return parser.parse_args(argv)
+  args = parser.parse_args(argv)
+
+  # `args.ckpt` validation.
+  lmp.util.validate.raise_if_wrong_ordered(vals=[-1, args.ckpt], val_names=['-1', 'args.ckpt'])
+  # `args.txt` validation.
+  lmp.util.validate.raise_if_not_instance(val=args.txt, val_name='args.txt', val_type=str)
+
+  return args
 
 
 def main(argv: List[str]) -> None:
@@ -164,11 +171,6 @@ def main(argv: List[str]) -> None:
   """
   # Parse CLI arguments.
   args = parse_args(argv=argv)
-
-  # `args.ckpt` validation.
-  lmp.util.validate.raise_if_wrong_ordered(vals=[-1, args.ckpt], val_names=['-1', 'args.ckpt'])
-  # `args.txt` validation.
-  lmp.util.validate.raise_if_not_instance(val=args.txt, val_name='args.txt', val_type=str)
 
   # Set random seed for reproducibility.
   lmp.util.rand.set_seed(seed=args.seed)

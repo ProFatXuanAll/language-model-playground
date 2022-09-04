@@ -392,7 +392,21 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
     # Add model specific arguments.
     model_type.add_CLI_args(parser=model_subparser)
 
-  return parser.parse_args(argv)
+  args = parser.parse_args(argv)
+
+  # `args.batch_size` validation.
+  lmp.util.validate.raise_if_wrong_ordered(vals=[1, args.batch_size], val_names=['1', 'args.batch_size'])
+  # `args.ckpt_step` validation.
+  lmp.util.validate.raise_if_wrong_ordered(vals=[1, args.ckpt_step], val_names=['1', 'args.ckpt_step'])
+  # `args.log_step` validation.
+  lmp.util.validate.raise_if_wrong_ordered(vals=[1, args.log_step], val_names=['1', 'args.log_step'])
+  # `args.max_norm` validation.
+  lmp.util.validate.raise_if_wrong_ordered(vals=[0, args.max_norm], val_names=['0', 'args.max_norm'])
+
+  if args.ver is None:
+    args.ver = lmp.util.dset.DSET_OPTS[args.dset_name].df_ver
+
+  return args
 
 
 def main(argv: List[str]) -> None:
@@ -409,15 +423,6 @@ def main(argv: List[str]) -> None:
   """
   # Parse CLI arguments.
   args = parse_args(argv=argv)
-
-  # `args.batch_size` validation.
-  lmp.util.validate.raise_if_wrong_ordered(vals=[1, args.batch_size], val_names=['1', 'args.batch_size'])
-  # `args.ckpt_step` validation.
-  lmp.util.validate.raise_if_wrong_ordered(vals=[1, args.ckpt_step], val_names=['1', 'args.ckpt_step'])
-  # `args.log_step` validation.
-  lmp.util.validate.raise_if_wrong_ordered(vals=[1, args.log_step], val_names=['1', 'args.log_step'])
-  # `args.max_norm` validation.
-  lmp.util.validate.raise_if_wrong_ordered(vals=[0, args.max_norm], val_names=['0', 'args.max_norm'])
 
   # Save training configuration.
   lmp.util.cfg.save(args=args, exp_name=args.exp_name)
@@ -547,6 +552,7 @@ def main(argv: List[str]) -> None:
   lmp.util.model.save(ckpt=step, exp_name=args.exp_name, model=copy.deepcopy(model).to('cpu'))
 
   # Close tensorboard logger.
+  writer.flush()
   writer.close()
 
   # Close CLI logger.

@@ -20,7 +20,7 @@ def test_default_values() -> None:
   assert args.max_vocab == -1
   assert args.min_count == 0
   assert args.seed == 42
-  assert args.ver == 'train'
+  assert args.ver == DemoDset.df_ver
 
 
 def test_parse_results(

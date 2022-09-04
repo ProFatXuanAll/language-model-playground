@@ -37,7 +37,7 @@ def test_default_values() -> None:
   stride = 32
   tknzr_exp_name = 'my_tknzr_exp'
   total_step = 10000
-  ver = None
+  ver = DemoDset.df_ver
   warmup_step = 5000
   weight_decay = 0.0
 

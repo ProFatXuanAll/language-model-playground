@@ -86,7 +86,12 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
     type=str,
   )
 
-  return parser.parse_args(argv)
+  args = parser.parse_args(argv)
+
+  # `args.txt` validation.
+  lmp.util.validate.raise_if_not_instance(val=args.txt, val_name='args.txt', val_type=str)
+
+  return args
 
 
 def main(argv: List[str]) -> str:
@@ -103,9 +108,6 @@ def main(argv: List[str]) -> str:
   """
   # Parse CLI arguments.
   args = parse_args(argv=argv)
-
-  # `args.txt` validation.
-  lmp.util.validate.raise_if_empty_str(val=args.txt, val_name='args.txt')
 
   # Set random seed for reproducibility.
   lmp.util.rand.set_seed(seed=args.seed)

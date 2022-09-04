@@ -144,10 +144,10 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
     )
     group.add_argument(
       '--ver',
-      default='train',
+      default=None,
       help='''
       Version of the dataset.
-      Default is ``train``.
+      Default is ``None``.
       ''',
       type=str,
     )
@@ -155,7 +155,12 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
     # Add tokenizer specific arguments.
     tknzr_type.add_CLI_args(parser=tknzr_subparser)
 
-  return parser.parse_args(argv)
+  args = parser.parse_args(argv)
+
+  if args.ver is None:
+    args.ver = lmp.util.dset.DSET_OPTS[args.dset_name].df_ver
+
+  return args
 
 
 def main(argv: List[str]) -> None:

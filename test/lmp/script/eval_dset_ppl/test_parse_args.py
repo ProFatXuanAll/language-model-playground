@@ -15,7 +15,7 @@ def test_default_value() -> None:
   first_ckpt = 0
   last_ckpt = -1
   seed = 42
-  ver = None
+
   for dset_name in DSET_OPTS:
     args = lmp.script.eval_dset_ppl.parse_args(argv=[dset_name])
 
@@ -25,7 +25,7 @@ def test_default_value() -> None:
     assert args.first_ckpt == first_ckpt
     assert args.last_ckpt == last_ckpt
     assert args.seed == seed
-    assert args.ver == ver
+    assert args.ver == DSET_OPTS[dset_name].df_ver
 
 
 def test_parse_results(batch_size: int, exp_name: str, seed: int) -> None:
