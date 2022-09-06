@@ -3,24 +3,26 @@ Elman Net: ``d_emb`` vs ``d_hid`` vs ``n_lyr``
 
 Abstract
 --------
-This goal of this experiment is to show how Elman Net model structure hyperparameters affect training loss and perplexity.
+This goal of this experiment is to show how Elman Net language model's structure hyperparameters affect training loss and perplexity.
 We found that
 
-- Increasing ``d_emb`` makes training loss and perplexity lower.
-- Increasing ``d_hid`` in general makes training loss and perplexity lower.
-- No general conclusion can be made when increasing ``n_lyr``.
-- Lower training loss does not guarentee lower perplexity.
-- All experiments are underfitting.
+- Increasing ``d_emb`` from ``10`` to ``100`` makes training loss and perplexity lower.
+- Increasing ``d_hid`` from ``10`` to ``100`` makes training loss and perplexity lower.
+- When ``d_emb = 100``, increasing ``n_lyr`` from ``1`` to ``2`` (or ``3``) makes training loss and perplexity lower.
+- No overfitting was observed.
+- :math:`100\%` accuracy on training set is possible.
+- Performance are really bad for validation and test sets.
+  There might be problems related to dataset design philosophy.
 
 Environment setup
 -----------------
-We run experiments on Nvidia RTX 2070S.
+We ran experiments on Nvidia RTX 2070S.
 CUDA version is ``11.4`` and CUDA driver version is ``470.129.06``.
 
 Experiment setup
 ----------------
-We change the values of ``d_emb``, ``d_hid`` and ``n_lyr`` and record training loss and perplexity.
-Parameters and their values are list below.
+We changed the values of ``d_emb``, ``d_hid`` and ``n_lyr`` and recorded training loss and perplexity.
+Parameters and their values are listed below.
 
 +-----------+-----------------------+
 | Name      | Values                |
@@ -34,9 +36,9 @@ Parameters and their values are list below.
 
 Tokenizer settings
 ~~~~~~~~~~~~~~~~~~
-We use character tokenizer :py:class:`lmp.tknzr.CharTknzr`.
-We use :py:mod:`lmp.script.train_tknzr` to train our tokenizer.
-Script was called as below:
+We used character tokenizer :py:class:`~lmp.tknzr.CharTknzr`.
+We used :doc:`lmp.script.train_tknzr </script/train_tknzr>` to train our tokenizer.
+Script was executed as below:
 
 .. code-block:: shell
 
@@ -50,9 +52,9 @@ Script was called as below:
 
 Model training settings
 ~~~~~~~~~~~~~~~~~~~~~~~
-We train Elman Net language model :py:class:`lmp.model.ElmanNet` with different model structure hyperparameters.
-We use :py:mod:`lmp.script.train_model` to train language models.
-Script was called as below:
+We trained Elman Net language model :py:class:`~lmp.model.ElmanNet` with different model structure hyperparameters.
+We used :doc:`lmp.script.train_model </script/train_model>` to train language models.
+Script was executed as below:
 
 .. code-block:: shell
 
@@ -60,14 +62,16 @@ Script was called as below:
     --dset_name demo \
     --batch_size 32 \
     --beta1 0.9 \
-    --beta1 0.99 \
+    --beta1 0.999 \
     --ckpt_step 500 \
-    --ctx_win 16 \
     --d_emb D_EMB \
     --d_hid D_HID \
     --dset_name demo \
     --eps 1e-8 \
     --exp_name EXP_NAME \
+    --init_lower -0.1 \
+    --init_upper 0.1 \
+    --label_smoothing 0.0 \
     --log_step 100 \
     --lr 1e-3 \
     --max_norm 1 \
@@ -75,23 +79,27 @@ Script was called as below:
     --n_lyr N_LYR \
     --p_emb 0.0 \
     --p_hid 0.0 \
+    --seed 42 \
+    --stride 35 \
     --tknzr_exp_name demo_tknzr \
     --total_step 30000 \
     --ver train \
     --warmup_step 5000 \
-    --weight_decay 1e-2
+    --weight_decay 0.0
 
 Model evaluation settings
 ~~~~~~~~~~~~~~~~~~~~~~~~~
-We evaluate language model using :py:mod:`lmp.script.eval_dset_ppl`.
-Script was called as below:
+We evaluated language models using :doc:`lmp.script.eval_dset_ppl </script/eval_dset_ppl>`.
+Script was executed as below:
 
 .. code-block:: shell
 
   python -m lmp.script.eval_dset_ppl demo \
     --batch_size 512 \
-    --first_ckpt 0 \
     --exp_name EXP_NAME \
+    --first_ckpt 0 \
+    --last_ckpt -1 \
+    --seed 42 \
     --ver VER
 
 Experiment results
@@ -109,160 +117,239 @@ Training loss
 +-----------+-----------+-----------+------------+------------+------------+------------+------------+------------+
 | ``d_emb`` | ``d_hid`` | ``n_lyr`` | 5k steps   | 10k steps  | 15k steps  | 20k steps  | 25k steps  | 30k steps  |
 +===========+===========+===========+============+============+============+============+============+============+
-| 10        | 10        | 1         | 0.6797     | 0.3004     | 0.2687     | 0.2676     | 0.2642     | 0.2603     |
+| 10        | 10        | 1         | 0.7045     | 0.3986     | 0.3789     | 0.3725     | 0.3659     | 0.3637     |
 +-----------+-----------+-----------+------------+------------+------------+------------+------------+------------+
-| 10        | 10        | 2         | 0.5803     | 0.2753     | 0.2617     | 0.2634     | 0.2586     | 0.2551     |
+| 10        | 10        | 2         | 1.064      | 0.4145     | 0.389      | 0.3768     | 0.3734     | 0.3711     |
 +-----------+-----------+-----------+------------+------------+------------+------------+------------+------------+
-| 10        | 10        | 3         | 0.9195     | 0.3842     | 0.3111     | 0.2963     | 0.2861     | 0.2824     |
+| 10        | 10        | 3         | 2.496      | 0.6864     | 0.5211     | 0.4777     | 0.4678     | 0.4645     |
 +-----------+-----------+-----------+------------+------------+------------+------------+------------+------------+
-| 10        | 100       | 1         | 0.7075     | 0.2624     | 0.254      | 0.2579     | 0.2542     | 0.2515     |
+| 10        | 100       | 1         | 0.5376     | 0.3764     | 0.3696     | 0.3509     | 0.3441     | 0.3423     |
 +-----------+-----------+-----------+------------+------------+------------+------------+------------+------------+
-| 10        | 100       | 2         | 1.419      | 0.2982     | 0.2575     | 0.2597     | 0.2565     | 0.2530     |
+| 10        | 100       | 2         | 1.255      | 0.3774     | 0.37       | 0.369      | 0.3688     | 0.3681     |
 +-----------+-----------+-----------+------------+------------+------------+------------+------------+------------+
-| 10        | 100       | 3         | 1.08       | 0.2599     | 0.254      | 0.2577     | 0.2542     | 0.2519     |
+| 10        | 100       | 3         | 0.5312     | 0.4244     | 0.4145     | 0.3726     | 0.3703     | 0.3656     |
 +-----------+-----------+-----------+------------+------------+------------+------------+------------+------------+
-| 100       | 10        | 1         | 0.2655     | 0.2572     | 0.2545     | 0.2591     | 0.2553     | 0.2497     |
+| 100       | 10        | 1         | 0.3768     | 0.3708     | 0.3679     | 0.3439     | 0.3355     | 0.3322     |
 +-----------+-----------+-----------+------------+------------+------------+------------+------------+------------+
-| 100       | 10        | 2         | 0.2666     | 0.2556     | 0.2527     | 0.2567     | 0.254      | 0.2509     |
+| 100       | 10        | 2         | 0.379      | 0.3697     | 0.369      | 0.3683     | 0.368      | 0.3675     |
 +-----------+-----------+-----------+------------+------------+------------+------------+------------+------------+
-| 100       | 10        | 3         | 0.2646     | 0.2526     | 0.2476     | 0.2536     | 0.2452     | 0.2409     |
+| 100       | 10        | 3         | 0.3784     | 0.3688     | 0.3668     | 0.3658     | 0.3653     | 0.3653     |
 +-----------+-----------+-----------+------------+------------+------------+------------+------------+------------+
-| 100       | 100       | 1         | 0.2448     | 0.2181     | 0.2056     | 0.2016     | 0.1941     | 0.1856     |
+| 100       | 100       | 1         | 0.3099     | 0.2765     | 0.2651     | 0.255      | 0.2443     | 0.2409     |
 +-----------+-----------+-----------+------------+------------+------------+------------+------------+------------+
-| 100       | 100       | 2         | **0.2272** | **0.2153** | 0.205      | **0.1984** | **0.1883** | 0.1759     |
+| 100       | 100       | 2         | 0.3016     | **0.2696** | **0.2574** | **0.2455** | **0.2373** | 0.2363     |
 +-----------+-----------+-----------+------------+------------+------------+------------+------------+------------+
-| 100       | 100       | 3         | 0.2439     | 0.2197     | **0.2049** | 0.2        | 0.1934     | **0.1784** |
+| 100       | 100       | 3         | **0.2950** | 0.2723     | 0.2604     | 0.2462     | 0.2387     | **0.2361** |
 +-----------+-----------+-----------+------------+------------+------------+------------+------------+------------+
 
 Observation 1: Increasing ``d_emb`` from ``10`` to ``100`` makes training loss smaller.
 ***************************************************************************************
-By fixing ``d_hid`` and ``n_lyr``, we compare training loss for ``d_emb = 10`` and ``d_emb = 100``.
-All comparisons (:math:`\dfrac{36}{36}`) show that training loss is smaller when increasing ``d_emb``.
-Thus we conclude that increasing ``d_emb`` from ``10`` to ``100`` makes training loss smaller.
+By fixing ``d_hid`` and ``n_lyr``, we can compare training loss for ``d_emb = 10`` and ``d_emb = 100``.
+All comparisons (:math:`\dfrac{36}{36}`) show that training loss is smaller when increasing ``d_emb`` from ``10`` to ``100``.
 
-Observation 2: Increasing ``d_hid`` from ``10`` to ``100`` in general makes training loss smaller.
-**************************************************************************************************
-By fixing ``d_emb`` and ``n_lyr``, we compare training loss for ``d_hid = 10`` and ``d_hid = 100``.
-:math:`32` out of :math:`36` comparisons show that training loss is smaller when increasing ``d_hid``.
-This suggest that increasing ``d_hid`` from ``10`` to ``100`` in general makes training loss smaller.
+Observation 2: Increasing ``d_hid`` from ``10`` to ``100`` makes training loss smaller.
+***************************************************************************************
+By fixing ``d_emb`` and ``n_lyr``, we can compare training loss for ``d_hid = 10`` and ``d_hid = 100``.
+All comparisons (:math:`\dfrac{36}{36})` show that training loss is smaller when increasing ``d_hid`` from ``10`` to ``100``.
 
-Observation 3: Increasing ``n_lyr`` has not significant behavior.
-*****************************************************************
-By fixing ``d_emb`` and ``d_hid``, we compare training loss for ``n_lyr = 1`` and ``n_lyr = 2``.
-Only :math:`16` out of :math:`24` comparisons show that training loss is smaller when increasing ``n_lyr``.
-Increasing ``n_lyr`` further (from ``1`` to ``3``) does not make training loss smaller, neither.
-Only :math:`13` out of :math:`24` comparisons show that training loss is smaller when increasing ``n_lyr``.
-No significant results can be concluded.
-
-Observation 4: When ``d_emb = 10`` and ``d_hid = 10``, increasing ``n_lyr`` shows inconsistent behavior.
+Observation 3: When ``d_emb = 10``, increasing ``n_lyr`` from ``1`` to ``2`` makes training loss larger.
 ********************************************************************************************************
-This is a further observation of Observation 3.
-By fixing ``d_emb = 10`` and ``d_hid = 10``, we compare training loss for ``n_lyr = 1`` and ``n_lyr = 2``.
-Increasing ``n_lyr`` from ``1`` to ``2`` makes training loss smaller (:math:`\dfrac{6}{6}`).
-But increasing ``n_lyr`` further to ``3`` makes training loss larger (:math:`\dfrac{6}{6}`).
+By fixing ``d_emb = 10`` and ``d_hid``, we can compare training loss for ``n_lyr = 1`` and ``n_lyr = 2``.
+All comparisons (:math:`\dfrac{12}{12})` show that training loss is larger when increasing ``n_lyr`` from ``1`` to ``2``.
 
-Observation 5: When ``d_emb = 10`` and ``d_hid = 100``, increasing ``n_lyr`` in general makes training loss larger.
-*******************************************************************************************************************
-This is a further observation of Observation 3.
-By fixing ``d_emb = 10`` and ``d_hid = 100``, we compare training loss for ``n_lyr = 1`` and ``n_lyr = 2``.
-All comparisons (:math:`\dfrac{6}{6}`) show that training loss is larger when increasing ``d_emb``.
-But increasing ``n_lyr`` further (from ``1`` to ``3``) has a three-way tie (:math:`\dfrac{2}{6}` in all cases).
-No conclusion can be made for the last case.
+Observation 4: When ``d_emb = 10``, increasing ``n_lyr`` from ``1`` to ``3`` makes training loss larger.
+********************************************************************************************************
+By fixing ``d_emb = 10`` and ``d_hid``, we can compare training loss for ``n_lyr = 1`` and ``n_lyr = 3``.
+All comparisons (:math:`\dfrac{12}{12})` show that training loss is larger when increasing ``n_lyr`` from ``1`` to ``3``.
 
-Observation 6: When ``d_emb = 100``, increasing ``n_lyr`` in general makes training loss smaller.
-*************************************************************************************************
-This is a further observation of Observation 3.
-By fixing ``d_emb = 100`` and ``d_hid``, we compare training loss for ``n_lyr = 1`` and ``n_lyr = 2``.
-:math:`10` out of :math:`12` comparisons show that training loss is smaller when increasing ``n_lyr``.
-Increasing ``n_lyr`` further (from ``1`` to ``3``) has similar behavior.
-:math:`11` out of :math:`12` comparisons show that training loss is smaller when increasing ``n_lyr``.
-Thus we conclude that when ``d_emb = 100``, increasing ``n_lyr`` from ``1`` to ``2`` or ``3`` in general makes training loss smaller.
+Observation 5: When ``d_emb = 100``, increasing ``n_lyr`` from ``1`` to ``2`` in general makes training loss smaller.
+*********************************************************************************************************************
+By fixing ``d_emb = 100`` and ``d_hid``, we can compare training loss for ``n_lyr = 1`` and ``n_lyr = 2``.
+:math:`7` out of :math:`12` comparisons show that training loss is smaller when increasing ``n_lyr`` from ``1`` to ``2``.
+Thus we conclude that when ``d_emb = 100``, increasing ``n_lyr`` from ``1`` to ``2`` in general makes training loss smaller.
+
+Observation 6: When ``d_emb = 100``, increasing ``n_lyr`` from ``1`` to ``3`` in general makes training loss smaller.
+*********************************************************************************************************************
+By fixing ``d_emb = 100`` and ``d_hid``, we can compare training loss for ``n_lyr = 1`` and ``n_lyr = 3``.
+:math:`8` out of :math:`12` comparisons show that training loss is smaller when increasing ``n_lyr`` from ``1`` to ``3``.
+Thus we conclude that when ``d_emb = 100``, increasing ``n_lyr`` from ``1`` to ``3`` in general makes training loss smaller.
 
 Observation 7: Increasing ``n_lyr`` must also increase ``d_emb``.
 *****************************************************************
-Combining observations in 3 and 6, it suggest that when increasing ``n_lyr`` one have to increase ``d_emb`` together to make training loss smaller.
+Combining observations from 3 to 6 we conclude that when increasing ``n_lyr`` one have to increase ``d_emb`` together to make training loss smaller.
+
+Observation 8: Minimum loss is achieved when ``d_emb = 100`` and ``n_lyr = 2 or 3``.
+************************************************************************************
+From tensorboard logs we see the two lines are almost identical.
+
+Observation 9: Training loss is still decreasing in all configuration.
+**********************************************************************
+All comparisons (:math:`\dfrac{60}{60}`) show that training loss is still decreasing no matter which configuration is used.
+This suggest that further training may be required.
 
 Perplexity
 ~~~~~~~~~~
 
-+-----------+-----------+-----------+-----------------------------------+-----------------------------------+-----------------------------------+-----------------------------------+-----------------------------------+-----------------------------------+
-| ``d_emb`` | ``d_hid`` | ``n_lyr`` | 5k steps                          | 10k steps                         | 15k steps                         | 20k steps                         | 25k steps                         | 30k steps                         |
-|           |           |           +-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+
-|           |           |           | train     | valid     | test      | train     | valid     | test      | train     | valid     | test      | train     | valid     | test      | train     | valid     | test      | train     | valid     | test      |
-+===========+===========+===========+===========+===========+===========+===========+===========+===========+===========+===========+===========+===========+===========+===========+===========+===========+===========+===========+===========+===========+
-| 10        | 10        | 1         | 4.018     | 3.843     | 4.088     | 4.3       | 4.477     | 5.604     | 5.089     | 6.87      | 9.125     | 5.509     | 10.39     | 11.49     | 6.269     | 11.92     | 15.63     | 6.193     | 11.45     | 15.51     |
-+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+
-| 10        | 10        | 2         | 3.982     | 3.93      | 4.159     | 7.744     | 8.173     | 9.336     | 9.768     | 10.73     | 12.38     | 11.51     | 12.93     | 15.01     | 13.95     | 17.76     | 19.22     | 13.97     | 20.53     | 21.09     |
-+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+
-| 10        | 10        | 3         | 6.264     | 5.988     | 6.717     | 4.343     | 4.243     | 4.997     | 6.022     | 5.515     | 7.005     | 6.083     | 5.624     | 7.152     | 5.967     | 5.551     | 7.047     | 5.948     | 5.538     | 7.052     |
-+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+
-| 10        | 100       | 1         | 15.31     | 13.51     | 14.48     | 17.59     | 26.52     | 25.85     | 22.3      | 41.9      | 38.11     | 29.22     | 54.44     | 49.2      | 34.27     | 58.01     | 55.97     | 35.77     | 61.97     | 59.23     |
-+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+
-| 10        | 100       | 2         | 4.966     | 4.97      | 5.185     | 3.73      | 5.63      | 5.664     | 4.588     | 7.856     | 8.175     | 5.477     | 9.059     | 9.221     | 5.84      | 10.03     | 10.7      | 5.508     | 9.083     | 10.84     |
-+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+
-| 10        | 100       | 3         | 6.595     | 6.539     | 7.029     | 4.432     | 5.727     | 6.07      | 5.102     | 11.02     | 9.23      | 5.019     | 12.7      | 9.523     | 7.362     | 22.49     | 15.26     | 7.648     | 24.01     | 15.71     |
-+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+
-| 100       | 10        | 1         | **1.908** | 3.488     | 3.363     | **1.952** | 4.906     | 4.121     | **1.956** | 5.859     | 4.569     | **1.999** | 6.75      | 4.96      | **2.188** | 7.108     | 5.354     | **2.356** | 6.069     | 5.02      |
-+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+
-| 100       | 10        | 2         | 6.111     | 7.492     | 8.515     | 14.74     | 20.2      | 22.35     | 17.99     | 25.92     | 28.24     | 17.49     | 25.42     | 27.74     | 17.68     | 25.85     | 28.29     | 17.74     | 26.2      | 28.54     |
-+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+
-| 100       | 10        | 3         | 14.63     | 12.38     | 19.23     | 22.73     | 22.84     | 31.88     | 16.78     | 17.8      | 22.16     | 20.7      | 29.82     | 32.95     | 23.67     | 36.28     | 39.5      | 26.19     | 46.51     | 47.41     |
-+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+
-| 100       | 100       | 1         | 1.973     | **2.852** | **2.71**  | 1.964     | **2.803** | **2.952** | 2.278     | **3.138** | **3.347** | 2.4       | **3.486** | **3.493** | 2.51      | **3.78**  | **3.606** | 2.761     | **4.136** | **3.958** |
-+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+
-| 100       | 100       | 2         | 2.352     | 2.996     | 3.287     | 3.153     | 3.791     | 4.143     | 4.231     | 5.226     | 5.794     | 5.232     | 6.432     | 7.074     | 4.833     | 6.33      | 6.718     | 4.973     | 6.591     | 6.86      |
-+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+
-| 100       | 100       | 3         | 3.86      | 4.436     | 5.248     | 3.268     | 4.05      | 4.488     | 3.119     | 4.434     | 4.581     | 4.087     | 5.606     | 5.724     | 4.285     | 5.923     | 6.036     | 4.578     | 6.311     | 6.376     |
-+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+
++-----------+-----------+-----------+----------------------------------+----------------------------------+-----------------------------------+-----------------------------------+-----------------------------------+-----------------------------------+
+| ``d_emb`` | ``d_hid`` | ``n_lyr`` | 5k steps                         | 10k steps                        | 15k steps                         | 20k steps                         | 25k steps                         | 30k steps                         |
+|           |           |           +----------+-----------+-----------+-----------+-----------+----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+
+|           |           |           | train    | valid     | test      | train     | valid     | test     | train     | valid     | test      | train     | valid     | test      | train     | valid     | test      | train     | valid     | test      |
++===========+===========+===========+==========+===========+===========+===========+===========+==========+===========+===========+===========+===========+===========+===========+===========+===========+===========+===========+===========+===========+
+| 10        | 10        | 1         | 1.179    | 1.18      | 1.181     | 1.068     | 1.066     | 1.064    | 1.06      | 1.052     | 1.053     | 1.058     | 1.047     | 1.048     | 1.056     | 1.045     | 1.046     | 1.056     | 1.044     | 1.047     |
++-----------+-----------+-----------+----------+-----------+-----------+-----------+-----------+----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+
+| 10        | 10        | 2         | 1.224    | 1.233     | 1.219     | 1.069     | 1.071     | 1.071    | 1.055     | 1.048     | 1.049     | 1.054     | 1.044     | 1.046     | 1.054     | 1.042     | 1.042     | 1.054     | 1.052     | 1.048     |
++-----------+-----------+-----------+----------+-----------+-----------+-----------+-----------+----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+
+| 10        | 10        | 3         | 1.229    | 1.229     | 1.229     | 1.116     | 1.115     | 1.114    | 1.059     | 1.06      | 1.059     | 1.054     | 1.053     | 1.051     | 1.054     | 1.052     | 1.05      | 1.054     | 1.052     | 1.05      |
++-----------+-----------+-----------+----------+-----------+-----------+-----------+-----------+----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+
+| 10        | 100       | 1         | 1.13     | 1.119     | 1.117     | 1.058     | 1.047     | 1.048    | 1.054     | 1.041     | 1.039     | 1.052     | 1.037     | 1.037     | 1.051     | 1.038     | 1.036     | 1.051     | 1.038     | 1.036     |
++-----------+-----------+-----------+----------+-----------+-----------+-----------+-----------+----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+
+| 10        | 100       | 2         | 1.272    | 1.253     | 1.252     | 1.058     | 1.044     | 1.049    | 1.055     | 1.042     | 1.044     | 1.054     | 1.04      | 1.041     | 1.054     | 1.039     | 1.039     | 1.054     | 1.04      | 1.039     |
++-----------+-----------+-----------+----------+-----------+-----------+-----------+-----------+----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+
+| 10        | 100       | 3         | 1.131    | 1.129     | 1.127     | 1.08      | 1.064     | 1.069    | 1.076     | 1.059     | 1.06      | 1.056     | 1.04      | 1.041     | 1.054     | 1.041     | 1.04      | 1.054     | 1.042     | 1.039     |
++-----------+-----------+-----------+----------+-----------+-----------+-----------+-----------+----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+
+| 100       | 10        | 1         | 1.057    | 1.047     | 1.046     | 1.054     | 1.044     | 1.041    | 1.054     | 1.04      | 1.041     | 1.053     | 1.044     | 1.043     | 1.053     | 1.044     | 1.039     | 1.053     | 1.043     | 1.04      |
++-----------+-----------+-----------+----------+-----------+-----------+-----------+-----------+----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+
+| 100       | 10        | 2         | 1.056    | 1.039     | 1.04      | 1.054     | 1.039     | 1.038    | 1.054     | 1.043     | 1.041     | 1.054     | 1.043     | 1.042     | 1.054     | 1.044     | 1.042     | 1.054     | 1.042     | 1.041     |
++-----------+-----------+-----------+----------+-----------+-----------+-----------+-----------+----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+
+| 100       | 10        | 3         | 1.056    | 1.039     | 1.039     | 1.055     | 1.039     | 1.041    | 1.054     | 1.038     | 1.038     | 1.054     | 1.037     | 1.038     | 1.054     | 1.037     | 1.038     | 1.054     | 1.037     | 1.039     |
++-----------+-----------+-----------+----------+-----------+-----------+-----------+-----------+----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+
+| 100       | 100       | 1         | 1.053    | **1.032** | 1.035     | 1.048     | 1.027     | 1.033    | 1.045     | 1.025     | 1.03      | 1.042     | 1.023     | 1.03      | 1.039     | 1.021     | 1.029     | 1.037     | 1.021     | 1.029     |
++-----------+-----------+-----------+----------+-----------+-----------+-----------+-----------+----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+
+| 100       | 100       | 2         | **1.05** | **1.032** | **1.033** | **1.045** | 1.026     | **1.03** | 1.042     | 1.023     | 1.028     | 1.038     | 1.021     | **1.027** | **1.034** | **1.019** | **1.026** | 1.034     | **1.018** | **1.026** |
++-----------+-----------+-----------+----------+-----------+-----------+-----------+-----------+----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+
+| 100       | 100       | 3         | **1.05** | **1.032** | **1.033** | **1.045** | **1.025** | **1.03** | **1.04**  | **1.022** | **1.027** | **1.036** | **1.02**  | **1.027** | **1.034** | **1.019** | **1.026** | **1.033** | **1.018** | **1.026** |
++-----------+-----------+-----------+----------+-----------+-----------+-----------+-----------+----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+
 
-Observation 1: Increasing ``d_emb`` in general makes perplexity smaller.
-************************************************************************
-By fixing ``d_hid`` and ``n_lyr``, we compare perplexity for ``d_emb = 10`` and ``d_emb = 100``.
-Most comparisons (:math:`\dfrac{71}{108}`) show that perplexity is smaller when increasing ``d_emb``.
+Observation 1: Increasing ``d_emb`` from ``10`` to ``100`` makes perplexity smaller.
+************************************************************************************
+By fixing ``d_hid`` and ``n_lyr``, we can compare perplexity for ``d_emb = 10`` and ``d_emb = 100``.
+Almost all comparisons (:math:`\dfrac{100}{108}`) show that perplexity is smaller when increasing ``d_emb`` from ``10`` to ``100``.
 
-Observation 2: When ``d_hid = 10`` and ``n_lyr = 2 or 3``, increasing ``d_emb`` makes perplexity larger.
-********************************************************************************************************
-This is a further observation of Observation 1.
-By fixing ``d_hid = 10`` and ``n_lyr = 2 or 3``, we compare perplexity for ``d_emb = 10`` and ``d_emb = 100``.
-All comparisons (:math:`\dfrac{36}{36}`) show that perplexity is larger when increase ``d_emb``.
+Observation 2: Increasing ``d_hid`` from ``10`` to ``100`` makes perplexity smaller.
+************************************************************************************
+By fixing ``d_emb`` and ``n_lyr``, we can compare perplexity for ``d_hid = 10`` and ``d_hid = 100``.
+Almost all comparisons (:math:`\dfrac{96}{108}`) show that perplexity is smaller when increasing ``d_hid`` from ``10`` to ``100``.
 
-Observation 3: Increasing ``d_hid`` in general makes perplexity smaller.
-************************************************************************
-By fixing ``d_emb`` and ``n_lyr``, we compare perplexity for ``d_hid = 10`` and ``d_hid = 100``.
-More than half of the comparisons (:math:`\dfrac{63}{108}`) show that perplexity is smaller when increasing ``d_hid``.
+Observation 3: When ``d_emb = 10``, increasing ``n_lyr`` from ``1`` to ``2`` in general makes perplexity larger.
+****************************************************************************************************************
+By fixing ``d_emb = 10`` and ``d_hid``, we can compare perplexity for ``n_lyr = 1`` and ``n_lyr = 2``.
+Most comparisons (:math:`\dfrac{25}{36}`) show that perplexity is larger when increasing ``n_lyr`` from ``1`` to ``2``.
 
-Observation 4: When ``d_emb = 10`` and ``n_lyr = 1 or 3``, increasing ``d_hid`` makes perplexity larger.
-********************************************************************************************************
-This is a further observation of Observation 3.
-By fixing ``d_emb = 10`` and ``n_lyr = 1 or 3``, we compare perplexity for ``d_hid = 10`` and ``d_hid = 100``.
-Almost all comparisons (:math:`\dfrac{18}{18}` and :math:`\dfrac{17}{18}`) show that perplexity is larger when increasing ``d_hid``.
+Observation 4: When ``d_emb = 10``, increasing ``n_lyr`` from ``1`` to ``3`` makes perplexity larger.
+*****************************************************************************************************
+By fixing ``d_emb = 10`` and ``d_hid``, we can compare perplexity for ``n_lyr = 1`` and ``n_lyr = 3``.
+Almost all comparisons (:math:`\dfrac{32}{36}`) show that perplexity is larger when increasing ``n_lyr`` from ``1`` to ``3``.
 
-Observation 5: Increasing ``n_lyr`` in general makes perplexity larger.
-***********************************************************************
-By fixing ``d_emb`` and ``n_lyr``, we compare perplexity for ``n_lyr = 1`` and ``n_lyr = 2``.
-Most comparisons (:math:`\dfrac{54}{72}`) show that perplexity is larger when increasing ``n_lyr``.
-Increasing ``n_lyr`` further (from ``1`` to ``3``) has similar behavior.
-More than half of comparisons (:math:`\dfrac{42}{72}`) show that perplexity is larger when increasing ``n_lyr``.
+Observation 5: When ``d_emb = 100``, increasing ``n_lyr`` from ``1`` to ``2`` in general makes perplexity smaller.
+******************************************************************************************************************
+By fixing ``d_emb = 100`` and ``d_hid``, we can compare perplexity for ``n_lyr = 1`` and ``n_lyr = 2``.
+Most comparisons (:math:`\dfrac{27}{36}`) show that perplexity is smaller when increasing ``n_lyr`` from ``1`` to ``2``.
 
-Observation 6: Increasing ``n_lyr`` from ``1`` to ``3`` has inconsistent behavior.
-**********************************************************************************
-This is a further observation of Observation 5.
-We fix ``d_hid`` and compare perplexity for ``n_lyr = 1`` and ``n_lyr = 3``.
-When ``d_emb = 10``, most comparisons (:math:`\dfrac{30}{36}`) show that perplexity is smaller when increasing ``n_lyr``.
-But when ``d_emb = 100``, all comparisons (:math:`\dfrac{36}{36}`) show that perplexity is larger when increasing ``n_lyr``.
+Observation 6: When ``d_emb = 100``, increasing ``n_lyr`` from ``1`` to ``3`` makes perplexity smaller.
+*******************************************************************************************************
+By fixing ``d_emb = 100`` and ``d_hid``, we can compare perplexity for ``n_lyr = 1`` and ``n_lyr = 3``.
+Almost all comparisons (:math:`\dfrac{30}{36}`) show that perplexity is smaller when increasing ``n_lyr`` from ``1`` to ``3``.
 
-Observation 7: Elman Net language models may still underfitting.
-****************************************************************
-For all configuration, perplexity has the increasing tendency across all dataset.
-This is unexpected when loss is convergent.
+Observation 7: No overfitting seems to happen.
+**********************************************
+On validation and test set, most comparisons (:math:`\dfrac{84}{120}`) show that perplexity is still decreasing in most configurations.
 
-Observation 8: Low perplexity happens at ``5k`` steps.
-******************************************************
-We use ``--warmup_step 5000`` to train our language model.
-This might suggest that we use larger ``--warmup_step`` to tune Elman Net language models.
-By observation 7, it seems that ``--total_step`` does not need to adjust.
+Observation 8: Minimum perplexity on training set is achieved at ``30k`` step when ``d_emb = 100``, ``d_hid = 100`` and ``n_lyr = 3``.
+**************************************************************************************************************************************
+
+- On training set, minimum perplexity :math:`1.033` is achieved at ``30k`` step when ``d_emb = 100``, ``d_hid = 100`` and ``n_lyr = 3``.
+- On validation set, minimum perplexity :math:`1.018` is achieved at ``30k`` step when ``d_emb = 100``, ``d_hid = 100`` and ``n_lyr = 3``.
+- On training set, minimum perplexity :math:`1.026` is achieved at ``25k`` and ``30k`` step when ``d_emb = 100``, ``d_hid = 100`` and ``n_lyr = 3``.
+
+Observation 9: Only when setting ``d_emb = 100`` and ``d_hid = 100`` perplexity is lower than :math:`1.05`.
+***********************************************************************************************************
+Later in the accuracy experiments we see that only when perplexity is lower than :math:`1.05` accuracy can be higher than :math:`90 \%`.
+
+Accuracy
+--------
+We use the following script to calculate accuracy on demo dataset:
+
+.. code-block:: python
+
+  import re
+
+  import torch
+
+  import lmp.dset
+  import lmp.infer
+  import lmp.model
+  import lmp.script
+  import lmp.tknzr
+  import lmp.util.model
+  import lmp.util.tknzr
+
+  device = torch.device('cuda')
+  tknzr = lmp.util.tknzr.load(exp_name='demo_tknzr')
+  for d_emb in [10, 100]:
+    for d_hid in [10, 100]:
+      for n_lyr in [1, 2, 3]:
+        for ckpt in [5000, 10000, 15000, 20000, 25000, 30000]:
+          for ver in lmp.dset.DemoDset.vers:
+            dset = lmp.dset.DemoDset(ver=ver)
+            exp_name = f'demo-d_emb-{d_emb}-d_hid-{d_hid}-n_lyr-{n_lyr}'
+            model = lmp.util.model.load(exp_name=exp_name, ckpt=ckpt).to(device)
+            infer = lmp.infer.Top1Infer(max_seq_len=35)
+
+            correct = 0
+            for spl in dset:
+              match = re.match(r'If you add (\d+) to (\d+) you get (\d+) .', spl)
+              input = f'If you add {match.group(1)} to {match.group(2)} you get '
+
+              output = infer.gen(model=model, tknzr=tknzr, txt=input)
+
+              if input + output == spl:
+                correct += 1
+
+            print(f'{exp_name}, ckpt: {ckpt}, ver: {ver}, acc: {correct / len(dset) * 100 :.2f}%')
+
+
++-----------+-----------+-----------+-------------------------------+------------------------------+------------------------------+------------------------------+---------------------------+-------------------------+
+| ``d_emb`` | ``d_hid`` | ``n_lyr`` | 5k steps                      | 10k steps                    | 15k steps                    | 20k steps                    | 25k steps                 | 30k steps               |
+|           |           |           +-----------+-----------+-------+-----------+-----------+------+-----------+-----------+------+-----------+-----------+------+-----------+--------+------+---------+--------+------+
+|           |           |           | train     | valid     | test  | train     | valid     | test | train     | valid     | test | train     | valid     | test | train     | valid  | test | train   | valid  | test |
++===========+===========+===========+===========+===========+=======+===========+===========+======+===========+===========+======+===========+===========+======+===========+========+======+=========+========+======+
+| 10        | 10        | 1         | 1.56      | 1.56      | 0     | 1.64      | 2         | 0    | 1.92      | 2         | 0    | 1.84      | 2         | 0    | 1.6       | 2      | 0    | 1.56    | 2      | 0    |
++-----------+-----------+-----------+-----------+-----------+-------+-----------+-----------+------+-----------+-----------+------+-----------+-----------+------+-----------+--------+------+---------+--------+------+
+| 10        | 10        | 2         | 0         | 0         | 0     | 1.36      | 1.36      | 0    | 1.36      | 1.36      | 0    | 1.96      | 1.96      | 0    | 1.88      | 1.68   | 0    | 2       | 1.8    | 0    |
++-----------+-----------+-----------+-----------+-----------+-------+-----------+-----------+------+-----------+-----------+------+-----------+-----------+------+-----------+--------+------+---------+--------+------+
+| 10        | 10        | 3         | 0         | 0         | 0     | 0         | 0         | 0    | 1.76      | 1.44      | 0    | 1.76      | 1.76      | 0    | 1.76      | 1.76   | 0    | 1.32    | 1.32   | 0    |
++-----------+-----------+-----------+-----------+-----------+-------+-----------+-----------+------+-----------+-----------+------+-----------+-----------+------+-----------+--------+------+---------+--------+------+
+| 10        | 100       | 1         | 1.92      | 1.92      | 0     | 1.96      | 1.96      | 0    | 1.96      | 1.96      | 0    | 3.04      | 2.8       | 0    | 2.76      | 2.92   | 0    | 4.6     | 3      | 0    |
++-----------+-----------+-----------+-----------+-----------+-------+-----------+-----------+------+-----------+-----------+------+-----------+-----------+------+-----------+--------+------+---------+--------+------+
+| 10        | 100       | 2         | 0         | 0         | 0     | 1.96      | 1.96      | 0    | 1.92      | 1.92      | 0    | 1.92      | 1.92      | 0    | 1.92      | 1.92   | 0    | 1.92    | 1.92   | 0    |
++-----------+-----------+-----------+-----------+-----------+-------+-----------+-----------+------+-----------+-----------+------+-----------+-----------+------+-----------+--------+------+---------+--------+------+
+| 10        | 100       | 3         | 1.76      | 1.76      | 0     | 1.92      | 1.92      | 0    | 1.76      | 1.76      | 0    | 1.76      | 1.76      | 0    | 1.92      | 1.92   | 0    | 2       | 1.96   | 0    |
++-----------+-----------+-----------+-----------+-----------+-------+-----------+-----------+------+-----------+-----------+------+-----------+-----------+------+-----------+--------+------+---------+--------+------+
+| 100       | 10        | 1         | 1.92      | 1.92      | 0     | 1.76      | 1.76      | 0    | 1.88      | 1.96      | 0    | 5.08      | 2.68      | 0    | 8.2       | 2.68   | 0    | 9.68    | 3      | 0    |
++-----------+-----------+-----------+-----------+-----------+-------+-----------+-----------+------+-----------+-----------+------+-----------+-----------+------+-----------+--------+------+---------+--------+------+
+| 100       | 10        | 2         | 1.4       | 1.4       | 0     | 1.96      | 1.96      | 0    | 1.64      | 1.72      | 0    | 1.88      | 1.88      | 0    | 1.96      | 1.96   | 0    | 1.96    | 1.96   | 0    |
++-----------+-----------+-----------+-----------+-----------+-------+-----------+-----------+------+-----------+-----------+------+-----------+-----------+------+-----------+--------+------+---------+--------+------+
+| 100       | 10        | 3         | 1.84      | 1.76      | 0     | 1.76      | 1.76      | 0    | 1.92      | 1.68      | 0    | 2         | 1.84      | 0    | 2         | 1.2    | 0    | 2       | 1.32   | 0    |
++-----------+-----------+-----------+-----------+-----------+-------+-----------+-----------+------+-----------+-----------+------+-----------+-----------+------+-----------+--------+------+---------+--------+------+
+| 100       | 100       | 1         | 15        | 2.12      | 0     | **74.96** | 13.44     | 0    | 69.52     | 20.84     | 0    | 87.52     | 17.12     | 0    | 98.92     | 19.60  | 0    | 99.24   | 20.88  | 0    |
++-----------+-----------+-----------+-----------+-----------+-------+-----------+-----------+------+-----------+-----------+------+-----------+-----------+------+-----------+--------+------+---------+--------+------+
+| 100       | 100       | 2         | 15.36     | 10.88     | 0     | 55.88     | **24.76** | 0    | 62.20     | **34.96** | 0    | 90.16     | 32.88     | 0    | 99.76     | 34.92  | 0    | 99.96   | 34.28  | 0    |
++-----------+-----------+-----------+-----------+-----------+-------+-----------+-----------+------+-----------+-----------+------+-----------+-----------+------+-----------+--------+------+---------+--------+------+
+| 100       | 100       | 3         | **29.6**  | **22.64** | 0     | 46.72     | 19.72     | 0    | **83.20** | 30.28     | 0    | **97.32** | **33.60** | 0    | **99.84** | **35** | 0    | **100** | **35** | 0    |
++-----------+-----------+-----------+-----------+-----------+-------+-----------+-----------+------+-----------+-----------+------+-----------+-----------+------+-----------+--------+------+---------+--------+------+
+
+Observation 1: :math:`100\%` accuracy is possible on training set.
+------------------------------------------------------------------
+This is achieved using ``d_emb = 100``, ``d_hid = 100`` and ``n_lyr = 3``.
+
+Observation 2: Models are not generalized.
+------------------------------------------
+Test set always have :math:`0\%` accuracy.
+Validation set do not have accuracy higher than :math:`50\%`.
+This might be the problem of dataset design.
 
 Future work
 -----------
-We will try to make Elman Net overfitting.
-We will do it by increasing ``--warmup_step`` and adding dropout.
+We will try to fix demo dataset.
+
+.. footbiliography::

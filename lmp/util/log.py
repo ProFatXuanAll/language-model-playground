@@ -2,14 +2,14 @@
 
 import os
 
-# Typeshed for `tensorboardX` is not available, we ignore type check on `tensorboardX`.
-import tensorboardX  # type: ignore
+# Typeshed for `tensorboard` is not available, we ignore type check on `tensorboard`.
+import torch.utils.tensorboard  # type: ignore
 
 import lmp.util.validate
 import lmp.vars
 
 
-def get_tb_logger(exp_name: str) -> tensorboardX.SummaryWriter:
+def get_tb_logger(exp_name: str) -> torch.utils.tensorboard.SummaryWriter:
   """Get tensorboard logger.
 
   Create tensorboard for performance log visualization.
@@ -22,7 +22,7 @@ def get_tb_logger(exp_name: str) -> tensorboardX.SummaryWriter:
 
   Returns
   -------
-  tensorboardX.SummaryWriter
+  torch.utils.tensorboard.SummaryWriter
     Tensorboard logger instance.
   """
   # `exp_name` validation.
@@ -36,4 +36,4 @@ def get_tb_logger(exp_name: str) -> tensorboardX.SummaryWriter:
   if not os.path.exists(log_dir):
     os.makedirs(log_dir)
 
-  return tensorboardX.SummaryWriter(log_dir=log_dir)
+  return torch.utils.tensorboard.SummaryWriter(log_dir=log_dir)

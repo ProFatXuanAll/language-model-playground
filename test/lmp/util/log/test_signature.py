@@ -3,7 +3,7 @@ r"""Test :py:mod:`lmp.util.log` signature."""
 import inspect
 from inspect import Parameter, Signature
 
-import tensorboardX
+import torch.utils.tensorboard
 
 import lmp.util.log
 
@@ -21,5 +21,5 @@ def test_module_function():
         name='exp_name',
       ),
     ],
-    return_annotation=tensorboardX.SummaryWriter,
+    return_annotation=torch.utils.tensorboard.SummaryWriter,
   )
