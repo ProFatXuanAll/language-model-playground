@@ -5,8 +5,8 @@ import torch
 from lmp.vars import PAD_TKID
 
 
-def nplogp(batch_tkids: torch.Tensor, batch_tkids_pd: torch.Tensor, use_log2: bool = True) -> torch.Tensor:
-  r"""Calculate :math:`-p \log p` on batch token ids.
+def nll(batch_tkids: torch.Tensor, batch_tkids_pd: torch.Tensor, use_log2: bool = True) -> torch.Tensor:
+  r"""Calculate negative log-likelihood :math:`-\log p` on batch token ids.
 
   Let :math:`x = \pa{x^1, \dots, x^B}` be a batch of token sequences.
   Suppose that each token sequence has length :math:`S+1` and each token is defined in a vocabulary with size :math:`V`.
@@ -18,7 +18,7 @@ def nplogp(batch_tkids: torch.Tensor, batch_tkids_pd: torch.Tensor, use_log2: bo
 
   .. math::
 
-    R_{b,t} = -\Pr\pa{x_{t+1}^b \vert x_1^b, \dots, x_t^b} \log_2 \Pr\pa{x_{t+1} \vert x_1^b, \dots,  x_t^b}.
+    R_{b,t} = -\log_2 \Pr\pa{x_{t+1} \vert x_1^b, \dots,  x_t^b}.
 
   If :math:`x_{t+1}^b` is padding token, then we assign :math:`R_{b,t}` to zero.
 
@@ -37,7 +37,7 @@ def nplogp(batch_tkids: torch.Tensor, batch_tkids_pd: torch.Tensor, use_log2: bo
   Returns
   -------
   torch.Tensor
-    :math:`-p \log p` tensor.
+    :math:`-\log p` tensor.
     Returned tensor has shape :math:`(B, S)` and ``dtype == torch.float``.
   """
   # Get target token id's probabilities.
@@ -50,5 +50,5 @@ def nplogp(batch_tkids: torch.Tensor, batch_tkids_pd: torch.Tensor, use_log2: bo
   mask = batch_tkids != PAD_TKID
 
   if use_log2:
-    return mask * -batch_tkids_p * batch_tkids_p.log2()
-  return mask * -batch_tkids_p * batch_tkids_p.log()
+    return mask * -batch_tkids_p.log2()
+  return mask * -batch_tkids_p.log()

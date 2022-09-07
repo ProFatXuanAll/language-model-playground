@@ -494,7 +494,7 @@ def main(argv: List[str]) -> None:
   step = 0
   while step < args.total_step:
     # Loop through dataset by mini-batches.
-    for batch_cur_tkids, batch_next_tkids in data_loader:
+    for _, batch_cur_tkids, batch_next_tkids in data_loader:
       # Calculate next token prediction loss.
       loss, _ = model.cal_loss(
         batch_cur_tkids=batch_cur_tkids.to(device),

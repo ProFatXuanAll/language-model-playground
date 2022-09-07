@@ -177,7 +177,7 @@ def main(argv: List[str]) -> None:
   # Naming it as BPC is simply because the convention.
   batch_prev_states = None
   bpc = 0.0
-  for ctx_idx in range(0, model_cfg.max_seq_len, model_cfg.max_seq_len):
+  for ctx_idx in range(0, S, model_cfg.max_seq_len):
     # Fetch context window.
     ctx_batch_tkids = batch_tkids[..., ctx_idx:ctx_idx + model_cfg.max_seq_len + 1]
 
@@ -195,11 +195,11 @@ def main(argv: List[str]) -> None:
       batch_prev_states=batch_prev_states,
     )
 
-    # Calculate -p log p.
-    nplogp = lmp.util.metric.nplogp(batch_tkids=batch_next_tkids, batch_tkids_pd=batch_tkids_pd, use_log2=True)
+    # Calculate negative log-likelihood -log(p).
+    nll = lmp.util.metric.nll(batch_tkids=batch_next_tkids, batch_tkids_pd=batch_tkids_pd, use_log2=True)
 
     # Record BPC.
-    bpc += (nplogp / S).sum().item()
+    bpc += (nll / S).sum().item()
 
     # Update hidden states.
     batch_prev_states = batch_cur_states

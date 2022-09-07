@@ -168,6 +168,16 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
       type=int,
     )
     dset_subparser.add_argument(
+      '--stride',
+      default=-1,
+      help='''
+      Number of overlapping tokens between context windows.
+      Set to ``-1`` to use model training configuration.
+      Default is ``-1``.
+      ''',
+      type=int,
+    )
+    dset_subparser.add_argument(
       '--ver',
       default=None,
       help=f'''
@@ -219,6 +229,15 @@ def main(argv: List[str]) -> None:
   # Load pre-trained model configuration.
   model_cfg = lmp.util.cfg.load(exp_name=args.exp_name)
 
+  # Use model configuration.
+  if args.stride == -1:
+    args.stride = model_cfg.stride
+  else:
+    lmp.util.validate.raise_if_wrong_ordered(
+      vals=[1, args.stride, model_cfg.max_seq_len],
+      val_names=['1', 'args.stride', 'model_cfg.max_seq_len'],
+    )
+
   # Load pre-trained tokenizer instance.
   tknzr = lmp.util.tknzr.load(exp_name=model_cfg.tknzr_exp_name)
 
@@ -230,7 +249,7 @@ def main(argv: List[str]) -> None:
   lm_format_dset = lmp.util.dset.LMFormatDset(
     dset=dset,
     max_seq_len=model_cfg.max_seq_len,
-    stride=model_cfg.max_seq_len,
+    stride=args.stride,
     tknzr=tknzr,
   )
 
@@ -262,22 +281,21 @@ def main(argv: List[str]) -> None:
     # In practice we can use word or subword as token, so we shall call it bit-per-token instead of BPC.
     # Naming it as BPC is simply because the convention.
     bpc = 0.0
-    for batch_cur_tkids, batch_next_tkids in tqdm(data_loader):
+    for batch_is_not_ctx, batch_cur_tkids, batch_next_tkids in tqdm(data_loader):
       # Get next token id probability distribution.
       batch_tkids_pd, _ = model.pred(
         batch_cur_tkids=batch_cur_tkids.to(device),
         batch_prev_states=None,
       )
 
-      # Calculate -p log p.
-      nplogp = lmp.util.metric.nplogp(
-        batch_tkids=batch_next_tkids.to(device),
-        batch_tkids_pd=batch_tkids_pd,
-        use_log2=True,
-      )
+      # Calculate negative log-likelihood -log(p).
+      nll = lmp.util.metric.nll(batch_tkids=batch_next_tkids.to(device), batch_tkids_pd=batch_tkids_pd, use_log2=True)
+
+      # Only tokens not used as context will contribute to BPC.
+      masked_nll = nll * batch_is_not_ctx.to(device)
 
       # Record BPC.
-      bpc += (nplogp / lm_format_dset.n_tk).sum().item()
+      bpc += (masked_nll / lm_format_dset.n_tk).sum().item()
 
     # Convert BPC to perplexity.
     ppl = pow(2, bpc)

@@ -32,9 +32,11 @@ def test_formatting_chinese_poem(max_seq_len: int, stride: int) -> None:
     for idx in range(dset_size):
       spl = lm_format_dset[idx]
       assert isinstance(spl, tuple)
-      assert len(spl) == 2
+      assert len(spl) == 3
 
-      cur_tkids, next_tkids = spl
+      is_not_ctx, cur_tkids, next_tkids = spl
+      assert isinstance(is_not_ctx, torch.Tensor)
+      assert is_not_ctx.dtype == torch.bool
       assert isinstance(cur_tkids, torch.Tensor)
       assert cur_tkids.dtype == torch.long
       assert isinstance(next_tkids, torch.Tensor)
@@ -67,9 +69,11 @@ def test_formatting_demo(max_seq_len: int, stride: int) -> None:
     for idx in range(dset_size):
       spl = lm_format_dset[idx]
       assert isinstance(spl, tuple)
-      assert len(spl) == 2
+      assert len(spl) == 3
 
-      cur_tkids, next_tkids = spl
+      is_not_ctx, cur_tkids, next_tkids = spl
+      assert isinstance(is_not_ctx, torch.Tensor)
+      assert is_not_ctx.dtype == torch.bool
       assert isinstance(cur_tkids, torch.Tensor)
       assert cur_tkids.dtype == torch.long
       assert isinstance(next_tkids, torch.Tensor)
@@ -102,9 +106,11 @@ def test_formatting_wiki_text_2(max_seq_len: int, stride: int) -> None:
     for idx in range(dset_size):
       spl = lm_format_dset[idx]
       assert isinstance(spl, tuple)
-      assert len(spl) == 2
+      assert len(spl) == 3
 
-      cur_tkids, next_tkids = spl
+      is_not_ctx, cur_tkids, next_tkids = spl
+      assert isinstance(is_not_ctx, torch.Tensor)
+      assert is_not_ctx.dtype == torch.bool
       assert isinstance(cur_tkids, torch.Tensor)
       assert cur_tkids.dtype == torch.long
       assert isinstance(next_tkids, torch.Tensor)
@@ -137,9 +143,11 @@ def test_formatting_wnli(max_seq_len: int, stride: int) -> None:
     for idx in range(dset_size):
       spl = lm_format_dset[idx]
       assert isinstance(spl, tuple)
-      assert len(spl) == 2
+      assert len(spl) == 3
 
-      cur_tkids, next_tkids = spl
+      is_not_ctx, cur_tkids, next_tkids = spl
+      assert isinstance(is_not_ctx, torch.Tensor)
+      assert is_not_ctx.dtype == torch.bool
       assert isinstance(cur_tkids, torch.Tensor)
       assert cur_tkids.dtype == torch.long
       assert isinstance(next_tkids, torch.Tensor)

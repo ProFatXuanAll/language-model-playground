@@ -10,9 +10,9 @@ import lmp.util.metric
 
 def test_module_method() -> None:
   """Ensure module methods' signatures."""
-  assert hasattr(lmp.util.metric, 'nplogp')
-  assert inspect.isfunction(lmp.util.metric.nplogp)
-  assert inspect.signature(lmp.util.metric.nplogp) == Signature(
+  assert hasattr(lmp.util.metric, 'nll')
+  assert inspect.isfunction(lmp.util.metric.nll)
+  assert inspect.signature(lmp.util.metric.nll) == Signature(
     parameters=[
       Parameter(
         annotation=torch.Tensor,

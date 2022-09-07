@@ -8,11 +8,15 @@ import torch.utils.data
 import lmp.util.validate
 from lmp.dset import DSET_OPTS, BaseDset
 from lmp.tknzr import BaseTknzr
-from lmp.vars import EOS_TKID, PAD_TKID
+from lmp.vars import EOS_TKID
 
 
 class LMFormatDset(torch.utils.data.Dataset):
-  """Covert dataset samples into token id sequence.
+  """Convert dataset into language model training format.
+
+  Each dataset samples is converted into token id sequence.
+  Token id sequence is splitted into multiple subsequences.
+  All subsequences have the same length.
 
   Parameters
   ----------
@@ -26,14 +30,15 @@ class LMFormatDset(torch.utils.data.Dataset):
   ----------
   batch_cur_tkids: list[torch.Tensor]
     Language model input token ids.
+  batch_is_not_ctx: list[torch.Tensor]
+    Boolean tensor indicate whether token ids are used as conditional context or not.
+    Conditional context means tokens that are overlapping with other context windows.
   batch_next_tkids: list[torch.Tensor]
     Language model prediction target.
   n_tk: int
-    Total number of tokens in the dataset.
-    This number will be affected by `stride`.
-    Overlapping tokens are repeatly counted.
-    To get the correct number of tokens in the dataset, set ``stride == max_seq_len``.
-    Padding tokens are not included.
+    Number of tokens in the dataset.
+    Overlapping tokens are not repeatly counted.
+    Padding tokens are not counted.
   """
 
   def __init__(self, *, dset: BaseDset, max_seq_len: int, stride: int, tknzr: BaseTknzr):
@@ -46,16 +51,25 @@ class LMFormatDset(torch.utils.data.Dataset):
     # `tknzr` validation.
     lmp.util.validate.raise_if_not_instance(val=tknzr, val_name='tknzr', val_type=BaseTknzr)
 
+    self.batch_is_not_ctx = []
     self.batch_cur_tkids = []
     self.batch_next_tkids = []
     self.n_tk = 0
+
+    # `ctx_len` is the length of conditional context token ids.
+    # `tgt_len` is the length of target token ids.
+    ctx_len = max(0, max_seq_len - stride)
+    tgt_len = max_seq_len - ctx_len
 
     # Slice token sequence into context windows with each length equals to `max_seq_len`.
     # Context windows shorter than `max_seq_len` are padded at the end.
     # Context windows may have overlaps.
     # Number of overlapping tokens are determined by `stride`.
     for txt in dset:
+      # Encode text and record number of tokens.
       tkids = tknzr.enc(txt=txt)
+      self.n_tk += len(tkids)
+
       for idx in range(0, len(tkids), stride):
         cur_tkids = tknzr.pad_to_max(max_seq_len=max_seq_len, tkids=tkids[idx:idx + max_seq_len])
         next_tkids = tknzr.pad_to_max(max_seq_len=max_seq_len, tkids=tkids[idx + 1:idx + 1 + max_seq_len])
@@ -71,10 +85,13 @@ class LMFormatDset(torch.utils.data.Dataset):
         self.batch_cur_tkids.append(torch.LongTensor(cur_tkids))
         self.batch_next_tkids.append(torch.LongTensor(next_tkids))
 
-        # Record total number of tokens.
-        self.n_tk += torch.sum(self.batch_cur_tkids[-1] != PAD_TKID).item()
+        # All token are not used as conditional context at the start since it is just started.
+        if idx == 0:
+          self.batch_is_not_ctx.append(torch.tensor([True] * max_seq_len))
+        else:
+          self.batch_is_not_ctx.append(torch.tensor([False] * ctx_len + [True] * tgt_len))
 
-  def __getitem__(self, idx: int) -> Tuple[torch.Tensor, torch.Tensor]:
+  def __getitem__(self, idx: int) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
     """Sample context window using index.
 
     Parameters
@@ -84,12 +101,13 @@ class LMFormatDset(torch.utils.data.Dataset):
 
     Returns
     -------
-    tuple[torch.Tensor, torch.Tensor]
+    tuple[torch.Tensor, torch.Tensor, torch.Tensor]
       The context window whose index equals to ``idx``.
-      The first tensor in the returned tuple represent the current context window.
-      The second tensor in the returned tuple represent the prediction target of the current context window.
+      The first tensor in the returned tuple represent whether a token is used as conditional context.
+      The second tensor in the returned tuple represent the current context window.
+      The third tensor in the returned tuple represent the prediction target of the current context window.
     """
-    return self.batch_cur_tkids[idx], self.batch_next_tkids[idx]
+    return self.batch_is_not_ctx[idx], self.batch_cur_tkids[idx], self.batch_next_tkids[idx]
 
   def __len__(self) -> int:
     """Get dataset size.

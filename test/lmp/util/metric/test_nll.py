@@ -1,7 +1,7 @@
-"""Test -p log(p) calculation.
+"""Test -log(p) calculation.
 
 Test target:
-- :py:meth:`lmp.util.metric.nplogp`.
+- :py:meth:`lmp.util.metric.nll`.
 """
 
 import pytest
@@ -40,7 +40,7 @@ def batch_tkids_pd(batch_tkids: torch.Tensor) -> torch.Tensor:
 
 
 @pytest.fixture
-def batch_nplogp(batch_tkids: torch.Tensor, batch_tkids_pd: torch.Tensor) -> torch.Tensor:
+def batch_nll(batch_tkids: torch.Tensor, batch_tkids_pd: torch.Tensor) -> torch.Tensor:
   """Expect perplexity result.
 
   Must has shape ``(B) == (2)``.
@@ -50,17 +50,17 @@ def batch_nplogp(batch_tkids: torch.Tensor, batch_tkids_pd: torch.Tensor) -> tor
     [0.9, 0.8, 0.7, 1.0, 1.0],
     [0.4, 0.3, 0.2, 0.1, 0.1],
   ])
-  return -p * p.log2()
+  return -p.log2()
 
 
-def test_calculate_result(batch_nplogp: torch.Tensor, batch_tkids: torch.Tensor, batch_tkids_pd: torch.Tensor) -> None:
+def test_calculate_result(batch_nll: torch.Tensor, batch_tkids: torch.Tensor, batch_tkids_pd: torch.Tensor) -> None:
   """Test perplexity calcuation result."""
   assert torch.all(
     torch.isclose(
-      input=lmp.util.metric.nplogp(
+      input=lmp.util.metric.nll(
         batch_tkids=batch_tkids,
         batch_tkids_pd=batch_tkids_pd,
       ),
-      other=batch_nplogp,
+      other=batch_nll,
     )
   )
