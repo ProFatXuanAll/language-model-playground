@@ -112,7 +112,7 @@ The following example use whitespace tokenizer :py:class:`~lmp.tknzr.WsTknzr` to
     --exp_name my_tknzr_exp \
     --is_uncased \
     --max_vocab -1 \
-    --min_count 10 \
+    --min_count 0 \
     --ver train
 
 .. seealso::
@@ -148,10 +148,10 @@ The following example train a LSTM (2000 version) based language model :py:class
   python -m lmp.script.train_model LSTM-2000 \
     --batch_size 64 \
     --beta1 0.9 \
-    --beta2 0.99 \
+    --beta2 0.999 \
     --ckpt_step 1000 \
-    --d_blk 64 \
-    --d_emb 300 \
+    --d_blk 1 \
+    --d_emb 1000 \
     --dset_name wiki-text-2 \
     --eps 1e-8 \
     --exp_name my_model_exp \
@@ -164,16 +164,16 @@ The following example train a LSTM (2000 version) based language model :py:class
     --log_step 200 \
     --lr 1e-4 \
     --max_norm 1 \
-    --max_seq_len 16 \
-    --n_blk 8 \
+    --max_seq_len 32 \
+    --n_blk 1000 \
     --n_lyr 1 \
     --p_emb 0.1 \
     --p_hid 0.1 \
-    --stride 16 \
+    --stride 32 \
     --tknzr_exp_name my_tknzr_exp \
-    --total_step 50000 \
+    --total_step 10000 \
     --ver train \
-    --warmup_step 10000 \
+    --warmup_step 5000 \
     --weight_decay 1e-2
 
 We log the training process with tensorboard_.
@@ -220,16 +220,15 @@ Use the following script to launch tensorboard:
 
 6. Generate Continual Text
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
-We use :term:`pre-trained` :term:`language model` to generate continual text conditioned on given text segment ``I 'm on the highway to hell``.
+We use :term:`pre-trained` :term:`language model` to generate continual text conditioned on given text segment ``A very good``.
 
 .. code-block:: shell
 
-  python -m lmp.script.gen_txt top-P \
+  python -m lmp.script.gen_txt top-1 \
     --ckpt -1 \
     --exp_name my_model_exp \
-    --max_seq_len 128 \
-    --p 0.9 \
-    --txt "I 'm on the highway to hell"
+    --max_seq_len 32 \
+    --txt "A very good"
 
 .. seealso::
 

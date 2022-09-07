@@ -16,20 +16,18 @@ class DemoDset(BaseDset):
   where :math:`a, b` are integers within :math:`0` to :math:`99` (inclusive).
 
   Here we describe the dataset in detail.
-  Let :math:`E = \set{0, 2, 4, \dots, 98}` be the set of non-negative even numbers which are less than :math:`100`, and
-  let :math:`O = \set{1, 3, 5, \dots, 99}` be the set of positive odd numbers which are less than :math:`100`.
+  Let :math:`N = \set{0, 1, \dots, 99}` be the set of non-negative integers which are less than :math:`100`.
+  Let :math:`a, b \in N`.
 
-  +-----------+---------------------------------------+--------------------+--------------------+
-  | Version   | Design Philosophy                     | Range of :math:`a` | Range of :math:`b` |
-  +-----------+---------------------------------------+--------------------+--------------------+
-  | ``train`` | Train the model.                      | :math:`a \in E`    | :math:`b \in O`    |
-  +-----------+---------------------------------------+--------------------+--------------------+
-  | ``valid`` | Check whether model learn commutative | :math:`a \in O`    | :math:`b \in E`    |
-  |           | law of 2-digits integer addition.     |                    |                    |
-  +-----------+---------------------------------------+--------------------+--------------------+
-  | ``test``  | Check whether model learn to          | :math:`a = b` and                       |
-  |           | generalize 2-digits addition.         | :math:`a \in E \cup O`                  |
-  +-----------+---------------------------------------+-----------------------------------------+
+  +-----------+-------------------------------------------------------------------------+---------------+
+  | Version   | Design Philosophy                                                       | Constraint    |
+  +-----------+-------------------------------------------------------------------------+---------------+
+  | ``train`` | Training set.                                                           | :math:`a < b` |
+  +-----------+-------------------------------------------------------------------------+---------------+
+  | ``valid`` | Check whether model learn commutative law on 2-digits integer addition. | :math:`a > b` |
+  +-----------+-------------------------------------------------------------------------+---------------+
+  | ``test``  | Check whether model learn to generalize 2-digits addition.              | :math:`a = b` |
+  +-----------+-------------------------------------------------------------------------+---------------+
 
   Parameters
   ----------
@@ -73,23 +71,24 @@ class DemoDset(BaseDset):
     # Demo text template.
     temp = 'If you add {} to {} you get {} .'
 
-    # Number ranges in demo text.
-    even = list(range(0, 100, 2))
-    odd = list(range(1, 100, 2))
+    train = []
+    valid = []
+    test = []
+    for a in range(100):
+      for b in range(100):
+        if a < b:
+          train.append(temp.format(str(a), str(b), str(a + b)))
+        elif a > b:
+          valid.append(temp.format(str(a), str(b), str(a + b)))
+        else:
+          test.append(temp.format(str(a), str(b), str(a + b)))
 
     if self.ver == 'train':
-      for num_1 in even:
-        for num_2 in odd:
-          self.spls.append(temp.format(str(num_1), str(num_2), str(num_1 + num_2)))
+      self.spls = train
     elif self.ver == 'valid':
-      # Validation set is used to test commutitive law.
-      for num_1 in odd:
-        for num_2 in even:
-          self.spls.append(temp.format(str(num_1), str(num_2), str(num_1 + num_2)))
+      self.spls = valid
     else:
-      # Test set is used to test multiplication
-      for num in even + odd:
-        self.spls.append(temp.format(str(num), str(num), str(2 * num)))
+      self.spls = test
 
     # Normalize dataset.
     self.spls = list(map(self.norm, self.spls))

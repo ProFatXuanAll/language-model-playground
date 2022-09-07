@@ -140,10 +140,10 @@ For example, we can train a LSTM (2000 version) language model :py:class:`~lmp.m
   python -m lmp.script.train_model LSTM-2000 \
     --batch_size 64 \
     --beta1 0.9 \
-    --beta2 0.99 \
+    --beta2 0.999 \
     --ckpt_step 1000 \
-    --d_blk 64 \
-    --d_emb 300 \
+    --d_blk 1 \
+    --d_emb 1000 \
     --dset_name wiki-text-2 \
     --eps 1e-8 \
     --exp_name my_model_exp \
@@ -156,16 +156,16 @@ For example, we can train a LSTM (2000 version) language model :py:class:`~lmp.m
     --log_step 200 \
     --lr 1e-4 \
     --max_norm 1 \
-    --max_seq_len 16 \
-    --n_blk 8 \
+    --max_seq_len 32 \
+    --n_blk 1000 \
     --n_lyr 1 \
     --p_emb 0.1 \
     --p_hid 0.1 \
-    --stride 16 \
+    --stride 32 \
     --tknzr_exp_name my_tknzr_exp \
     --ver train \
-    --total_step 50000 \
-    --warmup_step 10000 \
+    --total_step 10000 \
+    --warmup_step 5000 \
     --weight_decay 1e-2
 
 Language model arguments
@@ -296,16 +296,15 @@ One use the script :doc:`lmp.script.gen_txt </script/gen_txt>` and select a deco
 
 .. code-block:: shell
 
-  python -m lmp.script.gen_txt top-P \
+  python -m lmp.script.gen_txt top-1 \
     --ckpt -1 \
     --exp_name my_model_exp \
-    --max_seq_len 128 \
-    --p 0.9 \
-    --txt "I 'm on the highway to hell"
+    --max_seq_len 32 \
+    --txt "A very good"
 
 The first argument is the name of inference method.
 Different inference method have different arguments.
-In the example above, the top-P inference method must specify the probability threshold ``--p`` to perform inference.
+For example, the top-P :py:class:`~lmp.infer.TopPInfer` inference method must specify the probability threshold ``--p`` to perform inference.
 As in evaluating language model, one specify :term:`experiment name` and :term:`checkpoint` to perform generation.
 When setting ``--ckpt -1``, one use the last checkpoint to generate continual text.
 The conditional text to perform generation is give by ``--txt``.
