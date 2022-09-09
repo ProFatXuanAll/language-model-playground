@@ -304,6 +304,12 @@ def min_count(request) -> int:
   return request.param
 
 
+@pytest.fixture(params=[10, 100])
+def n_merge(request) -> int:
+  """Number of merge operation."""
+  return request.param
+
+
 #######################################################################################################################
 # Text fixtures.
 #######################################################################################################################

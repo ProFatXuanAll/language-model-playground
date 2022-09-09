@@ -7,8 +7,31 @@ Test target:
 import os
 
 import lmp.util.tknzr
-from lmp.tknzr import CharTknzr, WsTknzr
+from lmp.tknzr import BPETknzr, CharTknzr, WsTknzr
 
+
+def test_bpe_tknzr(
+  exp_name: str,
+  is_uncased: bool,
+  max_vocab: int,
+  min_count: int,
+  n_merge: int,
+  tknzr_file_path: str,
+) -> None:
+  """Ensure consistency between save and load."""
+  tknzr = BPETknzr(is_uncased=is_uncased, max_vocab=max_vocab, min_count=min_count, n_merge=n_merge)
+  tknzr.build_vocab(batch_txt=['a', 'b', 'c'])
+  lmp.util.tknzr.save(exp_name=exp_name, tknzr=tknzr)
+  assert os.path.exists(tknzr_file_path)
+
+  load_tknzr = lmp.util.tknzr.load(exp_name=exp_name)
+  assert isinstance(load_tknzr, BPETknzr)
+  assert load_tknzr.is_uncased == tknzr.is_uncased
+  assert load_tknzr.max_vocab == tknzr.max_vocab
+  assert load_tknzr.min_count == tknzr.min_count
+  assert load_tknzr.n_merge == tknzr.n_merge
+  assert load_tknzr.tk2id == tknzr.tk2id
+  assert load_tknzr.id2tk == tknzr.id2tk
 
 def test_char_tknzr(
   exp_name: str,

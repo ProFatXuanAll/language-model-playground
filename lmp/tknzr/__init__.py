@@ -21,10 +21,12 @@ True
 from typing import Dict, Final, List, Type
 
 from lmp.tknzr._base import BaseTknzr
+from lmp.tknzr._bpe import BPETknzr
 from lmp.tknzr._char import CharTknzr
 from lmp.tknzr._ws import WsTknzr
 
 ALL_TKNZRS: Final[List[Type[BaseTknzr]]] = [
+  BPETknzr,
   CharTknzr,
   WsTknzr,
 ]

@@ -141,8 +141,8 @@ class BaseTknzr(abc.ABC):
       default=-1,
       help='''
       Maximum vocabulary size.
-      Set to `-1` to include any tokens.
-      Default is `-1`.
+      Set to ``-1`` to include any tokens.
+      Default is ``-1``.
       ''',
       type=int,
     )
@@ -151,8 +151,8 @@ class BaseTknzr(abc.ABC):
       default=0,
       help='''
       Minimum token occurrence count for a token to be included in tokenizer's vocabulary.
-      Set to `0` to disable.
-      Default is `0`.
+      Set to ``0`` to disable.
+      Default is ``0``.
       ''',
       type=int,
     )
@@ -206,7 +206,7 @@ class BaseTknzr(abc.ABC):
 
     max_id = max(self.tk2id.values()) + 1
     for tk, tk_count in c.most_common():
-      # Stop adding tokens when pass vocabulary size limit.
+      # Stop adding tokens when vocabulary size limit is exceeded.
       # Add as many tokens into vocabulary as possible when `self.max_vocab == -1`.
       if self.max_vocab != -1 and max_id >= self.max_vocab:
         break

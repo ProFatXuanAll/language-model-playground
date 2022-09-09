@@ -71,7 +71,7 @@ def test_module_method() -> None:
         name='idx',
       ),
     ],
-    return_annotation=Tuple[torch.Tensor, torch.Tensor],
+    return_annotation=Tuple[torch.Tensor, torch.Tensor, torch.Tensor],
   )
 
   assert hasattr(lmp.util.dset.LMFormatDset, '__len__')

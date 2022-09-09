@@ -18,7 +18,7 @@ SP_TKS_PTTN: Final[re.Pattern] = re.compile('(' + '|'.join(map(re.escape, SP_TKS
 class CharTknzr(BaseTknzr):
   """Character tokenizer class.
 
-  Tokenize text into list of characters.
+  Tokenize text into list of unicode characters.
 
   Parameters
   ----------
@@ -27,11 +27,11 @@ class CharTknzr(BaseTknzr):
     Mainly used by :py:meth:`~norm`.
   max_vocab: int, default: -1
     Tokenizer's maximum vocabulary size.
-    Set to ``-1`` to include as many characters in vocabulary as possible.
+    Set to ``-1`` to include as many unicode characters in vocabulary as possible.
     Mainly used by :py:meth:`~build_vocab`.
   min_count: int, default: 0
     Minimum character occurrence counts.
-    Characters have occurrence counts less than ``min_count`` will not be added to tokenizer's vocabulary.
+    Unicode characters have occurrence counts less than ``min_count`` will not be added to tokenizer's vocabulary.
     Mainly used by :py:meth:`~build_vocab`.
   kwargs: typing.Any, optional
     Useless parameter.
@@ -70,8 +70,8 @@ class CharTknzr(BaseTknzr):
   def tknz(self, txt: str) -> List[str]:
     """Convert text into character list.
 
-    Text is first normalized then splitted into character list.
-    Each special token is treated as a character and thus is not splitted.
+    Text is first normalized then splitted into unicode character list.
+    Each special token is treated as an unicode character and thus is not splitted.
 
     Parameters
     ----------
@@ -81,12 +81,12 @@ class CharTknzr(BaseTknzr):
     Returns
     -------
     list[str]
-      List of normalized characters.
+      List of normalized unicode characters.
 
     See Also
     --------
     ~dtknz
-      Convert character list back to text.
+      Convert unicode character list back to text.
     ~norm
       Text normalization.
 
@@ -114,25 +114,25 @@ class CharTknzr(BaseTknzr):
     return tks
 
   def dtknz(self, tks: List[str]) -> str:
-    """Convert character list back to text.
+    """Convert unicode character list back to text.
 
-    Character list is joined without whitespaces.
+    Unicode character list is joined without whitespaces.
     Returned text is normalized.
 
     Parameters
     ----------
     tks: list[str]
-      Character list to be joint.
+      Unicode character list to be joint.
 
     Returns
     -------
     str
-      Normalized text without additional whitespaces other than the ones in the character list.
+      Normalized text without additional whitespaces other than the ones in the unicode character list.
 
     See Also
     --------
     ~tknz
-      Convert text into characters.
+      Convert text into unicode characters.
     ~norm
       Text normalization.
 
