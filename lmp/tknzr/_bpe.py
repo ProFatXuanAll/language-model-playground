@@ -4,8 +4,8 @@ Attributes
 ----------
 EOW: typing.Final[str]
   Special token indicating end-of-word.
-SP_TKS_PTTN: typing.Final[re.Pattern]
-  Special tokens matching pattern.
+SPLIT_PTTN: typing.Final[re.Pattern]
+  Special tokens and whitespaces matching pattern.
 """
 
 import argparse
@@ -15,7 +15,8 @@ import typing
 from collections import Counter
 from typing import Any, ClassVar, Dict, Final, Iterable, List, Tuple
 
-from tqdm import tqdm
+# Typeshed for `tqdm` is not available, we ignore type check on `tqdm`.
+from tqdm import tqdm  # type: ignore
 
 import lmp.util.validate
 from lmp.tknzr._base import BaseTknzr

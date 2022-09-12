@@ -9,7 +9,7 @@ import unicodedata
 
 import pytest
 
-from lmp.tknzr._bpe import BPETknzr, EOW_TK
+from lmp.tknzr._bpe import EOW_TK, BPETknzr
 from lmp.vars import BOS_TK, EOS_TK, PAD_TK, UNK_TK
 
 

@@ -129,7 +129,7 @@ class ElmanNet(BaseModel):
     Embeddings dropout probability :math:`\pEmb`.
   p_hid: float, default: 0.0
     Hidden units dropout probability :math:`\pHid`.
-  tknzr: lmp.tknzr.BaseTknzr
+  tknzr: ~lmp.tknzr.BaseTknzr
     Tokenizer instance.
 
   Attributes
@@ -154,11 +154,11 @@ class ElmanNet(BaseModel):
     Dropout with probability :math:`\pHid` is applied to output.
     Input shape: :math:`(B, S, \dHid)`.
     Output shape: :math:`(B, S, \dEmb)`.
-  init_lower: float, default: -0.1
+  init_lower: float
     Uniform distribution lower bound :math:`\init_l` used to initialize model parameters.
-  init_upper: float, default: 0.1
+  init_upper: float
     Uniform distribution upper bound :math:`\init_u` used to initialize model parameters.
-  label_smoothing: float, default: 0.0
+  label_smoothing: float
     Smoothing applied on prediction target :math:`x_{t+1}`.
   loss_fn: torch.nn.CrossEntropyLoss
     Loss function to be optimized.
@@ -626,7 +626,7 @@ class ElmanNetLayer(nn.Module):
 
     \begin{align*}
       & \algoProc{\ElmanNetLayer}\pa{x, h_0}                               \\
-      & \indent{1} S \algoEq x.\text{size}(1)                              \\
+      & \indent{1} S \algoEq x.\sz{1}                                      \\
       & \indent{1} \algoFor{t \in \set{1, \dots, S}}                       \\
       & \indent{2} h_t \algoEq \tanh\pa{W \cdot x_t + U \cdot h_{t-1} + b} \\
       & \indent{1} \algoEndFor                                             \\

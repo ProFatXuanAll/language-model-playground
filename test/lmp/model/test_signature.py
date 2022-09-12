@@ -10,12 +10,14 @@ def test_module_attribute() -> None:
   assert hasattr(lmp.model, 'LSTM1997')
   assert hasattr(lmp.model, 'LSTM2000')
   assert hasattr(lmp.model, 'LSTM2002')
+  assert hasattr(lmp.model, 'TransEnc')
   assert hasattr(lmp.model, 'ALL_MODELS')
   assert lmp.model.ALL_MODELS == [
     lmp.model.ElmanNet,
     lmp.model.LSTM1997,
     lmp.model.LSTM2000,
     lmp.model.LSTM2002,
+    lmp.model.TransEnc,
   ]
   assert hasattr(lmp.model, 'MODEL_OPTS')
   assert lmp.model.MODEL_OPTS == {
@@ -23,6 +25,7 @@ def test_module_attribute() -> None:
     lmp.model.LSTM1997.model_name: lmp.model.LSTM1997,
     lmp.model.LSTM2000.model_name: lmp.model.LSTM2000,
     lmp.model.LSTM2002.model_name: lmp.model.LSTM2002,
+    lmp.model.TransEnc.model_name: lmp.model.TransEnc,
   }
   assert hasattr(lmp.model, 'SUB_MODELS')
   assert lmp.model.SUB_MODELS == [
@@ -30,4 +33,7 @@ def test_module_attribute() -> None:
     lmp.model.LSTM1997Layer,
     lmp.model.LSTM2000Layer,
     lmp.model.LSTM2002Layer,
+    lmp.model.MultiHeadAttnLayer,
+    lmp.model.PosEncLayer,
+    lmp.model.TransEncLayer,
   ]

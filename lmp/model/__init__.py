@@ -27,12 +27,14 @@ from lmp.model._elman_net import ElmanNet, ElmanNetLayer
 from lmp.model._lstm_1997 import LSTM1997, LSTM1997Layer
 from lmp.model._lstm_2000 import LSTM2000, LSTM2000Layer
 from lmp.model._lstm_2002 import LSTM2002, LSTM2002Layer
+from lmp.model._trans_enc import MultiHeadAttnLayer, PosEncLayer, TransEnc, TransEncLayer
 
 ALL_MODELS: Final[List[Type[BaseModel]]] = [
   ElmanNet,
   LSTM1997,
   LSTM2000,
   LSTM2002,
+  TransEnc,
 ]
 MODEL_OPTS: Final[Dict[str, Type[BaseModel]]] = {m.model_name: m for m in ALL_MODELS}
 SUB_MODELS: Final[List[Type[torch.nn.Module]]] = [
@@ -40,4 +42,7 @@ SUB_MODELS: Final[List[Type[torch.nn.Module]]] = [
   LSTM1997Layer,
   LSTM2000Layer,
   LSTM2002Layer,
+  MultiHeadAttnLayer,
+  PosEncLayer,
+  TransEncLayer,
 ]

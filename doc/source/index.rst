@@ -10,6 +10,8 @@ We have implemented several :term:`language models` including:
   (See :py:class:`~lmp.model.ElmanNet`.)
 - LSTM and its variations.
   (See :py:class:`~lmp.model.LSTM1997`, :py:class:`~lmp.model.LSTM2000` and :py:class:`~lmp.model.LSTM2002`.)
+- Transformer encoder.
+  (See :py:class:`~lmp.model.TransEnc`)
 - And more to come!
 
 You can easily create these models instance using module :py:mod:`lmp.model`.
@@ -21,15 +23,12 @@ You can also train these models directly using CLI script :doc:`lmp.script.train
 
   model = lmp.model.ElmanNet(...)  # parameters go in here.
   model = lmp.model.LSTM1997(...)  # parameters go in here.
+  model = lmp.model.TransEnc(...)  # parameters go in here.
 
 .. seealso::
 
   :doc:`lmp.model </model/index>`
     All available language models.
-
-.. todo::
-
-  Add Transformer models.
 
 We have written serveral **scripts** to demonstrate typical training pipline of :term:`language models` and demonstrate furthur usage on language models:
 

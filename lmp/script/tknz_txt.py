@@ -94,7 +94,7 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
   return args
 
 
-def main(argv: List[str]) -> str:
+def main(argv: List[str]) -> List[str]:
   """Script entry point.
 
   Parameters

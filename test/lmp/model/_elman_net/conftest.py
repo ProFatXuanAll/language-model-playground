@@ -1,4 +1,4 @@
-"""Setup fixtures for testing :py:class:`lmp.model._elman_net.ElmanNet`."""
+"""Setup fixtures for testing :py:class:`lmp.model._elman_net`."""
 
 import pytest
 import torch

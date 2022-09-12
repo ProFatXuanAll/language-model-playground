@@ -1,7 +1,7 @@
-"""Test training :py:class:`lmp.model.LSTM1997`.
+"""Test training :py:class:`lmp.model.TransEnc`.
 
 Test target:
-- :py:meth:`lmp.model.LSTM1997.forward`
+- :py:meth:`lmp.model.TransEnc.forward`
 - :py:meth:`lmp.script.train_model.main`.
 """
 
@@ -16,10 +16,10 @@ import lmp.util.cfg
 import lmp.util.model
 import lmp.vars
 from lmp.dset import DemoDset
-from lmp.model import LSTM1997
+from lmp.model import TransEnc
 
 
-def test_train_lstm_1997_on_demo(
+def test_train_trans_enc_on_demo(
   batch_size: int,
   beta1: float,
   beta2: float,
@@ -27,22 +27,21 @@ def test_train_lstm_1997_on_demo(
   cfg_file_path: str,
   ckpt_dir_path: str,
   ckpt_step: int,
-  d_blk: int,
-  d_emb: int,
+  d_ff: int,
+  d_k: int,
+  d_model: int,
+  d_v: int,
   eps: float,
   exp_name: str,
-  init_ib: float,
   init_lower: float,
-  init_ob: float,
   init_upper: float,
   label_smoothing: float,
   log_step: int,
   lr: float,
   max_norm: float,
   max_seq_len: int,
-  n_blk: int,
+  n_head: int,
   n_lyr: int,
-  p_emb: float,
   p_hid: float,
   seed: int,
   stride: int,
@@ -52,9 +51,9 @@ def test_train_lstm_1997_on_demo(
   warmup_step: int,
   weight_decay: float,
 ) -> None:
-  """Successfully train model :py:class:`lmp.model.LSTM1997` on :py:class:`lmp.dset.DemoDset` dataset."""
+  """Successfully train model :py:class:`lmp.model.TransEnc` on :py:class:`lmp.dset.DemoDset` dataset."""
   argv = [
-    LSTM1997.model_name,
+    TransEnc.model_name,
     '--batch_size',
     str(batch_size),
     '--beta1',
@@ -63,22 +62,22 @@ def test_train_lstm_1997_on_demo(
     str(beta2),
     '--ckpt_step',
     str(ckpt_step),
-    '--d_blk',
-    str(d_blk),
-    '--d_emb',
-    str(d_emb),
+    '--d_ff',
+    str(d_ff),
+    '--d_k',
+    str(d_k),
+    '--d_model',
+    str(d_model),
+    '--d_v',
+    str(d_v),
     '--dset_name',
     DemoDset.dset_name,
     '--eps',
     str(eps),
     '--exp_name',
     exp_name,
-    '--init_ib',
-    str(init_ib),
     '--init_lower',
     str(init_lower),
-    '--init_ob',
-    str(init_ob),
     '--init_upper',
     str(init_upper),
     '--label_smoothing',
@@ -91,13 +90,11 @@ def test_train_lstm_1997_on_demo(
     str(max_norm),
     '--max_seq_len',
     str(max_seq_len),
-    '--n_blk',
-    str(n_blk),
+    '--n_head',
+    str(n_head),
     '--n_lyr',
     str(n_lyr),
-    '--p_emb',
-    str(p_emb),
-    '--p_hid',
+    '--p',
     str(p_hid),
     '--seed',
     str(seed),
@@ -131,25 +128,24 @@ def test_train_lstm_1997_on_demo(
   assert math.isclose(cfg.beta1, beta1)
   assert math.isclose(cfg.beta2, beta2)
   assert cfg.ckpt_step == ckpt_step
-  assert cfg.d_blk == d_blk
-  assert cfg.d_emb == d_emb
+  assert cfg.d_ff == d_ff
+  assert cfg.d_k == d_k
+  assert cfg.d_model == d_model
+  assert cfg.d_v == d_v
   assert cfg.dset_name == DemoDset.dset_name
   assert math.isclose(cfg.eps, eps)
   assert cfg.exp_name == exp_name
-  assert math.isclose(cfg.init_ib, init_ib)
   assert math.isclose(cfg.init_lower, init_lower)
-  assert math.isclose(cfg.init_ob, init_ob)
   assert math.isclose(cfg.init_upper, init_upper)
   assert math.isclose(cfg.label_smoothing, label_smoothing)
   assert cfg.log_step == log_step
   assert math.isclose(cfg.lr, lr)
   assert math.isclose(cfg.max_norm, max_norm)
   assert cfg.max_seq_len == max_seq_len
-  assert cfg.model_name == LSTM1997.model_name
-  assert cfg.n_blk == n_blk
+  assert cfg.model_name == TransEnc.model_name
+  assert cfg.n_head == n_head
   assert cfg.n_lyr == n_lyr
-  assert math.isclose(cfg.p_emb, p_emb)
-  assert math.isclose(cfg.p_hid, p_hid)
+  assert math.isclose(cfg.p, p_hid)
   assert cfg.seed == seed
   assert cfg.stride == stride
   assert cfg.tknzr_exp_name == tknzr_exp_name
@@ -159,7 +155,7 @@ def test_train_lstm_1997_on_demo(
   assert math.isclose(cfg.weight_decay, weight_decay)
 
   model = lmp.util.model.load(ckpt=-1, exp_name=exp_name)
-  assert isinstance(model, LSTM1997)
+  assert isinstance(model, TransEnc)
 
   device = torch.device('cpu')
   for p in model.parameters():

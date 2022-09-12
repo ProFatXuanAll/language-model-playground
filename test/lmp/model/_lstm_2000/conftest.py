@@ -1,4 +1,4 @@
-"""Setup fixtures for testing :py:class:`lmp.model._lstm_2000.LSTM2000`."""
+"""Setup fixtures for testing :py:class:`lmp.model._lstm_2000`."""
 
 import pytest
 import torch

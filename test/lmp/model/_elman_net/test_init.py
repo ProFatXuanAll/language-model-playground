@@ -2,7 +2,9 @@
 
 Test target:
 - :py:meth:`lmp.model._elman_net.ElmanNet.__init__`.
+- :py:meth:`lmp.model._elman_net.ElmanNet.params_init`.
 - :py:meth:`lmp.model._elman_net.ElmanNetLayer.__init__`.
+- :py:meth:`lmp.model._elman_net.ElmanNetLayer.params_init`.
 """
 
 import math

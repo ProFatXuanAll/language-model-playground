@@ -2,7 +2,9 @@
 
 Test target:
 - :py:meth:`lmp.model._lstm_2002.LSTM2002.__init__`.
+- :py:meth:`lmp.model._lstm_2002.LSTM2002.params_init`.
 - :py:meth:`lmp.model._lstm_2002.LSTM2002Layer.__init__`.
+- :py:meth:`lmp.model._lstm_2002.LSTM2002Layer.params_init`.
 """
 
 import math

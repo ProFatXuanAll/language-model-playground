@@ -7,7 +7,7 @@ Test target:
 
 import unicodedata
 
-from lmp.tknzr._bpe import BPETknzr, EOW_TK
+from lmp.tknzr._bpe import EOW_TK, BPETknzr
 from lmp.vars import BOS_TK, BOS_TKID, EOS_TK, EOS_TKID, PAD_TK, PAD_TKID, UNK_TK, UNK_TKID
 
 

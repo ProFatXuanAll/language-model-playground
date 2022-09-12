@@ -23,6 +23,7 @@ def test_bpe_tknzr(capsys, bpe_tknzr: BPETknzr, exp_name: str, seed: int) -> Non
     txt,
   ]) == bpe_tknzr.tknz(txt=txt)
 
+
 def test_char_tknzr(capsys, char_tknzr: CharTknzr, exp_name: str, seed: int) -> None:
   """Ensure tokenize script output consistency when using :py:class:`lmp.tknzr.CharTknzr`."""
   txt = 'abc'

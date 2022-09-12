@@ -33,6 +33,7 @@ def test_bpe_tknzr(
   assert load_tknzr.tk2id == tknzr.tk2id
   assert load_tknzr.id2tk == tknzr.id2tk
 
+
 def test_char_tknzr(
   exp_name: str,
   is_uncased: bool,

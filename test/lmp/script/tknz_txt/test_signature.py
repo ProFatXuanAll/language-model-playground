@@ -35,5 +35,5 @@ def test_module_method() -> None:
         name='argv',
       ),
     ],
-    return_annotation=str,
+    return_annotation=List[str],
   )

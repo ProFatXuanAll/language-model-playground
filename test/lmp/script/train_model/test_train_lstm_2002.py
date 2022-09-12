@@ -111,7 +111,7 @@ def test_train_lstm_2002_on_demo(
     '--total_step',
     str(total_step),
     '--ver',
-    'valid',  # Make training faster.
+    'test',  # Make training faster.
     '--warmup_step',
     str(warmup_step),
     '--weight_decay',
@@ -158,7 +158,7 @@ def test_train_lstm_2002_on_demo(
   assert cfg.stride == stride
   assert cfg.tknzr_exp_name == tknzr_exp_name
   assert cfg.total_step == total_step
-  assert cfg.ver == 'valid'
+  assert cfg.ver == 'test'
   assert cfg.warmup_step == warmup_step
   assert math.isclose(cfg.weight_decay, weight_decay)
 

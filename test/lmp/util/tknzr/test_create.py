@@ -23,6 +23,7 @@ def test_create_bpe_tknzr(is_uncased: bool, max_vocab: int, min_count: int, n_me
   assert tknzr.min_count == min_count
   assert tknzr.n_merge == n_merge
 
+
 def test_create_char_tknzr(is_uncased: bool, max_vocab: int, min_count: int) -> None:
   """Test construction for character tokenizer."""
   tknzr = lmp.util.tknzr.create(

@@ -130,8 +130,32 @@ def d_emb(request) -> int:
 
 
 @pytest.fixture(params=[1, 2])
+def d_ff(request) -> int:
+  """Mock Transformer encoder fully connect feed-forward network dimension."""
+  return request.param
+
+
+@pytest.fixture(params=[1, 2])
 def d_hid(request) -> int:
   """Mock hidden dimension."""
+  return request.param
+
+
+@pytest.fixture(params=[1, 2])
+def d_k(request) -> int:
+  """Mock Transformer encoder multi-head attention key featurs dimension."""
+  return request.param
+
+
+@pytest.fixture(params=[1, 2])
+def d_model(request) -> int:
+  """Mock Transformer encoder input dimension."""
+  return request.param
+
+
+@pytest.fixture(params=[1, 2])
+def d_v(request) -> int:
+  """Mock Transformer encoder multi-head value attention featurs dimension."""
   return request.param
 
 
@@ -226,6 +250,12 @@ def n_blk(request) -> int:
 
 
 @pytest.fixture(params=[1, 2])
+def n_head(request) -> int:
+  """Mock number of attention heads."""
+  return request.param
+
+
+@pytest.fixture(params=[1, 2])
 def n_lyr(request) -> int:
   """Mock number of layers."""
   return request.param
@@ -306,7 +336,7 @@ def min_count(request) -> int:
 
 @pytest.fixture(params=[10, 100])
 def n_merge(request) -> int:
-  """Number of merge operation."""
+  """Mock number of merge operation."""
   return request.param
 
 

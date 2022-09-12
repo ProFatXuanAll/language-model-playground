@@ -135,7 +135,7 @@ class LSTM2000(LSTM1997):
     Embeddings dropout probability :math:`\pEmb`.
   p_hid: float, default: 0.0
     Hidden units dropout probability :math:`\pHid`.
-  tknzr: lmp.tknzr.BaseTknzr
+  tknzr: ~lmp.tknzr.BaseTknzr
     Tokenizer instance.
 
   Attributes
@@ -442,7 +442,7 @@ class LSTM2000Layer(LSTM1997Layer):
 
     \begin{align*}
       & \algoProc{\LSTMZeroZeroLayer}\pa{x, c_0, h_0}                                                   \\
-      & \indent{1} S \algoEq x.\text{size}(1)                                                           \\
+      & \indent{1} S \algoEq x.\sz{1}                                                                   \\
       & \indent{1} \algoFor{t \in \set{1, \dots, S}}                                                    \\
       & \indent{2} f_t \algoEq \sigma(W_f \cdot x_t + U_f \cdot h_{t-1} + b_f)       &&\tag{1}\label{1} \\
       & \indent{2} i_t \algoEq \sigma(W_i \cdot x_t + U_i \cdot h_{t-1} + b_i)                          \\

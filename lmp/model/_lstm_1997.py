@@ -152,7 +152,7 @@ class LSTM1997(BaseModel):
     Embeddings dropout probability :math:`\pEmb`.
   p_hid: float, default: 0.0
     Hidden units dropout probability :math:`\pHid`.
-  tknzr: lmp.tknzr.BaseTknzr
+  tknzr: ~lmp.tknzr.BaseTknzr
     Tokenizer instance.
 
   Attributes
@@ -604,7 +604,7 @@ class LSTM1997(BaseModel):
     rnn_in = self.fc_e2h(self.emb(batch_cur_tkids))
 
     # Loop through each layer and gather last hidden states and memory cell last internal states of each layer.
-    batch_cur_states = ([], [])
+    batch_cur_states: Tuple[List[torch.Tensor], List[torch.Tensor]] = ([], [])
     for lyr in range(self.n_lyr):
       # Fetch memory cell previous internal states of a layer.
       # Shape: (B, S, n_blk, d_blk).
@@ -743,7 +743,7 @@ class LSTM1997Layer(nn.Module):
 
     \begin{align*}
       & \algoProc{\LSTMNineSevenLayer}\pa{x, c_0, h_0}                                              \\
-      & \indent{1} S \algoEq x.\text{size}(1)                                                       \\
+      & \indent{1} S \algoEq x.\sz{1}                                                               \\
       & \indent{1} \algoFor{t \in \set{1, \dots, S}}                                                \\
       & \indent{2} i_t \algoEq \sigma\pa{W_i \cdot x_t + U_i \cdot h_{t-1} + b_i}                   \\
       & \indent{2} o_t \algoEq \sigma\pa{W_o \cdot x_t + U_o \cdot h_{t-1} + b_o}                   \\
