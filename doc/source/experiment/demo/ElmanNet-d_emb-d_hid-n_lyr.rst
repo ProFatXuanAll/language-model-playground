@@ -8,11 +8,10 @@ We found that
 
 - Increasing ``d_emb`` from ``10`` to ``100`` makes training loss and perplexity lower.
 - Increasing ``d_hid`` from ``10`` to ``100`` makes training loss and perplexity lower.
-- When ``d_emb = 100``, increasing ``n_lyr`` from ``1`` to ``2`` (or ``3``) makes training loss and perplexity lower.
-- No overfitting was observed.
-- :math:`100\%` accuracy on training set is possible.
-- Performance are really bad for validation and test sets.
-  There might be problems related to dataset design philosophy.
+- When ``d_emb = 100`` and ``d_hid = 100``, increasing ``n_lyr`` from ``1`` to ``2`` (or ``3``) makes training loss and perplexity lower.
+- Overfitting was observed.
+- :math:`100\%` accuracy on training set is almost achieved.
+- Performance are really bad for validation set.
 
 Environment setup
 -----------------
@@ -162,29 +161,37 @@ Observation 4: When ``d_emb = 10``, increasing ``n_lyr`` from ``1`` to ``3`` in 
 By fixing ``d_emb = 10`` and ``d_hid``, we can compare training loss for ``n_lyr = 1`` and ``n_lyr = 3``.
 :math:`9` out of :math:`12` comparisons show that training loss is larger when increasing ``n_lyr`` from ``1`` to ``3``.
 
-Observation 5: When ``d_emb = 100``, increasing ``n_lyr`` from ``1`` to ``2`` maybe is not the only reason that affect the training loss.
-*****************************************************************************************************************************************
-By fixing ``d_emb = 100`` and ``d_hid``, we can compare training loss for ``n_lyr = 1`` and ``n_lyr = 2``.
-For ``d_hid = 10``, all comparisons (:math:`\dfrac{6}{6})` show that training loss is larger when increasing ``n_lyr`` from ``1`` to ``2``.
-However, if ``d_hid = 100``, all comparisons (:math:`\dfrac{6}{6})` show that training loss is smaller when increasing ``n_lyr`` from ``1`` to ``2``.
-Thus we conclude that besides ``n_lyr``, ``d_hid`` may also affect the training loss.
+Observation 5: When ``d_emb = 100`` and ``d_hid = 10``, increasing ``n_lyr`` from ``1`` to ``2`` makes training loss larger.
+****************************************************************************************************************************
+By fixing ``d_emb = 100`` and ``d_hid = 10``, we can compare training loss for ``n_lyr = 1`` and ``n_lyr = 2``.
+All comparisons (:math:`\dfrac{6}{6})` show that training loss is larger when increasing ``n_lyr`` from ``1`` to ``2``.
 
-Observation 6: When ``d_emb = 100``, increasing ``n_lyr`` from ``1`` to ``3`` maybe is not the only reason that affect the training loss.
-*****************************************************************************************************************************************
-By fixing ``d_emb = 100`` and ``d_hid``, we can compare training loss for ``n_lyr = 1`` and ``n_lyr = 3``.
-For ``d_hid = 10``, all comparisons (:math:`\dfrac{6}{6})` show that training loss is larger when increasing ``n_lyr`` from ``1`` to ``3``.
-However, if ``d_hid = 100``, all comparisons (:math:`\dfrac{6}{6})` show that training loss is smaller when increasing ``n_lyr`` from ``1`` to ``3``.
-Thus we conclude that besides ``n_lyr``, ``d_hid`` may also affect the training loss.
+Observation 6: When ``d_emb = 100`` and ``d_hid = 100``, increasing ``n_lyr`` from ``1`` to ``2`` makes training loss smaller.
+******************************************************************************************************************************
+By fixing ``d_emb = 100`` and ``d_hid = 100``, we can compare training loss for ``n_lyr = 1`` and ``n_lyr = 2``.
+All comparisons (:math:`\dfrac{6}{6})` show that training loss is smaller when increasing ``n_lyr`` from ``1`` to ``2``.
+One should compare this with observation 5.
 
-Observation 7: Increasing ``n_lyr`` must also increase ``d_emb`` and ``d_hid``.
+Observation 7: When ``d_emb = 100`` and ``d_hid = 10``, increasing ``n_lyr`` from ``1`` to ``3`` makes training loss larger.
+****************************************************************************************************************************
+By fixing ``d_emb = 100`` and ``d_hid = 10``, we can compare training loss for ``n_lyr = 1`` and ``n_lyr = 3``.
+All comparisons (:math:`\dfrac{6}{6})` show that training loss is larger when increasing ``n_lyr`` from ``1`` to ``3``.
+
+Observation 8: When ``d_emb = 100`` and ``d_hid = 100``, increasing ``n_lyr`` from ``1`` to ``3`` makes training loss larger.
+*****************************************************************************************************************************
+By fixing ``d_emb = 100`` and ``d_hid = 100``, we can compare training loss for ``n_lyr = 1`` and ``n_lyr = 3``.
+All comparisons (:math:`\dfrac{6}{6})` show that training loss is smaller when increasing ``n_lyr`` from ``1`` to ``3``.
+One should compare this with observation 7.
+
+Observation 9: Increasing ``n_lyr`` must also increase ``d_emb`` and ``d_hid``.
 *******************************************************************************
-Combining observations from 3 to 6, we conclude that when increasing ``n_lyr``, one have to increase ``d_emb`` and ``d_hid`` together to make training loss smaller.
+Combining observations from 3 to 9, we conclude that when increasing ``n_lyr``, one have to increase ``d_emb`` and ``d_hid`` together to make training loss smaller.
 
-Observation 8: Minimum loss is achieved when ``d_emb = 100``, ``d_hid = 100`` and ``n_lyr = 3``.
-************************************************************************************************
+Observation 10: Minimum loss is achieved when ``d_emb = 100``, ``d_hid = 100`` and ``n_lyr = 3``.
+*************************************************************************************************
 
-Observation 9: Training loss is still decreasing in all configuration.
-**********************************************************************
+Observation 11: Training loss is still decreasing in all configuration.
+***********************************************************************
 All comparisons (:math:`\dfrac{60}{60}`) show that training loss is still decreasing no matter which configuration is used.
 This suggest that further training may be required.
 
@@ -236,28 +243,28 @@ Observation 3: When ``d_emb = 10``, increasing ``n_lyr`` from ``1`` to ``2`` in 
 By fixing ``d_emb = 10`` and ``d_hid``, we can compare perplexity for ``n_lyr = 1`` and ``n_lyr = 2``.
 Most of the comparisons (:math:`\dfrac{24}{36}`) show that perplexity is larger when increasing ``n_lyr`` from ``1`` to ``2``.
 
-Observation 4: When ``d_emb = 10``, increasing ``n_lyr`` from ``1`` to ``3`` maybe is not the only reason to affect the perplexity.
-***********************************************************************************************************************************
+Observation 4: When ``d_emb = 10``, increasing ``n_lyr`` from ``1`` to ``3`` does not show anything significant.
+****************************************************************************************************************
 By fixing ``d_emb = 10`` and ``d_hid``, we can compare perplexity for ``n_lyr = 1`` and ``n_lyr = 3``.
 About half of comparisons (:math:`\dfrac{19}{36}`) show that perplexity is larger when increasing ``n_lyr`` from ``1`` to ``3``.
-Thus we conclude that besides ``n_lyr``, ``d_hid`` may also affect the training loss.
+No significance was shown and no conclusion could be made.
 
 Observation 5: When ``d_emb = 100``, increasing ``n_lyr`` from ``1`` to ``2`` in general makes perplexity larger.
 *****************************************************************************************************************
 By fixing ``d_emb = 100`` and ``d_hid``, we can compare perplexity for ``n_lyr = 1`` and ``n_lyr = 2``.
 Most of the comparisons (:math:`\dfrac{21}{36}`) show that perplexity is smaller when increasing ``n_lyr`` from ``1`` to ``2``.
 
-Observation 6: When ``d_emb = 100``, increasing ``n_lyr`` from ``1`` to ``3`` maybe is not the only reason to affect the perplexity.
-************************************************************************************************************************************
+Observation 6: When ``d_emb = 100``, increasing ``n_lyr`` from ``1`` to ``3`` does not show anything significant.
+*****************************************************************************************************************
 By fixing ``d_emb = 100`` and ``d_hid``, we can compare perplexity for ``n_lyr = 1`` and ``n_lyr = 3``.
 About half of comparisons (:math:`\dfrac{20}{36}`) show that perplexity is smaller when increasing ``n_lyr`` from ``1`` to ``3``.
-Thus we conclude that besides ``n_lyr``, ``d_hid`` may also affect the training loss.
+No significance was shown and no conclusion could be made.
 
 Observation 7: Overfitting seems to happen.
 *******************************************
 On test set, most comparisons (:math:`\dfrac{53}{60}`) show that perplexity is still decreasing in most configurations.
 However, on validation set, most comparisons (:math:`\dfrac{42}{60}`) show that perplexity is increasing.
-Most of the perplexity increasing on validation set occurs at ``10k`` or ``15k`` step.
+Perplexity on validation set increase early, most of them happened at either ``10k`` or ``15k`` steps.
 
 Observation 8: Minimum perplexity on training set is achieved at ``30k`` step when ``d_emb = 100``, ``d_hid = 100`` and ``n_lyr = 3``.
 **************************************************************************************************************************************
@@ -265,12 +272,12 @@ Observation 8: Minimum perplexity on training set is achieved at ``30k`` step wh
 - On validation set, minimum perplexity :math:`1.55` is achieved at ``15k`` step when ``d_emb = 10``, ``d_hid = 10`` and ``n_lyr = 2``.
 - On testing set, minimum perplexity :math:`1.36` is achieved at ``25k`` step when ``d_emb = 100``, ``d_hid = 100`` and ``n_lyr = 3``.
 
-Observation 9: Only when setting ``d_emb = 100`` and ``d_hid = 100`` perplexity is lower than :math:`1.3`.
-**********************************************************************************************************
-Later in the accuracy experiments we see that only when perplexity is lower than :math:`1.4` accuracy can be higher than :math:`90\%`.
+Observation 9: Only when setting ``d_emb = 100`` and ``d_hid = 100`` perplexity is less than :math:`1.4`.
+*********************************************************************************************************
+Later in the accuracy experiments we see that training set accuracy is higher than :math:`90\%` only when perplexity is less than :math:`1.4`.
 
 Accuracy
---------
+~~~~~~~~
 We use the following script to calculate accuracy on demo dataset:
 
 .. code-block:: python
@@ -342,17 +349,30 @@ We use the following script to calculate accuracy on demo dataset:
 | 100       | 100       | 3         | **19.25** | **7.47**  | 6     | **36.12** | **11.8**  | 18    | 51.64     | **9.7**   | **41**| **67.8**  | **9.98**  | **48**| **97.9**  | **13.56**| **78**| 99.6     | **18.02**| **92**|
 +-----------+-----------+-----------+-----------+-----------+-------+-----------+-----------+-------+-----------+-----------+-------+-----------+-----------+-------+-----------+----------+-------+----------+----------+-------+
 
-Observation 1: No :math:`100\%` accuracy is achieved. The highest accuracy we can achieve on testing set is :math:`92\%`.
-------------------------------------------------------------------------------------------------------------------------
-:math:`92\%` accuracy is achieved using ``d_emb = 100``, ``d_hid = 100`` and ``n_lyr = 3``.
+Observation 1: :math:`100\%` accuracy is not achieved on training set.
+**********************************************************************
+The highest accuracy can be achieved on training set is :math:`99.72\%`.
+:math:`99.72\%` accuracy is achieved using ``d_emb = 100``, ``d_hid = 100`` and ``n_lyr = 2``.
 
-Observation 2: Models are not generalized.
-------------------------------------------
-Validation set do not have accuracy higher than :math:`20\%`.
-This might be the problem of dataset design.
+Observation 2: :math:`100\%` accuracy is not achieved on test set.
+******************************************************************
+The highest accuracy can be achieved on test set is :math:`92\%`.
+:math:`92\%` accuracy is achieved using ``d_emb = 100``, ``d_hid = 100`` and ``n_lyr = 3``.
+One should compare this with observation 1.
+
+Observation 3: Accuracy on validation set is less than :math:`20\%`.
+********************************************************************
+The highest accuracy can be achieved on validation set is :math:`18.02\%`.
+This happened when the best accuracy is achieved on test set (see observation 2).
+
+Observation 4: Commutative law for addition seems to be harder to generalized than reflexive addition.
+******************************************************************************************************
+Validation set is basically training set but changing ``a + b`` to ``b + a``.
+Test set is only consist of ``a + a``.
+From observation 2 and 3 we know that model generalized well on test set but not validation set.
 
 Future work
 -----------
-We will try to fix demo dataset.
+Find a way to make model generalize on validation set.
 
-.. footbiliography::
+.. footbibliography::
