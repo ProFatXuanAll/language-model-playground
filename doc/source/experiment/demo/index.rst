@@ -6,4 +6,5 @@ All experiment related to :py:class:`lmp.dset.DemoDset` are put under this direc
 .. toctree::
    :maxdepth: 1
 
-   ElmanNet-d_emb-d_hid-n_lyr
+   ElmanNet-struct-base
+   ElmanNet-struct-best

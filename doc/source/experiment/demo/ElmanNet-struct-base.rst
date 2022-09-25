@@ -1,14 +1,14 @@
-Elman Net: ``d_emb`` vs ``d_hid`` vs ``n_lyr``
-==============================================
+Elman Net: structure-related hyperparameters baseline
+=====================================================
 
 Abstract
 --------
-This goal of this experiment is to show how Elman Net language model's structure hyperparameters affect training loss and perplexity.
+The goal of this experiment is to show how Elman Net language model's structure hyperparameters affect training loss and perplexity.
 We found that
 
 - Increasing ``d_emb`` from ``10`` to ``100`` makes training loss and perplexity lower.
 - Increasing ``d_hid`` from ``10`` to ``100`` makes training loss and perplexity lower.
-- When ``d_emb = 100`` and ``d_hid = 100``, increasing ``n_lyr`` from ``1`` to ``2`` (or ``3``) makes training loss and perplexity lower.
+- When ``d_emb = 100`` and ``d_hid = 100``, increasing ``n_lyr`` from ``1`` to ``2`` (or ``3``) makes both training loss and perplexity lower.
 - Overfitting was observed.
 - :math:`100\%` accuracy on training set is almost achieved.
 - Performance are really bad for validation set.
@@ -21,7 +21,7 @@ CUDA version is ``11.4`` and CUDA driver version is ``470.129.06``.
 Experiment setup
 ----------------
 We changed the values of ``d_emb``, ``d_hid`` and ``n_lyr`` and recorded training loss and perplexity.
-Parameters and their values are listed below.
+Hyperparameters and their values are listed below.
 
 +-----------+-----------------------+
 | Name      | Values                |
@@ -35,8 +35,7 @@ Parameters and their values are listed below.
 
 Tokenizer settings
 ~~~~~~~~~~~~~~~~~~
-We used character tokenizer :py:class:`~lmp.tknzr.CharTknzr`.
-We used :doc:`lmp.script.train_tknzr </script/train_tknzr>` to train our tokenizer.
+We used :doc:`lmp.script.train_tknzr </script/train_tknzr>` to train a character tokenizer :py:class:`~lmp.tknzr.CharTknzr`.
 Script was executed as below:
 
 .. code-block:: shell
@@ -262,7 +261,7 @@ No significance was shown and no conclusion could be made.
 
 Observation 7: Overfitting seems to happen.
 *******************************************
-On test set, most comparisons (:math:`\dfrac{53}{60}`) show that perplexity is still decreasing in most configurations.
+On test set, most comparisons (:math:`\dfrac{53}{60}`) show that perplexity is still decreasing.
 However, on validation set, most comparisons (:math:`\dfrac{42}{60}`) show that perplexity is increasing.
 Perplexity on validation set increase early, most of them happened at either ``10k`` or ``15k`` steps.
 
