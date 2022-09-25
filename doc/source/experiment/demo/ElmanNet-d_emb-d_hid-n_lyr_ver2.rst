@@ -7,8 +7,7 @@ This goal of this experiment is to show how Elman Net language model's structure
 We found that
 
 - Increasing ``d_emb`` from ``100`` to ``200`` makes training loss and perplexity lower.
-- Increasing ``d_hid`` from ``100`` to ``200`` makes training loss and perplexity lower.
-- When ``d_emb = 100``, increasing ``n_lyr`` from ``2`` to ``3`` (or ``4``) makes training loss and perplexity lower.
+- When ``d_emb = 100`` and ``d_emb = 200``, increasing ``n_lyr`` from ``2`` to ``3`` (or ``4``) makes training loss and perplexity lower.
 - Overfitting was observed.
 - :math:`100\%` accuracy on training set is possible.
 - Performance are really bad for validation sets.
